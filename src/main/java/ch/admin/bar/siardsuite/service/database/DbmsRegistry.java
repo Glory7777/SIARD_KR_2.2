@@ -199,8 +199,40 @@ public class DbmsRegistry {
                     .examplePort("1433")
                     .exampleHost("mssql.exampleHost.org")
                     .exampleDbName("MS-SQL-Database")
+                    .build(),
+
+            ServerBasedDbms.builder()
+                    .name("CUBRID")
+                    .id("CUBRID")
+                    .driverClassName("ch.admin.bar.siard2.jdbc.CubridJdbc") // TODO:: 드라이버 추가 시 경로 변경 필요
+                    .jdbcConnectionStringEncoder(config -> String.format(
+                            "jdbc:db2://%s:%s/%s%s",
+                            config.getHost(),
+                            config.getPort(),
+                            config.getDbName(),
+                            config.getOptions()
+                                    .map(optionsString -> "?" + optionsString)
+                                    .orElse("")))
+                    .jdbcConnectionStringDecoder(encoded -> {
+                        val splitEncoded = encoded.split(":");
+                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
+                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
+
+                        return ServerBasedDbmsConnectionProperties.builder()
+                                .host(splitEncoded[2].replace("//", ""))
+                                .port(splitPortAndDbNameWithOptions[0])
+                                .dbName(splitDbNameAndOptions[0])
+                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
+                                .user("")
+                                .password("")
+                                .build();
+                    })
+                    .examplePort("30000")
+                    .exampleHost("cubrid.exampleHost.org")
+                    .exampleDbName("CUBRID")
                     .build()
-    );
+
+            );
 
     public static Set<String> getSupportedDbms() {
         return DBMS.stream()
