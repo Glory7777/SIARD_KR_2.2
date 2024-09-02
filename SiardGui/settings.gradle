@@ -3,5 +3,4 @@
  */
 
 rootProject.name = 'siard-suite'
-include 'siardCmd'
 
