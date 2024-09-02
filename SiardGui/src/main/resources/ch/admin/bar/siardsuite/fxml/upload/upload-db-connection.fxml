@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import ch.admin.bar.siardsuite.ui.presenter.connection.ConnectionForm?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+<ScrollPane styleClass="scrollable-pane"
+            stylesheets="@../../css/root.css"
+            xmlns="http://javafx.com/javafx/1.8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ch.admin.bar.siardsuite.ui.presenter.upload.UploadConnectionPresenter"
+            maxHeight="1.7976931348623157E308"
+            maxWidth="1.7976931348623157E308">
+    <BorderPane style="-fx-background-color: white"
+                fx:id="borderPane"
+                maxHeight="1.7976931348623157E308"
+                maxWidth="1.7976931348623157E308">
+        <center>
+            <VBox BorderPane.alignment="TOP_LEFT">
+                <BorderPane.margin>
+                    <Insets left="25.0" right="25.0" top="48.0"/>
+                </BorderPane.margin>
+
+                <ConnectionForm fx:id="connectionForm"
+                                maxWidth="1140.0"/>
+
+                <VBox>
+                    <VBox.margin>
+                        <Insets bottom="24.0" left="25.0" right="25.0" top="24.0"/>
+                    </VBox.margin>
+                    <styleClass>
+                        <String fx:value="form-container"/>
+                        <String fx:value="form-container-white"/>
+                    </styleClass>
+                    <HBox alignment="CENTER_LEFT" styleClass="info-container">
+                        <Label fx:id="titleNewSchemaName" styleClass="h3" text="Label"/>
+                        <MFXButton fx:id="infoButton" alignment="CENTER" rippleAnimateBackground="false">
+                            <styleClass>
+                                <String fx:value="info-icon"/>
+                                <String fx:value="icon-button"/>
+                            </styleClass>
+                            <HBox.margin>
+                                <Insets left="10.0" top="4.0"/>
+                            </HBox.margin>
+                        </MFXButton>
+                        <VBox.margin>
+                            <Insets bottom="24.0" top="10.0"/>
+                        </VBox.margin>
+                    </HBox>
+
+                    <VBox fx:id="schemaFields">
+                        <HBox prefWidth="200.0">
+                            <Label fx:id="currentNameLabel" prefHeight="22.0" prefWidth="277.0"/>
+                            <Label fx:id="newNameLabel" prefHeight="22.0" prefWidth="277.0">
+                                <HBox.margin>
+                                    <Insets left="24.0"/>
+                                </HBox.margin>
+                            </Label>
+                        </HBox>
+
+                    </VBox>
+                    <Label fx:id="schemaValidationMsg" styleClass="error-text">
+                        <VBox.margin>
+                            <Insets/>
+                        </VBox.margin>
+                    </Label>
+
+                </VBox>
+
+                <BorderPane.margin>
+                    <Insets left="25.0" right="25.0" top="48.0"/>
+                </BorderPane.margin>
+            </VBox>
+        </center>
+        <bottom>
+        </bottom>
+    </BorderPane>
+</ScrollPane>
