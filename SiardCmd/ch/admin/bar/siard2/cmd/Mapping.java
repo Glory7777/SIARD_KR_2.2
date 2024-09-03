@@ -5,14 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
-
 public class Mapping
 {
   protected static Map<String, String> getDisambiguated(List<String> list, int iMaxLength) {

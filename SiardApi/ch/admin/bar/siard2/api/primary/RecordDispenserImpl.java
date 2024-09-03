@@ -7,16 +7,17 @@ import ch.admin.bar.siard2.api.generated.table.ObjectFactory;
 import ch.admin.bar.siard2.api.generated.table.RecordType;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.jaxb.XMLStreamFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 

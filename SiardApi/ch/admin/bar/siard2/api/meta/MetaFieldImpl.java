@@ -1,12 +1,6 @@
 package ch.admin.bar.siard2.api.meta;
 
-import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.api.MetaAttribute;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaField;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.MetaType;
-import ch.admin.bar.siard2.api.MetaView;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.FieldType;
 import ch.admin.bar.siard2.api.generated.FieldsType;
@@ -15,6 +9,7 @@ import ch.admin.bar.siard2.api.primary.ArchiveImpl;
 import ch.enterag.utils.DU;
 import ch.enterag.utils.SU;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

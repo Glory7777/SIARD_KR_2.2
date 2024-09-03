@@ -1,29 +1,16 @@
 package ch.admin.bar.siard2.api.meta;
-import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.api.MetaData;
-import ch.admin.bar.siard2.api.MetaPrivilege;
-import ch.admin.bar.siard2.api.MetaRole;
-import ch.admin.bar.siard2.api.MetaSchema;
-import ch.admin.bar.siard2.api.MetaSearch;
-import ch.admin.bar.siard2.api.MetaUser;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.generated.MessageDigestType;
-import ch.admin.bar.siard2.api.generated.PrivilegeType;
-import ch.admin.bar.siard2.api.generated.PrivilegesType;
-import ch.admin.bar.siard2.api.generated.RoleType;
-import ch.admin.bar.siard2.api.generated.RolesType;
-import ch.admin.bar.siard2.api.generated.SchemaType;
-import ch.admin.bar.siard2.api.generated.SchemasType;
-import ch.admin.bar.siard2.api.generated.SiardArchive;
-import ch.admin.bar.siard2.api.generated.UserType;
-import ch.admin.bar.siard2.api.generated.UsersType;
+
+import ch.admin.bar.siard2.api.*;
+import ch.admin.bar.siard2.api.generated.*;
+import ch.admin.bar.siard2.api.primary.ArchiveImpl;
 import ch.enterag.utils.DU;
 import ch.enterag.utils.SU;
+import ch.enterag.utils.TZ;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 import java.net.URI;
-import java.util.GregorianCalendar;
-import java.util.Objects;
+import java.util.*;
 
 public class MetaDataImpl extends MetaSearchImpl implements MetaData {
   private static DU _du = DU.getInstance("en", "yyyy-MM-dd"); public static final String _sURI_SCHEME_FILE = "file";

@@ -1,22 +1,14 @@
 package ch.admin.bar.siard2.api.primary;
 
-import ch.admin.bar.siard2.api.Cell;
-import ch.admin.bar.siard2.api.MetaValue;
 import ch.admin.bar.siard2.api.Record;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.Value;
+import ch.admin.bar.siard2.api.*;
 import ch.enterag.utils.background.Progress;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.text.Collator;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
+import java.text.Collator;
 
 
 public class SortedTableImpl

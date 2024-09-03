@@ -13,20 +13,16 @@ import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.enterag.utils.StopWatch;
 import ch.enterag.utils.background.Progress;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Struct;
+import java.sql.*;
+
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.Duration;
 
 public class PrimaryDataFromDb extends PrimaryDataTransfer {
   private static final Logger LOG = LoggerFactory.getLogger(PrimaryDataFromDb.class);

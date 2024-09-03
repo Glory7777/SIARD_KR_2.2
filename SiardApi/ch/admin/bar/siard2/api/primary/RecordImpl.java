@@ -1,22 +1,20 @@
 package ch.admin.bar.siard2.api.primary;
 
-import ch.admin.bar.siard2.api.Cell;
-import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siard2.api.Record;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.Value;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.table.ObjectFactory;
 import ch.admin.bar.siard2.api.generated.table.RecordType;
 import ch.admin.bar.siard2.api.meta.MetaColumnImpl;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 
 

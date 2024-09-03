@@ -1,33 +1,26 @@
 package ch.admin.bar.siard2.api.primary;
-import ch.admin.bar.siard2.api.generated.CheckConstraintType;
-import ch.admin.bar.siard2.api.generated.ColumnType;
-import ch.admin.bar.siard2.api.generated.ForeignKeyType;
-import ch.admin.bar.siard2.api.generated.MessageDigestType;
-import ch.admin.bar.siard2.api.generated.ParameterType;
-import ch.admin.bar.siard2.api.generated.PrivOptionType;
-import ch.admin.bar.siard2.api.generated.PrivilegeType;
-import ch.admin.bar.siard2.api.generated.ReferenceType;
-import ch.admin.bar.siard2.api.generated.RoleType;
-import ch.admin.bar.siard2.api.generated.RoutineType;
-import ch.admin.bar.siard2.api.generated.SchemaType;
-import ch.admin.bar.siard2.api.generated.SiardArchive;
-import ch.admin.bar.siard2.api.generated.TableType;
-import ch.admin.bar.siard2.api.generated.TriggerType;
-import ch.admin.bar.siard2.api.generated.UniqueKeyType;
-import ch.admin.bar.siard2.api.generated.UserType;
-import ch.admin.bar.siard2.api.generated.ViewType;
+
+import ch.admin.bar.siard2.api.Archive;
+import ch.admin.bar.siard2.api.convertableSiardArchive.Siard21.ConvertableSiard21Archive;
+import ch.admin.bar.siard2.api.convertableSiardArchive.Siard22.Siard21ToSiard22Transformer;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.generated.old10.ActionTimeType;
-import ch.admin.bar.siard2.api.generated.old10.ColumnType;
-import ch.admin.bar.siard2.api.generated.old10.ForeignKeyType;
-import ch.admin.bar.siard2.api.generated.old10.ParameterType;
-import ch.admin.bar.siard2.api.generated.old10.PrivilegeType;
-import ch.admin.bar.siard2.api.generated.old10.RoutineType;
-import ch.admin.bar.siard2.api.generated.old10.SchemaType;
-import ch.admin.bar.siard2.api.generated.old10.SiardArchive;
-import ch.admin.bar.siard2.api.generated.old10.TableType;
-import ch.admin.bar.siard2.api.generated.old10.TriggerType;
-import java.net.URL;
+import ch.admin.bar.siard2.api.generated.old10.CandidateKeyType;
+import ch.admin.bar.siard2.api.generated.old10.PrimaryKeyType;
+import ch.enterag.sqlparser.BaseSqlFactory;
+import ch.enterag.sqlparser.datatype.PredefinedType;
+import ch.enterag.sqlparser.datatype.enums.PreType;
+import ch.enterag.utils.EU;
+import ch.enterag.utils.jaxb.Io;
+import ch.enterag.utils.logging.IndentLogger;
+
 import javax.xml.bind.JAXBException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+
+import static ch.admin.bar.siard2.api.generated.PrivOptionType.ADMIN;
+import static ch.admin.bar.siard2.api.generated.PrivOptionType.GRANT;
 
 public class MetaDataXml {
   private static IndentLogger _il = IndentLogger.getIndentLogger(MetaDataXml.class.getName());
@@ -477,8 +470,8 @@ public class MetaDataXml {
     {
       switch (potOld) {
         case ADMIN:
-          pot = PrivOptionType.ADMIN; break;
-        case GRANT: pot = PrivOptionType.GRANT;
+          pot = ADMIN; break;
+        case GRANT: pot = GRANT;
           break;
       }  } 
     return pot;
@@ -566,7 +559,7 @@ public class MetaDataXml {
     
     try {
       URL urlXsd = Archive.class.getResource("/ch/admin/bar/siard2/api/res/metadata.xsd");
-      sa = (SiardArchive)Io.readJaxbObject(SiardArchive.class, isXml, urlXsd);
+      sa = (SiardArchive) Io.readJaxbObject(SiardArchive.class, isXml, urlXsd);
     } catch (JAXBException je) {
       _il.exception(je);
       System.err.println(EU.getExceptionMessage(je));

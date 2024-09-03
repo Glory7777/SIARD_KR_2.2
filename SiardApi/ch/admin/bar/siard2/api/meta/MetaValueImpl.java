@@ -6,6 +6,7 @@ import ch.admin.bar.siard2.api.MetaType;
 import ch.admin.bar.siard2.api.MetaValue;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.enterag.sqlparser.identifier.QualifiedId;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

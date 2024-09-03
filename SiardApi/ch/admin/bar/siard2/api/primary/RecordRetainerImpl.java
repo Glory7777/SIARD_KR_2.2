@@ -6,17 +6,14 @@ import ch.admin.bar.siard2.api.Table;
 import ch.admin.bar.siard2.api.generated.table.RecordType;
 import ch.enterag.utils.FU;
 import ch.enterag.utils.jaxb.XMLStreamFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
+import java.net.URI;
 
 
 

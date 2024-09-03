@@ -1,32 +1,25 @@
 package ch.admin.bar.siard2.cmd;
-import ch.admin.bar.siard2.api.MetaAttribute;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaForeignKey;
-import ch.admin.bar.siard2.api.MetaParameter;
-import ch.admin.bar.siard2.api.MetaPrivilege;
-import ch.admin.bar.siard2.api.MetaRole;
-import ch.admin.bar.siard2.api.MetaRoutine;
-import ch.admin.bar.siard2.api.MetaSchema;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.MetaType;
-import ch.admin.bar.siard2.api.MetaUniqueKey;
-import ch.admin.bar.siard2.api.MetaUser;
-import ch.admin.bar.siard2.api.MetaView;
-import ch.admin.bar.siard2.api.Schema;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
+import ch.admin.bar.siard2.api.meta.MetaDataImpl;
 import ch.enterag.sqlparser.BaseSqlFactory;
 import ch.enterag.sqlparser.datatype.DataType;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.ProgramInfo;
+import ch.enterag.utils.background.Progress;
 import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MetaDataFromDb extends MetaDataBase {
   private static final Logger LOG = LoggerFactory.getLogger(MetaDataFromDb.class);
@@ -43,23 +36,6 @@ public class MetaDataFromDb extends MetaDataBase {
   
   private MetaDataFromDb(DatabaseMetaData dmd, MetaData md) throws SQLException {
     super(dmd, md);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     this._lMaxLobSize = -1L;
     this._progress = null;
     this._bViewsAsTables = false;

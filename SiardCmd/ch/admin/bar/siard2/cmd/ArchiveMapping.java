@@ -2,6 +2,7 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.MetaData;
 import ch.admin.bar.siard2.api.MetaSchema;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ArchiveMapping {

@@ -2,6 +2,7 @@ package ch.admin.bar.siard2.api.primary;
 
 import ch.admin.bar.siard2.api.Table;
 import ch.enterag.utils.background.Progress;
+
 import java.io.IOException;
 import java.io.InputStream;
 

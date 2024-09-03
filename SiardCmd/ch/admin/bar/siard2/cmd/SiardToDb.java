@@ -50,26 +50,14 @@ public class SiardToDb
   
   public static final int iRETURN_FATAL = 12;
 
-  
+
   private static ProgramInfo _pi = ProgramInfo.getProgramInfo("SIARD Suite", VersionsExplorer.INSTANCE
-      .getSiardVersion(), "SiardToDb", VersionsExplorer.INSTANCE
-      .getAppVersion(), "Program to load database content from a .siard file", "Swiss Federal Archives, Berne, Switzerland, 2008-2016", 
-
-      
-      Arrays.asList(new String[] {
-
-          
-          "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Andreas Voss, Swiss Federal Archives, Berne, Switzerland", "Anders Bo Nielsen, Danish National Archives, Denmark", "Claire Röthlisberger-Jourdan, KOST, Berne, Switzerland"
-        }, ), Arrays.asList(new String[] {
-          "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Simon Jutz, Cytex GmbH, Zurich, Switzerland"
-        }, ), Arrays.asList(new String[] {
-          
-          "Claudia Matthys, POOL Computer AG, Zurich, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Yvan Dutoit, Swiss Federal Archives, Berne, Switzerland"
-        }, ), Arrays.asList(new String[] { "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Alain Mast, Swiss Federal Archives, Berne, Switzerland", "Krystyna Ohnesorge, Swiss Federal Archives, Berne, Switzerland" }));
-
-
-
-  
+                  .getSiardVersion(), "SiardToDb", VersionsExplorer.INSTANCE
+                  .getAppVersion(), "Program to load database content from a .siard file", "Swiss Federal Archives, Berne, Switzerland, 2008-2016",
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Andreas Voss, Swiss Federal Archives, Berne, Switzerland", "Anders Bo Nielsen, Danish National Archives, Denmark", "Claire Röthlisberger-Jourdan, KOST, Berne, Switzerland"),
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Simon Jutz, Cytex GmbH, Zurich, Switzerland"),
+          Arrays.asList("Claudia Matthys, POOL Computer AG, Zurich, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Yvan Dutoit, Swiss Federal Archives, Berne, Switzerland"),
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Alain Mast, Swiss Federal Archives, Berne, Switzerland", "Krystyna Ohnesorge, Swiss Federal Archives, Berne, Switzerland"));
   private int _iLoginTimeoutSeconds = 300;
   private int _iQueryTimeoutSeconds = 75;
   private boolean _bOverwrite = false;
@@ -87,9 +75,6 @@ public class SiardToDb
   }
 
 
-
-
-  
   private void printUsage() {
     System.out.println("Usage:");
     System.out.println("java -cp <siardpath>/lib/siardcmd.jar ch.admin.bar.siard2.cmd.SiardToDb [-h]");
@@ -246,7 +231,7 @@ public class SiardToDb
 
 
   
-  public SiardToDb(String[] asArgs) throws IOException, SQLException {
+  public SiardToDb(String[] asArgs) throws IOException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
     getParameters(asArgs);
     if (this._iReturn == 0) {
 

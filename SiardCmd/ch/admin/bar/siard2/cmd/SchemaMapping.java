@@ -2,6 +2,10 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.MetaSchema;
 import ch.admin.bar.siard2.api.MetaTable;
 import ch.admin.bar.siard2.api.MetaType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +24,7 @@ public class SchemaMapping extends Mapping {
 
 
   
-  private SchemaMapping(boolean bSupportsArrays, boolean bSupportsUdts, String sMappedSchemaName, MetaSchema ms, int iMaxTableNameLength, int iMaxColumnNameLength) throws IOException {
+  private SchemaMapping(boolean bSupportsArrays, boolean bSupportsUdts, String sMappedSchemaName, MetaSchema ms, int iMaxTableNameLength, int iMaxColumnNameLength) throws IOException, IOException {
     this._sMappedSchemaName = sMappedSchemaName;
     List<String> listTypes = new ArrayList<>();
     for (int iType = 0; iType < ms.getMetaTypes(); iType++)

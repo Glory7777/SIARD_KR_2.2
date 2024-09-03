@@ -1,11 +1,10 @@
 package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.MetaData;
 import ch.enterag.sqlparser.identifier.QualifiedId;
-import java.sql.Array;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class MetaDataBase {

@@ -1,10 +1,12 @@
 package ch.admin.bar.siard2.api.primary;
+
 import ch.enterag.utils.xml.XU;
+import org.w3c.dom.Element;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import org.w3c.dom.Element;
 
 public class ValidatingWriter extends Writer {
   private Element _el = null;

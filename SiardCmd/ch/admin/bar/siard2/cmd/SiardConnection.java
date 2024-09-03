@@ -28,26 +28,11 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
-
-
-
-
-
-
-
-
 public class SiardConnection
   extends Properties
 {
   private static final Logger LOG = LoggerFactory.getLogger(SiardConnection.class);
 
-
-
-  
   private static SiardConnection _sc = null;
   
   public static final int iDEFAULT_QUERY_TIMEOUT_SECONDS = 75;
@@ -175,7 +160,7 @@ public class SiardConnection
     return split[1];
   }
   
-  public Driver loadValidDriver(String jdbcUrl) {
+  public Driver loadValidDriver(String jdbcUrl) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
     try {
       String subSchema = extractSubSchema(jdbcUrl);
       
@@ -202,7 +187,7 @@ public class SiardConnection
   }
 
   
-  public Connection createValidConnection(String jdbcUrl, String user, String password) throws SQLException {
+  public Connection createValidConnection(String jdbcUrl, String user, String password) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
     logDrivers(jdbcUrl);
     
     Properties info = new Properties();
@@ -225,7 +210,7 @@ public class SiardConnection
 
 
   
-  private static void logDrivers(String jdbcUrl) {
+  private static void logDrivers(String jdbcUrl) throws SQLException {
     try {
       StringBuilder sb = (new StringBuilder()).append("Registered JDBC drivers and its compatibility for url '").append(jdbcUrl).append("':");
       

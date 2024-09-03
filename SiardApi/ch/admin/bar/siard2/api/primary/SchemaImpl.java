@@ -1,10 +1,6 @@
 package ch.admin.bar.siard2.api.primary;
 
-import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.api.MetaSchema;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.Table;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.SchemaType;
 import ch.admin.bar.siard2.api.generated.SchemasType;
 import ch.admin.bar.siard2.api.generated.TableType;
@@ -12,6 +8,7 @@ import ch.admin.bar.siard2.api.generated.TablesType;
 import ch.admin.bar.siard2.api.meta.MetaDataImpl;
 import ch.admin.bar.siard2.api.meta.MetaSchemaImpl;
 import ch.admin.bar.siard2.api.meta.MetaTableImpl;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;

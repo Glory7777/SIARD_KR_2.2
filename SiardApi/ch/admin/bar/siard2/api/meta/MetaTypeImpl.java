@@ -1,13 +1,10 @@
 package ch.admin.bar.siard2.api.meta;
+
 import ch.admin.bar.siard2.api.MetaAttribute;
 import ch.admin.bar.siard2.api.MetaSchema;
 import ch.admin.bar.siard2.api.MetaSearch;
 import ch.admin.bar.siard2.api.MetaType;
-import ch.admin.bar.siard2.api.generated.AttributeType;
-import ch.admin.bar.siard2.api.generated.AttributesType;
-import ch.admin.bar.siard2.api.generated.CategoryType;
-import ch.admin.bar.siard2.api.generated.ObjectFactory;
-import ch.admin.bar.siard2.api.generated.TypeType;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.primary.ArchiveImpl;
 import ch.enterag.sqlparser.BaseSqlFactory;
 import ch.enterag.sqlparser.SqlFactory;
@@ -15,6 +12,7 @@ import ch.enterag.sqlparser.datatype.PredefinedType;
 import ch.enterag.sqlparser.datatype.enums.PreType;
 import ch.enterag.sqlparser.ddl.enums.Multiplier;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 
 public class MetaTypeImpl extends MetaSearchImpl implements MetaType {

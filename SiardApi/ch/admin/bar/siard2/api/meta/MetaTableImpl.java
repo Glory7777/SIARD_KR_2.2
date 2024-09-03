@@ -1,24 +1,9 @@
 package ch.admin.bar.siard2.api.meta;
-import ch.admin.bar.siard2.api.MetaCheckConstraint;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaForeignKey;
-import ch.admin.bar.siard2.api.MetaSearch;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.MetaTrigger;
-import ch.admin.bar.siard2.api.MetaUniqueKey;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.generated.CandidateKeysType;
-import ch.admin.bar.siard2.api.generated.CheckConstraintType;
-import ch.admin.bar.siard2.api.generated.CheckConstraintsType;
-import ch.admin.bar.siard2.api.generated.ColumnType;
-import ch.admin.bar.siard2.api.generated.ColumnsType;
-import ch.admin.bar.siard2.api.generated.ForeignKeyType;
-import ch.admin.bar.siard2.api.generated.ForeignKeysType;
-import ch.admin.bar.siard2.api.generated.TableType;
-import ch.admin.bar.siard2.api.generated.TriggerType;
-import ch.admin.bar.siard2.api.generated.TriggersType;
-import ch.admin.bar.siard2.api.generated.UniqueKeyType;
+
+import ch.admin.bar.siard2.api.*;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;

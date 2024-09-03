@@ -1,17 +1,24 @@
 package ch.admin.bar.siard2.api.primary;
+
+import ch.admin.bar.siard2.api.Archive;
+import ch.admin.bar.siard2.api.MetaData;
 import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.generated.DigestTypeType;
-import ch.admin.bar.siard2.api.generated.MessageDigestType;
-import ch.admin.bar.siard2.api.generated.SchemaType;
-import ch.admin.bar.siard2.api.generated.SchemasType;
-import ch.admin.bar.siard2.api.generated.SiardArchive;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.meta.MetaDataImpl;
+import ch.enterag.utils.StopWatch;
+import ch.enterag.utils.zip.EntryOutputStream;
 import ch.enterag.utils.zip.FileEntry;
 import ch.enterag.utils.zip.Zip64File;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ArchiveImpl implements Archive {
   private static ObjectFactory _of = new ObjectFactory(); public static final String sSIARD2_TABLE_TEMPLATE_XSD_RESOURCE = "/ch/admin/bar/siard2/api/res/table0.xsd"; private static final String _sHEADER_FOLDER = "header/"; private static final String _sCONTENT_FOLDER = "content/"; private static final String _sSIARDVERSION_FOLDER = "siardversion/"; private static final String _sMETADATA_XML = "metadata.xml"; private static final String _sMETADATA_XSD = "metadata.xsd"; private static final String _sGENERIC_TABLE_XSD = "table.xsd"; private static final String _sMETADATA_XSL = "metadata.xsl";
@@ -44,17 +51,18 @@ public class ArchiveImpl implements Archive {
   public StopWatch _swValid = StopWatch.getInstance();
   
   private boolean _bValid = false;
-  private Zip64File _zipFile = null; private String _sPreviousMetaDataVersion; private boolean _bModifyPrimaryData; private boolean _bMetaDataModified; private int _iMaxInlineSize; private int _iMaxLobsPerFolder; private MetaData _md; private Map<String, Schema> _mapSchemas; public Zip64File getZipFile() {
+  private Zip64File _zipFile = null;
+  private String _sPreviousMetaDataVersion;
+  private boolean _bModifyPrimaryData;
+  private boolean _bMetaDataModified;
+  private int _iMaxInlineSize;
+  private int _iMaxLobsPerFolder;
+  private MetaData _md;
+  private Map<String, Schema> _mapSchemas;
+  public Zip64File getZipFile() {
     return this._zipFile;
   }
 
-
-
-
-
-
-
-  
   public boolean existsFileEntry(String sEntryName) throws IOException {
     boolean bExists = false;
     if (!sEntryName.endsWith("/")) {
@@ -120,45 +128,17 @@ public class ArchiveImpl implements Archive {
     getZipFile().delete(folder);
   }
 
-
-
-
-
-
-
-  
   public InputStream openFileEntry(String sEntryName) throws IOException {
     return (InputStream)getZipFile().openEntryInputStream(sEntryName);
   }
 
-
-
-
-
-
-
-
-  
   public OutputStream createFileEntry(String sEntryName) throws IOException {
     return (OutputStream)getZipFile().openEntryOutputStream(sEntryName, 8, new Date());
   }
 
-
-
-
-
-
-
-
-
-
-  
   public static Archive newInstance() {
     return new ArchiveImpl();
   }
-
-
-
   
   public File getFile() {
     return new File(getZipFile().getDiskFile().getFileName());
@@ -168,156 +148,11 @@ public class ArchiveImpl implements Archive {
 
     
     this._bModifyPrimaryData = false;
-
-
-
-    
     this._bMetaDataModified = false;
-
-
-
-
-
-
-
-
-
-    
     this._iMaxInlineSize = 4000;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     this._iMaxLobsPerFolder = -1;
-
-
-
-
-
-
-
-
-
-
-
-
-    
     this._md = null;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     this._mapSchemas = new HashMap<>(); }
   public int getMaxInlineSize() { return this._iMaxInlineSize; }
   public void setMaxLobsPerFolder(int iMaxLobsPerFolder) throws IOException { if (canModifyPrimaryData() && isEmpty()) { this._iMaxLobsPerFolder = iMaxLobsPerFolder; } else { throw new IOException("Maximum number of external LOBs per folder can only be set for SIARD archives that are empty!"); }  }

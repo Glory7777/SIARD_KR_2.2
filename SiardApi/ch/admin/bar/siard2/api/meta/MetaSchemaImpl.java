@@ -1,24 +1,10 @@
 package ch.admin.bar.siard2.api.meta;
-import ch.admin.bar.siard2.api.MetaRoutine;
-import ch.admin.bar.siard2.api.MetaSchema;
-import ch.admin.bar.siard2.api.MetaSearch;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.MetaType;
-import ch.admin.bar.siard2.api.MetaView;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.generated.ObjectFactory;
-import ch.admin.bar.siard2.api.generated.RoutineType;
-import ch.admin.bar.siard2.api.generated.RoutinesType;
-import ch.admin.bar.siard2.api.generated.SchemaType;
-import ch.admin.bar.siard2.api.generated.TableType;
-import ch.admin.bar.siard2.api.generated.TablesType;
-import ch.admin.bar.siard2.api.generated.TypeType;
-import ch.admin.bar.siard2.api.generated.TypesType;
-import ch.admin.bar.siard2.api.generated.ViewType;
-import ch.admin.bar.siard2.api.generated.ViewsType;
+
+import ch.admin.bar.siard2.api.*;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.primary.ArchiveImpl;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;

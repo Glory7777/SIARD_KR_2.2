@@ -1,14 +1,11 @@
 package ch.admin.bar.siard2.api.primary;
 
-import ch.admin.bar.siard2.api.Cell;
-import ch.admin.bar.siard2.api.Field;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaField;
-import ch.admin.bar.siard2.api.MetaValue;
 import ch.admin.bar.siard2.api.Record;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.meta.MetaColumnImpl;
-import java.io.IOException;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
 
 
 

@@ -2,13 +2,14 @@ package ch.admin.bar.siard2.api.primary;
 
 import ch.enterag.utils.BU;
 import ch.enterag.utils.xml.XU;
+import org.w3c.dom.Element;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.w3c.dom.Element;
 
 public class ValidatingOutputStream extends OutputStream {
   private OutputStream _os;

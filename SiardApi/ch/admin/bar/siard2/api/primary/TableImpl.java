@@ -1,15 +1,7 @@
 package ch.admin.bar.siard2.api.primary;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaField;
-import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.MetaType;
-import ch.admin.bar.siard2.api.MetaValue;
+
 import ch.admin.bar.siard2.api.Record;
-import ch.admin.bar.siard2.api.RecordDispenser;
-import ch.admin.bar.siard2.api.RecordExtract;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.Value;
+import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.TableType;
 import ch.admin.bar.siard2.api.generated.TablesType;
@@ -17,23 +9,17 @@ import ch.admin.bar.siard2.api.meta.MetaSchemaImpl;
 import ch.enterag.utils.DU;
 import ch.enterag.utils.SU;
 import ch.enterag.utils.background.Progress;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.URI;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.*;
+import java.net.URI;
 
 public class TableImpl extends SearchImpl implements Table {
   public static final String _sTABLE_FOLDER_PREFIX = "table";

@@ -2,8 +2,10 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siard2.api.MetaTable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TableMapping extends Mapping {
   private String _sMappedTableName = null;
@@ -54,9 +56,3 @@ public class TableMapping extends Mapping {
     return new TableMapping(bSupportsArrays, bSupportsUdts, sMappedTableName, mt, iMaxColumnNameLength);
   }
 }
-
-
-/* Location:              C:\Users\lenovo\IdeaProjects\SIARD_KR_2.2\lib\siardcmd.jar!\ch\admin\bar\siard2\cmd\TableMapping.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

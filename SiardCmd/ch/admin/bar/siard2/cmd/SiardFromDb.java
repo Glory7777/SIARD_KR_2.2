@@ -44,15 +44,12 @@ public class SiardFromDb
   public static final int iRETURN_ERROR = 8;
   public static final int iRETURN_FATAL = 12;
   private static ProgramInfo _pi = ProgramInfo.getProgramInfo("SIARD Suite", VersionsExplorer.INSTANCE
-      .getSiardVersion(), "SiardFromDb", VersionsExplorer.INSTANCE
-      
-      .getAppVersion(), "Program to store database content in a .siard file", "Swiss Federal Archives, Berne, Switzerland, 2008-2016", 
-
-      
-      Arrays.asList(new String[] { "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Andreas Voss, Swiss Federal Archives, Berne, Switzerland", "Anders Bo Nielsen, Danish National Archives, Denmark", "Claire Röthlisberger-Jourdan, KOST, Berne, Switzerland"
-        }, ), Arrays.asList(new String[] { "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Simon Jutz, Cytex GmbH, Zurich, Switzerland"
-        }, ), Arrays.asList(new String[] { "Claudia Matthys, POOL Computer AG, Zurich, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Yvan Dutoit, Swiss Federal Archives, Berne, Switzerland"
-        }, ), Arrays.asList(new String[] { "Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Alain Mast, Swiss Federal Archives, Berne, Switzerland", "Krystyna Ohnesorge, Swiss Federal Archives, Berne, Switzerland" }));
+                  .getSiardVersion(), "SiardFromDb", VersionsExplorer.INSTANCE
+                  .getAppVersion(), "Program to store database content in a .siard file", "Swiss Federal Archives, Berne, Switzerland, 2008-2016",
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Andreas Voss, Swiss Federal Archives, Berne, Switzerland", "Anders Bo Nielsen, Danish National Archives, Denmark", "Claire Röthlisberger-Jourdan, KOST, Berne, Switzerland"),
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Simon Jutz, Cytex GmbH, Zurich, Switzerland"),
+          Arrays.asList("Claudia Matthys, POOL Computer AG, Zurich, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Yvan Dutoit, Swiss Federal Archives, Berne, Switzerland"),
+          Arrays.asList("Hartwig Thomas, Enter AG, Rüti ZH, Switzerland", "Marcel Büchler, Swiss Federal Archives, Berne, Switzerland", "Alain Mast, Swiss Federal Archives, Berne, Switzerland", "Krystyna Ohnesorge, Swiss Federal Archives, Berne, Switzerland"));
   
   private boolean _bOverwrite = false;
   private boolean _bViewsAsTables = false;
@@ -77,9 +74,6 @@ public class SiardFromDb
     return this._iReturn;
   }
 
-
-
-  
   private void printUsage() {
     System.out.println("Usage:");
     System.out.println("java -cp <siardpath>/lib/siardcmd.jar ch.admin.bar.siard2.cmd.SiardFromDb [-h]");
@@ -108,19 +102,13 @@ public class SiardFromDb
       if (i > 0) System.out.println("                           "); 
       String sScheme = asSchemes[i];
       System.out.println("for " + sc.getTitle(sScheme) + ": " + sc.getSampleUrl(sScheme, "dbserver.enterag.ch", "D:\\dbfolder", "testdb"));
-    } 
-
-
-    
+    }
     System.out.println("  <database user>      database user");
     System.out.println("  <database password>  database password");
     System.out.println("  <siard file>         name of .siard file to be written");
     System.out.println("  <export xml>         name of meta data XML file to be exported");
   }
 
-
-
-  
   private void getParameters(String[] asArgs) {
     this._iReturn = 0;
     Arguments args = Arguments.newInstance(asArgs);

@@ -2,15 +2,12 @@ package ch.admin.bar.siard2.api.meta;
 
 import ch.admin.bar.siard2.api.MetaForeignKey;
 import ch.admin.bar.siard2.api.MetaTable;
-import ch.admin.bar.siard2.api.generated.ForeignKeyType;
-import ch.admin.bar.siard2.api.generated.MatchTypeType;
-import ch.admin.bar.siard2.api.generated.ObjectFactory;
-import ch.admin.bar.siard2.api.generated.ReferenceType;
-import ch.admin.bar.siard2.api.generated.ReferentialActionType;
+import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.primary.ArchiveImpl;
 import ch.enterag.utils.DU;
 import ch.enterag.utils.SU;
 import ch.enterag.utils.xml.XU;
+
 import java.io.IOException;
 
 

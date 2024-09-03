@@ -1,12 +1,14 @@
 package ch.admin.bar.siard2.api.primary;
+
 import ch.enterag.utils.BU;
+import org.w3c.dom.Element;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import org.w3c.dom.Element;
 
 public class ValidatingInputStream extends InputStream {
   private InputStream _is = null;

@@ -1,7 +1,6 @@
 package ch.admin.bar.siard2.api.generated.table;
 
 import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 

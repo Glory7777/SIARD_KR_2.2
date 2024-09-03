@@ -1,8 +1,11 @@
 package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.MetaAttribute;
 import ch.admin.bar.siard2.api.MetaType;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TypeMapping extends Mapping {
   private String _sMappedTypeName = null; String getMappedTypeName() {

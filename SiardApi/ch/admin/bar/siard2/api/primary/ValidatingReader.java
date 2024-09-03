@@ -1,10 +1,12 @@
 package ch.admin.bar.siard2.api.primary;
+
 import ch.enterag.utils.xml.XU;
+import org.w3c.dom.Element;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import org.w3c.dom.Element;
 
 public class ValidatingReader extends Reader {
   private Reader _rdr = null;
