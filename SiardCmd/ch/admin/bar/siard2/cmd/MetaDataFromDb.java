@@ -2,7 +2,7 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
-import ch.admin.bar.siard2.api.meta.MetaDataImpl;
+import ch.admin.bar.siard2.api.meta.*;
 import ch.enterag.sqlparser.BaseSqlFactory;
 import ch.enterag.sqlparser.datatype.DataType;
 import ch.enterag.sqlparser.identifier.QualifiedId;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -359,7 +360,7 @@ public class MetaDataFromDb extends MetaDataBase {
       } 
     } catch (ParseException pe) {
       throw new SQLException("Type name " + sTypeName + " could not be parsed!", pe);
-    } 
+    }
     return mt;
   }
 
