@@ -94,6 +94,7 @@ public class GenericArchiveBrowserPresenter {
 
         this.borderPane.setBottom(footerNode);
         this.treeView.setRoot(rootTreeItem);
+        this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory());
 
         this.metaSearchButton.textProperty().bind(DisplayableText.of(META_SEARCH).bindable());
         this.tableSearchButton.textProperty().bind(DisplayableText.of(TABLE_SEARCH).bindable());
@@ -256,4 +257,5 @@ public class GenericArchiveBrowserPresenter {
 
         return loaded;
     }
+
 }

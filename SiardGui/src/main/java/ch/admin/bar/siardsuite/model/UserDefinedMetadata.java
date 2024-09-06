@@ -6,6 +6,7 @@ import lombok.Value;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @Value
@@ -21,4 +22,6 @@ public class UserDefinedMetadata {
 
     @NonNull File saveAt;
     @NonNull Boolean exportViewsAsTables;
+
+    List<TreeAttributeWrapper> selectedTables;
 }

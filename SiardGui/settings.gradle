@@ -3,4 +3,7 @@
  */
 
 rootProject.name = 'siard-suite'
-
+//include ':SiardCmd', ':SiardGui'
+//
+//project(':SiardCmd').projectDir = file('C:/Users/lenovo/IdeaProjects/SiardCmd')
+//project(':SiardCmd').projectDir = file('C:/Users/lenovo/IdeaProjects/SiardCmd')

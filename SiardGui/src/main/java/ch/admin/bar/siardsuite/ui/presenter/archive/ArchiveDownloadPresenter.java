@@ -1,6 +1,7 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive;
 
 import ch.admin.bar.siard2.api.Archive;
+import ch.admin.bar.siard2.cmd.Mapping;
 import ch.admin.bar.siardsuite.framework.ServicesFacade;
 import ch.admin.bar.siardsuite.framework.dialogs.Dialogs;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
@@ -165,6 +166,7 @@ public class ArchiveDownloadPresenter implements Destructible {
                     double pos = newValue.doubleValue();
                     progressBar.progressProperty().set(pos);
                 })
+                .selectedTables(userDefinedMetadata.getSelectedTables())
                 .build());
     }
 

@@ -74,6 +74,9 @@ dependencies {
 
     // legacy: add all dependencies from lib folder
     implementation fileTree(include: ['*.jar'], dir: 'lib')
+
+//    implementation project(':SiardCmd')
+
 }
 
 tasks.withType(JavaCompile) {

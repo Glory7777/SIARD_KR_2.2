@@ -1,6 +1,7 @@
 package ch.admin.bar.siardsuite.service.database.model;
 
 import ch.admin.bar.siard2.api.Archive;
+import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -52,4 +55,7 @@ public class LoadDatabaseInstruction {
     @NonNull
     @Builder.Default
     ChangeListener<ObservableList<Pair<String, Long>>> onStepCompleted = (observableValue, pairs, t1) -> {};
+
+    @Builder.Default
+    List<TreeAttributeWrapper> selectedTables = new ArrayList<>();
 }

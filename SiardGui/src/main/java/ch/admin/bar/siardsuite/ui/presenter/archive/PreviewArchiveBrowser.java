@@ -1,6 +1,7 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive;
 
 import ch.admin.bar.siard2.api.Archive;
+import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import ch.admin.bar.siardsuite.ui.component.ButtonBox;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import ch.admin.bar.siardsuite.framework.ServicesFacade;
@@ -15,8 +16,13 @@ import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
+import ch.admin.bar.siardsuite.ui.presenter.archive.model.CustomArchiveProxy;
 import javafx.scene.Node;
+import javafx.scene.control.TreeItem;
 import lombok.val;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.DEFAULT;
 
@@ -40,13 +46,19 @@ public class PreviewArchiveBrowser {
             final ErrorHandler errorHandler
     ) {
         val archiveBrowserView = new TreeBuilder(new SiardArchive("", archive, true), true);
-
+        TreeItem<TreeAttributeWrapper> rootItem = archiveBrowserView.createRootItem();
         this.buttonsBox = new ButtonBox().make(DEFAULT);
-        buttonsBox.next().setOnAction((event) -> navigator.next(new Tuple<>(archive, connectionData)));
+
+        buttonsBox.next().setOnAction((event) -> {
+            List<TreeAttributeWrapper> selectedTables = getSelectedTables(rootItem);
+            Archive proxy = CustomArchiveProxy.wrap(archive, selectedTables);
+
+            navigator.next(new Tuple<>(proxy, connectionData));
+        } );
+
         buttonsBox.previous().setOnAction((event) -> navigator.previous());
         buttonsBox.cancel().setOnAction((event) -> dialogs
                 .open(View.ARCHIVE_ABORT_DIALOG));
-
 
         this.loadedView = GenericArchiveBrowserPresenter.load(
                 dialogs,
@@ -54,7 +66,8 @@ public class PreviewArchiveBrowser {
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 this.buttonsBox,
-                archiveBrowserView.createRootItem());
+                rootItem
+        );
     }
 
     public static LoadedView<PreviewArchiveBrowser> load(
@@ -71,5 +84,28 @@ public class PreviewArchiveBrowser {
                 servicesFacade.errorHandler()
         );
         return new LoadedView<>(browser::getView, browser);
+    }
+
+
+    /**
+     * 체크박스에 체크된 아이템
+     * @param rootItem 생성한 루트 아이템
+     * @return
+     */
+    public List<TreeAttributeWrapper> getSelectedTables(TreeItem<TreeAttributeWrapper> rootItem) {
+        List<TreeAttributeWrapper> selectedTables = new ArrayList<>();
+        collectSelectedTables(rootItem, selectedTables);
+        return selectedTables;
+    }
+
+    private void collectSelectedTables(TreeItem<TreeAttributeWrapper> item, List<TreeAttributeWrapper> selectedTables) {
+        TreeAttributeWrapper attr = item.getValue();
+
+        if (attr == null) return;
+        if (attr.isSelected() && attr.isTransferable()) {selectedTables.add(item.getValue());}
+        if (attr.shouldPropagate()) {
+            item.getChildren().
+                    forEach(child -> collectSelectedTables(child, selectedTables));
+        }
     }
 }

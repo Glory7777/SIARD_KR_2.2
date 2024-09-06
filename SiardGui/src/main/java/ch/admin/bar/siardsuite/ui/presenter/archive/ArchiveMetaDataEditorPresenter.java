@@ -9,6 +9,7 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.framework.steps.StepperNavigator;
 import ch.admin.bar.siardsuite.framework.view.FXMLLoadHelper;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
+import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import ch.admin.bar.siardsuite.model.Tuple;
 import ch.admin.bar.siardsuite.model.UserDefinedMetadata;
 import ch.admin.bar.siardsuite.service.ArchiveHandler;
@@ -18,6 +19,7 @@ import ch.admin.bar.siardsuite.ui.common.ValidationProperties;
 import ch.admin.bar.siardsuite.ui.common.ValidationProperty;
 import ch.admin.bar.siardsuite.ui.component.ButtonBox;
 import ch.admin.bar.siardsuite.ui.component.SiardTooltip;
+import ch.admin.bar.siardsuite.ui.presenter.archive.model.CustomArchiveProxy;
 import ch.admin.bar.siardsuite.util.I18n;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.fxml.FXML;
@@ -35,6 +37,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -211,11 +214,17 @@ public class ArchiveMetaDataEditorPresenter {
                         .lobFolder(lobFolder)
                         .saveAt(targetArchive)
                         .exportViewsAsTables(exportViewsAsTables.isSelected())
+                        .selectedTables(getSelectedTables())
                         .build());
             }
         }
 
         return Optional.empty();
+    }
+
+    // test
+    private List<TreeAttributeWrapper> getSelectedTables() {
+        return archive instanceof CustomArchiveProxy ? ((CustomArchiveProxy) archive).getSelectedCheckBoxes() : Collections.emptyList();
     }
 
     private void initFields(final Archive archive) {

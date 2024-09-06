@@ -32,13 +32,14 @@ import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKeyArg;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import javafx.scene.control.TreeItem;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ch.admin.bar.siardsuite.model.TreeAttributeWrapper.DatabaseAttribute.*;
 
 @RequiredArgsConstructor
 public class TreeBuilder {
@@ -95,6 +96,7 @@ public class TreeBuilder {
                                 .toBuilder()
                                 .readOnlyForm(readonly)
                                 .build())
+                        .shouldPropagate(true)
                         .build(),
                 new ImageView(Icon.DB.toResizedImageOfHeight(16)));
 
@@ -142,6 +144,9 @@ public class TreeBuilder {
                         .renderableForm(MetadataDetailsForm.create(siardArchive).toBuilder()
                                 .readOnlyForm(readonly)
                                 .build())
+                        .databaseAttribute(SCHEMA_TITLE)
+                        .shouldPropagate(true)
+                        .shouldHaveCheckBox(true)
                         .build());
 
         val schemaItems = schemas.stream()
@@ -160,6 +165,9 @@ public class TreeBuilder {
                         .renderableForm(SchemaOverviewForm.create(schema).toBuilder()
                                 .readOnlyForm(readonly)
                                 .build())
+                        .databaseAttribute(SCHEMA)
+                        .shouldPropagate(true)
+                        .shouldHaveCheckBox(true)
                         .build());
 
         schemaItem.setExpanded(true);
@@ -302,6 +310,7 @@ public class TreeBuilder {
                 .renderableForm(ViewsOverviewForm.create(schema).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(VIEW_TITLE)
                 .build());
 
         val viewItems = views.stream()
@@ -320,6 +329,7 @@ public class TreeBuilder {
                 .renderableForm(ViewOverviewForm.create(view.getMetaView()).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(VIEW)
                 .build());
 
         item.getChildren().add(createItemForColumns(view));
@@ -370,6 +380,9 @@ public class TreeBuilder {
                 .renderableForm(SchemaOverviewForm.create(schema).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(TABLE_TITLE)
+                .shouldPropagate(true)
+//                .shouldHaveCheckBox(true)
                 .build());
 
         tablesItem.getChildren()
@@ -389,6 +402,11 @@ public class TreeBuilder {
                 .renderableForm(TableOverviewForm.create(table).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(TABLE)
+                .databaseTable(table)
+                .shouldPropagate(false)
+                .transferable(true)
+                .shouldHaveCheckBox(true)
                 .build());
 
         if (!siardArchive.onlyMetaData()) {
@@ -418,6 +436,7 @@ public class TreeBuilder {
                 .renderableForm(TableOverviewForm.create(table).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(COLUMN)
                 .build());
 
         val columnItems = columns.stream()
