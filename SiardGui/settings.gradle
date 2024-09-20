@@ -3,9 +3,10 @@
  */
 
 rootProject.name = 'siard-suite'
-include ':SiardCmd', ':SiardApi', ':EnterUtils'
+include ':SiardCmd', ':SiardApi', ':EnterUtils', ':jdbccubrid'
 
 project(':SiardCmd').projectDir = file('C:/Users/lenovo/IdeaProjects/SiardCmd')
 project(':SiardApi').projectDir = file('C:/Users/lenovo/IdeaProjects/SiardApi')
 project(':EnterUtils').projectDir = file('C:/Users/lenovo/IdeaProjects/EnterUtils')
 project(':SiardCmd').projectDir = file('C:/Users/lenovo/IdeaProjects/SiardCmd')
+project(':jdbccubrid').projectDir = file('C:/Users/lenovo/Desktop/SIARD_KR/jdbccubrid')
