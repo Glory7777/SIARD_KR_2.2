@@ -204,10 +204,10 @@ public class DbmsRegistry {
             // TODO:: cubrid, tibero 드라이버 추가 시 경로 및 설정 변경 필요
             ServerBasedDbms.builder()
                     .name("CUBRID")
-                    .id("CUBRID")
-                    .driverClassName("ch.admin.bar.siard2.jdbc.CubridJdbc")
+                    .id("cubrid")
+                    .driverClassName("ch.admin.bar.siard2.jdbc.CUBRIDDriver")
                     .jdbcConnectionStringEncoder(config -> String.format(
-                            "jdbc:cubrid:%s:%s:%s:::%s",
+                            "jdbc:cubrid:%s:%s:%s:dba::%s?charset=utf8",
                             config.getHost(),
                             config.getPort(),
                             config.getDbName(),
@@ -242,6 +242,7 @@ public class DbmsRegistry {
                             config.getHost(),
                             config.getPort(),
                             config.getDbName(),
+                            config.getUser(),
                             config.getOptions()
                                     .map(optionsString -> "?" + optionsString)
                                     .orElse("")))
