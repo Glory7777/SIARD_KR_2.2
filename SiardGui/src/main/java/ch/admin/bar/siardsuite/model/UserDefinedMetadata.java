@@ -1,12 +1,15 @@
 package ch.admin.bar.siardsuite.model;
 
+import ch.admin.bar.siard2.api.Schema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Value
@@ -23,5 +26,6 @@ public class UserDefinedMetadata {
     @NonNull File saveAt;
     @NonNull Boolean exportViewsAsTables;
 
-    List<TreeAttributeWrapper> selectedTables;
+    @Builder.Default
+    Map<String, Schema> selectedSchemaMap = new HashMap<>();
 }

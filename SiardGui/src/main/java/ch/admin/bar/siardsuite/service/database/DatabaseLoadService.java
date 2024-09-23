@@ -9,7 +9,6 @@ import ch.admin.bar.siard2.cmd.PrimaryDataTransfer;
 import ch.admin.bar.siardsuite.service.ArchiveHandler;
 import ch.admin.bar.siardsuite.service.database.model.LoadDatabaseInstruction;
 import ch.admin.bar.siardsuite.service.preferences.UserPreferences;
-import ch.admin.bar.siardsuite.ui.presenter.archive.model.CustomArchiveProxy;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.sql.Connection;
+import java.util.Map;
 
 @Slf4j
 public class DatabaseLoadService extends Service<ObservableList<Pair<String, Long>>> {
@@ -69,6 +69,10 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
                     .map(archiveHandler::init)
                     .orElseGet(archiveHandler::init);
 
+            // 선택한 엔티티로 교체
+            Map<String, Schema> selectedSchemaMap = instruction.getSelectedSchemaMap();
+            if (!selectedSchemaMap.isEmpty()) archive.replaceWithSelectedSchemaMap(selectedSchemaMap);
+
             val metaDataFromDb = MetaDataFromDb.newInstance(connection.getMetaData(), archive.getMetaData());
             metaDataFromDb.setQueryTimeout(timeout);
 
@@ -79,7 +83,8 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
             metaDataFromDb.download(
                     instruction.getViewsAsTables(),
                     false,
-                    new SiardCmdProgressListener(this::updateProgress));
+                    new SiardCmdProgressListener(this::updateProgress),
+                    archive);
 
             instruction.getExternalLobs()
                     .ifPresent(uri -> archiveHandler.setExternalLobFolder(archive, uri));
@@ -87,43 +92,43 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
             ObservableList<Pair<String, Long>> progressData = FXCollections.observableArrayList();
             if (!instruction.getLoadOnlyMetadata()) {
 
-//                PrimaryDataFromDb data = PrimaryDataFromDb.newInstance(connection, archive);
-                Archive proxy = CustomArchiveProxy.wrap(archive, instruction.getSelectedTables());
-                TempPrimaryDataFromDb data = TempPrimaryDataFromDb.newInstance(connection, proxy); // TODO:: 라이브러리로 관리 필요
+                PrimaryDataFromDb data = PrimaryDataFromDb.newInstance(connection, archive);
+//                archive.test();
+
                 data.setQueryTimeout(timeout);
                 updateValue(FXCollections.observableArrayList(new Pair<>("Dataload", -1L)));
                 updateProgress(0, 100);
                 data.download(new SiardCmdProgressListener(this::updateProgress)); // 읽어들인 데이터 다운로드
 
-                if (proxy instanceof CustomArchiveProxy) {
-                    CustomArchiveProxy customArchiveProxy = (CustomArchiveProxy) proxy;
+                archive.getSelectedSchemaMap().forEach(
+                        (schemaName, schema) -> schema.getSelectedTables().forEach(
+                                table -> {
+                                    Pair<String, Long> stringLongPair =
+                                            new Pair<>(
+                                                    schemaName + "." + table.getMetaTable().getName(),
+                                                    table.getMetaTable().getRows()
+                                            );
+                                    progressData.add(stringLongPair);
+                                    System.out.println("string long pair = " + stringLongPair);
+                                }
+                        )
+                );
 
-                    customArchiveProxy.getSchemaTableMap().forEach(
-                            (schema, tables) -> tables.forEach(
-                                    t -> {
-                                        Pair<String, Long> stringLongPair = new Pair<>(schema.getMetaSchema().getName() + "." + t
-                                                .getMetaTable()
-                                                .getName(),
-                                                t.getMetaTable().getRows());
-                                        progressData.add(stringLongPair);
-                                    }
-                            )
-                    );
-                } else {
-                    for (int i = 0; i < archive.getSchemas(); i++) {
-                        Schema schema = archive.getSchema(i);
-                        for (int y = 0; y < schema.getTables(); y++) {
-                            Pair<String, Long> stringLongPair = new Pair<>(schema.getMetaSchema().getName() + "." + schema.getTable(y)
-                                    .getMetaTable()
-                                    .getName(),
-                                    schema.getTable(y).getMetaTable().getRows());
-                            progressData.add(stringLongPair);
-                            System.out.println("string long pair = " + stringLongPair);
-                        }
-                    }
+//                    for (int i = 0; i < archive.getSchemas(); i++) {
+//                        Schema schema = archive.getSchema(i);
+//                        for (int y = 0; y < schema.getTables(); y++) {
+//                            Pair<String, Long> stringLongPair = new Pair<>(schema.getMetaSchema().getName() + "." + schema.getTable(y)
+//                                    .getMetaTable()
+//                                    .getName(),
+//                                    schema.getTable(y).getMetaTable().getRows());
+//                            progressData.add(stringLongPair);
+//                            System.out.println("string long pair = " + stringLongPair);
+//                        }
+//                    }
                 }
+
                 updateValue(progressData);
-            }
+//            }
 
             /*
             Workaround: It seems that the default onSucceed mechanism sometimes is not very stable in java fx 8.

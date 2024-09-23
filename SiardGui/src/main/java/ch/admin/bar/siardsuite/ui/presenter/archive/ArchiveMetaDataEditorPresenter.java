@@ -19,7 +19,6 @@ import ch.admin.bar.siardsuite.ui.common.ValidationProperties;
 import ch.admin.bar.siardsuite.ui.common.ValidationProperty;
 import ch.admin.bar.siardsuite.ui.component.ButtonBox;
 import ch.admin.bar.siardsuite.ui.component.SiardTooltip;
-import ch.admin.bar.siardsuite.ui.presenter.archive.model.CustomArchiveProxy;
 import ch.admin.bar.siardsuite.util.I18n;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.fxml.FXML;
@@ -117,7 +116,8 @@ public class ArchiveMetaDataEditorPresenter {
 
     private Archive archive;
 
-    public void init(
+    public void
+    init(
             final Archive archive,
             final DbmsConnectionData connectionData,
             final StepperNavigator<Tuple<UserDefinedMetadata, DbmsConnectionData>> navigator,
@@ -214,17 +214,12 @@ public class ArchiveMetaDataEditorPresenter {
                         .lobFolder(lobFolder)
                         .saveAt(targetArchive)
                         .exportViewsAsTables(exportViewsAsTables.isSelected())
-                        .selectedTables(getSelectedTables())
+                        .selectedSchemaMap(archive.getSelectedSchemaMap())
                         .build());
             }
         }
 
         return Optional.empty();
-    }
-
-    // test
-    private List<TreeAttributeWrapper> getSelectedTables() {
-        return archive instanceof CustomArchiveProxy ? ((CustomArchiveProxy) archive).getSelectedCheckBoxes() : Collections.emptyList();
     }
 
     private void initFields(final Archive archive) {

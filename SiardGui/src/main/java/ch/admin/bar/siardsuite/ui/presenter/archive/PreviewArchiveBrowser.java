@@ -16,16 +16,18 @@ import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
-import ch.admin.bar.siardsuite.ui.presenter.archive.model.CustomArchiveProxy;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import lombok.val;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.DEFAULT;
 
+/**
+ * 스키마 및 엔티티 선택 화면
+ */
 public class PreviewArchiveBrowser {
 
     private static final I18nKey TITLE = I18nKey.of("archivePreview.view.title");
@@ -49,12 +51,15 @@ public class PreviewArchiveBrowser {
         TreeItem<TreeAttributeWrapper> rootItem = archiveBrowserView.createRootItem();
         this.buttonsBox = new ButtonBox().make(DEFAULT);
 
-        buttonsBox.next().setOnAction((event) -> {
-            List<TreeAttributeWrapper> selectedTables = getSelectedTables(rootItem);
-            Archive proxy = CustomArchiveProxy.wrap(archive, selectedTables);
-
-            navigator.next(new Tuple<>(proxy, connectionData));
-        } );
+        // next 버튼 이벤트 등록
+        buttonsBox.next().setOnAction(
+                (event) -> {
+                    // 선택된 엔티티 조회
+                    Map<String, List<String>> selectedSchemaTableMap = getSelectedSchemaTableMap(rootItem);
+                    if(!selectedSchemaTableMap.isEmpty()) archive.replaceWithSelectedSchemas(selectedSchemaTableMap); // 스키마, 테이블 교체
+                    navigator.next(new Tuple<>(archive, connectionData));
+                }
+        );
 
         buttonsBox.previous().setOnAction((event) -> navigator.previous());
         buttonsBox.cancel().setOnAction((event) -> dialogs
@@ -92,10 +97,33 @@ public class PreviewArchiveBrowser {
      * @param rootItem 생성한 루트 아이템
      * @return
      */
-    public List<TreeAttributeWrapper> getSelectedTables(TreeItem<TreeAttributeWrapper> rootItem) {
+    private Map<String, List<String>> getSelectedSchemaTableMap(TreeItem<TreeAttributeWrapper> rootItem) {
         List<TreeAttributeWrapper> selectedTables = new ArrayList<>();
         collectSelectedTables(rootItem, selectedTables);
-        return selectedTables;
+        return getSchemaTableMap(selectedTables);
+    }
+
+    private interface KeyValueMapper<T, K> {
+        K map(T function);
+    }
+
+    public Map<String, List<String>> getSchemaTableMap(List<TreeAttributeWrapper> selectedCheckBoxes) {
+
+        // 스키마명
+        KeyValueMapper<TreeAttributeWrapper, String> keyMapper = attr -> attr.getDatabaseTable().getTable().getParentSchema().getMetaSchema().getName();
+
+        // 테이블명
+        KeyValueMapper<TreeAttributeWrapper, String> valueMapper = attr -> attr.getDatabaseTable().getTable().getMetaTable().getName(); //
+
+        return selectedCheckBoxes.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                keyMapper::map,
+                                Collectors.mapping(
+                                        valueMapper::map, Collectors.toList()
+                                )
+                        )
+                );
     }
 
     private void collectSelectedTables(TreeItem<TreeAttributeWrapper> item, List<TreeAttributeWrapper> selectedTables) {

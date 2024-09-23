@@ -166,7 +166,7 @@ public class ArchiveDownloadPresenter implements Destructible {
                     double pos = newValue.doubleValue();
                     progressBar.progressProperty().set(pos);
                 })
-                .selectedTables(userDefinedMetadata.getSelectedTables())
+                .selectedSchemaMap(userDefinedMetadata.getSelectedSchemaMap())
                 .build());
     }
 
