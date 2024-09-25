@@ -214,7 +214,7 @@ public class ArchiveMetaDataEditorPresenter {
                         .lobFolder(lobFolder)
                         .saveAt(targetArchive)
                         .exportViewsAsTables(exportViewsAsTables.isSelected())
-                        .selectedSchemaMap(archive.getSelectedSchemaMap())
+                        .selectedSchemaTableMap(archive.getSelectedSchemaTableMap())
                         .build());
             }
         }

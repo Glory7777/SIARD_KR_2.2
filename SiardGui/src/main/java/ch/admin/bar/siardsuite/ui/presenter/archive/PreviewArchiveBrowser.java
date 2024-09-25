@@ -56,7 +56,7 @@ public class PreviewArchiveBrowser {
                 (event) -> {
                     // 선택된 엔티티 조회
                     Map<String, List<String>> selectedSchemaTableMap = getSelectedSchemaTableMap(rootItem);
-                    if(!selectedSchemaTableMap.isEmpty()) archive.replaceWithSelectedSchemas(selectedSchemaTableMap); // 스키마, 테이블 교체
+                    if(!selectedSchemaTableMap.isEmpty()) archive.setSelectedSchemaTableMap(selectedSchemaTableMap); // 스키마, 테이블 세팅
                     navigator.next(new Tuple<>(archive, connectionData));
                 }
         );

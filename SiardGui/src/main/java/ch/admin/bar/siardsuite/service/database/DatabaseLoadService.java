@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -69,10 +70,6 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
                     .map(archiveHandler::init)
                     .orElseGet(archiveHandler::init);
 
-            // 선택한 엔티티로 교체
-            Map<String, Schema> selectedSchemaMap = instruction.getSelectedSchemaMap();
-            if (!selectedSchemaMap.isEmpty()) archive.replaceWithSelectedSchemaMap(selectedSchemaMap);
-
             val metaDataFromDb = MetaDataFromDb.newInstance(connection.getMetaData(), archive.getMetaData());
             metaDataFromDb.setQueryTimeout(timeout);
 
@@ -84,7 +81,8 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
                     instruction.getViewsAsTables(),
                     false,
                     new SiardCmdProgressListener(this::updateProgress),
-                    archive);
+                    instruction.getSelectedSchemaTableMap()
+            );
 
             instruction.getExternalLobs()
                     .ifPresent(uri -> archiveHandler.setExternalLobFolder(archive, uri));
@@ -93,14 +91,14 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
             if (!instruction.getLoadOnlyMetadata()) {
 
                 PrimaryDataFromDb data = PrimaryDataFromDb.newInstance(connection, archive);
-//                archive.test();
 
                 data.setQueryTimeout(timeout);
                 updateValue(FXCollections.observableArrayList(new Pair<>("Dataload", -1L)));
                 updateProgress(0, 100);
                 data.download(new SiardCmdProgressListener(this::updateProgress)); // 읽어들인 데이터 다운로드
 
-                archive.getSelectedSchemaMap().forEach(
+                // 프로그레스 바
+                archive.getSchemaMap().forEach(
                         (schemaName, schema) -> schema.getSelectedTables().forEach(
                                 table -> {
                                     Pair<String, Long> stringLongPair =
@@ -109,35 +107,19 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
                                                     table.getMetaTable().getRows()
                                             );
                                     progressData.add(stringLongPair);
-                                    System.out.println("string long pair = " + stringLongPair);
                                 }
                         )
                 );
-
-//                    for (int i = 0; i < archive.getSchemas(); i++) {
-//                        Schema schema = archive.getSchema(i);
-//                        for (int y = 0; y < schema.getTables(); y++) {
-//                            Pair<String, Long> stringLongPair = new Pair<>(schema.getMetaSchema().getName() + "." + schema.getTable(y)
-//                                    .getMetaTable()
-//                                    .getName(),
-//                                    schema.getTable(y).getMetaTable().getRows());
-//                            progressData.add(stringLongPair);
-//                            System.out.println("string long pair = " + stringLongPair);
-//                        }
-//                    }
-                }
-
                 updateValue(progressData);
-//            }
+            }
 
             /*
             Workaround: It seems that the default onSucceed mechanism sometimes is not very stable in java fx 8.
             For that reason, the result is returned with a callback.
              */
-            Platform.runLater(() -> instruction.getOnSuccess().accept(archive));
+                Platform.runLater(() -> instruction.getOnSuccess().accept(archive));
 
-            return progressData;
+                return progressData;
         }
     }
-
 }

@@ -28,4 +28,7 @@ public class UserDefinedMetadata {
 
     @Builder.Default
     Map<String, Schema> selectedSchemaMap = new HashMap<>();
+
+    @Builder.Default
+    Map<String, List<String>> selectedSchemaTableMap = new HashMap<>();
 }

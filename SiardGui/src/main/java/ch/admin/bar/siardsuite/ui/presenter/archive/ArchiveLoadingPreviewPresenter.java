@@ -87,7 +87,7 @@ public class ArchiveLoadingPreviewPresenter {
                 .loadOnlyMetadata(true)
                 .onSuccess(downloadedArchive -> {
                     downloadedArchive.getMetaData().setDbName(dbmsConnectionData.getDbName());
-
+                    
                     navigator.next(new Tuple<>(
                             downloadedArchive,
                             dbmsConnectionData
