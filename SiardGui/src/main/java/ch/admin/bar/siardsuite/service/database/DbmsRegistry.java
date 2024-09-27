@@ -202,36 +202,87 @@ public class DbmsRegistry {
                     .build(),
 
             // TODO:: cubrid, tibero 드라이버 추가 시 경로 및 설정 변경 필요
+//            ServerBasedDbms.builder()
+//                    .name("CUBRID")
+//                    .id("cubrid")
+//                    .driverClassName("ch.admin.bar.siard2.jdbc.CUBRIDDriver")
+//                    .jdbcConnectionStringEncoder(config -> String.format(
+//                            "jdbc:cubrid:%s:%s:%s:dba::%s?charset=utf8",
+//                            config.getHost(),
+//                            config.getPort(),
+//                            config.getDbName(),
+//                            config.getOptions()
+//                                    .map(optionsString -> "?" + optionsString)
+//                                    .orElse("")))
+//                    .jdbcConnectionStringDecoder(encoded -> {
+//                        val splitEncoded = encoded.split(":");
+//                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
+//                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
+//
+//                        return ServerBasedDbmsConnectionProperties.builder()
+//                                .host(splitEncoded[2].replace("//", ""))
+//                                .port(splitPortAndDbNameWithOptions[0])
+//                                .dbName(splitDbNameAndOptions[0])
+//                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
+//                                .user("")
+//                                .password("")
+//                                .build();
+//                    })
+//                    .examplePort("30000")
+//                    .exampleHost("cubrid.exampleHost.org")
+//                    .exampleDbName("testDB")
+//                    .build(),
+
             ServerBasedDbms.builder()
                     .name("CUBRID")
                     .id("cubrid")
                     .driverClassName("ch.admin.bar.siard2.jdbc.CUBRIDDriver")
-                    .jdbcConnectionStringEncoder(config -> String.format(
-                            "jdbc:cubrid:%s:%s:%s:dba::%s?charset=utf8",
-                            config.getHost(),
-                            config.getPort(),
-                            config.getDbName(),
-                            config.getOptions()
-                                    .map(optionsString -> "?" + optionsString)
-                                    .orElse("")))
+                    .jdbcConnectionStringEncoder(config -> {
+                        String baseUrl = String.format(
+                                "jdbc:cubrid:%s:%s:%s:%s::",
+                                config.getHost(),
+                                config.getPort(),
+                                config.getDbName(),
+                                config.getUser()
+                        );
+
+                        String options = config.getOptions()
+                                .map(opts -> "?" + opts)
+                                .orElse("");
+
+                        return baseUrl + options;
+                    })
                     .jdbcConnectionStringDecoder(encoded -> {
-                        val splitEncoded = encoded.split(":");
-                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
-                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
+                        String[] splitEncoded = encoded.split(":");
+
+                        if (splitEncoded.length < 5) {
+                            throw new IllegalArgumentException("Invalid CUBRID JDBC URL format");
+                        }
+
+                        String host = splitEncoded[2];
+                        String port = splitEncoded[3];
+                        String dbName = splitEncoded[4];
+                        String user = splitEncoded[5];
+
+                        String password = ""; // 비밀번호가 없거나 필요 없는 경우
+
+                        String[] parts = splitEncoded[6].split("\\?", 2);
+                        String options = parts.length > 1 ? parts[1] : "";
 
                         return ServerBasedDbmsConnectionProperties.builder()
-                                .host(splitEncoded[2].replace("//", ""))
-                                .port(splitPortAndDbNameWithOptions[0])
-                                .dbName(splitDbNameAndOptions[0])
-                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
-                                .user("")
-                                .password("")
+                                .host(host)
+                                .port(port)
+                                .dbName(dbName)
+                                .user(user)
+                                .password(password)
+                                .options(Optional.of(options))
                                 .build();
                     })
                     .examplePort("30000")
                     .exampleHost("cubrid.exampleHost.org")
                     .exampleDbName("testDB")
                     .build(),
+
 
             ServerBasedDbms.builder()
                     .name("TIBERO")
