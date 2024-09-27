@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="SIARD-Suite-0.1.0-SNAPSHOT6">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/SiardGui/build/distributions/SIARD-Suite-0.1.0-SNAPSHOT.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
