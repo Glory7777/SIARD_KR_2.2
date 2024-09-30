@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'ch.admin.bar'
+version = '1.0-SNAPSHOT'
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    implementation fileTree(include: ['*.jar'], dir: "$rootDir/lib")
+
+    implementation project(':SiardApi')
+
+}
+
+test {
+    useJUnitPlatform()
+}
