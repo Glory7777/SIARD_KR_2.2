@@ -88,7 +88,7 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
                     .ifPresent(uri -> archiveHandler.setExternalLobFolder(archive, uri));
 
             ObservableList<Pair<String, Long>> progressData = FXCollections.observableArrayList();
-            if (!instruction.getLoadOnlyMetadata()) {
+            if (!instruction.getLoadOnlyMetadata() || instruction.getPreview()) {
 
                 PrimaryDataFromDb data = PrimaryDataFromDb.newInstance(connection, archive);
 

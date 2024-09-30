@@ -82,28 +82,30 @@ public class ArchiveLoadingPreviewPresenter {
         buttonsBox.cancel().setOnAction(event -> dialogs
                 .open(View.ARCHIVE_ABORT_DIALOG));
 
-        dbInteractionService.execute(LoadDatabaseInstruction.builder()
-                .connectionData(dbmsConnectionData)
-                .loadOnlyMetadata(true)
-                .onSuccess(downloadedArchive -> {
-                    downloadedArchive.getMetaData().setDbName(dbmsConnectionData.getDbName());
-                    
-                    navigator.next(new Tuple<>(
-                            downloadedArchive,
-                            dbmsConnectionData
-                    ));
-                })
-                .onFailure(event -> {
-                    navigator.previous();
-                    errorHandler.handle(event.getSource().getException());
-                })
-                .onProgress((o, oldValue, newValue) -> {
-                    progressBar.progressProperty().set(newValue.doubleValue());
-                })
-                .onStepCompleted((o1, oldValue, newValue) -> {
-                    newValue.forEach(p -> addLoadingItem(p.getKey(), new AtomicInteger().getAndIncrement()));
-                })
-                .build());
+        dbInteractionService.execute(
+                LoadDatabaseInstruction.builder()
+                        .connectionData(dbmsConnectionData)
+                        .loadOnlyMetadata(true)
+                        .onSuccess(downloadedArchive -> {
+                            downloadedArchive.getMetaData().setDbName(dbmsConnectionData.getDbName());
+
+                            navigator.next(new Tuple<>(
+                                    downloadedArchive,
+                                    dbmsConnectionData
+                            ));
+                        })
+                        .onFailure(event -> {
+                            navigator.previous();
+                            errorHandler.handle(event.getSource().getException());
+                        })
+                        .onProgress((o, oldValue, newValue) -> {
+                            progressBar.progressProperty().set(newValue.doubleValue());
+                        })
+                        .onStepCompleted((o1, oldValue, newValue) -> {
+                            newValue.forEach(p -> addLoadingItem(p.getKey(), new AtomicInteger().getAndIncrement()));
+                        })
+                        .preview(true)
+                        .build());
     }
 
     private void addLoadingItem(String text, Integer pos) {

@@ -62,7 +62,8 @@ public class PreviewArchiveBrowser {
         );
 
         buttonsBox.previous().setOnAction((event) -> navigator.previous());
-        buttonsBox.cancel().setOnAction((event) -> dialogs
+        buttonsBox.cancel().setOnAction(
+                (event) -> dialogs
                 .open(View.ARCHIVE_ABORT_DIALOG));
 
         this.loadedView = GenericArchiveBrowserPresenter.load(

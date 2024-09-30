@@ -48,6 +48,7 @@ public class TableImpl extends SearchImpl implements Table {
     public static final String _sTAG_RECORD = "row";
     public static final String _sATTR_TABLE_VERSION = "version";
     private static final ObjectFactory _OF = new ObjectFactory();
+    private long expectedTableSize;
 
     static DocumentBuilder _db = null;
 
@@ -613,10 +614,14 @@ public class TableImpl extends SearchImpl implements Table {
         oswr.write("</html>\r\n");
         oswr.flush();
     }
+
+    @Override
+    public void setExpectedTableSize(long expectedTableSize) {
+        this.expectedTableSize = expectedTableSize;
+    }
+
+    @Override
+    public long getExpectedTableSize() {
+        return expectedTableSize;
+    }
 }
-
-
-/* Location:              C:\Users\lenovo\IdeaProjects\siardapi.jar!\ch\admin\bar\siard2\api\primary\TableImpl.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

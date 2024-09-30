@@ -66,4 +66,7 @@ public class LoadDatabaseInstruction {
     @Builder.Default
     Map<String, List<String>> selectedSchemaTableMap = new HashMap<>();
 
+    @Builder.Default
+    Boolean preview = true;
+
 }
