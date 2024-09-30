@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,14 +37,14 @@ import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 
-import main.java.cubrid.jdbc.jci.UColumnInfo;
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UError;
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.USchType;
-import main.java.cubrid.jdbc.jci.UStatement;
-import main.java.cubrid.jdbc.jci.UUType;
-import main.java.cubrid.jdbc.jci.UShardInfo;
+import cubrid.jdbc.jci.UColumnInfo;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UError;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.USchType;
+import cubrid.jdbc.jci.UStatement;
+import cubrid.jdbc.jci.UUType;
+import cubrid.jdbc.jci.UShardInfo;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -843,17 +843,14 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		}
 
 		UColumnInfo[] column_info = us.getColumnInfo();
-		boolean has_remarks = false;
-		if (column_info.length > 2) {
-		    /* 
-		     * Class schema info may have two types of column info:
-		     * i - [0]=TABLE_NAME, [1]=TABLE_TYPE;
-		     * ii- [0]=TABLE_NAME, [1]=TABLE_TYPE, [2]=REMARKS;
-		     */
-			has_remarks = true;
-		}
+		boolean has_remarks = column_info.length > 2;
+        /*
+         * Class schema info may have two types of column info:
+         * i - [0]=TABLE_NAME, [1]=TABLE_TYPE;
+         * ii- [0]=TABLE_NAME, [1]=TABLE_TYPE, [2]=REMARKS;
+         */
 
-		int result_count = 0;
+        int result_count = 0;
 		int[] precision = new int[5];
 		precision[0] = 0; /* TABLE_CAT */
 		precision[1] = 0; /* TABLE_SCHEM */
@@ -866,7 +863,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		Object[] value = new Object[5];
 		value[0] = null;
 		value[1] = u_con.dbname;
-		if (has_remarks == false) {
+		if (!has_remarks) {
 			value[4] = null;
 		}
 
@@ -983,7 +980,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 					continue;
 
 				value[2] = us.getString(0);
-				if (has_remarks == true) {
+				if (has_remarks) {
 					value[4] = us.getString(2);
 				}
 				rs.addTuple(value);
@@ -1092,19 +1089,16 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		}
 
 		UColumnInfo[] column_info = us.getColumnInfo();
-		boolean has_remarks = false;
-		if (column_info.length > 13) {
-		    /* 
-		     * Attribute schema info may have two types of column info:
-		     * i - [0~12]=ATTR_NAME/DOMAIN/SCALE/PRECISION/INDEXED/NON_NULL
-		     *     /SHARED/UNIQUE/DEFAULT/ATTR_ORDER/CLASS_NAME
-		     *     /SOURCE_CLASS/IS_KEY
-		     * ii- [0~12]=i, [13]=REMARKS;
-		     */
-			has_remarks = true;
-		}
+		boolean has_remarks = column_info.length > 13;
+        /*
+         * Attribute schema info may have two types of column info:
+         * i - [0~12]=ATTR_NAME/DOMAIN/SCALE/PRECISION/INDEXED/NON_NULL
+         *     /SHARED/UNIQUE/DEFAULT/ATTR_ORDER/CLASS_NAME
+         *     /SOURCE_CLASS/IS_KEY
+         * ii- [0~12]=i, [13]=REMARKS;
+         */
 
-		int[] precision = new int[18];
+        int[] precision = new int[18];
 		precision[0] = 0; /* TABLE_CAT */
 		precision[1] = 0; /* TABLE_SCHEM */
 		precision[2] = column_info[10].getColumnPrecision(); /* TABLE_NAME */
@@ -1117,7 +1111,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		precision[9] = 0; /* NUM_PREC_RADIX */
 		precision[10] = 4; /* NULLABLE */
 		precision[11] = has_remarks ? column_info[13].getColumnPrecision() : 0; /* REMARKS */
-		precision[12] = column_info[8].getColumnPrecision();; /* COLUMN_DEF */
+		precision[12] = column_info[8].getColumnPrecision();/* COLUMN_DEF */
 		precision[13] = 0; /* SQL_DATA_TYPE */
 		precision[14] = 0; /* SQL_DATETIME_SUB */
 		precision[15] = 4; /* CHAR_OCTET_LENGTH */
@@ -1132,8 +1126,8 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		value[0] = null;
 		value[1] = u_con.dbname;
 		value[7] = null;
-		value[9] = new Integer(10);
-		if (has_remarks == false) {
+		value[9] = 10;
+		if (!has_remarks) {
 			value[11] = null; /* REMARKS */
 		}
 		value[13] = null;
@@ -1143,13 +1137,13 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 			value[2] = tableNamePattern;
 			value[3] = "sp_name";
-			value[4] = new Short((short) java.sql.Types.VARCHAR);
+			value[4] = (short) java.sql.Types.VARCHAR;
 			value[5] = "VARCHAR";
 			value[6] = value[15] = 256;
 			value[8] = 0;
 			value[11] = null;
 			value[16] = 1;
-			value[10] = new Integer(columnNoNulls);
+			value[10] = columnNoNulls;
 			value[17] = "NO";
 			value[12] = "name";
 
@@ -1157,13 +1151,13 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 			value[2] = tableNamePattern;
 			value[3] = "target";
-			value[4] = new Short((short) java.sql.Types.BINARY);
+			value[4] = (short) java.sql.Types.BINARY;
 			value[5] = "BINARY";
 			value[6] = value[15] = 0x3fffffff;
 			value[8] = 0;
 			value[11] = null;
 			value[16] = 2;
-			value[10] = new Integer(columnNoNulls);
+			value[10] = columnNoNulls;
 			value[17] = "NO";
 			value[12] = "body";
 			
@@ -1191,17 +1185,17 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 			// type-independent decisions
 			value[2] = us.getString(10);
 			value[3] = us.getString(0);
-			value[6] = value[15] = new Integer(us.getInt(3));
-			value[8] = new Integer(us.getInt(2));
-			if (has_remarks == true) {
+			value[6] = value[15] = us.getInt(3);
+			value[8] = us.getInt(2);
+			if (has_remarks) {
 				value[11] = us.getString(13);
 			}
-			value[16] = new Integer(us.getInt(9));
+			value[16] = us.getInt(9);
 			if (us.getInt(5) == 1) {
-				value[10] = new Integer(columnNoNulls);
+				value[10] = columnNoNulls;
 				value[17] = "NO";
 			} else {
-				value[10] = new Integer(columnNullable);
+				value[10] = columnNullable;
 				value[17] = "YES";
 			}
 			value[12] = us.getObject(8);
@@ -1209,91 +1203,92 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 			// type-dependent decisions
 			int type = us.getInt(1);
 			if (type == UUType.U_TYPE_BIT) {
-				value[4] = new Short((short) java.sql.Types.BINARY);
-				value[5] = "BIT";
+				value[4] = (short) java.sql.Types.BINARY;
+                value[5] = "BIT";
 			} else if (type == UUType.U_TYPE_VARBIT) {
-				value[4] = new Short((short) java.sql.Types.VARBINARY);
-				value[5] = "BIT VARYING";
+				value[4] = (short) java.sql.Types.VARBINARY;
+                value[5] = "BIT VARYING";
 			} else if (type == UUType.U_TYPE_CHAR) {
-				value[4] = new Short((short) java.sql.Types.CHAR);
-				value[5] = "CHAR";
+				value[4] = (short) java.sql.Types.CHAR;
+                value[5] = "CHAR";
 			} else if (type == UUType.U_TYPE_VARCHAR) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
+
 				value[5] = "VARCHAR";
 			} else if (type == UUType.U_TYPE_ENUM) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "ENUM";
 			} else if (type == UUType.U_TYPE_NCHAR) {
-				value[4] = new Short((short) java.sql.Types.CHAR);
-				value[5] = "NCHAR";
+				value[4] = (short) java.sql.Types.CHAR;
+                value[5] = "NCHAR";
 			} else if (type == UUType.U_TYPE_VARNCHAR) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "NCHAR VARYING";
 			} else if (type == UUType.U_TYPE_SHORT) {
-				value[4] = new Short((short) java.sql.Types.SMALLINT);
+				value[4] = (short) java.sql.Types.SMALLINT;
 				value[5] = "SMALLINT";
 			} else if (type == UUType.U_TYPE_BIGINT) {
-				value[4] = new Short((short) java.sql.Types.BIGINT);
+				value[4] = (short) java.sql.Types.BIGINT;
 				value[5] = "BIGINT";
 			} else if (type == UUType.U_TYPE_INT) {
-				value[4] = new Short((short) java.sql.Types.INTEGER);
+				value[4] = (short) java.sql.Types.INTEGER;
 				value[5] = "INTEGER";
 			} else if (type == UUType.U_TYPE_NUMERIC) {
-				value[4] = new Short((short) java.sql.Types.NUMERIC);
+				value[4] = (short) java.sql.Types.NUMERIC;
 				value[5] = "NUMERIC";
 			} else if (type == UUType.U_TYPE_FLOAT) {
-				value[4] = new Short((short) java.sql.Types.REAL);
+				value[4] = (short) java.sql.Types.REAL;
 				value[5] = "FLOAT";
 			} else if (type == UUType.U_TYPE_DOUBLE) {
-				value[4] = new Short((short) java.sql.Types.DOUBLE);
+				value[4] = (short) java.sql.Types.DOUBLE;
 				value[5] = "DOUBLE PRECISION";
 			} else if (type == UUType.U_TYPE_MONETARY) {
-				value[4] = new Short((short) java.sql.Types.DOUBLE);
+				value[4] = (short) java.sql.Types.DOUBLE;
 				value[5] = "MONETARY";
 			} else if (type == UUType.U_TYPE_TIME) {
-				value[4] = new Short((short) java.sql.Types.TIME);
+				value[4] = (short) java.sql.Types.TIME;
 				value[5] = "TIME";
 			} else if (type == UUType.U_TYPE_DATE) {
-				value[4] = new Short((short) java.sql.Types.DATE);
+				value[4] = (short) java.sql.Types.DATE;
 				value[5] = "DATE";
 			} else if (type == UUType.U_TYPE_TIMESTAMP) {
-				value[4] = new Short((short) java.sql.Types.TIMESTAMP);
+				value[4] = (short) java.sql.Types.TIMESTAMP;
 				value[5] = "TIMESTAMP";
 			} else if (type == UUType.U_TYPE_DATETIME) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "DATETIME";
 			} else if (type == UUType.U_TYPE_OBJECT) {
-				value[4] = new Short((short) java.sql.Types.OTHER);
+				value[4] = (short) java.sql.Types.OTHER;
 				value[5] = "VARCHAR";
 			} else if (type == UUType.U_TYPE_SET) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "VARCHAR";
 			} else if (type == UUType.U_TYPE_MULTISET) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "VARCHAR";
 			} else if (type == UUType.U_TYPE_SEQUENCE) {
-				value[4] = new Short((short) java.sql.Types.VARCHAR);
+				value[4] = (short) java.sql.Types.VARCHAR;
 				value[5] = "VARCHAR";
 			} else if (type == UUType.U_TYPE_BLOB) {
-				value[4] = new Short((short) java.sql.Types.BLOB);
+				value[4] = (short) java.sql.Types.BLOB;
 				value[5] = "BLOB";
 			} else if (type == UUType.U_TYPE_CLOB) {
-				value[4] = new Short((short) java.sql.Types.CLOB);
+				value[4] = (short) java.sql.Types.CLOB;
 				value[5] = "CLOB";
 			} else if (type == UUType.U_TYPE_TIMESTAMPTZ) {
-				value[4] = new Short((short) java.sql.Types.TIMESTAMP);
+				value[4] = (short) java.sql.Types.TIMESTAMP;
 				value[5] = "TIMESTAMPTZ";
 			} else if (type == UUType.U_TYPE_TIMESTAMPLTZ) {
-				value[4] = new Short((short) java.sql.Types.TIMESTAMP);
+				value[4] = (short) java.sql.Types.TIMESTAMP;
 				value[5] = "TIMESTAMPLTZ";
 			} else if (type == UUType.U_TYPE_DATETIMETZ) {
-				value[4] = new Short((short) java.sql.Types.TIMESTAMP);
+				value[4] = (short) java.sql.Types.TIMESTAMP;
 				value[5] = "DATETIMETZ";
 			} else if (type == UUType.U_TYPE_DATETIMELTZ) {
-				value[4] = new Short((short) java.sql.Types.TIMESTAMP);
+				value[4] = (short) java.sql.Types.TIMESTAMP;
 				value[5] = "DATETIMELTZ";
 			} else if (type == UUType.U_TYPE_TIMETZ) {
-				value[4] = new Short((short) java.sql.Types.TIME);
+				value[4] = (short) java.sql.Types.TIME;
 				value[5] = "TIMETZ";
 			}
 
@@ -1505,7 +1500,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 		Object[] value = new Object[8];
 		value[5] = null;
-		value[7] = new Short((short) DatabaseMetaData.bestRowNotPseudo);
+		value[7] = (short) DatabaseMetaData.bestRowNotPseudo;
 
 		for (i = 0; i <= min; i++) {
 			us.moveCursor(minindex + i, UStatement.CURSOR_SET);
@@ -1522,113 +1517,113 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 				j++;
 			}
 
-			value[6] = new Integer(us2.getInt(2));
+			value[6] = us2.getInt(2);
 
 			switch (us2.getInt(1)) {
 			case UUType.U_TYPE_CHAR:
-				value[2] = new Integer(java.sql.Types.CHAR);
+				value[2] = java.sql.Types.CHAR;
 				value[3] = "CHAR";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_VARCHAR:
-				value[2] = new Integer(java.sql.Types.VARCHAR);
+				value[2] = java.sql.Types.VARCHAR;
 				value[3] = "VARCHAR";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_ENUM:
-				value[2] = new Integer(java.sql.Types.VARCHAR);
+				value[2] = java.sql.Types.VARCHAR;
 				value[3] = "ENUM";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_SHORT:
-				value[2] = new Integer(java.sql.Types.SMALLINT);
+				value[2] = java.sql.Types.SMALLINT;
 				value[3] = "SMALLINT";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_INT:
-				value[2] = new Integer(java.sql.Types.INTEGER);
+				value[2] = java.sql.Types.INTEGER;
 				value[3] = "INTEGER";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_BIGINT:
-				value[2] = new Integer(java.sql.Types.BIGINT);
+				value[2] = java.sql.Types.BIGINT;
 				value[3] = "BIGINT";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_DOUBLE:
-				value[2] = new Integer(java.sql.Types.DOUBLE);
+				value[2] = java.sql.Types.DOUBLE;
 				value[3] = "DOUBLE";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_FLOAT:
-				value[2] = new Integer(java.sql.Types.REAL);
+				value[2] = java.sql.Types.REAL;
 				value[3] = "FLOAT";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_NUMERIC:
-				value[2] = new Integer(java.sql.Types.NUMERIC);
+				value[2] = java.sql.Types.NUMERIC;
 				value[3] = "NUMERIC";
-				value[4] = new Integer(us2.getInt(3));
+				value[4] = us2.getInt(3);
 				break;
 			case UUType.U_TYPE_DATE:
-				value[2] = new Integer(java.sql.Types.DATE);
+				value[2] = java.sql.Types.DATE;
 				value[3] = "DATE";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_TIME:
-				value[2] = new Integer(java.sql.Types.TIME);
+				value[2] = java.sql.Types.TIME;
 				value[3] = "TIME";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_TIMESTAMP:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "TIMESTAMP";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_DATETIME:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "DATETIME";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_NULL:
-				value[2] = new Integer(java.sql.Types.NULL);
+				value[2] = java.sql.Types.NULL;
 				value[3] = "";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_BLOB:
-				value[2] = new Integer(java.sql.Types.BLOB);
+				value[2] = java.sql.Types.BLOB;
 				value[3] = "BLOB";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_CLOB:
-				value[2] = new Integer(java.sql.Types.CLOB);
+				value[2] = java.sql.Types.CLOB;
 				value[3] = "CLOB";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_TIMETZ:
-				value[2] = new Integer(java.sql.Types.TIME);
+				value[2] = java.sql.Types.TIME;
 				value[3] = "TIMETZ";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_TIMESTAMPTZ:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "TIMESTAMPTZ";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_TIMESTAMPLTZ:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "TIMESTAMPLTZ";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_DATETIMETZ:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "DATETIMETZ";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			case UUType.U_TYPE_DATETIMELTZ:
-				value[2] = new Integer(java.sql.Types.TIMESTAMP);
+				value[2] = java.sql.Types.TIMESTAMP;
 				value[3] = "DATETIMELTZ";
-				value[4] = new Integer(0);
+				value[4] = 0;
 				break;
 			}
 
@@ -1893,35 +1888,39 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 				"BIGINT", "SMALLINT", "DOUBLE", "FLOAT", "DOUBLE", "VARCHAR",
 				"DATE", "TIME", "TIMESTAMP", "DATETIME" };
 		/* Data Type */
-		Object[] column2 = { new Short((short) java.sql.Types.BIT),
-				new Short((short) java.sql.Types.TINYINT),
-				new Short((short) java.sql.Types.BIGINT),
-				new Short((short) java.sql.Types.LONGVARBINARY),
-				new Short((short) java.sql.Types.VARBINARY),
-				new Short((short) java.sql.Types.BINARY),
-				new Short((short) java.sql.Types.LONGVARCHAR),
-				new Short((short) java.sql.Types.CHAR),
-				new Short((short) java.sql.Types.NUMERIC),
-				new Short((short) java.sql.Types.INTEGER),
-				new Short((short) java.sql.Types.BIGINT),
-				new Short((short) java.sql.Types.SMALLINT),
-				new Short((short) java.sql.Types.FLOAT),
-				new Short((short) java.sql.Types.REAL),
-				new Short((short) java.sql.Types.DOUBLE),
-				new Short((short) java.sql.Types.VARCHAR),
-				new Short((short) java.sql.Types.DATE),
-				new Short((short) java.sql.Types.TIME),
-				new Short((short) java.sql.Types.TIMESTAMP),
-				new Short((short) java.sql.Types.TIMESTAMP) };
+		Object[] column2 = {(short) java.sql.Types.BIT,
+				(short) java.sql.Types.TINYINT,
+				(short) java.sql.Types.BIGINT,
+				(short) java.sql.Types.LONGVARBINARY,
+				(short) java.sql.Types.VARBINARY,
+				(short) java.sql.Types.BINARY,
+				(short) java.sql.Types.LONGVARCHAR,
+				(short) java.sql.Types.CHAR,
+				(short) java.sql.Types.NUMERIC,
+				(short) java.sql.Types.INTEGER,
+				(short) java.sql.Types.BIGINT,
+				(short) java.sql.Types.SMALLINT,
+				(short) java.sql.Types.FLOAT,
+				(short) java.sql.Types.REAL,
+				(short) java.sql.Types.DOUBLE,
+				(short) java.sql.Types.VARCHAR,
+				(short) java.sql.Types.DATE,
+				(short) java.sql.Types.TIME,
+				(short) java.sql.Types.TIMESTAMP,
+				(short) java.sql.Types.TIMESTAMP
+		};
 		/* Precision */
-		Object[] column3 = { new Integer(8), new Integer(3), new Integer(38),
-				new Integer(1073741823), new Integer(1073741823),
-				new Integer(1073741823), new Integer(1073741823),
-				new Integer(1073741823), new Integer(38), new Integer(10),
-				new Integer(19), new Integer(5), new Integer(38),
-				new Integer(38), new Integer(38), new Integer(1073741823),
-				new Integer(10), new Integer(11), new Integer(22),
-				new Integer(26) };
+		Object[] column3 = {
+				8, 3, 38,
+				1073741823, 1073741823,
+				1073741823, 1073741823,
+				1073741823, 38, 10,
+				19, 5, 38,
+				38, 38, 1073741823,
+				10, 11, 22,
+				26
+		};
+
 		/* Literal prefix */
 		Object[] column4 = { "B'", null, null, "X'", "X'", "X'", "'", "'",
 				null, null, null, null, null, null, null, "'", "DATE'",
@@ -1934,76 +1933,83 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 				null, null, null, null, null, null, null, null, null, null,
 				null, null };
 		/* Nullable */
-		Object column7 = new Short((short) typeNullable);
+		Object column7 = (short) typeNullable;
 		/* case sensitive */
-		Object[] column8 = { new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(true), new Boolean(true),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(true), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false) };
+		Object[] column8 = { false, false,
+				false, false, false,
+				false, true, true,
+				false, false, false,
+				false, false, false,
+				true, false, false,
+				false, false, false };
 		/* Searchable */
-		Object[] column9 = { new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typeSearchable),
-				new Short((short) typeSearchable),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typeSearchable),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic),
-				new Short((short) typePredBasic) };
+		Object[] column9 = {
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typeSearchable,
+				(short) typeSearchable,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typeSearchable,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic,
+				(short) typePredBasic
+		};
 		/* Unsigned attribute */
-		Object[] column10 = { new Boolean(true), new Boolean(false),
-				new Boolean(false), new Boolean(true), new Boolean(true),
-				new Boolean(true), new Boolean(true), new Boolean(true),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(true), new Boolean(true),
-				new Boolean(true), new Boolean(true), new Boolean(true) };
+		Object[] column10 = {true, false,
+				false, true, true,
+				true, true, true,
+				false, false, false,
+				false, false, false,
+				false, true, true,
+				true, true, true
+		};
 		/* FIXED_PREC_SCALE */
-		Object[] column11 = { new Boolean(false), new Boolean(true),
-				new Boolean(true), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false),
-				new Boolean(true), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(true), new Boolean(true),
-				new Boolean(true), new Boolean(false), new Boolean(false),
-				new Boolean(false), new Boolean(false), new Boolean(false) };
+		Object[] column11 = {false, true,
+				true, false, false,
+				false, false, false,
+				true, false, false,
+				false, true, true,
+				true, false, false,
+				false, false, false
+		};
 		/* AUTO_INCREMENT */
-		Object column12 = new Boolean(false);
+		Object column12 = false;
+
 		/* LOCAL_TYPE_NAME */
 		Object[] column13 = column1;
 		/* MINIMUM_SCALE */
-		Object[] column14 = { new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0) };
+		Object[] column14 = { 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0 };
 		/* MAXIMUM_SCALE */
-		Object[] column15 = { new Integer(0), new Integer(0), new Integer(38),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0),
-				new Integer(0), new Integer(38), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(38),
-				new Integer(38), new Integer(38), new Integer(0),
-				new Integer(0), new Integer(0), new Integer(0), new Integer(0) };
+		Object[] column15 = {0, 0, 38,
+				0, 0, 0, 0,
+				0, 38, 0,
+				0, 0, 38,
+				38, 38, 0,
+				0, 0, 0, 0
+		};
+
 		/* SQL_DATA_TYPE */
 		Object column16 = null;
 		/* SQL_DATETIME_SUB */
 		Object column17 = column16;
 		/* NUM_PREC_RADIX */
-		Object column18 = new Integer(10);
+		Object column18 = 10;
 
 		Object[] value = new Object[18];
 		value[6] = column7;
@@ -2079,20 +2085,20 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		value[4] = null;
 
 		// tableIndexStatistic
-		value[3] = new Boolean(false);
+		value[3] = false;
 		value[5] = null;
-		value[6] = new Short(tableIndexStatistic);
-		value[7] = new Short((short) 0);
+		value[6] = tableIndexStatistic;
+		value[7] = (short) 0;
 		value[8] = null;
 		value[9] = null;
-		value[10] = new Integer(us.getInt(4));
-		value[11] = new Integer(us.getInt(3));
+		value[10] = us.getInt(4);
+		value[11] = us.getInt(3);
 		value[12] = null;
 
 		rs.addTuple(value);
 
 		// tableIndexOther
-		value[6] = new Short(tableIndexOther);
+		value[6] = tableIndexOther;
 		value[9] = "A";
 
 		int i = 0, ordinal = 1;
@@ -2106,20 +2112,20 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 			if (unique && us.getShort(0) == 1)
 				continue;
 			if (us.getShort(0) == 1)
-				value[3] = new Boolean(true);
+				value[3] = true;
 			else
-				value[3] = new Boolean(false);
+				value[3] = false;
 			value[5] = us.getString(1);
-			if (((String) value[5]).equals(previousIndex))
-				value[7] = new Integer(ordinal++);
+			if (value[5].equals(previousIndex))
+				value[7] = ordinal++;
 			else {
-				value[7] = new Integer(1);
+				value[7] = 1;
 				ordinal = 2;
 				previousIndex = (String) value[5];
 			}
 			value[8] = us.getString(2);
-			value[10] = new Integer(us.getInt(4));
-			value[11] = new Integer(us.getInt(3));
+			value[10] = us.getInt(4);
+			value[11] = us.getInt(3);
 
 			rs.addTuple(value);
 		}
@@ -2137,10 +2143,8 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 			return true;
 		if (type == ResultSet.TYPE_SCROLL_INSENSITIVE)
 			return true;
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE)
-			return true;
-		return false;
-	}
+        return type == ResultSet.TYPE_SCROLL_SENSITIVE;
+    }
 
 	public synchronized boolean supportsResultSetConcurrency(int type,
 			int concurrency) throws SQLException {
@@ -2160,19 +2164,15 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 		if (type == ResultSet.TYPE_SCROLL_SENSITIVE
 				&& concurrency == ResultSet.CONCUR_READ_ONLY)
 			return true;
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE
-				&& concurrency == ResultSet.CONCUR_UPDATABLE)
-			return true;
-		return false;
-	}
+        return type == ResultSet.TYPE_SCROLL_SENSITIVE
+                && concurrency == ResultSet.CONCUR_UPDATABLE;
+    }
 
 	public synchronized boolean ownUpdatesAreVisible(int type)
 			throws SQLException {
 		checkIsOpen();
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE)
-			return true;
-		return false;
-	}
+        return type == ResultSet.TYPE_SCROLL_SENSITIVE;
+    }
 
 	public synchronized boolean ownDeletesAreVisible(int type)
 			throws SQLException {
@@ -2189,10 +2189,8 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 	public synchronized boolean othersUpdatesAreVisible(int type)
 			throws SQLException {
 		checkIsOpen();
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE)
-			return true;
-		return false;
-	}
+        return type == ResultSet.TYPE_SCROLL_SENSITIVE;
+    }
 
 	public synchronized boolean othersDeletesAreVisible(int type)
 			throws SQLException {
@@ -2215,10 +2213,8 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 	public synchronized boolean deletesAreDetected(int type)
 			throws SQLException {
 		checkIsOpen();
-		if (type == ResultSet.TYPE_SCROLL_SENSITIVE)
-			return true;
-		return false;
-	}
+        return type == ResultSet.TYPE_SCROLL_SENSITIVE;
+    }
 
 	public synchronized boolean insertsAreDetected(int type)
 			throws SQLException {
@@ -2329,11 +2325,9 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 	public synchronized boolean supportsResultSetHoldability(int holdability)
 			throws SQLException {
 		checkIsOpen();
-		if (holdability == ResultSet.CLOSE_CURSORS_AT_COMMIT
-				|| holdability == ResultSet.HOLD_CURSORS_OVER_COMMIT)
-			return true;
-		return false;
-	}
+        return holdability == ResultSet.CLOSE_CURSORS_AT_COMMIT
+                || holdability == ResultSet.HOLD_CURSORS_OVER_COMMIT;
+    }
 
 	public synchronized boolean supportsSavepoints() throws SQLException {
 		checkIsOpen();
@@ -2433,7 +2427,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 	}
 
 	private synchronized void endTransaction() {
-		if (u_con.getAutoCommit() == true) {
+		if (u_con.getAutoCommit()) {
 			u_con.endTransaction(true);
 		}
 	}
@@ -2457,7 +2451,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 		checkIsOpen();
 
-		if (con.isShard() == false)
+		if (!con.isShard())
 		{
 			return null;
 		}
@@ -2479,7 +2473,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 		checkIsOpen();
 
-		if (con.isShard() == false)
+		if (!con.isShard())
 		{
 			return null;
 		}

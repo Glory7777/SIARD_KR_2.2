@@ -16,7 +16,7 @@ import javax.sql.*;
 import ch.enterag.utils.logging.*;
 import ch.enterag.utils.jdbcx.*;
 import ch.admin.bar.siard2.jdbc.*;
-import main.java.cubrid.jdbc.driver.CUBRIDDataSource;
+import cubrid.jdbc.driver.CUBRIDDataSource;
 
 /* ===============================================================================- */
 
@@ -29,7 +29,7 @@ public class CubridDataSource extends BaseDataSource implements DataSource {
     /**
      * logger
      */
-    private static IndentLogger _il = IndentLogger.getIndentLogger(CubridDataSource.class.getName());
+    private static final IndentLogger _il = IndentLogger.getIndentLogger(CubridDataSource.class.getName());
 
     /**
      * @param dsWrapped DataSource to be wrapped

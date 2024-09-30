@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UError {
 	public final static int METHOD_USER_ERROR_BASE = -100000;

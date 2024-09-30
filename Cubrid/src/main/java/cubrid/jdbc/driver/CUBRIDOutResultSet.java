@@ -28,19 +28,19 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.SQLException;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UStatement;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UStatement;
 
 public class CUBRIDOutResultSet extends CUBRIDResultSet {
 	private boolean created;
 
-	private int srv_handle;
+	private final int srv_handle;
 
-	private UConnection ucon;
+	private final UConnection ucon;
 
 	public CUBRIDOutResultSet(UConnection ucon, int srv_handle_id) {
 		super(null);

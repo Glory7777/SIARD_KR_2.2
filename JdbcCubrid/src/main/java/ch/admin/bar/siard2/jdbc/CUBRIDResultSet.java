@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -99,31 +100,29 @@ public class CUBRIDResultSet
 	  if ((o instanceof String) && (iType == Types.LONGVARCHAR))
 	  {
       Clob clob = getStatement().getConnection().createClob();
-      clob.setString(1l, (String)o);
+      clob.setString(1L, (String)o);
       o = clob;
 	  }
 	  else if ((o instanceof String) && (iType == Types.LONGNVARCHAR))
 	  {
       NClob nclob = getStatement().getConnection().createNClob();
-      nclob.setString(1l, (String)o);
+      nclob.setString(1L, (String)o);
       o = nclob;
 	  }
 	  else if ((o instanceof byte[]) && (iType == Types.LONGVARBINARY))
 	  {
       Blob blob = getStatement().getConnection().createBlob();
-      blob.setBytes(1l, (byte[])o);
+      blob.setBytes(1L, (byte[])o);
       o = blob;
 	  }
-	  else if ((o instanceof Integer) && (iType == Types.SMALLINT))
+	  else if ((o instanceof Integer i) && (iType == Types.SMALLINT))
 	  {
-	    Integer i = (Integer)o;
-	    Short sh = Short.valueOf(i.shortValue());
+          Short sh = Short.valueOf(i.shortValue());
 	    o = sh;
 	  }
-    else if ((o instanceof Integer) && (iType == Types.TINYINT))
+    else if ((o instanceof Integer i) && (iType == Types.TINYINT))
     {
-      Integer i = (Integer)o;
-      Short sh = Short.valueOf(i.shortValue());
+        Short sh = Short.valueOf(i.shortValue());
       o = sh;
     }
 		return o;
@@ -237,8 +236,7 @@ public class CUBRIDResultSet
   /** {@inheritDoc} */
 	@Override
   public Duration getDuration(int columnIndex) 
-    throws SQLException, SQLFeatureNotSupportedException
-  {
+    throws SQLException {
     byte[] buf = getBytes(columnIndex);
     Interval iv = SqlLiterals.deserialize(buf, Interval.class);
     return iv.toDuration();
@@ -254,7 +252,7 @@ public class CUBRIDResultSet
 	{
 		byte[] buf = readByteArray(inputStream);
 		Blob b = _conn.createBlob();
-		b.setBytes(1l, buf);
+		b.setBytes(1L, buf);
 		updateBlob(columnIndex, b);
 	} /* updateBlob */
 
@@ -267,7 +265,7 @@ public class CUBRIDResultSet
 	public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
 		byte[] buf = readByteArray(inputStream);
 		Blob b = _conn.createBlob();
-		b.setBytes(1l, buf);
+		b.setBytes(1L, buf);
 		updateBlob(columnIndex, b);
 	} /* updateBlob */
 
@@ -480,7 +478,7 @@ public class CUBRIDResultSet
 		Document doc = null;
 		try {
 			dBuilder = dbFactory.newDocumentBuilder();
-			doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(sXML.getBytes(SU.sUTF8_CHARSET_NAME))));
+			doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(sXML.getBytes(StandardCharsets.UTF_8))));
 		} catch (ParserConfigurationException e) {
 			throw new SQLException(e);
 		} catch (SAXException e) {

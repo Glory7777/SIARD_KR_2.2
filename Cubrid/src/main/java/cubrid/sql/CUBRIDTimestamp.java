@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.sql;
+package cubrid.sql;
 
 import java.sql.Timestamp;
 
@@ -54,9 +54,7 @@ public class CUBRIDTimestamp extends Timestamp {
 
 	public static boolean isTimestampType(Timestamp o) {
 		if (o instanceof CUBRIDTimestamp) {
-			if (!((CUBRIDTimestamp) o).isDatetime) {
-				return true;
-			}
+            return !((CUBRIDTimestamp) o).isDatetime;
 		}
 		return false;
 	}

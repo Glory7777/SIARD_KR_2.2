@@ -24,7 +24,7 @@ import ch.enterag.sqlparser.datatype.enums.PreType;
  */
 public class CubridPredefinedType extends PredefinedType 
 {
-	private static Map<PreType, String> mapISO_TO_CUBRID = new HashMap<PreType, String>();
+	private static final Map<PreType, String> mapISO_TO_CUBRID = new HashMap<PreType, String>();
 		  
 	static {
 		mapISO_TO_CUBRID.put(PreType.BINARY, "BIT");
@@ -68,7 +68,7 @@ public class CubridPredefinedType extends PredefinedType
       if (iSecondsDecimals > 6)
         iSecondsDecimals = 6; // maximum precision for DATETIME
       if (iSecondsDecimals != iDefaultDecimals)
-        sSecondsDecimals = sSecondsDecimals + sLEFT_PAREN + String.valueOf(iSecondsDecimals) + sRIGHT_PAREN;
+        sSecondsDecimals = sSecondsDecimals + sLEFT_PAREN + iSecondsDecimals + sRIGHT_PAREN;
     }
     return sSecondsDecimals;
   } /* formatSecondsDecimals */

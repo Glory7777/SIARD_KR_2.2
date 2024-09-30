@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,7 +40,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import main.java.cubrid.jdbc.jci.UUType;
+import cubrid.jdbc.jci.UUType;
 
 public class CUBRIDBlob implements Blob {
 	/*
@@ -285,15 +285,14 @@ public class CUBRIDBlob implements Blob {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDBlob) {
-			CUBRIDBlob that = (CUBRIDBlob) obj;
-			return lobHandle.equals(that.lobHandle);
+		if (obj instanceof CUBRIDBlob that) {
+            return lobHandle.equals(that.lobHandle);
 		}
 		return false;
 	}
 	
 	@SuppressWarnings("resource")
-	public int toFile(String path) throws FileNotFoundException, IOException
+	public int toFile(String path) throws IOException
 	{
 		byte[] bArray = null;
 		try {

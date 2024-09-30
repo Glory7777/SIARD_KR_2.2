@@ -34,34 +34,29 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
+
+import cubrid.jdbc.driver.*;
+import cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDTimestamp;
+import cubrid.sql.CUBRIDTimestamptz;
+import cubrid.sql.CUBRIDTimetz;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.Calendar;
-
-import main.java.cubrid.jdbc.driver.CUBRIDBlob;
-import main.java.cubrid.jdbc.driver.CUBRIDClob;
-import main.java.cubrid.jdbc.driver.CUBRIDConnection;
-import main.java.cubrid.jdbc.driver.CUBRIDXid;
-import main.java.cubrid.jdbc.driver.CUBRIDException;
-import main.java.cubrid.jdbc.driver.CUBRIDBinaryString;
-import main.java.cubrid.sql.CUBRIDOID;
-import main.java.cubrid.sql.CUBRIDTimestamp;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
-import main.java.cubrid.sql.CUBRIDTimetz;
 import java.util.TimeZone;
 
 class UInputBuffer {
-	private UTimedDataInputStream input;
+	private final UTimedDataInputStream input;
 	private int position;
 	private int capacity;
-	private byte casinfo[];
-	private byte buffer[];
-	private int resCode;
+	private final byte[] casinfo;
+	private byte[] buffer;
+	private final int resCode;
 	private final static int CAS_INFO_SIZE = 4;
-	private UConnection uconn;
+	private final UConnection uconn;
 
 	UInputBuffer(UTimedDataInputStream relatedI, UConnection con)
 			throws IOException, UJciException {
@@ -157,7 +152,7 @@ class UInputBuffer {
 		return buffer[position++];
 	}
 
-	void readBytes(byte value[], int offset, int len) throws UJciException {
+	void readBytes(byte[] value, int offset, int len) throws UJciException {
 		if (value == null)
 			return;
 
@@ -169,7 +164,7 @@ class UInputBuffer {
 		position += len;
 	}
 
-	void readBytes(byte value[]) throws UJciException {
+	void readBytes(byte[] value) throws UJciException {
 		readBytes(value, 0, value.length);
 	}
 

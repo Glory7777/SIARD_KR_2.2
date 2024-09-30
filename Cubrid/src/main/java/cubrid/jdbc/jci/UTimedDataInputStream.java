@@ -34,14 +34,14 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 
-import main.java.cubrid.jdbc.net.BrokerHandler;
+import cubrid.jdbc.net.BrokerHandler;
 
 public class UTimedDataInputStream {
     public final static int PING_TIMEOUT = 5000;

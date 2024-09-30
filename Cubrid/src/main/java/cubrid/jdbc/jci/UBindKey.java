@@ -28,11 +28,11 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UBindKey {
 
-	private int num_key;
+	private final int num_key;
 	private Object[] values;
 
 	public UBindKey(Object[] values) {
@@ -40,7 +40,7 @@ public class UBindKey {
 			num_key = 0;
 		else {
 			num_key = values.length;
-			this.values = (Object[]) values.clone();
+			this.values = values.clone();
 		}
 	}
 
@@ -51,11 +51,10 @@ public class UBindKey {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof UBindKey) {
-			UBindKey k = (UBindKey) obj;
-			if (num_key == k.num_key) {
+		if (obj instanceof UBindKey k) {
+            if (num_key == k.num_key) {
 				for (int i = 0; i < num_key; i++) {
-					if (values[i].equals(k.values[i]) == false)
+					if (!values[i].equals(k.values[i]))
 						return false;
 				}
 				return true;

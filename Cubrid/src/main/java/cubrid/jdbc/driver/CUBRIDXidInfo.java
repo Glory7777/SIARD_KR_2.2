@@ -28,13 +28,13 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Arrays;
 
 import javax.transaction.xa.Xid;
 
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UConnection;
 
 class CUBRIDXidInfo {
 	static final int STATUS_NOFLAG = 0, STATUS_STARTED = 1,
@@ -56,13 +56,10 @@ class CUBRIDXidInfo {
 	}
 
 	boolean compare(Xid x) {
-		if ((xid.getFormatId() == x.getFormatId())
-				&& Arrays.equals(xid.getBranchQualifier(), x
-						.getBranchQualifier())
-				&& Arrays.equals(xid.getGlobalTransactionId(), x
-						.getGlobalTransactionId())) {
-			return true;
-		}
-		return false;
-	}
+        return (xid.getFormatId() == x.getFormatId())
+                && Arrays.equals(xid.getBranchQualifier(), x
+                .getBranchQualifier())
+                && Arrays.equals(xid.getGlobalTransactionId(), x
+                .getGlobalTransactionId());
+    }
 }

@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ import javax.sql.ConnectionEventListener;
 import javax.sql.PooledConnection;
 import javax.sql.StatementEventListener;
 
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UConnection;
 
 public class CUBRIDPooledConnection implements PooledConnection {
 	protected UConnection u_con;
@@ -89,7 +89,7 @@ public class CUBRIDPooledConnection implements PooledConnection {
 			u_con = storedConnection.getUConnection();
 		}
 
-		if (u_con.check_cas() == false) {
+		if (!u_con.check_cas()) {
 			u_con.reset_connection();
 		}
 

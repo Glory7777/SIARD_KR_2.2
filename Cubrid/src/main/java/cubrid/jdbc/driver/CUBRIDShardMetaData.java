@@ -28,14 +28,14 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.SQLException;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UError;
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.UShardInfo;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UError;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UShardInfo;
 
 /**
  * Title: CUBRID JDBC Driver Description:

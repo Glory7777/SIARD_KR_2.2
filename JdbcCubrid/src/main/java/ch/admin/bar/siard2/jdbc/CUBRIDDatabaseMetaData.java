@@ -270,7 +270,7 @@ public class CUBRIDDatabaseMetaData
 			sbWhereClause.append(whereClauseComponents.get(i));
 		}
 		sb.append("WHERE ");
-		sb.append(sbWhereClause.toString());
+		sb.append(sbWhereClause);
 		sb.append("\r\n");
 
 		// order according to the JDBC specification
@@ -335,7 +335,7 @@ public class CUBRIDDatabaseMetaData
 			sbWhereClause.append(whereClauseComponents.get(i));
 		}
 		sb.append("WHERE ");
-		sb.append(sbWhereClause.toString());
+		sb.append(sbWhereClause);
 		sb.append("\r\n");
 
 		// order according to the JDBC specification
@@ -388,7 +388,7 @@ public class CUBRIDDatabaseMetaData
 	    		"action_time,\r\n" +
 	    		"comment\r\n" +
 			"FROM db_trigger\r\n" +
-	 		"WHERE " + sbCondition.toString();
+	 		"WHERE " + sbCondition;
 		
 		  Statement stmt = getConnection().createStatement();
 		  rsTriggers = stmt.unwrap(Statement.class).executeQuery(sSql);
@@ -429,7 +429,7 @@ public class CUBRIDDatabaseMetaData
 	    		"0 as FUNCTION_TYPE,\r\n" +
 	    		"NULL AS SPECIFIC_NAME \r\n" +
 			"FROM db_stored_procedure\r\n" +
-	 		"WHERE " + sbCondition.toString() + "\r\n" + 
+	 		"WHERE " + sbCondition + "\r\n" +
 	 		"ORDER BY FUNCTION_CAT, FUNCTION_SCHEM, FUNCTION_NAME, SPECIFIC_NAME";
 		
 		  Statement stmt = getConnection().createStatement();
@@ -476,7 +476,7 @@ public class CUBRIDDatabaseMetaData
 	    		"0 as PROCEDURE_TYPE,\r\n" +
 	    		"NULL as SPECIFIC_NAME\r\n" +
 			"FROM db_stored_procedure\r\n" +
-	 		"WHERE " + sbCondition.toString() + "\r\n" + 
+	 		"WHERE " + sbCondition + "\r\n" +
 	 		"ORDER BY PROCEDURE_CAT, PROCEDURE_SCHEM, PROCEDURE_NAME, SPECIFIC_NAME";
 		
 		  Statement stmt = getConnection().createStatement();
@@ -571,8 +571,7 @@ public class CUBRIDDatabaseMetaData
 
 		ResultSet rsUdts;
 
-		StringBuilder sbCondition = new StringBuilder("T.TYPE_NAME LIKE ");
-	    sbCondition.append(SqlLiterals.formatStringLiteral(typeNamePattern));
+        String sbCondition = "T.TYPE_NAME LIKE " + SqlLiterals.formatStringLiteral(typeNamePattern);
 		    
 	    String sSql = "SELECT\r\n" +
 	    		"NULL as TYPE_CAT,\r\n" +
@@ -580,12 +579,12 @@ public class CUBRIDDatabaseMetaData
 	    		"T.TYPE_NAME AS TYPE_NAME,\r\n" +
 				"null AS TYPE_NAME,\r\n" +
 	    		"NULL as CLASS_NAME,\r\n" +
-	    		String.valueOf(Types.STRUCT) + " as DATA_TYPE,\r\n" +
+                Types.STRUCT + " as DATA_TYPE,\r\n" +
 				"NULL as DATA_TYPE,\r\n" +
 	    		"NULL as REMARKS,\r\n" +
 	    		"NULL as BASE_TYPE\r\n" +
 			"FROM _db_data_type T\r\n" +
-	 		"WHERE " + sbCondition.toString() + "\r\n" + 
+	 		"WHERE " + sbCondition + "\r\n" +
 	 		"ORDER BY DATA_TYPE, TYPE_CAT, TYPE_SCHEM, TYPE_NAME";
 		
 		  Statement stmt = getConnection().createStatement();

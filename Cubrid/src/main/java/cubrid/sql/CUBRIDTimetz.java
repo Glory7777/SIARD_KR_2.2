@@ -28,17 +28,17 @@
  *
  */
 
-package main.java.cubrid.sql;
+package cubrid.sql;
 
 import java.sql.Time;
 
-import main.java.cubrid.jdbc.driver.*;
+import cubrid.jdbc.driver.*;
 
 
 public class CUBRIDTimetz extends Time {
     private static final long serialVersionUID = 2346294268719129394L;
 
-	private String timezone;
+	private final String timezone;
 
 	public CUBRIDTimetz (long time,  String str_timezone) throws CUBRIDException {
 		super (time);
@@ -91,7 +91,7 @@ public class CUBRIDTimetz extends Time {
 
 	public String toString() {
 		if (timezone.isEmpty()) {
-			return "" + super.toString();
+			return super.toString();
 		}
 		else {
 			return super.toString() + " " + timezone;

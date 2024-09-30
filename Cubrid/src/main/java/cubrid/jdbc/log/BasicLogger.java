@@ -1,4 +1,4 @@
-package main.java.cubrid.jdbc.log;
+package cubrid.jdbc.log;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class BasicLogger implements Log {
 
     private int logLevel;
 
-    private static Hashtable<String, PrintWriter> writerTable = new Hashtable<String, PrintWriter>();
+    private static final Hashtable<String, PrintWriter> writerTable = new Hashtable<String, PrintWriter>();
     static {
 	writerTable.put("stderr", new PrintWriter(System.err));
     }
@@ -97,7 +97,7 @@ public class BasicLogger implements Log {
 	logInternal(WARN, msg, thrown);
     }
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private synchronized void logInternal(int level, String msg, Throwable thrown) {
 	if (logLevel < level) {
 	    return;
@@ -127,7 +127,7 @@ public class BasicLogger implements Log {
 	    break;
 	}
 	b.append('|').append(msg);
-	writer.println(b.toString());
+	writer.println(b);
 
 	if (thrown != null) {
 	    thrown.printStackTrace(writer);

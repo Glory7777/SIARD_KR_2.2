@@ -28,12 +28,12 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
-import main.java.cubrid.jdbc.jci.UConKey;
+import cubrid.jdbc.jci.UConKey;
 
 public class CUBRIDConnectionKey {
-	private UConKey conKey;
+	private final UConKey conKey;
 
 	public CUBRIDConnectionKey(String s) {
 		conKey = new UConKey(s);

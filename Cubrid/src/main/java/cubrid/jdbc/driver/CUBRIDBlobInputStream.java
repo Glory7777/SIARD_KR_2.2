@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.IOException;
 import java.io.InputStream;

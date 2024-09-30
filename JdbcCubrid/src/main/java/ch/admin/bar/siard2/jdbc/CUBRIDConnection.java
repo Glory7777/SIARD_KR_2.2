@@ -38,7 +38,7 @@ import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.jdbc.BaseConnection;
 import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 import ch.enterag.utils.logging.IndentLogger;
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UConnection;
 
 /* ===============================================================================- */
 
@@ -50,7 +50,7 @@ import main.java.cubrid.jdbc.jci.UConnection;
 public class CUBRIDConnection extends BaseConnection implements Connection {
     // logger
     UConnection u_con;
-    private static IndentLogger _il = IndentLogger.getIndentLogger(CUBRIDConnection.class.getName());
+    private static final IndentLogger _il = IndentLogger.getIndentLogger(CUBRIDConnection.class.getName());
     private QualifiedId _qiTableDropCascade = null;
 
     public QualifiedId getTableDropCascade() {
@@ -361,8 +361,8 @@ public class CUBRIDConnection extends BaseConnection implements Connection {
         throw new SQLFeatureNotSupportedException();
     }
 
-    main.java.cubrid.jdbc.driver.CUBRIDException createCUBRIDException(main.java.cubrid.jdbc.jci.UError error) {
-        main.java.cubrid.jdbc.driver.CUBRIDException e = new main.java.cubrid.jdbc.driver.CUBRIDException(error);
+    cubrid.jdbc.driver.CUBRIDException createCUBRIDException(cubrid.jdbc.jci.UError error) {
+        cubrid.jdbc.driver.CUBRIDException e = new cubrid.jdbc.driver.CUBRIDException(error);
         return e;
     }
 } /* class CubridConnection */

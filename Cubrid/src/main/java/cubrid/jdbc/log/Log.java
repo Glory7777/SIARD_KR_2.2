@@ -1,4 +1,4 @@
-package main.java.cubrid.jdbc.log;
+package cubrid.jdbc.log;
 
 public interface Log {
 	void logDebug(String msg);

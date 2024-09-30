@@ -28,12 +28,12 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Comparator;
 
 class CUBRIDComparator implements Comparator<Object> {
-	private String dbmd_method;
+	private final String dbmd_method;
 
 	CUBRIDComparator(String whatfor) {
 		dbmd_method = whatfor;

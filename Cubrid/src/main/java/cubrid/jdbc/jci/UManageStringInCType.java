@@ -34,10 +34,10 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 abstract class UManageStringInCType {
-	final static String spaceString = new String(" ");
+	final static String spaceString = " ";
 
 	static String stringWithSpace(String originalData, int length) {
 		if (originalData == null)

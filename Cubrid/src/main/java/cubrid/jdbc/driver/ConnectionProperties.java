@@ -1,4 +1,4 @@
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import main.java.cubrid.jdbc.jci.BrokerHealthCheck;
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.BrokerHealthCheck;
+import cubrid.jdbc.jci.UConnection;
 
 public class ConnectionProperties {
     static ArrayList<Field> PROPERTY_LIST = new ArrayList<Field>();
@@ -23,9 +23,8 @@ public class ConnectionProperties {
 		}
 	    }
 	} catch (Exception e) {
-	    RuntimeException rtEx = new RuntimeException();
-	    rtEx.initCause(e);
-	    throw rtEx;
+	    RuntimeException rtEx = new RuntimeException(e);
+        throw rtEx;
 	}
     }
 
@@ -57,7 +56,7 @@ public class ConnectionProperties {
 
 	int numProperties = PROPERTY_LIST.size();
 	for (int i = 0; i < numProperties; i++) {
-	    Field propertyField = (Field) PROPERTY_LIST.get(i);
+	    Field propertyField = PROPERTY_LIST.get(i);
 
 	    try {
 		ConnectionProperty prop = (ConnectionProperty) propertyField.get(this);
@@ -80,7 +79,7 @@ public class ConnectionProperties {
 	    this.connLoadBal.setValue("false");
 	}
 	if (this.getReconnectTime() < (BrokerHealthCheck.MONITORING_INTERVAL / 1000)) {
-	    this.rcTime.setValue((Integer)(BrokerHealthCheck.MONITORING_INTERVAL / 1000));
+	    this.rcTime.setValue(BrokerHealthCheck.MONITORING_INTERVAL / 1000);
 	}
     }
 
@@ -182,11 +181,7 @@ public class ConnectionProperties {
 		return false;
 	    }
 
-	    if (value < this.lowerBound || value > this.upperBound) {
-		return false;
-	    } else {
-		return true;
-	    }
+        return value >= this.lowerBound && value <= this.upperBound;
 	}
     }
 
@@ -230,11 +225,8 @@ public class ConnectionProperties {
 
 	@Override
 	boolean validateValue(Object o) {
-	    if (o != null) {
-		return true;
-	    }
-	    return false;
-	}
+        return o != null;
+    }
     }
 
     class CharSetConnectionProperty extends StringConnectionProperty {
@@ -271,13 +263,10 @@ public class ConnectionProperties {
 
 	@Override
 	boolean validateValue(Object o) {
-	    if (o instanceof String) {
-		String behavior = (String) o;
-		if (behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
-			|| behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_EXCEPTION)
-			|| behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_ROUND)) {
-		    return true;
-		}
+	    if (o instanceof String behavior) {
+            return behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
+                    || behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_EXCEPTION)
+                    || behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_ROUND);
 	    }
 	    return false;
 	}
@@ -290,12 +279,9 @@ public class ConnectionProperties {
 
 	@Override
 	boolean validateValue(Object o) {
-	    if (o instanceof String) {
-		String support = (String) o;
-		if (support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_YES)
-			|| support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_NO)) {
-		    return true;
-		}
+	    if (o instanceof String support) {
+            return support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_YES)
+                    || support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_NO);
 	    }
 	    return false;
 	}

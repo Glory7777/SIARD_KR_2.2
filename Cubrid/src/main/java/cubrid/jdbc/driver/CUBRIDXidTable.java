@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -36,7 +36,7 @@ import java.util.Vector;
 import javax.transaction.xa.Xid;
 
 abstract class CUBRIDXidTable {
-	private static Hashtable<String, Vector<CUBRIDXidInfo>> xaTable;
+	private static final Hashtable<String, Vector<CUBRIDXidInfo>> xaTable;
 
 	static {
 		xaTable = new Hashtable<String, Vector<CUBRIDXidInfo>>();

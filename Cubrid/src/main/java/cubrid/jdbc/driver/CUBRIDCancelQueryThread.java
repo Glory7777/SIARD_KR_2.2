@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 /**
  * Title:        CUBRID JDBC Driver
@@ -42,9 +42,9 @@ package main.java.cubrid.jdbc.driver;
  */
 class CUBRIDCancelQueryThread extends Thread {
 
-	private int timeout;
+	private final int timeout;
 
-	private CUBRIDStatement stmt;
+	private final CUBRIDStatement stmt;
 
 	private boolean end = false;
 
@@ -55,9 +55,9 @@ class CUBRIDCancelQueryThread extends Thread {
 
 	public void run() {
 		try {
-			Thread.sleep(timeout * 1000);
+			Thread.sleep(timeout * 1000L);
 			synchronized (this) {
-				if (end == false) {
+				if (!end) {
 					stmt.cancel();
 				}
 			}

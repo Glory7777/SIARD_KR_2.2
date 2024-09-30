@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Hashtable;
 
@@ -89,94 +89,94 @@ public class CUBRIDJDBCErrorCode {
 	private static void setMessageHash() {
 		messageString = new Hashtable<Integer, String>();
 
-		messageString.put(new Integer(unknown), "");
-		messageString.put(new Integer(connection_closed), 
+		messageString.put(unknown, "");
+		messageString.put(connection_closed,
 			"Attempt to operate on a closed Connection.");
-		messageString.put(new Integer(statement_closed), 
+		messageString.put(statement_closed,
 			"Attempt to access a closed Statement.");
-		messageString.put(new Integer(prepared_statement_closed), 
+		messageString.put(prepared_statement_closed,
 			"Attempt to access a closed PreparedStatement.");
-		messageString.put(new Integer(result_set_closed), 
+		messageString.put(result_set_closed,
 			"Attempt to access a closed ResultSet.");
-		messageString.put(new Integer(not_supported), 
+		messageString.put(not_supported,
 			"Not supported method");
-		messageString.put(new Integer(invalid_trans_iso_level), 
+		messageString.put(invalid_trans_iso_level,
 			"Unknown transaction isolation level.");
-		messageString.put(new Integer(invalid_url), 
+		messageString.put(invalid_url,
 			"invalid URL - ");
-		messageString.put(new Integer(no_dbname), 
+		messageString.put(no_dbname,
 			"The database name should be given.");
-		messageString.put(new Integer(invalid_query_type_for_executeQuery), 
+		messageString.put(invalid_query_type_for_executeQuery,
 			"The query is not applicable to the executeQuery(). Use the executeUpdate() instead.");
-		messageString.put(new Integer(invalid_query_type_for_executeUpdate), 
+		messageString.put(invalid_query_type_for_executeUpdate,
 			"The query is not applicable to the executeUpdate(). Use the executeQuery() instead.");
-		messageString.put(new Integer(negative_value_for_length), 
+		messageString.put(negative_value_for_length,
 			"The length of the stream cannot be negative.");
-		messageString.put(new Integer(ioexception_in_stream), 
+		messageString.put(ioexception_in_stream,
 			"An IOException was caught during reading the inputstream.");
-		messageString.put(new Integer(deprecated), 
+		messageString.put(deprecated,
 			"Not supported method, because it is deprecated.");
-		messageString.put(new Integer(not_numerical_object), 
+		messageString.put(not_numerical_object,
 			"The object does not seem to be a number.");
-		messageString.put(new Integer(invalid_index), 
+		messageString.put(invalid_index,
 			"Missing or invalid position of the bind variable provided.");
-		messageString.put(new Integer(invalid_column_name), 
+		messageString.put(invalid_column_name,
 			"The column name is invalid.");
-		messageString.put(new Integer(invalid_row), 
+		messageString.put(invalid_row,
 			"Invalid cursor position.");
-		messageString.put(new Integer(conversion_error), 
+		messageString.put(conversion_error,
 			"Type conversion error.");
-		messageString.put(new Integer(invalid_tuple), 
+		messageString.put(invalid_tuple,
 			"Internal error: The number of attributes is different from the expected.");
-		messageString.put(new Integer(invalid_value), 
+		messageString.put(invalid_value,
 			"The argument is invalid.");
-		messageString.put(new Integer(not_collection), 
+		messageString.put(not_collection,
 			"The type of the column should be a collection type.");
-		messageString.put(new Integer(dbmetadata_closed), 
+		messageString.put(dbmetadata_closed,
 			"Attempt to operate on a closed DatabaseMetaData.");
-		messageString.put(new Integer(non_scrollable), 
+		messageString.put(non_scrollable,
 			"Attempt to call a method related to scrollability of non-scrollable ResultSet.");
-		messageString.put(new Integer(non_sensitive), 
+		messageString.put(non_sensitive,
 			"Attempt to call a method related to sensitivity of non-sensitive ResultSet.");
-		messageString.put(new Integer(non_updatable), 
+		messageString.put(non_updatable,
 			"Attempt to call a method related to updatability of non-updatable ResultSet.");
-		messageString.put(new Integer(non_updatable_column), 
+		messageString.put(non_updatable_column,
 			"Attempt to update a column which cannot be updated.");
-		messageString.put(new Integer(invalid_query_type_for_executeInsert), 
+		messageString.put(invalid_query_type_for_executeInsert,
 			"The query is not applicable to the executeInsert().");
-		messageString.put(new Integer(argument_zero), 
+		messageString.put(argument_zero,
 			"The argument row can not be zero.");
-		messageString.put(new Integer(empty_inputstream), 
+		messageString.put(empty_inputstream,
 			"Given InputStream object has no data.");
-		messageString.put(new Integer(empty_reader), 
+		messageString.put(empty_reader,
 			"Given Reader object has no data.");
-		messageString.put(new Integer(insertion_query_fail), 
+		messageString.put(insertion_query_fail,
 			"Insertion query failed.");
-		messageString.put(new Integer(non_scrollable_statement), 
+		messageString.put(non_scrollable_statement,
 			"Attempt to call a method related to scrollability of TYPE_FORWARD_ONLY Statement.");
-		messageString.put(new Integer(iss_fail_login), 
+		messageString.put(iss_fail_login,
 			"Authentication failure");
-		messageString.put(new Integer(pooled_connection_closed), 
+		messageString.put(pooled_connection_closed,
 			"Attempt to operate on a closed PooledConnection.");
-		messageString.put(new Integer(xa_connection_closed), 
+		messageString.put(xa_connection_closed,
 			"Attempt to operate on a closed XAConnection.");
-		messageString.put(new Integer(xa_illegal_operation), 
+		messageString.put(xa_illegal_operation,
 			"Illegal operation in a distributed transaction");
-		messageString.put(new Integer(oid_closed), 
+		messageString.put(oid_closed,
 			"Attempt to access a CUBRIDOID associated with a Connection which has been closed.");
-		messageString.put(new Integer(invalid_table_name), 
+		messageString.put(invalid_table_name,
 			"The table name is invalid.");
-		messageString.put(new Integer(lob_pos_invalid), 
+		messageString.put(lob_pos_invalid,
 			"Lob position to write is invalid.");
-		messageString.put(new Integer(lob_is_not_writable), 
+		messageString.put(lob_is_not_writable,
 			"Lob is not writable.");
-		messageString.put(new Integer(request_timeout), 
+		messageString.put(request_timeout,
 			"Request timed out.");
 	}
 
 	public static String getMessage(int code) {
 		if (messageString == null)
 			setMessageHash();
-		return (String) messageString.get(new Integer(code));
+		return messageString.get(code);
 	}
 }

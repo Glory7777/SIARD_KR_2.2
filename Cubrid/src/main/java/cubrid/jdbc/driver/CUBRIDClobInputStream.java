@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.sql.SQLException;
 class CUBRIDClobInputStream extends InputStream {
 	private CUBRIDClob clob;
 	private long lob_pos;
-	private long lob_length;
+	private final long lob_length;
 
 	CUBRIDClobInputStream(CUBRIDClob clob) throws SQLException {
 		this.clob = clob;

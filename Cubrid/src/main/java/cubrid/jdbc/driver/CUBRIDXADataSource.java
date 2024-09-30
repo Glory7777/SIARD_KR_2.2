@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -79,7 +79,7 @@ public class CUBRIDXADataSource extends CUBRIDPoolDataSourceBase implements
 
 	public synchronized Reference getReference() throws NamingException {
 		Reference ref = new Reference(this.getClass().getName(),
-				"main.java.cubrid.jdbc.driver.CUBRIDDataSourceObjectFactory", null);
+				"cubrid.jdbc.driver.CUBRIDDataSourceObjectFactory", null);
 
 		ref = getProperties(ref);
 		return ref;

@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.util.Hashtable;
 
@@ -116,127 +116,127 @@ abstract public class UErrorCode {
 	public static String codeToMessage(int index) {
 		if (messageString == null)
 			setMessageHash();
-		return (String) messageString.get(new Integer(index));
+		return messageString.get(index);
 	}
 
 	public static String codeToCASMessage(int index) {
 		if (CASMessageString == null)
 			setCASMessageHash();
-		return (String) CASMessageString.get(new Integer(index));
+		return CASMessageString.get(index);
 	}
 
 	private static void setMessageHash() {
 		messageString = new Hashtable<Integer, String>();
 
-		messageString.put(new Integer(ER_UNKNOWN), "Error");
-		messageString.put(new Integer(ER_NO_ERROR), "No Error");
-		messageString.put(new Integer(ER_DBMS), "Server error");
-		messageString.put(new Integer(ER_COMMUNICATION),
+		messageString.put(ER_UNKNOWN, "Error");
+		messageString.put(ER_NO_ERROR, "No Error");
+		messageString.put(ER_DBMS, "Server error");
+		messageString.put(ER_COMMUNICATION,
 				"Cannot communicate with the broker");
-		messageString.put(new Integer(ER_NO_MORE_DATA),
+		messageString.put(ER_NO_MORE_DATA,
 				"Invalid cursor position");
-		messageString.put(new Integer(ER_TYPE_CONVERSION),
+		messageString.put(ER_TYPE_CONVERSION,
 				"Type conversion error");
-		messageString.put(new Integer(ER_BIND_INDEX),
+		messageString.put(ER_BIND_INDEX,
 				"Missing or invalid position of the bind variable provided");
-		messageString.put(new Integer(ER_NOT_BIND),
+		messageString.put(ER_NOT_BIND,
 				"Attempt to execute the query when not all the parameters are binded");
-		messageString.put(new Integer(ER_WAS_NULL),
+		messageString.put(ER_WAS_NULL,
 				"Internal Error: NULL value");
-		messageString.put(new Integer(ER_COLUMN_INDEX),
+		messageString.put(ER_COLUMN_INDEX,
 				"Column index is out of range");
-		messageString.put(new Integer(ER_TRUNCATE),
+		messageString.put(ER_TRUNCATE,
 				"Data is truncated because receive buffer is too small");
-		messageString.put(new Integer(ER_SCHEMA_TYPE),
+		messageString.put(ER_SCHEMA_TYPE,
 				"Internal error: Illegal schema type");
-		messageString.put(new Integer(ER_FILE), "File access failed");
-		messageString.put(new Integer(ER_CONNECTION),
+		messageString.put(ER_FILE, "File access failed");
+		messageString.put(ER_CONNECTION,
 				"Cannot connect to a broker");
-		messageString.put(new Integer(ER_ISO_TYPE),
+		messageString.put(ER_ISO_TYPE,
 				"Unknown transaction isolation level");
-		messageString.put(new Integer(ER_ILLEGAL_REQUEST),
+		messageString.put(ER_ILLEGAL_REQUEST,
 				"Internal error: The requested information is not available");
-		messageString.put(new Integer(ER_INVALID_ARGUMENT),
+		messageString.put(ER_INVALID_ARGUMENT,
 				"The argument is invalid");
-		messageString.put(new Integer(ER_IS_CLOSED),
+		messageString.put(ER_IS_CLOSED,
 				"Connection or Statement might be closed");
-		messageString.put(new Integer(ER_ILLEGAL_FLAG),
+		messageString.put(ER_ILLEGAL_FLAG,
 				"Internal error: Invalid argument");
-		messageString.put(new Integer(ER_ILLEGAL_DATA_SIZE),
+		messageString.put(ER_ILLEGAL_DATA_SIZE,
 				"Cannot communicate with the broker or received invalid packet");
-		messageString.put(new Integer(ER_NOT_OBJECT),
+		messageString.put(ER_NOT_OBJECT,
 				"Index's Column is Not Object");
-		messageString.put(new Integer(ER_NO_MORE_RESULT), "No More Result");
-		messageString.put(new Integer(ER_OID_IS_NOT_INCLUDED),
+		messageString.put(ER_NO_MORE_RESULT, "No More Result");
+		messageString.put(ER_OID_IS_NOT_INCLUDED,
 				"This ResultSet do not include the OID");
-		messageString.put(new Integer(ER_CMD_IS_NOT_INSERT),
+		messageString.put(ER_CMD_IS_NOT_INSERT,
 				"Command is not insert");
-		messageString.put(new Integer(ER_TIMEOUT), "Request timed out");
-		messageString.put(new Integer(ER_NO_SHARD_AVAILABLE), "No shard available");
-		messageString.put(new Integer(ER_INVALID_SHARD), "Invalid shard");
-		messageString.put(new Integer(ER_ILLEGAL_TIMESTAMP), 
+		messageString.put(ER_TIMEOUT, "Request timed out");
+		messageString.put(ER_NO_SHARD_AVAILABLE, "No shard available");
+		messageString.put(ER_INVALID_SHARD, "Invalid shard");
+		messageString.put(ER_ILLEGAL_TIMESTAMP,
 				"Zero date can not be represented as java.sql.Timestamp");
 	}
 
 	private static void setCASMessageHash() {
 		CASMessageString = new Hashtable<Integer, String>();
 
-		CASMessageString.put(new Integer(CAS_ER_DBMS),
+		CASMessageString.put(CAS_ER_DBMS,
 				"Database connection error");
-		CASMessageString.put(new Integer(CAS_ER_INTERNAL),
+		CASMessageString.put(CAS_ER_INTERNAL,
 				"General server error");
-		CASMessageString.put(new Integer(CAS_ER_NO_MORE_MEMORY),
+		CASMessageString.put(CAS_ER_NO_MORE_MEMORY,
 				"Memory allocation error");
-		CASMessageString.put(new Integer(CAS_ER_COMMUNICATION),
+		CASMessageString.put(CAS_ER_COMMUNICATION,
 				"Communication error");
-		CASMessageString.put(new Integer(CAS_ER_ARGS), "Invalid argument");
-		CASMessageString.put(new Integer(CAS_ER_TRAN_TYPE),
+		CASMessageString.put(CAS_ER_ARGS, "Invalid argument");
+		CASMessageString.put(CAS_ER_TRAN_TYPE,
 				"Unknown transaction type");
-		CASMessageString.put(new Integer(CAS_ER_SRV_HANDLE),
+		CASMessageString.put(CAS_ER_SRV_HANDLE,
 				"Internal server error");
-		CASMessageString.put(new Integer(CAS_ER_NUM_BIND),
+		CASMessageString.put(CAS_ER_NUM_BIND,
 				"Parameter binding error");
-		CASMessageString.put(new Integer(CAS_ER_UNKNOWN_U_TYPE),
+		CASMessageString.put(CAS_ER_UNKNOWN_U_TYPE,
 				"Parameter binding error");
-		CASMessageString.put(new Integer(CAS_ER_DB_VALUE),
+		CASMessageString.put(CAS_ER_DB_VALUE,
 				"Cannot make DB_VALUE");
-		CASMessageString.put(new Integer(CAS_ER_TYPE_CONVERSION),
+		CASMessageString.put(CAS_ER_TYPE_CONVERSION,
 				"Type conversion error");
-		CASMessageString.put(new Integer(CAS_ER_PARAM_NAME),
+		CASMessageString.put(CAS_ER_PARAM_NAME,
 				"Invalid database parameter name");
-		CASMessageString.put(new Integer(CAS_ER_NO_MORE_DATA), "No more data");
-		CASMessageString.put(new Integer(CAS_ER_OBJECT), "Object is not valid");
-		CASMessageString.put(new Integer(CAS_ER_OPEN_FILE), "File open error");
-		CASMessageString.put(new Integer(CAS_ER_SCHEMA_TYPE),
+		CASMessageString.put(CAS_ER_NO_MORE_DATA, "No more data");
+		CASMessageString.put(CAS_ER_OBJECT, "Object is not valid");
+		CASMessageString.put(CAS_ER_OPEN_FILE, "File open error");
+		CASMessageString.put(CAS_ER_SCHEMA_TYPE,
 				"Invalid schema type");
-		CASMessageString.put(new Integer(CAS_ER_VERSION), "Version mismatch");
-		CASMessageString.put(new Integer(CAS_ER_FREE_SERVER),
+		CASMessageString.put(CAS_ER_VERSION, "Version mismatch");
+		CASMessageString.put(CAS_ER_FREE_SERVER,
 				"Cannot process the request. Try again later");
-		CASMessageString.put(new Integer(CAS_ER_NOT_AUTHORIZED_CLIENT),
+		CASMessageString.put(CAS_ER_NOT_AUTHORIZED_CLIENT,
 				"Authorization error");
-		CASMessageString.put(new Integer(CAS_ER_QUERY_CANCEL),
+		CASMessageString.put(CAS_ER_QUERY_CANCEL,
 				"Cannot cancel the query");
-		CASMessageString.put(new Integer(CAS_ER_NOT_COLLECTION),
+		CASMessageString.put(CAS_ER_NOT_COLLECTION,
 				"The attribute domain must be the set type");
-		CASMessageString.put(new Integer(CAS_ER_COLLECTION_DOMAIN),
+		CASMessageString.put(CAS_ER_COLLECTION_DOMAIN,
 				"The domain of a set must be the same data type");
-		CASMessageString.put(new Integer(CAS_ER_NO_MORE_RESULT_SET),
+		CASMessageString.put(CAS_ER_NO_MORE_RESULT_SET,
 				"No More Result");
-		CASMessageString.put(new Integer(CAS_ER_INVALID_CALL_STMT),
+		CASMessageString.put(CAS_ER_INVALID_CALL_STMT,
 				"Illegal CALL statement");
-		CASMessageString.put(new Integer(CAS_ER_STMT_POOLING),
+		CASMessageString.put(CAS_ER_STMT_POOLING,
 				"Statement Pooling");
-		CASMessageString.put(new Integer(CAS_ER_DBSERVER_DISCONNECTED),
+		CASMessageString.put(CAS_ER_DBSERVER_DISCONNECTED,
 				"DB Server disconnected");
-		CASMessageString.put(new Integer(CAS_ER_MAX_PREPARED_STMT_COUNT_EXCEEDED),
+		CASMessageString.put(CAS_ER_MAX_PREPARED_STMT_COUNT_EXCEEDED,
 				"Cannot prepare more than MAX_PREPARED_STMT_COUNT statements");
-		CASMessageString.put(new Integer(CAS_ER_HOLDABLE_NOT_ALLOWED),
+		CASMessageString.put(CAS_ER_HOLDABLE_NOT_ALLOWED,
 				"Holdable results may not be updatable or sensitive");
-		CASMessageString.put(new Integer(CAS_ER_HOLDABLE_NOT_ALLOWED_KEEP_CON_OFF),
+		CASMessageString.put(CAS_ER_HOLDABLE_NOT_ALLOWED_KEEP_CON_OFF,
 				"Holdable results are not allowed while KEEP_CONNECTION is off");
-		CASMessageString.put(new Integer(CAS_ER_NOT_IMPLEMENTED),
+		CASMessageString.put(CAS_ER_NOT_IMPLEMENTED,
 				"Attempt to use a not supported service");
-		CASMessageString.put(new Integer(CAS_ER_MAX_CLIENT_EXCEEDED), "Proxy refused client connection. max clients exceeded");
-		CASMessageString.put(new Integer(CAS_ER_IS), "Authentication failure");
+		CASMessageString.put(CAS_ER_MAX_CLIENT_EXCEEDED, "Proxy refused client connection. max clients exceeded");
+		CASMessageString.put(CAS_ER_IS, "Authentication failure");
 	}
 }

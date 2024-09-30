@@ -34,13 +34,13 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UShardInfo {
 	public static final int SHARD_ID_INVALID = -1;
 	public static final int SHARD_ID_UNSUPPORTED = -2;
 
-	private int shardId;
+	private final int shardId;
 	private String dbName;
 	private String dbServer;
 

@@ -1,4 +1,4 @@
-package main.java.cubrid.jdbc.net;
+package cubrid.jdbc.net;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -8,13 +8,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.UJciException;
-import main.java.cubrid.jdbc.jci.UTimedDataInputStream;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UJciException;
+import cubrid.jdbc.jci.UTimedDataInputStream;
 
 public class BrokerHandler {
-    private static int TIMEOUT_UNIT = 1000;
+    private static final int TIMEOUT_UNIT = 1000;
 
     public static Socket connectBroker(String ip, int port, int timeout)
 	    throws IOException, UJciException {
@@ -83,11 +83,10 @@ public class BrokerHandler {
 		toBroker.close();
 	    }
 	    throw new UJciException(UErrorCode.ER_CONNECTION, e);
-	} finally {
 	}
     }
 
-    private static byte[] PING_INFO = { 'P', 'I', 'N', 'G', 0, 0, 0, 0, 0, 0 };
+    private static final byte[] PING_INFO = { 'P', 'I', 'N', 'G', 0, 0, 0, 0, 0, 0 };
     public static void pingBroker(String ip, int port, int timeout)
 	    throws IOException {
 	Socket toBroker = null;
@@ -163,7 +162,7 @@ public class BrokerHandler {
 	}
     }
 
-    private static byte[] CANCEL_INFO = { 'C', 'A', 'N', 'C', 'E', 'L' };
+    private static final byte[] CANCEL_INFO = { 'C', 'A', 'N', 'C', 'E', 'L' };
     public static void cancelBroker(String ip, int port, int process, int timeout)
 	    throws IOException, UJciException {
 	ByteArrayOutputStream bao = new ByteArrayOutputStream(10);

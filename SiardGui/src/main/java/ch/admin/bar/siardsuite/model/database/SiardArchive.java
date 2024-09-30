@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class SiardArchive {
 
     @Getter
-    private Archive archive;
-    private Optional<String> name;
+    private final Archive archive;
+    private final Optional<String> name;
     private boolean onlyMetaData = false;
 
     @Getter

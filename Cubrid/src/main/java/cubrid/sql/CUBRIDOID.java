@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.sql;
+package cubrid.sql;
 
 /**
  * Title:        CUBRID JDBC Driver
@@ -41,15 +41,15 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import main.java.cubrid.jdbc.driver.CUBRIDConnection;
-import main.java.cubrid.jdbc.driver.CUBRIDException;
-import main.java.cubrid.jdbc.driver.CUBRIDJDBCErrorCode;
-import main.java.cubrid.jdbc.driver.CUBRIDResultSet;
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UError;
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.UJCIUtil;
-import main.java.cubrid.jdbc.jci.UStatement;
+import cubrid.jdbc.driver.CUBRIDConnection;
+import cubrid.jdbc.driver.CUBRIDException;
+import cubrid.jdbc.driver.CUBRIDJDBCErrorCode;
+import cubrid.jdbc.driver.CUBRIDResultSet;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UError;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UJCIUtil;
+import cubrid.jdbc.jci.UStatement;
 
 public class CUBRIDOID {
 	private CUBRIDConnection cur_con;
@@ -72,7 +72,7 @@ public class CUBRIDOID {
 		is_closed = false;
 	}
 
-	public synchronized ResultSet getValues(String attrNames[])
+	public synchronized ResultSet getValues(String[] attrNames)
 			throws SQLException {
 		checkIsOpen();
 
@@ -136,10 +136,7 @@ public class CUBRIDOID {
 		}
 
 		checkError();
-		if (instance_obj == null)
-			return false;
-		else
-			return true;
+        return instance_obj != null;
 	}
 
 	public synchronized void setReadLock() throws SQLException {

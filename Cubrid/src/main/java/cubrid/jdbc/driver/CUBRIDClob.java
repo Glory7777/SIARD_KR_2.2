@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.Flushable;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import main.java.cubrid.jdbc.jci.UUType;
+import cubrid.jdbc.jci.UUType;
 
 public class CUBRIDClob implements Clob {
 
@@ -61,9 +61,9 @@ public class CUBRIDClob implements Clob {
 	private CUBRIDConnection conn;
 	private boolean isWritable;
 	private CUBRIDLobHandle lobHandle;
-	private String charsetName;
+	private final String charsetName;
 
-	private StringBuffer clobCharBuffer = new StringBuffer("");
+	private StringBuffer clobCharBuffer = new StringBuffer();
 	private long clobCharPos;
 	private long clobCharLength;
 
@@ -422,9 +422,8 @@ public class CUBRIDClob implements Clob {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDClob) {
-			CUBRIDClob that = (CUBRIDClob) obj;
-			return lobHandle.equals(that.lobHandle);
+		if (obj instanceof CUBRIDClob that) {
+            return lobHandle.equals(that.lobHandle);
 		}
 		return false;
 	}

@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -36,8 +36,8 @@ import java.util.Hashtable;
 public class UStmtCache {
 	String key;
 
-	private Hashtable<UBindKey, UResCache> res_cache_table;
-	private ArrayList<UResCache> res_cache_remove_list;
+	private final Hashtable<UBindKey, UResCache> res_cache_table;
+	private final ArrayList<UResCache> res_cache_remove_list;
 	int ref_count;
 
 	UStmtCache(String key) {

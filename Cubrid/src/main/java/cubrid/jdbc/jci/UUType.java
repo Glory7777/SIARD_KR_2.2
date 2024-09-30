@@ -34,19 +34,19 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import main.java.cubrid.jdbc.driver.CUBRIDBlob;
-import main.java.cubrid.jdbc.driver.CUBRIDClob;
-import main.java.cubrid.jdbc.driver.CUBRIDBinaryString;
-import main.java.cubrid.sql.CUBRIDOID;
-import main.java.cubrid.sql.CUBRIDTimestamp;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
+import cubrid.jdbc.driver.CUBRIDBlob;
+import cubrid.jdbc.driver.CUBRIDClob;
+import cubrid.jdbc.driver.CUBRIDBinaryString;
+import cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDTimestamp;
+import cubrid.sql.CUBRIDTimestamptz;
 
 /**
  * CUBRID Data Type�� ������ ���� class�̴�.
@@ -96,12 +96,9 @@ abstract public class UUType {
 	public static final byte U_TYPE_TIMETZ = 33;
 	
 	static boolean isCollectionType(byte type) {
-		if (type == UUType.U_TYPE_SET || type == UUType.U_TYPE_MULTISET
-				|| type == UUType.U_TYPE_SEQUENCE) {
-			return true;
-		}
-		return false;
-	}
+        return type == UUType.U_TYPE_SET || type == UUType.U_TYPE_MULTISET
+                || type == UUType.U_TYPE_SEQUENCE;
+    }
 
 	static byte getObjArrBaseDBtype(Object values) {
 		if (values instanceof String[])

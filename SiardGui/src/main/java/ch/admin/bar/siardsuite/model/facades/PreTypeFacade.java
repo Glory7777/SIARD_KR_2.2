@@ -9,7 +9,7 @@ import java.util.List;
 public class PreTypeFacade {
 
 
-    private static List<PreType> BLOB_TYPES = Arrays.asList(PreType.BLOB,
+    private static final List<PreType> BLOB_TYPES = Arrays.asList(PreType.BLOB,
                                                             PreType.CLOB,
                                                             PreType.NCLOB,
                                                             PreType.BINARY,

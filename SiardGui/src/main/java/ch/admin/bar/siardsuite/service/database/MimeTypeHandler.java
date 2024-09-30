@@ -101,21 +101,21 @@ public class MimeTypeHandler {
         if (!this.mimeTypes.containsKey(name)) {
             this.mimeTypes.put(name, new HashSet(Collections.singletonList(mimeType)));
         } else {
-            ((Set)this.mimeTypes.get(name)).add(mimeType);
+            this.mimeTypes.get(name).add(mimeType);
         }
 
     }
 
     private void applyMimeType(Cell cell) throws IOException {
-        this.applyMimeType((MetaValue)cell.getMetaColumn());
+        this.applyMimeType(cell.getMetaColumn());
     }
 
     private void applyMimeType(Field field) throws IOException {
-        this.applyMimeType((MetaValue)field.getMetaField());
+        this.applyMimeType(field.getMetaField());
     }
 
     private void applyMimeType(MetaValue metaValue) throws IOException {
-        Set<String> types = (Set)this.mimeTypes.get(metaValue.getName());
+        Set<String> types = this.mimeTypes.get(metaValue.getName());
         if (types != null) {
             if (types.size() == 1) {
                 metaValue.setMimeType((String)types.toArray()[0]);

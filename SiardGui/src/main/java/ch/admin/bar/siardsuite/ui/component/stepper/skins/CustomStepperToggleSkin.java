@@ -13,7 +13,7 @@ public class CustomStepperToggleSkin extends SkinBase<MFXStepperToggle> {
   private final TextField label;
   private final Button icon;
 
-  private Boolean visible;
+  private final Boolean visible;
 
   public CustomStepperToggleSkin(MFXStepperToggle stepperToggle, Boolean visible) {
     super(stepperToggle);

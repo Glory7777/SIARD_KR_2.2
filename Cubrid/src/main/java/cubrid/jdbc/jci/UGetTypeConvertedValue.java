@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -43,12 +43,12 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import main.java.cubrid.sql.CUBRIDOID;
-import main.java.cubrid.sql.CUBRIDTimestamp;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
-import main.java.cubrid.sql.CUBRIDTimetz;
-import main.java.cubrid.jdbc.driver.CUBRIDBinaryString;
-import main.java.cubrid.jdbc.driver.CUBRIDException;
+import cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDTimestamp;
+import cubrid.sql.CUBRIDTimestamptz;
+import cubrid.sql.CUBRIDTimetz;
+import cubrid.jdbc.driver.CUBRIDBinaryString;
+import cubrid.jdbc.driver.CUBRIDException;
 
 abstract public class UGetTypeConvertedValue {
 
@@ -66,12 +66,11 @@ abstract public class UGetTypeConvertedValue {
 		} else if (data instanceof Long) {
 			return new BigDecimal(((Long) data).longValue());
 		} else if (data instanceof Number) {
-			return new BigDecimal(((Number) data).doubleValue());
+			return BigDecimal.valueOf(((Number) data).doubleValue());
 		}
 		else if (data instanceof Boolean)
-			return new BigDecimal(
-					(((Boolean) data).booleanValue() == true) ? (double) 1
-							: (double) 0);
+			return BigDecimal.valueOf((((Boolean) data).booleanValue()) ? (double) 1
+                    : (double) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
 
@@ -81,12 +80,11 @@ abstract public class UGetTypeConvertedValue {
 		else if (data instanceof Boolean)
 			return ((Boolean) data).booleanValue();
 		else if (data instanceof String)
-			return (((((String) data).trim()).compareTo("0") == 0) ? false : true);
+			return ((((String) data).trim()).compareTo("0") != 0);
 		else if (data instanceof Number)
-			return ((((Number) data).doubleValue() == (double) 0) ? false
-					: true);
+			return (((Number) data).doubleValue() != (double) 0);
 		else if (data instanceof byte[])
-			return ((((byte[]) data)[0] == 0) ? false : true);
+			return (((byte[]) data)[0] != 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
 
@@ -106,7 +104,7 @@ abstract public class UGetTypeConvertedValue {
 				throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 			}
 		} else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? (byte) -128
+			return ((((Boolean) data).booleanValue()) ? (byte) -128
 					: (byte) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -116,7 +114,7 @@ abstract public class UGetTypeConvertedValue {
 			return null;
 
 		if (data instanceof byte[])
-			return (byte[]) ((byte[]) data).clone();
+			return ((byte[]) data).clone();
 
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -142,7 +140,7 @@ abstract public class UGetTypeConvertedValue {
 
 	static public double getDouble(Object data) throws UJciException {
 		if (data == null)
-			return (double) 0;
+			return 0;
 		else if (data instanceof Number)
 			return ((Number) data).doubleValue();
 		else if (data instanceof String) {
@@ -152,7 +150,7 @@ abstract public class UGetTypeConvertedValue {
 				throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 			}
 		} else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? (double) 1
+			return ((((Boolean) data).booleanValue()) ? (double) 1
 					: (double) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -169,7 +167,7 @@ abstract public class UGetTypeConvertedValue {
 				throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 			}
 		} else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? (float) 1
+			return ((((Boolean) data).booleanValue()) ? (float) 1
 					: (float) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -186,13 +184,13 @@ abstract public class UGetTypeConvertedValue {
 				throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 			}
 		} else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? 1 : 0);
+			return ((((Boolean) data).booleanValue()) ? 1 : 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
 
 	static public long getLong(Object data) throws UJciException {
 		if (data == null)
-			return (long) 0;
+			return 0;
 		else if (data instanceof String) {
 			try {
 				return Long.parseLong((String) data);
@@ -202,7 +200,7 @@ abstract public class UGetTypeConvertedValue {
 		} else if (data instanceof Number)
 			return ((Number) data).longValue();
 		else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? (long) 1
+			return ((((Boolean) data).booleanValue()) ? (long) 1
 					: (long) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -219,7 +217,7 @@ abstract public class UGetTypeConvertedValue {
 				throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 			}
 		} else if (data instanceof Boolean)
-			return ((((Boolean) data).booleanValue() == true) ? (short) 1
+			return ((((Boolean) data).booleanValue()) ? (short) 1
 					: (short) 0);
 		throw new UJciException(UErrorCode.ER_TYPE_CONVERSION);
 	}
@@ -258,7 +256,7 @@ abstract public class UGetTypeConvertedValue {
 	} else if ((data instanceof Blob) || (data instanceof Clob)) {
 	    return data.toString();
 	} else if (data instanceof CUBRIDBinaryString) {
-	    return (((CUBRIDBinaryString) data).toString());
+	    return (data.toString());
 	} else if (data instanceof CUBRIDArray) {
 		String ret_str;
 		Object aobj;

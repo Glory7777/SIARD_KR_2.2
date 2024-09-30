@@ -34,14 +34,14 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.IOException;
 
 class UPutByOIDParameter extends UParameter {
-	private String attributeNames[];
+	private final String[] attributeNames;
 
-	UPutByOIDParameter(String pNames[], Object pValues[]) throws UJciException {
+	UPutByOIDParameter(String[] pNames, Object[] pValues) throws UJciException {
 		super((pValues != null) ? pValues.length : 0);
 
 		if (pNames == null || pValues == null

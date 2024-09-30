@@ -28,14 +28,14 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Hashtable;
 
 abstract public class CUBRIDKeyTable {
 	public static final String sessionKeyName = "CUBRIDConnectionKey";
 
-	static private Hashtable<String, CUBRIDConnectionKey> ht;
+	static private final Hashtable<String, CUBRIDConnectionKey> ht;
 
 	static {
 		ht = new Hashtable<String, CUBRIDConnectionKey>();

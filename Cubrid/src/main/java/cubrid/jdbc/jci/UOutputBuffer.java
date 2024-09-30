@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,18 +45,18 @@ import java.util.Calendar;
 
 import javax.transaction.xa.Xid;
 
-import main.java.cubrid.jdbc.driver.CUBRIDBlob;
-import main.java.cubrid.jdbc.driver.CUBRIDClob;
-import main.java.cubrid.jdbc.driver.CUBRIDLobHandle;
-import main.java.cubrid.jdbc.driver.CUBRIDBinaryString;
-import main.java.cubrid.jdbc.util.ByteArrayBuffer;
-import main.java.cubrid.sql.CUBRIDOID;
-import main.java.cubrid.sql.CUBRIDTimetz;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
+import cubrid.jdbc.driver.CUBRIDBlob;
+import cubrid.jdbc.driver.CUBRIDClob;
+import cubrid.jdbc.driver.CUBRIDLobHandle;
+import cubrid.jdbc.driver.CUBRIDBinaryString;
+import cubrid.jdbc.util.ByteArrayBuffer;
+import cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDTimetz;
+import cubrid.sql.CUBRIDTimestamptz;
 import java.util.TimeZone;
 
-class UOutputBuffer {
-	private UConnection u_con;
+public class UOutputBuffer {
+	private final UConnection u_con;
 	private OutputStream output;
 	private ByteArrayBuffer dataBuffer;
 
@@ -166,7 +166,7 @@ class UOutputBuffer {
 		return 18;
 	}
 
-	private Calendar c = Calendar.getInstance();
+	private final Calendar c = Calendar.getInstance();
 
 	private void writeDate(Date date) throws IOException {
 		c.setTime(date);
@@ -337,7 +337,7 @@ class UOutputBuffer {
 	        boolean setDefaultValue) throws UJciException, IOException {
 		String stringData;
 
-		if (setDefaultValue == false && value == null) {
+		if (!setDefaultValue && value == null) {
 			return addNull();
 		}
 
@@ -542,7 +542,7 @@ class UOutputBuffer {
 					if (((Boolean[]) values)[i] != null) {
 						byteValues[i] = new byte[1];
 						byteValues[i][0] = (((Boolean[]) values)[i]
-						        .booleanValue() == true) ? (byte) 1 : (byte) 0;
+                                .booleanValue()) ? (byte) 1 : (byte) 0;
 					} else {
 						byteValues[i] = null;
 					}

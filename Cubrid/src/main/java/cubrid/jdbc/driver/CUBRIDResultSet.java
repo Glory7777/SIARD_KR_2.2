@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.Closeable;
 import java.io.File;
@@ -40,6 +40,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -62,11 +63,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
-import main.java.cubrid.jdbc.jci.UColumnInfo;
-import main.java.cubrid.jdbc.jci.UError;
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.UStatement;
-import main.java.cubrid.sql.CUBRIDOID;
+import cubrid.jdbc.jci.UColumnInfo;
+import cubrid.jdbc.jci.UError;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UStatement;
+import cubrid.sql.CUBRIDOID;
 
 
 /**
@@ -78,7 +79,7 @@ import main.java.cubrid.sql.CUBRIDOID;
 public class CUBRIDResultSet implements ResultSet {
 	public boolean complete_on_close;
 
-	private CUBRIDConnection con;
+	private final CUBRIDConnection con;
 	private CUBRIDStatement stmt;
 	protected UStatement u_stmt;
 	protected int number_of_rows;
@@ -87,17 +88,17 @@ public class CUBRIDResultSet implements ResultSet {
 	protected HashMap<String, Integer> col_name_to_index;
 	protected boolean is_closed;
 	private boolean was_null;
-	private boolean close_u_stmt_on_close;
+	private final boolean close_u_stmt_on_close;
 	protected UError error;
 	private CUBRIDResultSetMetaData meta_data;
 	protected ArrayList<Object> streams;
 
-	private int type;
-	private int concurrency;
+	private final int type;
+	private final int concurrency;
 
-	private boolean is_scrollable;
+	private final boolean is_scrollable;
 	private boolean is_updatable;
-	private boolean is_sensitive;
+	private final boolean is_sensitive;
 	private boolean is_holdable;
 
 	private int fetch_direction;
@@ -131,10 +132,7 @@ public class CUBRIDResultSet implements ResultSet {
 		is_scrollable = t != TYPE_FORWARD_ONLY;
 		is_updatable = true; //concur == CONCUR_UPDATABLE;
 		is_sensitive = t == TYPE_SCROLL_SENSITIVE;
-		is_holdable = false;
-		if (holdable && con.u_con.supportHoldableResult()) {
-			is_holdable = true;
-		}
+        is_holdable = holdable && con.u_con.supportHoldableResult();
 
 		fetch_direction = s.getFetchDirection();
 		u_stmt.setFetchDirection(fetch_direction);
@@ -259,12 +257,8 @@ public class CUBRIDResultSet implements ResultSet {
 			return false;
 		}
 
-		if (u_stmt.isFetchCompleted(current_row)) {
-			return false;
-		}
-		
-		return true;
-	}
+        return !u_stmt.isFetchCompleted(current_row);
+    }
 
 	public void close() throws SQLException {
 		try {
@@ -318,9 +312,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob) {
-			Clob clob = (Clob) obj;
-			int length;
+		if (obj != null && obj instanceof Clob clob) {
+            int length;
 			if (clob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
 			} else {
@@ -451,9 +444,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob) {
-			Blob blob = (Blob) obj;
-			int length;
+		if (obj != null && obj instanceof Blob blob) {
+            int length;
 			if (blob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
 			} else {
@@ -525,9 +517,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob) {
-			Clob clob = (Clob) obj;
-			InputStream stream = clob.getAsciiStream();
+		if (obj != null && obj instanceof Clob clob) {
+            InputStream stream = clob.getAsciiStream();
 			addStream(stream);
 			return stream;
 		}
@@ -562,9 +553,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob) {
-			Blob blob = (Blob) obj;
-			InputStream stream = blob.getBinaryStream();
+		if (obj != null && obj instanceof Blob blob) {
+            InputStream stream = blob.getBinaryStream();
 			addStream(stream);
 			return stream;
 		}
@@ -719,9 +709,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob) {
-			Clob clob = (Clob) obj;
-			Reader stream = clob.getCharacterStream();
+		if (obj != null && obj instanceof Clob clob) {
+            Reader stream = clob.getCharacterStream();
 			addStream(stream);
 			return stream;
 		}
@@ -739,11 +728,8 @@ public class CUBRIDResultSet implements ResultSet {
 
 		byte[] b = str.getBytes();
 		Reader stream = null;
-		try {
-			stream = new CUBRIDReader(new String(b, "ISO-8859-1"));
-		} catch (UnsupportedEncodingException e) {
-		}
-		addStream(stream);
+        stream = new CUBRIDReader(new String(b, StandardCharsets.ISO_8859_1));
+        addStream(stream);
 		return stream;
 	}
 
@@ -1049,37 +1035,37 @@ public class CUBRIDResultSet implements ResultSet {
 
 	public synchronized void updateBoolean(int columnIndex, boolean x)
 	        throws SQLException {
-		updateValue(columnIndex, new Boolean(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateByte(int columnIndex, byte x)
 	        throws SQLException {
-		updateValue(columnIndex, new Byte(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateShort(int columnIndex, short x)
 	        throws SQLException {
-		updateValue(columnIndex, new Short(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateInt(int columnIndex, int x)
 	        throws SQLException {
-		updateValue(columnIndex, new Integer(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateLong(int columnIndex, long x)
 	        throws SQLException {
-		updateValue(columnIndex, new Long(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateFloat(int columnIndex, float x)
 	        throws SQLException {
-		updateValue(columnIndex, new Float(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateDouble(int columnIndex, double x)
 	        throws SQLException {
-		updateValue(columnIndex, new Double(x));
+		updateValue(columnIndex, x);
 	}
 
 	public synchronized void updateBigDecimal(int columnIndex, BigDecimal x)
@@ -1167,9 +1153,7 @@ public class CUBRIDResultSet implements ResultSet {
 		}
 
 		byte[] value2 = new byte[len];
-		for (int i = 0; i < len; i++) {
-			value2[i] = value[i];
-		}
+        System.arraycopy(value, 0, value2, 0, len);
 
 		updateValue(columnIndex, value2);
 	}
@@ -1200,17 +1184,14 @@ public class CUBRIDResultSet implements ResultSet {
 			        null);
 		}
 
-		try {
-			updateValue(columnIndex, new String(value, 0, len)
-			        .getBytes("ISO-8859-1"));
-		} catch (UnsupportedEncodingException e) {
-		}
-	}
+        updateValue(columnIndex, new String(value, 0, len)
+                .getBytes(StandardCharsets.ISO_8859_1));
+    }
 
 	public synchronized void updateObject(int columnIndex, Object x, int scale)
 	        throws SQLException {
 		try {
-			updateObject(columnIndex, new BigDecimal(((Number) x).toString())
+			updateObject(columnIndex, new BigDecimal(x.toString())
 			        .setScale(scale));
 		} catch (SQLException e) {
 			throw e;
@@ -1368,7 +1349,7 @@ public class CUBRIDResultSet implements ResultSet {
 	
 						boolean first = true;
 						for (int i = 0; i < column_info.length; i++) {
-							if (updated[i] == false)
+							if (!updated[i])
 								continue;
 							if (!first)
 								sql += ",";
@@ -1380,7 +1361,7 @@ public class CUBRIDResultSet implements ResultSet {
 	
 						first = true;
 						for (int i = 0; i < column_info.length; i++) {
-							if (updated[i] == false)
+							if (!updated[i])
 								continue;
 							if (!first)
 								sql += ",";
@@ -1859,7 +1840,7 @@ public class CUBRIDResultSet implements ResultSet {
 		if (columnIndex > 0) {
 			if (updates != null) {
 				updates[columnIndex - 1] = value;
-				if (updated[columnIndex - 1] == false) {
+				if (!updated[columnIndex - 1]) {
 					updated[columnIndex - 1] = true;
 					number_of_updates++;
 				}
@@ -1921,20 +1902,20 @@ public class CUBRIDResultSet implements ResultSet {
 			java.text.SimpleDateFormat format = new java.text.SimpleDateFormat(
 			        "MM/dd/yyyy");
 			strvalue = "'" + format.format((java.util.Date) value) + "'";
-		} else if (value instanceof main.java.cubrid.sql.CUBRIDTimestamptz) {
-			if (main.java.cubrid.sql.CUBRIDTimestamp.isTimestampType ((main.java.cubrid.sql.CUBRIDTimestamp) value)) {
+		} else if (value instanceof cubrid.sql.CUBRIDTimestamptz) {
+			if (cubrid.sql.CUBRIDTimestamp.isTimestampType ((cubrid.sql.CUBRIDTimestamp) value)) {
 				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat(
 			        "MM/dd/yyyy HH:mm:ss");
 				format.setTimeZone(TimeZone.getTimeZone("UTC")); 
-				strvalue = "'" + format.format(value) + " " + ((main.java.cubrid.sql.CUBRIDTimestamptz) value).getTimezone() + "'";
+				strvalue = "'" + format.format(value) + " " + ((cubrid.sql.CUBRIDTimestamptz) value).getTimezone() + "'";
 			} else {
 				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat(
 			        "MM/dd/yyyy HH:mm:ss.SSS");
 				format.setTimeZone(TimeZone.getTimeZone("UTC")); 
-				strvalue = "'" + format.format(value) + " " + ((main.java.cubrid.sql.CUBRIDTimestamptz) value).getTimezone() + "'";
+				strvalue = "'" + format.format(value) + " " + ((cubrid.sql.CUBRIDTimestamptz) value).getTimezone() + "'";
 			}
-		} else if (value instanceof main.java.cubrid.sql.CUBRIDTimestamp) {
-			if (main.java.cubrid.sql.CUBRIDTimestamp.isTimestampType ((main.java.cubrid.sql.CUBRIDTimestamp) value)) {
+		} else if (value instanceof cubrid.sql.CUBRIDTimestamp) {
+			if (cubrid.sql.CUBRIDTimestamp.isTimestampType ((cubrid.sql.CUBRIDTimestamp) value)) {
 				java.text.SimpleDateFormat format = new java.text.SimpleDateFormat(
 			        "MM/dd/yyyy HH:mm:ss");
 				strvalue = "'" + format.format(value) + "'";
@@ -1949,9 +1930,8 @@ public class CUBRIDResultSet implements ResultSet {
 			strvalue = "'" + format.format((java.util.Date) value) + "'";
 		} else if (value instanceof CUBRIDOID) {
 			strvalue = "'" + ((CUBRIDOID) value).getOidString() + "'";
-		} else if (value instanceof byte[]) {
-			byte[] v = (byte[]) value;
-			strvalue = "";
+		} else if (value instanceof byte[] v) {
+            strvalue = "";
 			for (int i = v.length - 1; i >= 0; i--) {
 				int t = v[i] + 256;
 				for (int j = 0; j < 2; j++) {

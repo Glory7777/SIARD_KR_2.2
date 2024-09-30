@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class BrokerHealthCheck extends Thread {
 

@@ -28,15 +28,15 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UBatchResult {
 	private boolean errorFlag;
-	private int resultNumber;
-	private int result[];
-	private int statementType[];
-	private int errorCode[];
-	private String errorMessage[];
+	private final int resultNumber;
+	private final int[] result;
+	private final int[] statementType;
+	private final int[] errorCode;
+	private final String[] errorMessage;
 
 	UBatchResult(int number) {
 		resultNumber = number;

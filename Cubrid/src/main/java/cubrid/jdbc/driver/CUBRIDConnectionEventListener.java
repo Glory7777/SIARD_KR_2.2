@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,8 +39,8 @@ import javax.sql.ConnectionEventListener;
 import javax.sql.PooledConnection;
 
 class CUBRIDConnectionEventListener implements ConnectionEventListener {
-	private Vector<PooledConnection> availableConnections;
-	private CUBRIDConnectionPoolDataSource cpds;
+	private final Vector<PooledConnection> availableConnections;
+	private final CUBRIDConnectionPoolDataSource cpds;
 
 	CUBRIDConnectionEventListener(CUBRIDConnectionPoolDataSource ds) {
 		availableConnections = new Vector<PooledConnection>();
@@ -83,7 +83,7 @@ class CUBRIDConnectionEventListener implements ConnectionEventListener {
 			availableConnections.add(pc);
 		}
 
-		pc = (PooledConnection) availableConnections.remove(0);
+		pc = availableConnections.remove(0);
 
 		return (pc.getConnection());
 	}

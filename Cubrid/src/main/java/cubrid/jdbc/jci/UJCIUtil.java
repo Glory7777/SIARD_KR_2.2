@@ -28,37 +28,28 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import main.java.cubrid.jdbc.driver.*;
 
 abstract public class UJCIUtil {
 
 	private static boolean bServerSide;
-	private static boolean bConsoleDebug;
-	private static boolean bSendAppInfo;
+	private static final boolean bConsoleDebug;
+	private static final boolean bSendAppInfo;
 	private static boolean bJDBC4;
 	private static Boolean bMysqlMode = null;
 	private static Boolean bOracleMode = null;
 
 	static {
 		String value = System.getProperty("ConsoleDebug");
-		if (value != null && value.equals("true")) {
-			bConsoleDebug = true;
-		} else {
-			bConsoleDebug = false;
-		}
+        bConsoleDebug = value != null && value.equals("true");
 
 		value = System.getProperty("SendAppInfo");
-		if (value != null && value.equals("true")) {
-			bSendAppInfo = true;
-		} else {
-			bSendAppInfo = false;
-		}
+        bSendAppInfo = value != null && value.equals("true");
 
 		try {
 			Class.forName("com.main.java.cubrid.jsp.Server");
@@ -116,28 +107,20 @@ abstract public class UJCIUtil {
 
 	public static boolean isMysqlMode(Class<?> c) {
 		if (bMysqlMode == null) {
-			String split[] = c.getName().split("\\.");
-			if (split.length > 2 && split[2].equals("mysql")) {
-				bMysqlMode = new Boolean(true);
-			} else {
-				bMysqlMode = new Boolean(false);
-			}
+			String[] split = c.getName().split("\\.");
+            bMysqlMode = split.length > 2 && split[2].equals("mysql");
 		}
 
-		return bMysqlMode.booleanValue();
+		return bMysqlMode;
 	}
 
 	public static boolean isOracleMode(Class<?> c) {
 		if (bOracleMode == null) {
-			String split[] = c.getName().split("\\.");
-			if (split.length > 2 && split[2].equals("oracle")) {
-				bOracleMode = new Boolean(true);
-			} else {
-				bOracleMode = new Boolean(false);
-			}
+			String[] split = c.getName().split("\\.");
+            bOracleMode = split.length > 2 && split[2].equals("oracle");
 		}
 
-		return bOracleMode.booleanValue();
+		return bOracleMode;
 	}
 
 	public static boolean isServerSide() {
@@ -181,9 +164,9 @@ abstract public class UJCIUtil {
 	    public String	timezone;
 	    public boolean	isDatetime;
 	    public boolean	isPM;
-	};	
-	 
-	public static class TimePattern{
+	}
+
+    public static class TimePattern{
 		/* YYYY-MM-DD HH:MI:SS[.msec] [AM|PM] */
 		final static String format_1 = "\\d\\d\\d\\d\\-\\d\\d\\-\\d\\d\\s++\\d\\d\\:\\d\\d\\:\\d\\d(\\.\\d*)?";
 		/* HH:MI:SS[.msec] [AM|PM] YYYY-MM-DD */
@@ -195,12 +178,12 @@ abstract public class UJCIUtil {
 		/* HH:MI:SS [AM|PM]  - time format */
 		final static String format_5 = "\\d\\d\\:\\d\\d\\:\\d\\d";
 
-		public final static Pattern pattern_time = Pattern.compile((format_1+"|"+format_2+"|"+format_3+"|"+format_4+"|"+format_5).toString());
+		public final static Pattern pattern_time = Pattern.compile((format_1+"|"+format_2+"|"+format_3+"|"+format_4+"|"+format_5));
 		public final static Pattern pattern_ampm = Pattern.compile("[aApP][mM][ \0]");
 		public final static Pattern pattern_millis = Pattern.compile("[.]");
 	} 
 	
-	public static TimeInfo parseStringTime(String str_time) throws CUBRIDException {
+	public static TimeInfo parseStringTime(String str_time) throws cubrid.jdbc.driver.CUBRIDException {
 			TimeInfo timeinfo = new TimeInfo();
 			String str_timestamp = "", str_timezone = "";
 			int timestamp_count = 0;
@@ -219,15 +202,15 @@ abstract public class UJCIUtil {
 			matcher = TimePattern.pattern_time.matcher(str_time);
 			while (matcher.find()) {
 				str_timestamp = matcher.group().trim();
-				str_timezone = str_time.substring(str_timestamp.length(), str_time.length()).trim();
+				str_timezone = str_time.substring(str_timestamp.length()).trim();
 				timestamp_count++;
 				if (timestamp_count > 1) {
-					throw new CUBRIDException(CUBRIDJDBCErrorCode.invalid_value);
+					throw new cubrid.jdbc.driver.CUBRIDException(cubrid.jdbc.driver.CUBRIDJDBCErrorCode.invalid_value);
 				}
 			}
 
 			if (timestamp_count == 0) {
-				throw new CUBRIDException(CUBRIDJDBCErrorCode.invalid_value);
+				throw new cubrid.jdbc.driver.CUBRIDException(cubrid.jdbc.driver.CUBRIDJDBCErrorCode.invalid_value);
 			}
 
 			matcher = TimePattern.pattern_millis.matcher(str_timestamp);
@@ -240,9 +223,9 @@ abstract public class UJCIUtil {
 			timeinfo.isDatetime = isDateTime;
 			timeinfo.isPM = isPM;
 			return timeinfo;
-	};
+	}
 
-	public static String getJavaCharsetName(byte cubridCharset){
+    public static String getJavaCharsetName(byte cubridCharset){
 		switch (cubridCharset){
 		case 0: return "ASCII";
 		case 2: return "BINARY";

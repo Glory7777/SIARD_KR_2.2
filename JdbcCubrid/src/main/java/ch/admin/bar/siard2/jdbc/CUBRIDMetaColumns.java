@@ -22,7 +22,7 @@ import ch.enterag.sqlparser.datatype.enums.*;
  */
 public class CUBRIDMetaColumns extends CUBRIDResultSet 
 {
-	private static Map<CubridType,PreType> mapNAME_CUBRID_TO_ISO = new HashMap<CubridType,PreType>();
+	private static final Map<CubridType,PreType> mapNAME_CUBRID_TO_ISO = new HashMap<CubridType,PreType>();
 
 	static 
 	{

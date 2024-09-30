@@ -36,7 +36,7 @@ public enum CubridPreType {
 	  public String getKeyword() { return _sKeyword; }
 	  private int _iSqlType = Types.NULL;
 	  public int getSqlType() { return _iSqlType; }
-	  private CubridPreType(int iSqlType, String sKeyword)
+	  CubridPreType(int iSqlType, String sKeyword)
 	  {
 	    _iSqlType = iSqlType;
 	    _sKeyword = sKeyword;

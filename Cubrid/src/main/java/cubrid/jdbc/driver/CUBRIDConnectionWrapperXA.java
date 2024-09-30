@@ -28,15 +28,15 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UConnection;
 
 public class CUBRIDConnectionWrapperXA extends CUBRIDConnection {
-	private CUBRIDXAConnection xacon;
+	private final CUBRIDXAConnection xacon;
 	private boolean xa_started;
 
 	protected CUBRIDConnectionWrapperXA(UConnection u, String r, String s,
@@ -44,7 +44,7 @@ public class CUBRIDConnectionWrapperXA extends CUBRIDConnection {
 		super(u, r, s);
 		xacon = c;
 		xa_started = xa_start;
-		if (xa_start == true)
+		if (xa_start)
 			auto_commit = false;
 	}
 
@@ -63,7 +63,7 @@ public class CUBRIDConnectionWrapperXA extends CUBRIDConnection {
 	public synchronized void setAutoCommit(boolean autoCommit)
 			throws SQLException {
 		if (xa_started) {
-			if (autoCommit == true) {
+			if (autoCommit) {
 				throw new CUBRIDException(
 						CUBRIDJDBCErrorCode.xa_illegal_operation);
 			}
@@ -121,13 +121,13 @@ public class CUBRIDConnectionWrapperXA extends CUBRIDConnection {
 	}
 
 	void autoCommit() throws SQLException {
-		if (xa_started == false) {
+		if (!xa_started) {
 			super.autoCommit();
 		}
 	}
 
 	void xa_start(UConnection u) {
-		if (xa_started == true)
+		if (xa_started)
 			return;
 
 		auto_commit = false;
@@ -139,7 +139,7 @@ public class CUBRIDConnectionWrapperXA extends CUBRIDConnection {
 	}
 
 	void xa_end(UConnection u) {
-		if (xa_started == false)
+		if (!xa_started)
 			return;
 
 		xa_started = false;

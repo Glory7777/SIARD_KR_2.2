@@ -28,12 +28,12 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Hashtable;
 
 abstract public class CUBRIDJdbcInfoTable {
-	static private Hashtable<String, String> ht;
+	static private final Hashtable<String, String> ht;
 
 	static {
 		ht = new Hashtable<String, String>();

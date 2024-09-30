@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -49,17 +49,17 @@ import java.util.Vector;
 
 import javax.transaction.xa.Xid;
 
-import main.java.cubrid.jdbc.driver.CUBRIDConnection;
-import main.java.cubrid.jdbc.driver.CUBRIDDriver;
-import main.java.cubrid.jdbc.driver.CUBRIDException;
-import main.java.cubrid.jdbc.driver.CUBRIDJDBCErrorCode;
-import main.java.cubrid.jdbc.driver.CUBRIDJdbcInfoTable;
-import main.java.cubrid.jdbc.driver.CUBRIDXid;
-import main.java.cubrid.jdbc.driver.ConnectionProperties;
-import main.java.cubrid.jdbc.log.BasicLogger;
-import main.java.cubrid.jdbc.log.Log;
-import main.java.cubrid.jdbc.net.BrokerHandler;
-import main.java.cubrid.sql.CUBRIDOID;
+import cubrid.jdbc.log.BasicLogger;
+import cubrid.jdbc.driver.CUBRIDConnection;
+import cubrid.jdbc.driver.CUBRIDDriver;
+import cubrid.jdbc.driver.CUBRIDException;
+import cubrid.jdbc.driver.CUBRIDJDBCErrorCode;
+import cubrid.jdbc.driver.CUBRIDJdbcInfoTable;
+import cubrid.jdbc.driver.CUBRIDXid;
+import cubrid.jdbc.driver.ConnectionProperties;
+import cubrid.jdbc.log.Log;
+import cubrid.jdbc.net.BrokerHandler;
+import cubrid.sql.CUBRIDOID;
 
 public class UConnection {
 	public final static byte DBMS_CUBRID = 1;
@@ -168,6 +168,7 @@ public class UConnection {
 	public final static int MAX_QUERY_TIMEOUT = 2000000;
 	public final static int MAX_CONNECT_TIMEOUT = 2000000;
 
+
 	UOutputBuffer outBuffer;
 	CUBRIDConnection cubridcon;
 
@@ -211,7 +212,7 @@ public class UConnection {
 
 	private ConnectionProperties connectionProperties = new ConnectionProperties();
 	private long lastFailureTime = 0;
-	byte sessionId[] = createNullSession();
+	byte[] sessionId = createNullSession();
 	int oldSessionId = 0;
 
 	private Log log;
@@ -358,7 +359,7 @@ public class UConnection {
 		String hostPort = altHosts.get(0);
 		int pos = hostPort.indexOf(':');
 		if (pos < 0) {
-			CASIp = hostPort.substring(0);
+			CASIp = hostPort;
 		} else {
 			CASIp = hostPort.substring(0, pos);
 		}
@@ -420,7 +421,7 @@ public class UConnection {
 	synchronized public void addElementToSet(CUBRIDOID oid,
 			String attributeName, Object value) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -430,19 +431,17 @@ public class UConnection {
 		} catch (UJciException e) {
 		    	logException(e);
 			e.toUError(errorHandler);
-			return;
-		} catch (IOException e) {
+        } catch (IOException e) {
 		    	logException(e);
 			errorHandler.setErrorCode(UErrorCode.ER_COMMUNICATION);
-			return;
-		}
+        }
 	}
 
-	synchronized public UBatchResult batchExecute(String batchSqlStmt[], int queryTimeout) {
+	synchronized public UBatchResult batchExecute(String[] batchSqlStmt, int queryTimeout) {
 		errorHandler = new UError(this);
 		setShardId(UShardInfo.SHARD_ID_INVALID);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -458,7 +457,7 @@ public class UConnection {
 			outBuffer.newRequest(output, UFunctionCode.EXECUTE_BATCH_STATEMENT);
 			outBuffer.addByte(getAutoCommit() ? (byte) 1 : (byte) 0);
 			if (protoVersionIsAbove(UConnection.PROTOCOL_V4)) {
-			    long remainingTime = getRemainingTime(queryTimeout * 1000);
+			    long remainingTime = getRemainingTime(queryTimeout * 1000L);
 			    if (queryTimeout > 0 && remainingTime <= 0) {
 				throw createJciException(UErrorCode.ER_TIMEOUT);
 			    }
@@ -512,7 +511,7 @@ public class UConnection {
 
 	synchronized public void close() {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -538,7 +537,7 @@ public class UConnection {
 	synchronized public void dropElementInSequence(CUBRIDOID oid,
 			String attributeName, int index) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -570,7 +569,7 @@ public class UConnection {
 	synchronized public void dropElementInSet(CUBRIDOID oid,
 			String attributeName, Object value) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -580,23 +579,21 @@ public class UConnection {
 		} catch (UJciException e) {
 		    	logException(e);
 			e.toUError(errorHandler);
-			return;
-		} catch (IOException e) {
+        } catch (IOException e) {
 		    	logException(e);
 			errorHandler.setErrorCode(UErrorCode.ER_COMMUNICATION);
-			return;
-		}
+        }
 	}
 
 	synchronized public void endTransaction(boolean type) {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
 
-		if (needReconnection == true)
+		if (needReconnection)
 			return;
 
 		try {
@@ -610,7 +607,7 @@ public class UConnection {
 				if (getCASInfoStatus() == CAS_INFO_STATUS_ACTIVE) {
 					if (UJCIUtil.isConsoleDebug()) {
 						if (!lastAutoCommit || isAutoCommitBySelf
-								|| type == false) {
+								|| !type) {
 							// this is ok;
 						} else {
 							// we need check
@@ -618,7 +615,7 @@ public class UConnection {
 						}
 					}
 					outBuffer.newRequest(output, UFunctionCode.END_TRANSACTION);
-					outBuffer.addByte((type == true) ? END_TRAN_COMMIT
+					outBuffer.addByte((type) ? END_TRAN_COMMIT
 							: END_TRAN_ROLLBACK);
 
 					send_recv_msg();
@@ -657,9 +654,9 @@ public class UConnection {
 		}
 
 		if (errorHandler.getErrorCode() != UErrorCode.ER_NO_ERROR
-				|| keepConnection == false) // jci 3.0
+				|| !keepConnection) // jci 3.0
 		{
-			if (type == false) {
+			if (!type) {
 				errorHandler.clear();
 			}
 
@@ -676,11 +673,11 @@ public class UConnection {
 	}
 
 	synchronized public UStatement getByOID(CUBRIDOID oid,
-			String[] attributeName) {
+																	  String[] attributeName) {
 		UStatement returnValue = null;
 
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -721,7 +718,7 @@ public class UConnection {
 
 	synchronized public String getDatabaseProductVersion() {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -756,7 +753,7 @@ public class UConnection {
 			return lastIsolationLevel;
 		}
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return CUBRIDIsolationLevel.TRAN_UNKNOWN_ISOLATION;
 		}
@@ -795,7 +792,7 @@ public class UConnection {
 			return null;
 
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -832,11 +829,11 @@ public class UConnection {
 	}
 
 	synchronized public UStatement getSchemaInfo(int type, String arg1,
-			String arg2, byte flag, int shard_id) {
+																		   String arg2, byte flag, int shard_id) {
 		UStatement returnValue = null;
 
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -895,7 +892,7 @@ public class UConnection {
 	synchronized public int getSizeOfCollection(CUBRIDOID oid,
 			String attributeName) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return 0;
 		}
@@ -930,7 +927,7 @@ public class UConnection {
 	synchronized public void insertElementIntoSequence(CUBRIDOID oid,
 			String attributeName, int index, Object value) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -940,13 +937,11 @@ public class UConnection {
 		} catch (UJciException e) {
 		    	logException(e);
 			e.toUError(errorHandler);
-			return;
-		} catch (IOException e) {
+        } catch (IOException e) {
 		    	logException(e);
 			if (errorHandler.getErrorCode() != UErrorCode.ER_CONNECTION)
 				errorHandler.setErrorCode(UErrorCode.ER_COMMUNICATION);
-			return;
-		}
+        }
 	}
 
 	public boolean isClosed() {
@@ -989,8 +984,8 @@ public class UConnection {
 	outBuffer.addByte(flag);
 	outBuffer.addByte(getAutoCommit() ? (byte) 1 : (byte) 0);
 
-	while (deferred_close_handle.isEmpty() != true) {
-	    Integer close_handle = (Integer) deferred_close_handle.remove(0);
+	while (!deferred_close_handle.isEmpty()) {
+	    Integer close_handle = deferred_close_handle.remove(0);
 	    outBuffer.addInt(close_handle.intValue());
 	}
 
@@ -1017,7 +1012,7 @@ public class UConnection {
     }
 
     synchronized public UStatement prepare(String sql, byte flag,
-	    boolean recompile) {
+																	 boolean recompile) {
 	errorHandler = new UError(this);
 	if (isClosed) {
 	    errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
@@ -1089,10 +1084,10 @@ public class UConnection {
 	return null;
     }
 
-	synchronized public void putByOID(CUBRIDOID oid, String attributeName[],
-			Object values[]) {
+	synchronized public void putByOID(CUBRIDOID oid, String[] attributeName,
+                                      Object[] values) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1132,7 +1127,7 @@ public class UConnection {
 	synchronized public void putElementInSequence(CUBRIDOID oid,
 			String attributeName, int index, Object value) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1142,13 +1137,11 @@ public class UConnection {
 		} catch (UJciException e) {
 		    	logException(e);
 			e.toUError(errorHandler);
-			return;
-		} catch (IOException e) {
+        } catch (IOException e) {
 		    	logException(e);
 			if (errorHandler.getErrorCode() != UErrorCode.ER_CONNECTION)
 				errorHandler.setErrorCode(UErrorCode.ER_COMMUNICATION);
-			return;
-		}
+        }
 	}
 
 	synchronized public void setIsolationLevel(int level) {
@@ -1159,7 +1152,7 @@ public class UConnection {
 			return;
 		}
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1198,7 +1191,7 @@ public class UConnection {
 			return;
 		}
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1231,7 +1224,7 @@ public class UConnection {
 	synchronized public int setCASChangeMode(int mode) {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return errorHandler.getJdbcErrorCode();
 		}
@@ -1279,7 +1272,7 @@ public class UConnection {
 
 	public byte getCASInfoStatus() {
 		if (casinfo == null) {
-			return (byte) CAS_INFO_STATUS_INACTIVE;
+			return CAS_INFO_STATUS_INACTIVE;
 		}
 		return casinfo[CAS_INFO_STATUS];
 	}
@@ -1305,40 +1298,28 @@ public class UConnection {
 
 	public boolean isConnectedToCubrid() {
 	    byte dbms_type = getDbmsType();
-		if (dbms_type == DBMS_CUBRID 
-			|| dbms_type == DBMS_PROXY_CUBRID) {
-			return true;
-		}
-		return false;
-	}
+        return dbms_type == DBMS_CUBRID
+                || dbms_type == DBMS_PROXY_CUBRID;
+    }
 
 	public boolean isConnectedToOracle() {
 	    byte dbms_type = getDbmsType();
-		if (dbms_type == DBMS_ORACLE 
-			|| dbms_type == DBMS_PROXY_ORACLE) {
-			return true;
-		}
-		return false;
-	}
+        return dbms_type == DBMS_ORACLE
+                || dbms_type == DBMS_PROXY_ORACLE;
+    }
 
 	public boolean isConnectedToProxy() {
 	    byte dbms_type = getDbmsType();
-		if (dbms_type == DBMS_PROXY_CUBRID 
-			|| dbms_type == DBMS_PROXY_MYSQL 
-			|| dbms_type == DBMS_PROXY_ORACLE) {
-			return true;
-		}
-		return false;
-	}
+        return dbms_type == DBMS_PROXY_CUBRID
+                || dbms_type == DBMS_PROXY_MYSQL
+                || dbms_type == DBMS_PROXY_ORACLE;
+    }
 
 	public boolean brokerInfoStatementPooling() {
 		if (broker_info == null)
 			return false;
 
-		if (broker_info[BROKER_INFO_STATEMENT_POOLING] == (byte) 1)
-			return true;
-		else
-			return false;
+        return broker_info[BROKER_INFO_STATEMENT_POOLING] == (byte) 1;
 	}
 
 	public boolean brokerInfoRenewedErrorCode() {
@@ -1368,18 +1349,14 @@ public class UConnection {
 	}
 
 	public boolean supportHoldableResult() {
-	    if (brokerInfoSupportHoldableResult()
-				|| protoVersionIsSame(UConnection.PROTOCOL_V2)) {
-		return true;
-	    }
-
-	    return false;
-	}
+        return brokerInfoSupportHoldableResult()
+                || protoVersionIsSame(UConnection.PROTOCOL_V2);
+    }
 
 	synchronized public void xa_endTransaction(Xid xid, boolean type) {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1392,7 +1369,7 @@ public class UConnection {
 
 			outBuffer.newRequest(output, UFunctionCode.XA_END_TRAN);
 			outBuffer.addXid(xid);
-			outBuffer.addByte((type == true) ? END_TRAN_COMMIT
+			outBuffer.addByte((type) ? END_TRAN_COMMIT
 					: END_TRAN_ROLLBACK);
 
 			send_recv_msg();
@@ -1407,7 +1384,7 @@ public class UConnection {
 	synchronized public void xa_prepare(Xid xid) {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1430,7 +1407,7 @@ public class UConnection {
 	synchronized public Xid[] xa_recover() {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -1480,9 +1457,9 @@ public class UConnection {
 	}
 
 	synchronized public boolean check_cas() {
-		if (isClosed == true)
+		if (isClosed)
 			return true;
-		if (client == null || needReconnection == true)
+		if (client == null || needReconnection)
 			return true;
 
 		if (skip_checkcas) {
@@ -1528,7 +1505,7 @@ public class UConnection {
 
 	synchronized public Object oidCmd(CUBRIDOID oid, byte cmd) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -1568,7 +1545,7 @@ public class UConnection {
 
 	synchronized public byte[] lobNew(int lob_type) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -1611,7 +1588,7 @@ public class UConnection {
 	synchronized public int lobWrite(byte[] packedLobHandle, long offset,
 			byte[] buf, int start, int len) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return -1;
 		}
@@ -1651,7 +1628,7 @@ public class UConnection {
 	synchronized public int lobRead(byte[] packedLobHandle, long offset,
 			byte[] buf, int start, int len) {
 		errorHandler = new UError(this);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return -1;
 		}
@@ -1779,7 +1756,7 @@ public class UConnection {
 
 	UInputBuffer send_recv_msg(boolean recv_result) throws UJciException,
 			IOException {
-		byte prev_casinfo[] = casinfo;
+		byte[] prev_casinfo = casinfo;
 		outBuffer.sendData();
 		/* set cas info to UConnection member variable and return InputBuffer */
 		UInputBuffer inputBuffer = new UInputBuffer(input, this);
@@ -1879,7 +1856,7 @@ public class UConnection {
 			    || code == -1018) {
 			code -= 9000;
 		    }
-		    byte msg[] = new byte[dataLength - 8];
+		    byte[] msg = new byte[dataLength - 8];
 		    is.readFully(msg);
 		    throw new UJciException(UErrorCode.ER_DBMS, response, code,
 			    new String(msg, 0, Math.max(msg.length - 1, 0)));
@@ -1897,9 +1874,9 @@ public class UConnection {
 			brokerVersion = makeProtoVersion(version & CAS_PROTO_VER_MASK);
 		} else {
 			brokerVersion = makeBrokerVersion(
-				(int) broker_info[BROKER_INFO_MAJOR_VERSION],
-				(int) broker_info[BROKER_INFO_MINOR_VERSION],
-				(int) broker_info[BROKER_INFO_PATCH_VERSION]);
+                    broker_info[BROKER_INFO_MAJOR_VERSION],
+                    broker_info[BROKER_INFO_MINOR_VERSION],
+                    broker_info[BROKER_INFO_PATCH_VERSION]);
 		}
 
 		if (protoVersionIsAbove(PROTOCOL_V4)) {
@@ -1931,7 +1908,7 @@ public class UConnection {
 	    return 0;
 	}
 
-	return timestamp + (timeout * 1000);
+	return timestamp + (timeout * 1000L);
     }
 
     private void reconnect() throws IOException, UJciException {
@@ -1989,8 +1966,8 @@ public class UConnection {
 			return 0;
 		}
 
-		version = ((int) major << 24) | ((int) minor << 16)
-				| ((int) patch << 8);
+		version = (major << 24) | (minor << 16)
+				| (patch << 8);
 		return version;
 	}
 
@@ -2003,26 +1980,17 @@ public class UConnection {
 	}
 
 	public boolean protoVersionIsSame(int ver) {
-		if (brokerInfoVersion() == makeProtoVersion(ver)) {
-			return true;
-		}
-		return false;
-	}
+        return brokerInfoVersion() == makeProtoVersion(ver);
+    }
 
 	public boolean protoVersionIsUnder(int ver) {
-		if (brokerInfoVersion() < makeProtoVersion(ver)) {
-			return true;
-		}
-		return false;
-	}
+        return brokerInfoVersion() < makeProtoVersion(ver);
+    }
 
 	public boolean protoVersionIsAbove(int ver) {
-		if (isServerSideJdbc()
-				|| (brokerInfoVersion() >= makeProtoVersion(ver))) {
-			return true;
-		}
-		return false;
-	}
+        return isServerSideJdbc()
+                || (brokerInfoVersion() >= makeProtoVersion(ver));
+    }
 
 	private void setConnectInfo(String info) throws UJciException {
 		StringTokenizer st = new StringTokenizer(info, ":");
@@ -2088,7 +2056,7 @@ public class UConnection {
 		} else if (protoVersionIsAbove(PROTOCOL_V3)) {
 			System.arraycopy(sessionId, 0, dbInfo, 608, 20);
 		} else {
-		    	UJCIUtil.copy_bytes(dbInfo, 608, 20, new Integer(oldSessionId).toString());
+		    	UJCIUtil.copy_bytes(dbInfo, 608, 20, Integer.valueOf(oldSessionId).toString());
 		}
 
 		if (outBuffer == null) {
@@ -2105,11 +2073,11 @@ public class UConnection {
 
 		if (!isServerSideJdbc) {
 			if (getCASInfoStatus() == CAS_INFO_STATUS_INACTIVE
-					&& check_cas() == false) {
+					&& !check_cas()) {
 				clientSocketClose();
 			}
 
-			if (needReconnection == true) {
+			if (needReconnection) {
 				reconnect();
 				if (UJCIUtil.isSendAppInfo()) {
 					sendAppInfo();
@@ -2164,8 +2132,8 @@ public class UConnection {
 		if (pooled_ustmts == null)
 			return;
 
-		while (pooled_ustmts.isEmpty() != true) {
-			UStatement tmp_ustmt = (UStatement) pooled_ustmts.remove(0);
+		while (!pooled_ustmts.isEmpty()) {
+			UStatement tmp_ustmt = pooled_ustmts.remove(0);
 			if (tmp_ustmt != null)
 				tmp_ustmt.close(false);
 		}
@@ -2236,9 +2204,9 @@ public class UConnection {
 		}
     }
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public void logSlowQuery(long begin, long end, String sql, UBindParameter p) {
-	if (connectionProperties == null || connectionProperties.getLogSlowQueries() != true) {
+	if (connectionProperties == null || !connectionProperties.getLogSlowQueries()) {
 	    return;
 	}
 
@@ -2314,7 +2282,7 @@ public class UConnection {
 
 	public int getShardCount()
 	{
-		if (isConnectedToProxy() == false)
+		if (!isConnectedToProxy())
 		{
 			return 0;
 		}
@@ -2335,12 +2303,12 @@ public class UConnection {
    synchronized public int shardInfo() {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return 0;
 		}
 
-        if (isConnectedToProxy() == false)
+        if (!isConnectedToProxy())
 		{
 			errorHandler.setErrorCode(UErrorCode.ER_NO_SHARD_AVAILABLE);
 			return 0;
@@ -2390,12 +2358,12 @@ public class UConnection {
    synchronized public UShardInfo getShardInfo(int shard_id) {
 		errorHandler = new UError(this);
 
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
 
-        if (isConnectedToProxy() == false)
+        if (!isConnectedToProxy())
 		{
 			errorHandler.setErrorCode(UErrorCode.ER_NO_SHARD_AVAILABLE);
 			return null;

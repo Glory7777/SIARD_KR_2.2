@@ -34,12 +34,12 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.IOException;
 
-import main.java.cubrid.jdbc.driver.CUBRIDBlob;
-import main.java.cubrid.jdbc.driver.CUBRIDClob;
+import cubrid.jdbc.driver.CUBRIDBlob;
+import cubrid.jdbc.driver.CUBRIDClob;
 
 public class UBindParameter extends UParameter {
 	private final static byte PARAM_MODE_UNKNOWN = 0;
@@ -48,10 +48,10 @@ public class UBindParameter extends UParameter {
 	@SuppressWarnings("unused")
 	private final static byte PARAM_MODE_INOUT = 3;
 
-	byte paramMode[];
+	byte[] paramMode;
 
-	private boolean isBinded[];
-	private byte dbmsType;
+	private boolean[] isBinded;
+	private final byte dbmsType;
 
 	UBindParameter(int parameterNumber, byte dbmsType) {
 		super(parameterNumber);
@@ -71,7 +71,7 @@ public class UBindParameter extends UParameter {
 
 	boolean checkAllBinded() {
 		for (int i = 0; i < number; i++) {
-			if (isBinded[i] == false && paramMode[i] == PARAM_MODE_UNKNOWN)
+			if (!isBinded[i] && paramMode[i] == PARAM_MODE_UNKNOWN)
 				return false;
 		}
 		return true;
@@ -126,12 +126,12 @@ public class UBindParameter extends UParameter {
 			throws UJciException {
 		try {
 			for (int i = 0; i < number; i++) {
-				if (isSetDefaultValue(i) == false && values[i] == null) {
+				if (!isSetDefaultValue(i) && values[i] == null) {
 					outBuffer.addByte(UUType.U_TYPE_NULL);
 					outBuffer.addNull();
 				} else {
-					outBuffer.addByte((byte) types[i]);
-					outBuffer.writeParameter(((byte) types[i]), values[i],
+					outBuffer.addByte(types[i]);
+					outBuffer.writeParameter(types[i], values[i],
 							isSetDefaultValue(i));
 				}
 			}

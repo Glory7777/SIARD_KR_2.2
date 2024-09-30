@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,8 +39,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 abstract class CUBRIDConnectionPoolManager {
-	private static Hashtable<String, CUBRIDConnectionEventListener> connectionPooltable;
-	private static Hashtable<String, CUBRIDConnectionPoolDataSource> poolDataSourceTable;
+	private static final Hashtable<String, CUBRIDConnectionEventListener> connectionPooltable;
+	private static final Hashtable<String, CUBRIDConnectionPoolDataSource> poolDataSourceTable;
 
 	static {
 		connectionPooltable = new Hashtable<String, CUBRIDConnectionEventListener>();

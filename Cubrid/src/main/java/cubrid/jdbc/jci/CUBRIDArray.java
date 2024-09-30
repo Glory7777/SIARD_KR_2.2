@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -43,12 +43,12 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import main.java.cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDOID;
 
 class CUBRIDArray {
 	private byte baseType;
-	private int length;
-	private Object internalArray[];
+	private final int length;
+	private Object[] internalArray;
 
 	CUBRIDArray(byte type, int arrayLength) throws UJciException {
 		baseType = type;
@@ -59,36 +59,36 @@ class CUBRIDArray {
 		switch (type) {
 		case UUType.U_TYPE_BIT:
 		case UUType.U_TYPE_VARBIT:
-			internalArray = (Object[]) (new byte[length][]);
+			internalArray = new byte[length][];
 			break;
 		case UUType.U_TYPE_SHORT:
 		case UUType.U_TYPE_USHORT:
-			internalArray = (Object[]) (new Short[length]);
+			internalArray = new Short[length];
 			break;
 		case UUType.U_TYPE_INT:
 		case UUType.U_TYPE_UINT:
-			internalArray = (Object[]) (new Integer[length]);
+			internalArray = new Integer[length];
 			break;
 		case UUType.U_TYPE_BIGINT:
 		case UUType.U_TYPE_UBIGINT:
-			internalArray = (Object[]) (new Long[length]);
+			internalArray = new Long[length];
 			break;
 		case UUType.U_TYPE_FLOAT:
-			internalArray = (Object[]) (new Float[length]);
+			internalArray = new Float[length];
 			break;
 		case UUType.U_TYPE_DOUBLE:
 		case UUType.U_TYPE_MONETARY:
-			internalArray = (Object[]) (new Double[length]);
+			internalArray = new Double[length];
 			break;
 		case UUType.U_TYPE_NUMERIC:
-			internalArray = (Object[]) (new BigDecimal[length]);
+			internalArray = new BigDecimal[length];
 			break;
 		case UUType.U_TYPE_DATE:
-			internalArray = (Object[]) (new Date[length]);
+			internalArray = new Date[length];
 			break;
 		case UUType.U_TYPE_TIME:
 		case UUType.U_TYPE_TIMETZ:		
-			internalArray = (Object[]) (new Time[length]);
+			internalArray = new Time[length];
 			break;
 		case UUType.U_TYPE_TIMESTAMP:
 		case UUType.U_TYPE_DATETIME:
@@ -96,23 +96,23 @@ class CUBRIDArray {
 		case UUType.U_TYPE_TIMESTAMPLTZ:
 		case UUType.U_TYPE_DATETIMETZ:
 		case UUType.U_TYPE_DATETIMELTZ:
-			internalArray = (Object[]) (new Timestamp[length]);
+			internalArray = new Timestamp[length];
 			break;
 		case UUType.U_TYPE_CHAR:
 		case UUType.U_TYPE_NCHAR:
 		case UUType.U_TYPE_STRING:
 		case UUType.U_TYPE_VARNCHAR:
 		case UUType.U_TYPE_ENUM:
-			internalArray = (Object[]) (new String[length]);
+			internalArray = new String[length];
 			break;
 		case UUType.U_TYPE_OBJECT:
-			internalArray = (Object[]) (new CUBRIDOID[length]);
+			internalArray = new CUBRIDOID[length];
 			break;
 		case UUType.U_TYPE_BLOB:
-			internalArray = (Object[]) (new Blob[length]);
+			internalArray = new Blob[length];
 			break;
 		case UUType.U_TYPE_CLOB:
-			internalArray = (Object[]) (new Clob[length]);
+			internalArray = new Clob[length];
 			break;
 		case UUType.U_TYPE_NULL:
 		case UUType.U_TYPE_SET:
@@ -134,7 +134,7 @@ class CUBRIDArray {
 			baseType = UUType.getObjArrBaseDBtype(values);
 		if (baseType == UUType.U_TYPE_NULL)
 			throw new UJciException(UErrorCode.ER_INVALID_ARGUMENT);
-		internalArray = (Object[]) ((Object[]) values).clone();
+		internalArray = ((Object[]) values).clone();
 		length = ((Object[]) values).length;
 	}
 
@@ -146,7 +146,7 @@ class CUBRIDArray {
 		if (internalArray == null)
 			return null;
 
-		Object[] obj = (Object[]) internalArray.clone();
+		Object[] obj = internalArray.clone();
 
 		if (obj instanceof Date[]) {
 			for (int i = 0; i < obj.length; i++)
@@ -170,7 +170,7 @@ class CUBRIDArray {
 	}
 
 	int getBaseType() {
-		return (int) baseType;
+		return baseType;
 	}
 
 	int getLength() {

@@ -29,7 +29,7 @@ public enum Icon {
     EXPORT_RED(resolve("ch/admin/bar/siardsuite/icons/export_red.png")),
     DB(resolve("ch/admin/bar/siardsuite/icons/server.png"));
 
-    private URL url;
+    private final URL url;
 
     Icon(URL file) {
         this.url = file;

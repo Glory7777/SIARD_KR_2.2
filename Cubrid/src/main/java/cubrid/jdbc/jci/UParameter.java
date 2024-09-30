@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 abstract class UParameter {
 	UParameter(int pNumber) {
@@ -61,6 +61,6 @@ abstract class UParameter {
 	abstract void writeParameter(UOutputBuffer outBuffer) throws UJciException;
 
 	int number;
-	byte types[];
-	Object values[];
+	byte[] types;
+	Object[] values;
 }

@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -51,10 +51,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import main.java.cubrid.jdbc.jci.UErrorCode;
-import main.java.cubrid.jdbc.jci.UStatement;
-import main.java.cubrid.sql.CUBRIDTimetz;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
+import cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UStatement;
+import cubrid.sql.CUBRIDTimetz;
+import cubrid.sql.CUBRIDTimestamptz;
 
 public class CUBRIDCallableStatement extends CUBRIDPreparedStatement implements
 		CallableStatement {
@@ -97,9 +97,8 @@ public class CUBRIDCallableStatement extends CUBRIDPreparedStatement implements
 			obj = u_stmt.getObject(index);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob) {
-			Clob clob = (Clob) obj;
-			int length;
+		if (obj != null && obj instanceof Clob clob) {
+            int length;
 			if (clob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
 			} else {
@@ -204,9 +203,8 @@ public class CUBRIDCallableStatement extends CUBRIDPreparedStatement implements
 			obj = u_stmt.getObject(index);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob) {
-			Blob blob = (Blob) obj;
-			int length;
+		if (obj != null && obj instanceof Blob blob) {
+            int length;
 			if (blob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
 			} else {

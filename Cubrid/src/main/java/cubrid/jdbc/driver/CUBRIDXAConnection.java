@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,8 +36,8 @@ import java.sql.SQLException;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UJCIManager;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UJCIManager;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -47,16 +47,16 @@ import main.java.cubrid.jdbc.jci.UJCIManager;
 
 public class CUBRIDXAConnection extends CUBRIDPooledConnection implements
 		XAConnection {
-	private String serverName;
-	private int portNumber;
-	private String databaseName;
-	private String username;
-	private String passwd;
+	private final String serverName;
+	private final int portNumber;
+	private final String databaseName;
+	private final String username;
+	private final String passwd;
 
 	private CUBRIDXAResource xares;
 
 	private boolean xa_started;
-	private String xacon_key;
+	private final String xacon_key;
 
 	protected CUBRIDXAConnection(CUBRIDXADataSource xads,
 			String serverName, int portNumber, String databaseName,
@@ -115,7 +115,7 @@ public class CUBRIDXAConnection extends CUBRIDPooledConnection implements
 	synchronized void notifyConnectionClosed() {
 		super.notifyConnectionClosed();
 
-		if (xa_started == true) {
+		if (xa_started) {
 			u_con = null;
 		}
 	}
@@ -129,7 +129,7 @@ public class CUBRIDXAConnection extends CUBRIDPooledConnection implements
 	}
 
 	synchronized UConnection xa_start(int flag, UConnection u) {
-		if (xa_started == true) {
+		if (xa_started) {
 			return null;
 		}
 
@@ -157,7 +157,7 @@ public class CUBRIDXAConnection extends CUBRIDPooledConnection implements
 	}
 
 	synchronized boolean xa_end() {
-		if (xa_started == false) {
+		if (!xa_started) {
 			return true;
 		}
 

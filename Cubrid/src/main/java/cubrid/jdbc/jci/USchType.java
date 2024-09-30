@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 /**
  * CUBRID�� Schema type�� �����ϴ� class�̴�.

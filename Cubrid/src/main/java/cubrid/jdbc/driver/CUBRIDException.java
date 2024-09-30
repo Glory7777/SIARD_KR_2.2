@@ -28,11 +28,11 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.SQLException;
 
-import main.java.cubrid.jdbc.jci.UError;
+import cubrid.jdbc.jci.UError;
 
 public class CUBRIDException extends SQLException {
     	private static final long serialVersionUID = -1902040094322313271L;

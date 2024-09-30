@@ -28,13 +28,13 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UUrlHostKey {
-	private String host;
-	private int port;
-	private String dbname;
-	private String user;
+	private final String host;
+	private final int port;
+	private final String dbname;
+	private final String user;
 
 	public UUrlHostKey(String host, int port, String dbname, String user) {
 		this.host = host;
@@ -48,15 +48,10 @@ public class UUrlHostKey {
 	}
 
 	public boolean equals(Object obj) {
-		if (!(obj instanceof UUrlHostKey))
+		if (!(obj instanceof UUrlHostKey key))
 			return false;
 
-		UUrlHostKey key = (UUrlHostKey) obj;
-
-		if (host.equals(key.host) && port == key.port
-				&& dbname.equals(key.dbname) && user.equals(key.user))
-			return true;
-		else
-			return false;
+        return host.equals(key.host) && port == key.port
+                && dbname.equals(key.dbname) && user.equals(key.user);
 	}
 }

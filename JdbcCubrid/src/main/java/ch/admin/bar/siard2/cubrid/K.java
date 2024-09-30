@@ -515,7 +515,7 @@ public enum K {
 	  private boolean _bReserved = false;
 	  public boolean isReserved() { return _bReserved; }
 
-	  private K(String sKeyword, boolean bReserved)
+	  K(String sKeyword, boolean bReserved)
 	  {
 	    _sKeyword = sKeyword;
 	    _bReserved = bReserved;

@@ -34,18 +34,18 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.IOException;
 
 class UAParameter extends UParameter {
-	private String attributeName;
+	private final String attributeName;
 
 	UAParameter(String pName, Object pValue) throws UJciException {
 		super(1);
 
 		byte[] pTypes = new byte[1];
-		Object attributeValue[] = new Object[1];
+		Object[] attributeValue = new Object[1];
 
 		attributeName = pName;
 		attributeValue[0] = pValue;

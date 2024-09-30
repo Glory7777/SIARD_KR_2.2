@@ -28,10 +28,10 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 public class CUBRIDBinaryString {
-	private byte[] bytes;
+	private final byte[] bytes;
 
 	public int length;
 	
@@ -50,7 +50,7 @@ public class CUBRIDBinaryString {
 		String result = "";
 
 		for (int i = 0; i < length; i++) {
-			result += String.format("%02X ", (byte) bytes[i]);
+			result += String.format("%02X ", bytes[i]);
 		}
 
 		return result;

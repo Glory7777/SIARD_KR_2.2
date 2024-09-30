@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,10 +48,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import main.java.cubrid.jdbc.jci.BrokerHealthCheck;
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UJCIManager;
-import main.java.cubrid.jdbc.jci.UJCIUtil;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.BrokerHealthCheck;
+import cubrid.jdbc.jci.UJCIManager;
+import cubrid.jdbc.jci.UJCIUtil;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -134,12 +134,12 @@ public class CUBRIDDriver implements Driver {
 	    Pattern pattern = Pattern.compile(URL_PATTERN, Pattern.CASE_INSENSITIVE);
 	    Matcher matcher = pattern.matcher(url);
 	    if (!matcher.find()) {
-		throw new CUBRIDException(CUBRIDJDBCErrorCode.invalid_url, url, null);
+		throw new cubrid.jdbc.driver.CUBRIDException(cubrid.jdbc.driver.CUBRIDJDBCErrorCode.invalid_url, url, null);
 	    }
 	    
 	    String match = matcher.group();
 	    if (!match.equals(url)) {
-	      throw new CUBRIDException(CUBRIDJDBCErrorCode.invalid_url, url, null);
+	      throw new cubrid.jdbc.driver.CUBRIDException(cubrid.jdbc.driver.CUBRIDJDBCErrorCode.invalid_url, url, null);
 	    }
 
 	    String dummy;
@@ -200,13 +200,13 @@ public class CUBRIDDriver implements Driver {
 		}
 		try {
 		    u_con = UJCIManager.connect(altHostList, db, user, pass, resolvedUrl);
-		} catch (CUBRIDException e) {
+		} catch (cubrid.jdbc.driver.CUBRIDException e) {
 		    throw e;
 		}
 	    } else {
 		try {
 		    u_con = UJCIManager.connect(host, port, db, user, pass, resolvedUrl);
-		} catch (CUBRIDException e) {
+		} catch (cubrid.jdbc.driver.CUBRIDException e) {
 		    throw e;
 		}
 	    }
@@ -217,7 +217,7 @@ public class CUBRIDDriver implements Driver {
 
 	    u_con.setConnectionProperties(connProperties);
 	    u_con.tryConnect();
-	    return new CUBRIDConnection(u_con, url, user);
+	    return new cubrid.jdbc.driver.CUBRIDConnection(u_con, url, user);
 	}
 
 	public Connection defaultConnection() throws SQLException {
@@ -231,7 +231,7 @@ public class CUBRIDDriver implements Driver {
 			}
 
 			UConnection u_con = UJCIManager.connectDefault();
-			CUBRIDConnection con = new CUBRIDConnection(u_con,
+			cubrid.jdbc.driver.CUBRIDConnection con = new cubrid.jdbc.driver.CUBRIDConnection(u_con,
 					"jdbc:default:connection:", "default", true);
 			UJCIUtil.invoke("com.main.java.cubrid.jsp.ExecuteThread",
 					"setJdbcConnection", new Class[] { Connection.class }, t,
@@ -262,13 +262,9 @@ public class CUBRIDDriver implements Driver {
 	    if (url.toLowerCase().startsWith(urlHeader)) {
 	    	return true;
 	    }
-	    
-	    if (url.toLowerCase().startsWith(JDBC_DEFAULT_CONNECTION)) {
-	    	return true;
-	    }
 
-	    return false;
-	}
+        return url.toLowerCase().startsWith(JDBC_DEFAULT_CONNECTION);
+    }
 
 	public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
 			throws SQLException {

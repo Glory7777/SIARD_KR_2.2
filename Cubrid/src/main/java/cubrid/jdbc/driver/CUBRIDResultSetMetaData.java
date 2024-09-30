@@ -28,14 +28,14 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
+
+import cubrid.jdbc.jci.UColumnInfo;
+import cubrid.jdbc.jci.UUType;
+import cubrid.jdbc.jci.UJCIUtil;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-
-import main.java.cubrid.jdbc.jci.UColumnInfo;
-import main.java.cubrid.jdbc.jci.UJCIUtil;
-import main.java.cubrid.jdbc.jci.UUType;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -44,19 +44,19 @@ import main.java.cubrid.jdbc.jci.UUType;
  */
 
 public class CUBRIDResultSetMetaData implements ResultSetMetaData {
-	private String[] col_name;
-	private int[] col_type;
-	private int[] ele_type;
-	private String[] col_type_name;
+	private final String[] col_name;
+	private final int[] col_type;
+	private final int[] ele_type;
+	private final String[] col_type_name;
 	private String[] ele_type_name;
-	private int[] col_prec;
-	private int[] col_disp_size;
-	private int[] col_scale;
-	private String[] col_table;
-	private int[] col_null;
-	private String[] col_class_name;
-	private boolean[] is_auto_increment_col;
-	private String[] col_charset_name;
+	private final int[] col_prec;
+	private final int[] col_disp_size;
+	private final int[] col_scale;
+	private final String[] col_table;
+	private final int[] col_null;
+	private final String[] col_class_name;
+	private final boolean[] is_auto_increment_col;
+	private final String[] col_charset_name;
 
 	protected CUBRIDResultSetMetaData(UColumnInfo[] col_info) {
 		col_name = new String[col_info.length];
@@ -87,11 +87,7 @@ public class CUBRIDResultSetMetaData implements ResultSetMetaData {
 			else
 				col_null[i] = columnNoNulls;
 
-			if (col_info[i].getIsAutoIncrement() == 0) {
-				is_auto_increment_col[i] = false;
-			} else {
-				is_auto_increment_col[i] = true;
-			}
+            is_auto_increment_col[i] = col_info[i].getIsAutoIncrement() != 0;
 			col_charset_name[i] = col_info[i].getColumnCharset();
 
 			switch (col_info[i].getColumnType()) {
@@ -619,14 +615,10 @@ public class CUBRIDResultSetMetaData implements ResultSetMetaData {
 	public boolean isCaseSensitive(int column) throws SQLException {
 		checkColumnIndex(column);
 
-		if (col_type[column - 1] == java.sql.Types.CHAR
-				|| col_type[column - 1] == java.sql.Types.VARCHAR
-				|| col_type[column - 1] == java.sql.Types.LONGVARCHAR) {
-			return true;
-		}
-
-		return false;
-	}
+        return col_type[column - 1] == java.sql.Types.CHAR
+                || col_type[column - 1] == java.sql.Types.VARCHAR
+                || col_type[column - 1] == java.sql.Types.LONGVARCHAR;
+    }
 
 	public boolean isSearchable(int column) throws SQLException {
 		checkColumnIndex(column);
@@ -640,14 +632,10 @@ public class CUBRIDResultSetMetaData implements ResultSetMetaData {
 			return false;
 		}
 
-		if (col_type[column - 1] == java.sql.Types.DOUBLE
-				|| col_type[column - 1] == java.sql.Types.REAL
-				|| col_type[column - 1] == java.sql.Types.NUMERIC) {
-			return true;
-		}
-
-		return false;
-	}
+        return col_type[column - 1] == java.sql.Types.DOUBLE
+                || col_type[column - 1] == java.sql.Types.REAL
+                || col_type[column - 1] == java.sql.Types.NUMERIC;
+    }
 
 	public int isNullable(int column) throws SQLException {
 		checkColumnIndex(column);
@@ -657,17 +645,13 @@ public class CUBRIDResultSetMetaData implements ResultSetMetaData {
 	public boolean isSigned(int column) throws SQLException {
 		checkColumnIndex(column);
 
-		if (col_type[column - 1] == java.sql.Types.SMALLINT
-				|| col_type[column - 1] == java.sql.Types.INTEGER
-				|| col_type[column - 1] == java.sql.Types.NUMERIC
-				|| col_type[column - 1] == java.sql.Types.DECIMAL
-				|| col_type[column - 1] == java.sql.Types.REAL
-				|| col_type[column - 1] == java.sql.Types.DOUBLE) {
-			return true;
-		}
-
-		return false;
-	}
+        return col_type[column - 1] == java.sql.Types.SMALLINT
+                || col_type[column - 1] == java.sql.Types.INTEGER
+                || col_type[column - 1] == java.sql.Types.NUMERIC
+                || col_type[column - 1] == java.sql.Types.DECIMAL
+                || col_type[column - 1] == java.sql.Types.REAL
+                || col_type[column - 1] == java.sql.Types.DOUBLE;
+    }
 
 	public int getColumnDisplaySize(int column) throws SQLException {
 		checkColumnIndex(column);

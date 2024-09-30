@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.PrintStream;
 
@@ -36,8 +36,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UErrorCode;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UErrorCode;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -46,9 +46,9 @@ import main.java.cubrid.jdbc.jci.UErrorCode;
  */
 
 public class CUBRIDXAResource implements XAResource {
-	private CUBRIDXAConnection xacon;
-	private PrintStream debug_out;
-	private String xacon_key;
+	private final CUBRIDXAConnection xacon;
+	private final PrintStream debug_out;
+	private final String xacon_key;
 
 	protected CUBRIDXAResource(CUBRIDXAConnection xacon, String xacon_key) {
 		this.xacon = xacon;
@@ -75,7 +75,7 @@ public class CUBRIDXAResource implements XAResource {
 			throw new XAException(XAException.XAER_NOTA);
 
 		synchronized (xidInfo) {
-			if (onePhase == true) {
+			if (onePhase) {
 				if (xidInfo.status != CUBRIDXidInfo.STATUS_NOFLAG)
 					throw new XAException(XAException.XAER_PROTO);
 			} else {
@@ -113,7 +113,7 @@ public class CUBRIDXAResource implements XAResource {
 				throw new XAException(XAException.XAER_PROTO);
 			}
 
-			if (xacon.xa_end() == false)
+			if (!xacon.xa_end())
 				throw new XAException(XAException.XAER_RMERR);
 
 			if (flags == TMSUSPEND)
@@ -143,9 +143,7 @@ public class CUBRIDXAResource implements XAResource {
 		}
 
 		if (xares instanceof CUBRIDXAResource) {
-			if (xacon_key.compareTo(((CUBRIDXAResource) xares).xacon_key) == 0) {
-				return true;
-			}
+            return xacon_key.compareTo(((CUBRIDXAResource) xares).xacon_key) == 0;
 		}
 
 		return false;
@@ -243,7 +241,7 @@ public class CUBRIDXAResource implements XAResource {
 					+ ")");
 		}
 
-		if (checkXid(xid) == false)
+		if (!checkXid(xid))
 			throw new XAException(XAException.XAER_INVAL);
 
 		CUBRIDXidInfo xidInfo = CUBRIDXidTable.getXid(xacon_key, xid);
@@ -284,11 +282,8 @@ public class CUBRIDXAResource implements XAResource {
 
 		if (gid == null || gid.length == 0 || gid.length > Xid.MAXGTRIDSIZE)
 			return false;
-		if (bid == null || bid.length == 0 || bid.length > Xid.MAXBQUALSIZE)
-			return false;
-
-		return true;
-	}
+        return bid != null && bid.length != 0 && bid.length <= Xid.MAXBQUALSIZE;
+    }
 
 	private void end_tran(UConnection ucon, Xid xid, int status, boolean type)
 			throws XAException {

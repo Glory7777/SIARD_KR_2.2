@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.InputStream;
 
@@ -54,7 +54,7 @@ class CUBRIDInputStream extends InputStream {
 	}
 
 	public synchronized int read() throws java.io.IOException {
-		byte b[] = new byte[1];
+		byte[] b = new byte[1];
 		if (read(b, 0, 1) == -1)
 			return -1;
 		else

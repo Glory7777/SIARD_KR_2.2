@@ -28,11 +28,11 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UConKey {
 
-	private String conKey;
+	private final String conKey;
 
 	public UConKey(String s) {
 		conKey = s;

@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;

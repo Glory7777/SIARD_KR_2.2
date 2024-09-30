@@ -7,12 +7,12 @@ import javafx.scene.Node;
 
 // understands a progress item (downlaod, preview, export)
 public class ProgressItem {
-    private int pos;
+    private final int pos;
     private ObservableList<Node> children;
-    private LabelIcon labelIcon;
+    private final LabelIcon labelIcon;
 
-    private IconView.IconType loading = IconView.IconType.LOADING;
-    private IconView.IconType ok = IconView.IconType.OK;
+    private final IconView.IconType loading = IconView.IconType.LOADING;
+    private final IconView.IconType ok = IconView.IconType.OK;
 
     public ProgressItem(int pos, String text) {
         this.pos = pos;

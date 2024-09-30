@@ -28,14 +28,14 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.SQLException;
 
-import main.java.cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UConnection;
 
 public class CUBRIDConnectionWrapperPooling extends CUBRIDConnection {
-	private CUBRIDPooledConnection pcon;
+	private final CUBRIDPooledConnection pcon;
 
 	protected CUBRIDConnectionWrapperPooling(UConnection u, String r, String s,
 			CUBRIDPooledConnection p) {

@@ -34,25 +34,18 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
+
+import cubrid.jdbc.driver.CUBRIDBlob;
+import cubrid.jdbc.driver.CUBRIDClob;
+import cubrid.jdbc.driver.CUBRIDOutResultSet;
+import cubrid.sql.CUBRIDOID;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import main.java.cubrid.jdbc.driver.CUBRIDBlob;
-import main.java.cubrid.jdbc.driver.CUBRIDClob;
-import main.java.cubrid.jdbc.driver.CUBRIDOutResultSet;
-import main.java.cubrid.sql.CUBRIDOID;
-import main.java.cubrid.sql.CUBRIDTimetz;
-import main.java.cubrid.sql.CUBRIDTimestamptz;
 
 public class UStatement {
 	public final static int CURSOR_SET = 0, CURSOR_CUR = 1, CURSOR_END = 2;
@@ -89,9 +82,9 @@ public class UStatement {
 	private int columnNumber;
 	private UBindParameter bindParameter;
 	private ArrayList<UBindParameter> batchParameter;
-	private UColumnInfo columnInfo[];
+	private UColumnInfo[] columnInfo;
 	private HashMap<String, Integer> colNameToIndex;
-	private UResultInfo resultInfo[];
+	private UResultInfo[] resultInfo;
 	private byte commandTypeIs;
 	private byte firstStmtType;
 	private byte executeFlag;
@@ -105,7 +98,7 @@ public class UStatement {
 	private int currentFirstCursor;
 	private int cursorPosition;
 	private int executeResult;
-	private UResultTuple tuples[];
+	private UResultTuple[] tuples;
 	private int numQueriesExecuted;
 
 	private UError errorHandler;
@@ -151,7 +144,7 @@ public class UStatement {
 	}
 
 	private void init(UConnection relatedC, UInputBuffer inBuffer, String sql,
-	        byte _prepare_flag, boolean clear_bind_info) throws UJciException {
+					  byte _prepare_flag, boolean clear_bind_info) throws UJciException {
 		sql_stmt = sql;
 		prepare_flag = _prepare_flag;
 		outBuffer = relatedC.outBuffer;
@@ -165,7 +158,7 @@ public class UStatement {
 		commandTypeIs = inBuffer.readByte();
 		firstStmtType = commandTypeIs;
 		parameterNumber = inBuffer.readInt();
-		isUpdatable = (inBuffer.readByte() == 1) ? true : false;
+		isUpdatable = inBuffer.readByte() == 1;
 		columnNumber = inBuffer.readInt();
 		readColumnInfo(inBuffer);
 
@@ -195,14 +188,14 @@ public class UStatement {
 		 */
 	}
 
-	UStatement(UConnection relatedC, CUBRIDOID oid, String attributeName[],
-	        UInputBuffer inBuffer) throws UJciException {
+	UStatement(UConnection relatedC, CUBRIDOID oid, String[] attributeName,
+               UInputBuffer inBuffer) throws UJciException {
 		outBuffer = relatedC.outBuffer;
 		statementType = GET_BY_OID;
 		relatedConnection = relatedC;
 		// oidString = oString;
 
-		errorHandler = new UError(relatedConnection);
+		errorHandler = new cubrid.jdbc.jci.UError(relatedConnection);
 
 		serverHandler = -1;
 
@@ -236,7 +229,7 @@ public class UStatement {
 		relatedConnection = relatedC;
 		schemaType = type;
 
-		errorHandler = new UError(relatedConnection);
+		errorHandler = new cubrid.jdbc.jci.UError(relatedConnection);
 
 		serverHandler = inBuffer.getResCode();
 		totalTupleNumber = inBuffer.readInt();
@@ -282,7 +275,7 @@ public class UStatement {
 		serverHandler = inBuffer.readInt();
 		commandTypeIs = inBuffer.readByte();
 		totalTupleNumber = inBuffer.readInt();
-		isUpdatable = (inBuffer.readByte() == 1) ? true : false;
+		isUpdatable = inBuffer.readByte() == 1;
 		columnNumber = inBuffer.readInt();
 		readColumnInfo(inBuffer);
 
@@ -294,7 +287,7 @@ public class UStatement {
 		relatedConnection = u_stmt.relatedConnection;
 		outBuffer = u_stmt.outBuffer;
 		statementType = NORMAL;
-		errorHandler = new UError(relatedConnection);
+		errorHandler = new cubrid.jdbc.jci.UError(relatedConnection);
 		bindParameter = null;
 		fetchSize = DEFAULT_FETCH_SIZE;
 		currentFirstCursor = cursorPosition = totalTupleNumber = fetchedTupleNumber = 0;
@@ -308,12 +301,12 @@ public class UStatement {
 
 		if (bindParameter == null)
 			key = new UBindKey(null);
-		else if (bindParameter.checkAllBinded() == false)
+		else if (!bindParameter.checkAllBinded())
 			return null;
 		else
 			key = new UBindKey(bindParameter.values);
 
-		return ((UResCache) stmt_cache.get(key));
+		return stmt_cache.get(key);
 	}
 
 	public int getParameterCount() {
@@ -336,46 +329,46 @@ public class UStatement {
 	}
 
 	public void bind(int index, boolean value) {
-		Byte data = new Byte((value == true) ? 
+		Byte data = value ?
 			((relatedConnection.getUseOldBooleanValue()) ?
 				OLD_TRUE : TRUE) 
-			: FALSE);
+			: FALSE;
 
 		bindValue(index, UUType.U_TYPE_SHORT, data);
 	}
 
 	public void bind(int index, byte value) {
-		Short data = new Short(value);
+		Short data = (short) value;
 
 		bindValue(index, UUType.U_TYPE_SHORT, data);
 	}
 
 	public void bind(int index, short value) {
-		Short data = new Short(value);
+		Short data = value;
 
 		bindValue(index, UUType.U_TYPE_SHORT, data);
 	}
 
 	public void bind(int index, int value) {
-		Integer data = new Integer(value);
+		Integer data = Integer.valueOf(value);
 
 		bindValue(index, UUType.U_TYPE_INT, data);
 	}
 
 	public void bind(int index, long value) {
-		Long data = new Long(value);
+		Long data = Long.valueOf(value);
 
 		bindValue(index, UUType.U_TYPE_BIGINT, data);
 	}
 
 	public void bind(int index, float value) {
-		Float data = new Float(value);
+		Float data = value;
 
 		bindValue(index, UUType.U_TYPE_FLOAT, data);
 	}
 
 	public void bind(int index, double value) {
-		Double data = new Double(value);
+		Double data = value;
 
 		bindValue(index, UUType.U_TYPE_DOUBLE, data);
 	}
@@ -394,7 +387,7 @@ public class UStatement {
 		if (value == null)
 			data = null;
 		else
-			data = (byte[]) value.clone();
+			data = value.clone();
 
 		bindValue(index, UUType.U_TYPE_VARBIT, data);
 	}
@@ -407,7 +400,7 @@ public class UStatement {
 		bindValue(index, UUType.U_TYPE_TIME, value);
 	}
 
-	public void bind(int index, CUBRIDTimetz value) {
+	public void bind(int index, cubrid.sql.CUBRIDTimetz value) {
 		byte type = UUType.getObjectDBtype(value);
 
 		bindValue(index, type, value);
@@ -419,7 +412,7 @@ public class UStatement {
 		bindValue(index, type, value);
 	}
 
-	public void bind(int index, CUBRIDTimestamptz value) {
+	public void bind(int index, cubrid.sql.CUBRIDTimestamptz value) {
 		byte type = UUType.getObjectDBtype(value);
 
 		bindValue(index, type, value);
@@ -441,7 +434,7 @@ public class UStatement {
 		bindValue(index, type, value);
 	}
 
-	public void bindCollection(int index, Object values[]) {
+	public void bindCollection(int index, Object[] values) {
 		CUBRIDArray collectionData;
 
 		if (values == null) {
@@ -459,7 +452,7 @@ public class UStatement {
 		bindValue(index, UUType.U_TYPE_SEQUENCE, collectionData);
 	}
 
-	public void bindOID(int index, CUBRIDOID oid) {
+	public void bindOID(int index, cubrid.sql.CUBRIDOID oid) {
 		bindValue(index, UUType.U_TYPE_OBJECT, oid);
 	}
 
@@ -477,7 +470,7 @@ public class UStatement {
 		if (bindParameter == null)
 			return;
 
-		if (bindParameter.checkAllBinded() == false) {
+		if (!bindParameter.checkAllBinded()) {
 			errorHandler.setErrorCode(UErrorCode.ER_NOT_BIND);
 			return;
 		}
@@ -497,7 +490,7 @@ public class UStatement {
 
 	public UError cancel() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return localError;
 		}
@@ -535,7 +528,7 @@ public class UStatement {
 	}
 
 	synchronized public void close(boolean close_srv_handle) {
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -549,8 +542,8 @@ public class UStatement {
 		try {
 			if (!isReturnable
 			        && close_srv_handle
-			        && (relatedConnection.getAutoCommit() == false
-			                || relatedConnection.brokerInfoStatementPooling() == true
+			        && (!relatedConnection.getAutoCommit()
+			                || relatedConnection.brokerInfoStatementPooling()
 			                || ((prepare_flag & UConnection.PREPARE_HOLDABLE) != 0))) {
 				if (getSqlType()) {
 					synchronized (relatedConnection) {
@@ -561,8 +554,7 @@ public class UStatement {
 						relatedConnection.send_recv_msg();
 					}
 				} else {
-					relatedConnection.deferred_close_handle.add(new Integer(
-					        serverHandler));
+					relatedConnection.deferred_close_handle.add(serverHandler);
 				}
 			}
 		} catch (UJciException e) {
@@ -589,7 +581,7 @@ public class UStatement {
 
 	synchronized public boolean cursorIsInstance(int cursor) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return false;
 		}
@@ -600,7 +592,7 @@ public class UStatement {
 			errorHandler.setErrorCode(UErrorCode.ER_INVALID_ARGUMENT);
 			return false;
 		}
-		if (tuples[cursorPosition - currentFirstCursor].oidIsIncluded() == false) {
+		if (!tuples[cursorPosition - currentFirstCursor].oidIsIncluded()) {
 			errorHandler.setErrorCode(UErrorCode.ER_OID_IS_NOT_INCLUDED);
 			return false;
 		}
@@ -612,10 +604,7 @@ public class UStatement {
 			        - currentFirstCursor].getOid(), UConnection.IS_INSTANCE);
 		}
 		errorHandler.copyValue(relatedConnection.getRecentError());
-		if (instance_obj == null)
-			return false;
-		else
-			return true;
+        return instance_obj != null;
 	}
 
 	synchronized public void closeCursor() {
@@ -623,7 +612,7 @@ public class UStatement {
 			return;
 		}
 		
-		if (relatedConnection.isConnectedToCubrid() == false) {
+		if (!relatedConnection.isConnectedToCubrid()) {
 			return;
 		}
 
@@ -646,7 +635,7 @@ public class UStatement {
 
 	synchronized public void deleteCursor(int cursor) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -657,7 +646,7 @@ public class UStatement {
 			errorHandler.setErrorCode(UErrorCode.ER_INVALID_ARGUMENT);
 			return;
 		}
-		if (tuples[cursorPosition - currentFirstCursor].oidIsIncluded() == false) {
+		if (!tuples[cursorPosition - currentFirstCursor].oidIsIncluded()) {
 			errorHandler.setErrorCode(UErrorCode.ER_OID_IS_NOT_INCLUDED);
 			return;
 		}
@@ -731,7 +720,7 @@ public class UStatement {
 		}
 		outBuffer.addByte(is_auto_commit);
 
-		if (isScrollable == false) {
+		if (!isScrollable) {
 			is_forward_only = (byte) 1;
 		}
 		outBuffer.addByte(is_forward_only);
@@ -741,12 +730,12 @@ public class UStatement {
 		if (relatedConnection.protoVersionIsAbove(UConnection.PROTOCOL_V2)) {
 			// send queryTimeout in milliseconds
 			remainingTime = relatedConnection
-			        .getRemainingTime(queryTimeout * 1000);
+			        .getRemainingTime(queryTimeout * 1000L);
 		} else if (relatedConnection
 		        .protoVersionIsAbove(UConnection.PROTOCOL_V1)) {
 			// send queryTimeout in seconds
 			remainingTime = relatedConnection
-			        .getRemainingTime(queryTimeout * 1000);
+			        .getRemainingTime(queryTimeout * 1000L);
 			remainingTime = (long) Math.ceil(remainingTime / 1000.0);
 		}
 		if (queryTimeout > 0 && remainingTime <= 0) {
@@ -766,7 +755,7 @@ public class UStatement {
 				inBuffer.readInt(); // result_cache_lifetime
 				commandTypeIs = inBuffer.readByte();
 				inBuffer.readInt(); // num_markers
-				isUpdatable = (inBuffer.readByte() == 1) ? true : false;
+				isUpdatable = inBuffer.readByte() == 1;
 				columnNumber = inBuffer.readInt();
 				readColumnInfo(inBuffer);
 				if (commandTypeIs == CUBRIDCommandType.CUBRID_STMT_CALL_SP) {
@@ -822,9 +811,9 @@ public class UStatement {
 	}
 
 	synchronized public void execute(boolean isAsync, int maxRow, int maxField,
-	        boolean isExecuteAll, boolean isSensitive, boolean isScrollable,
-	        boolean isQueryPlan, boolean isOnlyPlan, boolean isHoldable,
-	        UStatementCacheData cacheData, int queryTimeout) {
+									 boolean isExecuteAll, boolean isSensitive, boolean isScrollable,
+									 boolean isQueryPlan, boolean isOnlyPlan, boolean isHoldable,
+									 UStatementCacheData cacheData, int queryTimeout) {
 		boolean loop;
 		byte additional_prepare_flag;
 
@@ -951,9 +940,9 @@ public class UStatement {
 		init(relatedConnection, tmp.tmp_inbuffer, sql_stmt, prepare_flag, false);
 	}
 
-	synchronized public CUBRIDOID executeInsert(boolean isAsync) {
+	synchronized public cubrid.sql.CUBRIDOID executeInsert(boolean isAsync) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -976,13 +965,13 @@ public class UStatement {
 	}
 
 	private void writeExecuteBatchRequest(int queryTimeout) throws IOException,
-	        UJciException {
+			UJciException {
 		outBuffer.newRequest(relatedConnection.getOutputStream(),
 		        UFunctionCode.EXECUTE_BATCH_PREPAREDSTATEMENT);
 		outBuffer.addInt(serverHandler);
 		if (relatedConnection.protoVersionIsAbove(UConnection.PROTOCOL_V4)) {
 			long remainingTime = relatedConnection
-			        .getRemainingTime(queryTimeout * 1000);
+			        .getRemainingTime(queryTimeout * 1000L);
 			if (queryTimeout > 0 && remainingTime <= 0) {
 				throw relatedConnection
 				        .createJciException(UErrorCode.ER_TIMEOUT);
@@ -994,7 +983,7 @@ public class UStatement {
 		if (batchParameter != null) {
 			synchronized (batchParameter) {
 				for (int i = 0; i < batchParameter.size(); i++) {
-					UBindParameter b = (UBindParameter) batchParameter.get(i);
+					UBindParameter b = batchParameter.get(i);
 					b.writeParameter(outBuffer);
 				}
 			}
@@ -1126,7 +1115,7 @@ public class UStatement {
 
 	synchronized public void fetch() {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1232,7 +1221,7 @@ public class UStatement {
 		UError localError;
 
 		localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return null;
@@ -1245,7 +1234,7 @@ public class UStatement {
 		UError localError;
 
 		localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return null;
@@ -1254,29 +1243,29 @@ public class UStatement {
 		return colNameToIndex;
 	}
 
-	synchronized public CUBRIDOID getColumnOID(int index) {
+	synchronized public cubrid.sql.CUBRIDOID getColumnOID(int index) {
 		errorHandler = new UError(relatedConnection);
 
 		Object obj = beforeGetXXX(index);
 		if (obj == null)
 			return null;
 
-		if (!(obj instanceof CUBRIDOID)) {
+		if (!(obj instanceof cubrid.sql.CUBRIDOID)) {
 			errorHandler.setErrorCode(UErrorCode.ER_NOT_OBJECT);
 			return null;
 		}
 
-		return ((CUBRIDOID) obj);
+		return ((cubrid.sql.CUBRIDOID) obj);
 	}
 
-	synchronized public CUBRIDOID getCursorOID() {
+	synchronized public cubrid.sql.CUBRIDOID getCursorOID() {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
 
-		if (checkReFetch() != true)
+		if (!checkReFetch())
 			return null;
 
 		return (tuples[cursorPosition - currentFirstCursor].getOid());
@@ -1332,19 +1321,19 @@ public class UStatement {
 
 		Object obj = beforeGetXXX(index);
 		if (obj == null)
-			return ((double) 0);
+			return 0;
 
 		try {
 			return (UGetTypeConvertedValue.getDouble(obj));
 		} catch (UJciException e) {
 			e.toUError(errorHandler);
 		}
-		return ((double) 0);
+		return 0;
 	}
 
 	public int getExecuteResult() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return 0;
@@ -1355,7 +1344,7 @@ public class UStatement {
 
 	public int getFetchDirection() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return 0;
@@ -1366,7 +1355,7 @@ public class UStatement {
 
 	public int getFetchSize() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return 0;
@@ -1411,7 +1400,7 @@ public class UStatement {
 
 		Object obj = beforeGetXXX(index);
 		if (obj == null)
-			return ((long) 0);
+			return 0;
 
 		try {
 			return (UGetTypeConvertedValue.getLong(obj));
@@ -1419,7 +1408,7 @@ public class UStatement {
 			e.toUError(errorHandler);
 		}
 
-		return ((long) 0);
+		return 0;
 	}
 	
 	synchronized public Object getObject(int index) {
@@ -1434,7 +1423,7 @@ public class UStatement {
 			if ((commandTypeIs != CUBRIDCommandType.CUBRID_STMT_CALL_SP)
 			        && (columnInfo[index].getColumnType() == UUType.U_TYPE_BIT)
 			        && (columnInfo[index].getColumnPrecision() == 8)) {
-				retValue = new Boolean(UGetTypeConvertedValue.getBoolean(obj));
+				retValue = UGetTypeConvertedValue.getBoolean(obj);
 			} else if (obj instanceof CUBRIDArray)
 				retValue = ((CUBRIDArray) obj).getArrayClone();
 			else if (obj instanceof byte[])
@@ -1476,7 +1465,7 @@ public class UStatement {
 		UError localError;
 
 		localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return null;
@@ -1502,7 +1491,7 @@ public class UStatement {
 
 	public boolean getSqlType() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return false;
@@ -1570,7 +1559,7 @@ public class UStatement {
 
 	public boolean isOIDIncluded() {
 		UError localError = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			localError.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			errorHandler = localError;
 			return false;
@@ -1583,7 +1572,7 @@ public class UStatement {
 		UInputBuffer inBuffer;
 
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1662,7 +1651,7 @@ public class UStatement {
 		UInputBuffer inBuffer;
 
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return false;
 		}
@@ -1678,7 +1667,7 @@ public class UStatement {
 
 			executeResult = inBuffer.readInt();
 			commandTypeIs = inBuffer.readByte();
-			isUpdatable = (inBuffer.readByte() == 1) ? true : false;
+			isUpdatable = inBuffer.readByte() == 1;
 			columnNumber = inBuffer.readInt();
 			readColumnInfo(inBuffer);
 		} catch (UJciException e) {
@@ -1736,7 +1725,7 @@ public class UStatement {
 		UInputBuffer inBuffer;
 
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1757,7 +1746,7 @@ public class UStatement {
 					outBuffer.addInt(cursorPosition + 1);
 				}
 				outBuffer.addInt(fetchSize);
-				outBuffer.addByte((isSensitive == true) ? (byte) 1 : (byte) 0);
+				outBuffer.addByte((isSensitive) ? (byte) 1 : (byte) 0);
 				// jci 3.0
 				outBuffer.addInt(0);
 				// outBuffer.addInt(resultset_index);
@@ -1778,7 +1767,7 @@ public class UStatement {
 
 	synchronized public void setFetchDirection(int direction) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1793,7 +1782,7 @@ public class UStatement {
 
 	synchronized public void setFetchSize(int size) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1812,7 +1801,7 @@ public class UStatement {
 	synchronized public void updateRows(int cursorPosition, int[] indexes,
 	        Object[] values) {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return;
 		}
@@ -1864,7 +1853,7 @@ public class UStatement {
 		String plan = null;
 
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -1899,7 +1888,7 @@ public class UStatement {
 
 	synchronized public boolean getGeneratedKeys() {
 		errorHandler = new UError(relatedConnection);
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return false;
 		}
@@ -1914,7 +1903,7 @@ public class UStatement {
 
 				commandTypeIs = inBuffer.readByte();
 				totalTupleNumber = inBuffer.readInt();
-				isUpdatable = (inBuffer.readByte() == 1) ? true : false;
+				isUpdatable = inBuffer.readByte() == 1;
 				columnNumber = inBuffer.readInt();
 				statementType = GET_AUTOINCREMENT_KEYS;
 				readColumnInfo(inBuffer);
@@ -1957,7 +1946,7 @@ public class UStatement {
 	}
 
 	private Object beforeGetXXX(int index) {
-		if (isClosed == true) {
+		if (isClosed) {
 			errorHandler.setErrorCode(UErrorCode.ER_IS_CLOSED);
 			return null;
 		}
@@ -1965,7 +1954,7 @@ public class UStatement {
 			errorHandler.setErrorCode(UErrorCode.ER_COLUMN_INDEX);
 			return null;
 		}
-		if (checkReFetch() != true)
+		if (!checkReFetch())
 			return null;
 		if (fetchedTupleNumber <= 0) {
 			errorHandler.setErrorCode(UErrorCode.ER_NO_MORE_DATA);
@@ -1994,15 +1983,14 @@ public class UStatement {
 		        || (cursorPosition >= 0 && ((cursorPosition < currentFirstCursor) || (cursorPosition > currentFirstCursor
 		                + fetchedTupleNumber - 1)))) {
 			fetch();
-			if (errorHandler.getErrorCode() != UErrorCode.ER_NO_ERROR)
-				return false;
+            return errorHandler.getErrorCode() == UErrorCode.ER_NO_ERROR;
 		}
 		return true;
 	}
 
 	private byte[] readTypeFromData(int index, UInputBuffer inBuffer)
 	        throws UJciException {
-		byte typeInfo[];
+		byte[] typeInfo;
 		
 		typeInfo = new byte[4];
 		/* first two bytes are reserverd for type value */
@@ -2020,7 +2008,7 @@ public class UStatement {
 				typeInfo[0] = collectionByte;
 				typeInfo[2] = 1;
 			} else {
-				byte typeInfoColumn[];
+				byte[] typeInfoColumn;
 				byte charset;
 
 				charset = (byte) (collectionByte & MASK_CHARSET_FROM_TYPE);
@@ -2077,7 +2065,7 @@ public class UStatement {
 		if (statementType != GET_SCHEMA_INFO)
 			return;
 
-		byte realType[];
+		byte[] realType;
 		Short fetchedType;
 		Short type_msb_byte;
 		Short type_lsb_byte;
@@ -2095,7 +2083,7 @@ public class UStatement {
 			
 			type_msb_byte = (short) (fetchedType & 0xff00);
 			type_msb_byte = (short) (type_msb_byte >> 8);
-			if (((short) type_msb_byte & MASK_TYPE_HAS_2_BYTES) == MASK_TYPE_HAS_2_BYTES) {
+			if ((type_msb_byte & MASK_TYPE_HAS_2_BYTES) == MASK_TYPE_HAS_2_BYTES) {
 				/* V7 protocol (extended type has two bytes) */
 				collectionFlags = (byte) (type_msb_byte.byteValue() & MASK_COLLECTION_FROM_TYPE);
 				type_lsb_byte = (short) (fetchedType & 0x00ff);
@@ -2106,7 +2094,7 @@ public class UStatement {
 			}
 
 			realType = UColumnInfo.confirmType(originalType, collectionFlags);
-			tuples[index].setAttribute(1, new Short((short) realType[0]));
+			tuples[index].setAttribute(1, (short) realType[0]);
 		}
 	}
 
@@ -2114,7 +2102,7 @@ public class UStatement {
 	        throws UJciException {
 		int size;
 		int localType;
-		byte typeInfo[];
+		byte[] typeInfo;
 		String charsetName;
 
 		size = inBuffer.readInt();
@@ -2130,7 +2118,7 @@ public class UStatement {
 			if (typeInfo[3] == DEFAULT_CHARSET) {
 				charsetName = null;
 			} else {
-				charsetName = UJCIUtil.getJavaCharsetName ((byte)typeInfo[3]);
+				charsetName = UJCIUtil.getJavaCharsetName (typeInfo[3]);
 			}		
 		}
 
@@ -2158,13 +2146,13 @@ public class UStatement {
 			        UJCIManager.sysCharsetName));
 		case UUType.U_TYPE_BIGINT:
 		case UUType.U_TYPE_UBIGINT:
-			return new Long(inBuffer.readLong());
+			return inBuffer.readLong();
 		case UUType.U_TYPE_INT:
 		case UUType.U_TYPE_UINT:
-			return new Integer(inBuffer.readInt());
+			return inBuffer.readInt();
 		case UUType.U_TYPE_SHORT:
 		case UUType.U_TYPE_USHORT:
-			return new Short(inBuffer.readShort());
+			return inBuffer.readShort();
 		case UUType.U_TYPE_DATE:
 			return inBuffer.readDate();
 		case UUType.U_TYPE_TIME:
@@ -2200,9 +2188,9 @@ public class UStatement {
 		}
 		case UUType.U_TYPE_MONETARY:
 		case UUType.U_TYPE_DOUBLE:
-			return new Double(inBuffer.readDouble());
+			return inBuffer.readDouble();
 		case UUType.U_TYPE_FLOAT:
-			return new Float(inBuffer.readFloat());
+			return inBuffer.readFloat();
 		case UUType.U_TYPE_BIT:
 		case UUType.U_TYPE_VARBIT:
 			return inBuffer.readBytes(dataSize);
@@ -2237,7 +2225,7 @@ public class UStatement {
 		if (functionCode == UFunctionCode.FETCH
 		        && relatedConnection
 		                .protoVersionIsAbove(UConnection.PROTOCOL_V5)) {
-			isFetchCompleted = inBuffer.readByte() == 1 ? true : false;
+			isFetchCompleted = inBuffer.readByte() == 1;
 		}
 	}
 
@@ -2286,7 +2274,7 @@ public class UStatement {
 			}
 			else{
 				charset = (byte) (collectionByte & MASK_CHARSET_FROM_TYPE);
-				charsetName = UJCIUtil.getJavaCharsetName ((byte)charset);
+				charsetName = UJCIUtil.getJavaCharsetName (charset);
 				collectionByte = (byte)(collectionByte & MASK_COLLECTION_FROM_TYPE); 
 				type = inBuffer.readByte();
 			}
@@ -2309,7 +2297,7 @@ public class UStatement {
 				        relatedConnection.getCharset());
 				byte byteData = inBuffer.readByte();
 				columnInfo[i].setRemainedData(attributeName, className,
-				        ((byteData == (byte) 0) ? true : false));
+				        (byteData == (byte) 0));
 
 				String defValue = inBuffer.readString(inBuffer.readInt(),
 				        relatedConnection.getCharset());
@@ -2324,7 +2312,7 @@ public class UStatement {
 				columnInfo[i].setExtraData(defValue, bAI, bUK, bPK, bFK, bRI,
 				        bRU, bSh);
 			}
-			if (colNameToIndex.containsKey(name) == false) {
+			if (!colNameToIndex.containsKey(name)) {
 				colNameToIndex.put(name, i);
 			}
 		}
@@ -2391,11 +2379,8 @@ public class UStatement {
 	}
 
 	public boolean is_result_cacheable() {
-		if (result_cacheable == true
-		        && relatedConnection.update_executed == false)
-			return true;
-		else
-			return false;
+        return result_cacheable
+                && !relatedConnection.update_executed;
 	}
 
 	public void setAutoGeneratedKeys(boolean isGeneratedKeys) {

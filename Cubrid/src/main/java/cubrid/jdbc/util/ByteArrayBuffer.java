@@ -1,4 +1,4 @@
-package main.java.cubrid.jdbc.util;
+package cubrid.jdbc.util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ public class ByteArrayBuffer {
     private static final int UnitSize = 102400;
 
     private ArrayList<byte[]> byteArrayList;
-    private byte[] baseByteArray;
+    private final byte[] baseByteArray;
     private byte[] buffer;
     private int pos;
     private int dataSize;
@@ -36,7 +36,7 @@ public class ByteArrayBuffer {
         write((v >>>  0) & 0xFF);
     }
 
-    private byte writeBuffer[] = new byte[8];
+    private final byte[] writeBuffer = new byte[8];
     public final void writeLong(long v) {
         writeBuffer[0] = (byte)(v >>> 56);
         writeBuffer[1] = (byte)(v >>> 48);

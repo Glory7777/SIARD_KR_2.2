@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -36,14 +36,14 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import main.java.cubrid.jdbc.net.BrokerHandler;
+import cubrid.jdbc.net.BrokerHandler;
 
 public class UUnreachableHostList {
 	private static final String HEALTH_CHECK_DUMMY_DB = "___health_check_dummy_db___";
 	private static final int CAS_INFO_SIZE = 4;
 
 	private static UUnreachableHostList instance = null;
-	private List<String> unreachableHosts;
+	private final List<String> unreachableHosts;
 
 	private UUnreachableHostList() {
 		unreachableHosts = new CopyOnWriteArrayList<String>();

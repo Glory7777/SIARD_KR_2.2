@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,8 +59,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 
-import main.java.cubrid.jdbc.jci.UColumnInfo;
-import main.java.cubrid.jdbc.jci.UGetTypeConvertedValue;
+import cubrid.jdbc.jci.UColumnInfo;
+import cubrid.jdbc.jci.UGetTypeConvertedValue;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -96,7 +96,7 @@ class CUBRIDResultSetWithoutQuery implements ResultSet {
 			String[] colnames, boolean[] isnull, int[] precision) {
 		if (precision == null) {
 			precision = new int[columns];
-			Arrays.fill(precision, (int) 0);
+			Arrays.fill(precision, 0);
 		}
 
 		updated = new boolean[2];
@@ -110,7 +110,7 @@ class CUBRIDResultSetWithoutQuery implements ResultSet {
 			String[] colnames, boolean[] isnull, int[] precision) {
 		if (precision == null) {
 			precision = new int[columns];
-			Arrays.fill(precision, (int) 0);
+			Arrays.fill(precision, 0);
 		}
 
 		initialize(null, columns, types, colnames, isnull, precision);
@@ -704,7 +704,7 @@ class CUBRIDResultSetWithoutQuery implements ResultSet {
 
 	private void updateValue(int columnIndex, Object value) throws SQLException {
 		updates[columnIndex - 1] = value;
-		if (updated[columnIndex - 1] == false) {
+		if (!updated[columnIndex - 1]) {
 			updated[columnIndex - 1] = true;
 			number_of_updates++;
 		}
@@ -1028,9 +1028,7 @@ class CUBRIDResultSetWithoutQuery implements ResultSet {
 		}
 
 		Object[] newtuple = new Object[tuple.length];
-		for (int i = 0; i < tuple.length; i++) {
-			newtuple[i] = tuple[i];
-		}
+        System.arraycopy(tuple, 0, newtuple, 0, tuple.length);
 
 		rows.add(newtuple);
 		num_of_rows++;
@@ -1062,7 +1060,7 @@ class CUBRIDResultSetWithoutQuery implements ResultSet {
 		Iterator<InputStream> iter = streams.iterator();
 		try {
 			while (iter.hasNext()) {
-				((InputStream) iter.next()).close();
+				iter.next().close();
 				iter.remove();
 			}
 			streams.clear();

@@ -105,7 +105,7 @@ public class CUBRIDStatement extends BaseStatement implements Statement
 	    int iUnused = 0;
 	    for (bFound = false; !bFound; iUnused++)
 	    {
-	      sPrimaryColumn = "PK"+String.valueOf(iUnused);
+	      sPrimaryColumn = "PK"+ iUnused;
   	    ResultSet rs = bdmd.getColumns(qiTable.getCatalog(),
   	      bdmd.toPattern(qiTable.getSchema()),
   	      bdmd.toPattern(qiTable.getName()),

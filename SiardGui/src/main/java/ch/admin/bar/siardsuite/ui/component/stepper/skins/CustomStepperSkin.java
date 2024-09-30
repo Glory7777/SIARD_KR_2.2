@@ -33,7 +33,7 @@ public class CustomStepperSkin extends SkinBase<MFXStepper> {
   private final Group progressBarGroup;
   private final Rectangle bar;
   private final Rectangle track = this.buildRectangle("track");
-  private boolean buttonWasPressed = false;
+  private final boolean buttonWasPressed = false;
   private final MFXStepper stepper;
 
   public CustomStepperSkin(MFXStepper stepper) {
@@ -108,7 +108,7 @@ public class CustomStepperSkin extends SkinBase<MFXStepper> {
     });
     stepper.currentContentProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
-        this.contentPane.getChildren().setAll(new Node[]{newValue});
+        this.contentPane.getChildren().setAll(newValue);
       } else {
         this.contentPane.getChildren().clear();
       }
@@ -163,7 +163,7 @@ public class CustomStepperSkin extends SkinBase<MFXStepper> {
 
   protected Rectangle buildRectangle(String styleClass) {
     Rectangle rectangle = new Rectangle();
-    rectangle.getStyleClass().setAll(new String[]{styleClass});
+    rectangle.getStyleClass().setAll(styleClass);
     rectangle.setStroke(Color.TRANSPARENT);
     rectangle.setStrokeLineCap(StrokeLineCap.ROUND);
     rectangle.setStrokeLineJoin(StrokeLineJoin.ROUND);

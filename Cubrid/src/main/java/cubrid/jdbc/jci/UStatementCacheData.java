@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UStatementCacheData {
 	int tuple_count;

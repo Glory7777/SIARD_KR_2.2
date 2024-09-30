@@ -62,7 +62,7 @@ public class ArchiveChooseDbmsPresenter {
 
         this.errorMessage.setVisible(false);
 
-        dbmsRegistry.getSupportedDbms()
+        DbmsRegistry.getSupportedDbms()
                 .forEach(this::createRadioToVBox);
 
         this.buttonsBox = new ButtonBox().make(DEFAULT);
@@ -71,7 +71,7 @@ public class ArchiveChooseDbmsPresenter {
         this.buttonsBox.next().setOnAction((event) -> {
             MFXRadioButton selected = (MFXRadioButton) toggleGroup.getSelectedToggle();
             if (selected != null) {
-                val selectedDbms = dbmsRegistry.findDbmsByName(selected.getText());
+                val selectedDbms = DbmsRegistry.findDbmsByName(selected.getText());
                 this.errorMessage.setVisible(false);
 
                 stepperNavigator.next(DbmsWithInitialValue.builder()

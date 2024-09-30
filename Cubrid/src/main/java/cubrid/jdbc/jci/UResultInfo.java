@@ -34,28 +34,24 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
-import main.java.cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDOID;
 
 public class UResultInfo {
 	byte statementType;
-	private int resultCount;
-	private boolean isResultSet; /* if result is resultset, true. otherwise false */
+	private final int resultCount;
+	private final boolean isResultSet; /* if result is resultset, true. otherwise false */
 	private CUBRIDOID oid;
 	private long srv_cache_time;
 
 	UResultInfo(byte type, int count) {
 		statementType = type;
 		resultCount = count;
-		if (statementType == CUBRIDCommandType.CUBRID_STMT_SELECT
-				|| statementType == CUBRIDCommandType.CUBRID_STMT_CALL
-				|| statementType == CUBRIDCommandType.CUBRID_STMT_GET_STATS
-				|| statementType == CUBRIDCommandType.CUBRID_STMT_EVALUATE) {
-			isResultSet = true;
-		} else {
-			isResultSet = false;
-		}
+        isResultSet = statementType == CUBRIDCommandType.CUBRID_STMT_SELECT
+                || statementType == CUBRIDCommandType.CUBRID_STMT_CALL
+                || statementType == CUBRIDCommandType.CUBRID_STMT_GET_STATS
+                || statementType == CUBRIDCommandType.CUBRID_STMT_EVALUATE;
 		oid = null;
 		srv_cache_time = 0L;
 	}

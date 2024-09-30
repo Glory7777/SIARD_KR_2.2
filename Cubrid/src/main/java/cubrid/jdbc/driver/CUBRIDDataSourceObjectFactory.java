@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.util.Hashtable;
 
@@ -48,14 +48,14 @@ public class CUBRIDDataSourceObjectFactory implements ObjectFactory {
 			Hashtable<?, ?> env) throws Exception {
 		Reference ref = (Reference) refObj;
 
-		if (ref.getClassName().equals("main.java.cubrid.jdbc.driver.CUBRIDDataSource")) {
+		if (ref.getClassName().equals("cubrid.jdbc.driver.CUBRIDDataSource")) {
 			return (new CUBRIDDataSource(ref));
 		}
 		if (ref.getClassName().equals(
-				"main.java.cubrid.jdbc.driver.CUBRIDConnectionPoolDataSource")) {
+				"cubrid.jdbc.driver.CUBRIDConnectionPoolDataSource")) {
 			return (new CUBRIDConnectionPoolDataSource(ref));
 		}
-		if (ref.getClassName().equals("main.java.cubrid.jdbc.driver.CUBRIDXADataSource")) {
+		if (ref.getClassName().equals("cubrid.jdbc.driver.CUBRIDXADataSource")) {
 			return (new CUBRIDXADataSource(ref));
 		}
 		return null;

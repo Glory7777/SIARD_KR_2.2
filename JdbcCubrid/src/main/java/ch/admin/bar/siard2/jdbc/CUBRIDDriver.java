@@ -25,7 +25,7 @@ import ch.enterag.utils.logging.IndentLogger;
  */
 public class CUBRIDDriver extends BaseDriver implements Driver 
 {
-	private static IndentLogger _il = IndentLogger.getIndentLogger(CUBRIDDriver.class.getName());
+	private static final IndentLogger _il = IndentLogger.getIndentLogger(CUBRIDDriver.class.getName());
   /** protocol sub scheme for MsSQL JDBC URL */
   public static final String sCUBRID_SCHEME = "cubrid";
   /** URL prefix for Cubrid JDBC URL */

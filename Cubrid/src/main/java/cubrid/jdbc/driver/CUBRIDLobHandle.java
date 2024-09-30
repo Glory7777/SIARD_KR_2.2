@@ -28,12 +28,12 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 public class CUBRIDLobHandle {
-	private int lobType; // U_TYPE_BLOB or U_TYPE_CLOB
+	private final int lobType; // U_TYPE_BLOB or U_TYPE_CLOB
 	private long lobSize;
-	private byte[] packedLobHandle;
+	private final byte[] packedLobHandle;
 	private String locator;
 
 	public CUBRIDLobHandle(int lobType, byte[] packedLobHandle) {
@@ -99,9 +99,8 @@ public class CUBRIDLobHandle {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDLobHandle) {
-			CUBRIDLobHandle that = (CUBRIDLobHandle) obj;
-			return lobType == that.lobType && lobSize == that.lobSize
+		if (obj instanceof CUBRIDLobHandle that) {
+            return lobType == that.lobType && lobSize == that.lobSize
 					&& locator.equals(that.locator);
 		}
 		return false;

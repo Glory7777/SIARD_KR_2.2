@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 class CUBRIDBufferedInputStream extends BufferedInputStream {
-	private int bufSize;
+	private final int bufSize;
 
 	public CUBRIDBufferedInputStream(InputStream in, int bufferSize) {
 		super(in, bufferSize);
@@ -62,7 +62,7 @@ class CUBRIDBufferedInputStream extends BufferedInputStream {
 
 		try {
 			while (length > 0) {
-				read_len = (int) Math.min(length, (long) bufSize);
+				read_len = (int) Math.min(length, bufSize);
 				read_len = in.read(buf, 0, read_len);
 				if (read_len <= 0) {
 					break;

@@ -34,15 +34,15 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.io.IOException;
 
 class UUpdateParameter extends UParameter {
-	private int indexes[]; /* parameter's column index */
+	private final int[] indexes; /* parameter's column index */
 
-	public UUpdateParameter(UColumnInfo columnInfo[], int[] columnIndexes,
-	        Object[] columnValues) throws UJciException {
+	public UUpdateParameter(UColumnInfo[] columnInfo, int[] columnIndexes,
+                            Object[] columnValues) throws UJciException {
 		super(columnValues.length);
 
 		/* check acceptable argument */
@@ -56,7 +56,7 @@ class UUpdateParameter extends UParameter {
 				throw new UJciException(UErrorCode.ER_INVALID_ARGUMENT);
 		}
 
-		UColumnInfo info[] = columnInfo;
+		UColumnInfo[] info = columnInfo;
 		byte[] pTypes = new byte[number];
 		indexes = new int[number];
 

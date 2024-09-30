@@ -28,13 +28,13 @@
  *
  */
 
-package main.java.cubrid.sql;
+package cubrid.sql;
 
 import java.sql.Timestamp;
 
-import main.java.cubrid.jdbc.jci.UJCIUtil;
-import main.java.cubrid.jdbc.jci.UJCIUtil.TimeInfo;
-import main.java.cubrid.jdbc.driver.*;
+import cubrid.jdbc.jci.UJCIUtil;
+import cubrid.jdbc.jci.UJCIUtil.TimeInfo;
+import cubrid.jdbc.driver.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.TimeZone;
@@ -43,7 +43,7 @@ import java.util.Calendar;
 public class CUBRIDTimestamptz extends CUBRIDTimestamp {
     private static final long serialVersionUID = 6217189754717078421L;
 
-	private String timezone;
+	private final String timezone;
 
 
 	public CUBRIDTimestamptz(long time, boolean isDatetime, String str_timezone) {

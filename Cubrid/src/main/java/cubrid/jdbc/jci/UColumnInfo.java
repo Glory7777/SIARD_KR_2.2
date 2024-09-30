@@ -34,19 +34,21 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UColumnInfo {
 	private final static byte SET_FLAG = (byte) 0040;
 	private final static byte MULTISET_FLAG = (byte) 0100;
 	private final static byte SEQUENCE_FLAG = (byte) 0140;
 
-	private byte type;
-	private byte collectionBaseType;
-	private short scale;
-	private int precision;
-	private String charsetName;
-	private String name, className, attributeName;
+	private final byte type;
+	private final byte collectionBaseType;
+	private final short scale;
+	private final int precision;
+	private final String charsetName;
+	private final String name;
+    private String className;
+    private String attributeName;
 	// private String FQDN;
 	private boolean isNullable;
 
@@ -60,7 +62,7 @@ public class UColumnInfo {
 	private byte is_shared;
 
 	UColumnInfo(byte cType, short cScale, int cPrecision, String cName, byte collection, String cCharset) throws UJciException {
-		byte realType[];
+		byte[] realType;
 
 		realType = UColumnInfo.confirmType(cType, collection);
 		type = realType[0];
@@ -138,7 +140,7 @@ public class UColumnInfo {
 	}
 
 	public int getColumnScale() {
-		return (int) scale;
+		return scale;
 	}
 
 	public String getColumnCharset() {
@@ -159,7 +161,7 @@ public class UColumnInfo {
 	}
 
 	static byte[] confirmType(byte originalType, byte collectionFlags) throws UJciException {
-		byte typeInfo[];
+		byte[] typeInfo;
 	
 		typeInfo = new byte[2];
 		switch (collectionFlags) {
@@ -258,7 +260,7 @@ public class UColumnInfo {
 		case UUType.U_TYPE_MULTISET:
 			break;
 		case UUType.U_TYPE_OBJECT:
-			return "main.java.cubrid.sql.CUBRIDOID";
+			return "cubrid.sql.CUBRIDOID";
 		case UUType.U_TYPE_BLOB:
 			return "java.sql.Blob";
 		case UUType.U_TYPE_CLOB:
@@ -312,7 +314,7 @@ public class UColumnInfo {
 		case UUType.U_TYPE_MULTISET:
 			break;
 		case UUType.U_TYPE_OBJECT:
-			return "main.java.cubrid.sql.CUBRIDOID[]";
+			return "cubrid.sql.CUBRIDOID[]";
 		case UUType.U_TYPE_BLOB:
 			return "java.sql.Blob[]";
 		case UUType.U_TYPE_CLOB:

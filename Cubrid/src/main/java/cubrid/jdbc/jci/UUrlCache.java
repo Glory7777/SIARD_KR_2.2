@@ -28,14 +28,14 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class UUrlCache {
-	private Hashtable<String, UStmtCache> stmt_cache_table;
-	private ArrayList<UStmtCache> stmt_cache_remove_list;
+	private final Hashtable<String, UStmtCache> stmt_cache_table;
+	private final ArrayList<UStmtCache> stmt_cache_remove_list;
 
 	UUrlCache() {
 		stmt_cache_table = new Hashtable<String, UStmtCache>(100, 5);

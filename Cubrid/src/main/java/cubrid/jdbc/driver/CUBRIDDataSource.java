@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.driver;
+package cubrid.jdbc.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,8 +38,8 @@ import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 
-import main.java.cubrid.jdbc.jci.UConnection;
-import main.java.cubrid.jdbc.jci.UJCIManager;
+import cubrid.jdbc.jci.UConnection;
+import cubrid.jdbc.jci.UJCIManager;
 
 /**
  * Title: CUBRID JDBC Driver Description:
@@ -126,7 +126,7 @@ public class CUBRIDDataSource extends CUBRIDDataSourceBase implements
 	public synchronized Reference getReference() throws NamingException {
 		Reference ref = new Reference(
 				this.getClass().getName(),
-				"main.java.cubrid.jdbc.driver.CUBRIDDataSourceObjectFactory",
+				"cubrid.jdbc.driver.CUBRIDDataSourceObjectFactory",
 				null);
 
 		ref = getProperties(ref);

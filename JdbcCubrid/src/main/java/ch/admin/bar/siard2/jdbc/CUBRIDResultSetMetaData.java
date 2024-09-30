@@ -28,7 +28,7 @@ public class CUBRIDResultSetMetaData extends BaseResultSetMetaData implements Re
 	int minor_version;
 	
 	private String _sPrimaryColumn = null;
-	private static Map<String,Class<?>> mapCLASS_CUBRID_TO_ISO = new HashMap<String,Class<?>>();
+	private static final Map<String,Class<?>> mapCLASS_CUBRID_TO_ISO = new HashMap<String,Class<?>>();
 	static 
 	{
 		mapCLASS_CUBRID_TO_ISO.put(byte[].class.getName(), byte[].class); // or String in case of GEOMETRY types

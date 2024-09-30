@@ -28,7 +28,7 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 public class UResCache {
 	UBindKey key;
@@ -61,7 +61,7 @@ public class UResCache {
 	}
 
 	boolean isExpired(long checkTime) {
-		if (cache_data != null && used == false) {
+		if (cache_data != null && !used) {
 			return true;
 		} else {
 			used = false;

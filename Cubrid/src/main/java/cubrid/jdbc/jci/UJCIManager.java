@@ -34,7 +34,7 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 import java.net.Socket;
 import java.sql.SQLException;
@@ -130,7 +130,7 @@ class JdbcCacheWorker extends Thread {
 				long curTime = System.currentTimeMillis();
 				synchronized (UJCIManager.url_cache_remove_list) {
 					for (int i = 0; i < UJCIManager.url_cache_remove_list.size(); i++) {
-						UUrlCache uc = (UUrlCache) UJCIManager.url_cache_remove_list.get(i);
+						UUrlCache uc = UJCIManager.url_cache_remove_list.get(i);
 						uc.remove_expired_stmt(curTime);
 					}
 				}

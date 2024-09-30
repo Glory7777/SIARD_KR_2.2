@@ -28,13 +28,13 @@
  *
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
 
 public class UJciException extends Exception {
     	private static final long serialVersionUID = 4464106407657785825L;
 
-	private int jciErrCode;
+	private final int jciErrCode;
 	private int serverErrCode;
 	private int serverErrIndicator;
 

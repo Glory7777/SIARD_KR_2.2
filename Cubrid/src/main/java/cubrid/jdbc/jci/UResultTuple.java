@@ -34,15 +34,15 @@
  * @version 2.0
  */
 
-package main.java.cubrid.jdbc.jci;
+package cubrid.jdbc.jci;
 
-import main.java.cubrid.sql.CUBRIDOID;
+import cubrid.sql.CUBRIDOID;
 
 class UResultTuple {
-	private int index;
+	private final int index;
 	private CUBRIDOID oid;
 	// private boolean wasNull[] = {};
-	private Object attributes[];
+	private Object[] attributes;
 
 	UResultTuple(int tupleIndex, int attributeNumber) {
 		index = tupleIndex;
@@ -71,10 +71,8 @@ class UResultTuple {
 	}
 
 	boolean oidIsIncluded() {
-		if (oid == null)
-			return false;
-		return true;
-	}
+        return oid != null;
+    }
 
 	void setAttribute(int tIndex, Object data) {
 		/*
