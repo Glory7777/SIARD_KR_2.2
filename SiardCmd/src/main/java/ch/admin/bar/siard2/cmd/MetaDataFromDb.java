@@ -1208,8 +1208,8 @@ public class MetaDataFromDb extends MetaDataBase {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
                     "FROM information_schema.tables " +
                     "WHERE table_schema = ? AND table_name = ?";
-            case ORACLE -> "SELECT SUM(bytes) AS size " +
-                    "FROM user_segments WHERE segment_name = UPPER(?) AND segment_type = 'TABLE';";
+            case ORACLE -> "SELECT SUM(bytes) AS table_size " +
+                    "FROM user_segments WHERE segment_name = UPPER(?) AND segment_type = 'TABLE'";
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";

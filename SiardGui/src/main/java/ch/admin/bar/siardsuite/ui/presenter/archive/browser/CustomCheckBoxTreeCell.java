@@ -1,5 +1,6 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 
+import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
@@ -13,12 +14,15 @@ import javafx.util.Callback;
  */
 public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrapper> {
 
-    private CustomCheckBoxTreeCell(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback) {
+    private final GenericArchiveBrowserPresenter genericArchiveBrowserPresenter;
+
+    private CustomCheckBoxTreeCell(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback, GenericArchiveBrowserPresenter genericArchiveBrowserPresenter) {
         super(callback);
+        this.genericArchiveBrowserPresenter = genericArchiveBrowserPresenter;
     }
 
-    public static CustomCheckBoxTreeCell initCheckBoxTree(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback) {
-        return new CustomCheckBoxTreeCell(callback);
+    public static CustomCheckBoxTreeCell initCheckBoxTree(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback, GenericArchiveBrowserPresenter genericArchiveBrowserPresenter) {
+        return new CustomCheckBoxTreeCell(callback, genericArchiveBrowserPresenter);
     }
 
     /**
@@ -33,7 +37,6 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
             setGraphic(null);
         } else {
 
-//            setText(item.getDisplayName());
             setText(getDisplayText(item));
 
             if (item.shouldHaveCheckBox() && item.isTransferable(item.getDatabaseAttribute())) {
@@ -43,6 +46,7 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
                 checkBox.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
                     // 속성을 아래 노드에도 세팅하기 위해 TreeItem을 호출
                     propagateSelection(getTreeItem(), isNowSelected);
+                    updateTotalSelectedSize();
                 });
                 setGraphic(checkBox);
             } else {
@@ -51,15 +55,22 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
         }
     }
 
+
+    /**
+     * 엔티티, 스키마 별로 용량 표기
+     *
+     * @param item 
+     * @return
+     */
     private String getDisplayText(TreeAttributeWrapper item) {
         String displayName = item.getDisplayName();
-        String formattedByteCount = getFormattedByteCount(item);
-        return formattedByteCount == null ? displayName : displayName + formattedByteCount;
+        String formattedSize = getFormattedSize(item);
+        return formattedSize == null ? displayName : displayName + formattedSize;
     }
 
-    private String getFormattedByteCount(TreeAttributeWrapper item) {
-        String formattedByteCount = item.getFormattedSize();
-        return formattedByteCount == null || formattedByteCount.isBlank() ? null : " (" + item.getFormattedSize() + ")";
+    private String getFormattedSize(TreeAttributeWrapper item) {
+        String formatted = item.getFormattedSize();
+        return formatted == null || formatted.isBlank() ? null : " (" + item.getFormattedSize() + ")";
     }
     
     private void propagateSelection(TreeItem<TreeAttributeWrapper> currentTreeItem, boolean isSelected) {
@@ -87,6 +98,33 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
     private void setSelection(TreeAttributeWrapper currentItem, boolean isSelected) {
         if (currentItem == null) return;
         currentItem.setSelected(isSelected);
+    }
+
+    private void updateTotalSelectedSize() {
+        long totalSize = calculateTotalSize(getTreeView().getRoot());
+        System.out.println("selected totalSize = " + totalSize);
+        updateTotalSizeLabel(totalSize);
+    }
+
+    private long calculateTotalSize(TreeItem<TreeAttributeWrapper> root) {
+        long totalSize = 0;
+
+        if (root == null || root.getChildren().isEmpty()) {
+            return totalSize;
+        }
+
+        for (TreeItem<TreeAttributeWrapper> child : root.getChildren()) {
+            TreeAttributeWrapper value = child.getValue();
+            if (value != null && value.isTransferable() && value.isSelected()) {
+                totalSize += value.getSize();
+            }
+            totalSize += calculateTotalSize(child);
+        }
+        return totalSize;
+    }
+
+    private void updateTotalSizeLabel(long totalSize) {
+        genericArchiveBrowserPresenter.getTotalSizeLabel().setText(ByteFormatter.convertToBestFitUnit(totalSize));
     }
 
 }

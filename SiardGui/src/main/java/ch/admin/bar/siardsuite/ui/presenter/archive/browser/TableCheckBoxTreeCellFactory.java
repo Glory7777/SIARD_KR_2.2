@@ -11,6 +11,12 @@ import javafx.util.Callback;
  */
 public class TableCheckBoxTreeCellFactory implements Callback<TreeView<TreeAttributeWrapper>, TreeCell<TreeAttributeWrapper>> {
 
+    private final GenericArchiveBrowserPresenter genericArchiveBrowserPresenter;
+
+    public TableCheckBoxTreeCellFactory(GenericArchiveBrowserPresenter presenter) {
+        this.genericArchiveBrowserPresenter = presenter;
+    }
+
     @Override
     public TreeCell<TreeAttributeWrapper> call(TreeView<TreeAttributeWrapper> treeView) {
         return CustomCheckBoxTreeCell.initCheckBoxTree(param -> {
@@ -19,7 +25,7 @@ public class TableCheckBoxTreeCellFactory implements Callback<TreeView<TreeAttri
             } else {
                 return null;
             }
-        });
+        }, genericArchiveBrowserPresenter);
     }
 
 }
