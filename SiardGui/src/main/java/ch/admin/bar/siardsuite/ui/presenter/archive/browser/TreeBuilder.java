@@ -1,6 +1,7 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 
 import ch.admin.bar.siard2.api.MetaParameter;
+import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.admin.bar.siardsuite.ui.common.Icon;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.AttributeDetailsForm;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.ColumnDetailsForm;
@@ -137,6 +138,8 @@ public class TreeBuilder {
     private TreeItem<TreeAttributeWrapper> createItemForSchemas() {
         val schemas = this.siardArchive.schemas();
 
+        long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
+        String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
         val schemasItem = new TreeItem<>(
                 TreeAttributeWrapper.builder()
                         .name(DisplayableText.of(SCHEMAS_ELEMENT_NAME, schemas.size()))
@@ -147,6 +150,8 @@ public class TreeBuilder {
                         .databaseAttribute(SCHEMA_TITLE)
                         .shouldPropagate(true)
                         .shouldHaveCheckBox(true)
+                        .size(schemaSize)
+                        .formattedSize(formattedSchemaSize)
                         .build());
 
         val schemaItems = schemas.stream()
@@ -158,6 +163,10 @@ public class TreeBuilder {
     }
 
     private TreeItem<TreeAttributeWrapper> createItemsForSchema(DatabaseSchema schema) {
+
+        long schemaSize = schema.getSchema().getSchemaSize();
+        String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
+
         val schemaItem = new TreeItem<>(
                 TreeAttributeWrapper.builder()
                         .name(DisplayableText.of(schema.getName()))
@@ -168,6 +177,8 @@ public class TreeBuilder {
                         .databaseAttribute(SCHEMA)
                         .shouldPropagate(true)
                         .shouldHaveCheckBox(true)
+                        .size(schemaSize)
+                        .formattedSize(formattedSchemaSize)
                         .build());
 
         schemaItem.setExpanded(true);
@@ -382,7 +393,6 @@ public class TreeBuilder {
                         .build())
                 .databaseAttribute(TABLE_TITLE)
                 .shouldPropagate(true)
-//                .shouldHaveCheckBox(true)
                 .build());
 
         tablesItem.getChildren()
@@ -407,6 +417,8 @@ public class TreeBuilder {
                 .shouldPropagate(false)
                 .transferable(true)
                 .shouldHaveCheckBox(true)
+                .size(table.getTable().getTableSize())
+                .formattedSize(table.getTable().getFormattedTableSize())
                 .build());
 
         if (!siardArchive.onlyMetaData()) {

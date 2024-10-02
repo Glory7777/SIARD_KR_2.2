@@ -31,7 +31,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import ch.enterag.utils.xml.XU;
-//import org.apache.xalan.xsltc.trax.TransformerFactoryImpl;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +49,8 @@ public class TableImpl extends SearchImpl implements Table {
     public static final String _sTAG_RECORD = "row";
     public static final String _sATTR_TABLE_VERSION = "version";
     private static final ObjectFactory _OF = new ObjectFactory();
-    private long expectedTableSize;
+    @Getter @Setter private long tableSize;
+    @Getter @Setter private String formattedTableSize;
 
     static DocumentBuilder _db = null;
 
@@ -615,13 +617,4 @@ public class TableImpl extends SearchImpl implements Table {
         oswr.flush();
     }
 
-    @Override
-    public void setExpectedTableSize(long expectedTableSize) {
-        this.expectedTableSize = expectedTableSize;
-    }
-
-    @Override
-    public long getExpectedTableSize() {
-        return expectedTableSize;
-    }
 }

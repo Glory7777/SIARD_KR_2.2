@@ -4,6 +4,7 @@ import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
 import ch.admin.bar.siard2.api.meta.*;
+import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.enterag.sqlparser.BaseSqlFactory;
 import ch.enterag.sqlparser.SqlLiterals;
 import ch.enterag.sqlparser.datatype.DataType;
@@ -1103,6 +1104,8 @@ public class MetaDataFromDb extends MetaDataBase {
 
             LOG.debug("Load metadata for table '{}.{}'", sTableSchema, sTableName);
 
+            // 테이블 사이즈 세팅
+            getTableSize(table, mt);
             getColumns(mt);
             getPrimaryKey(mt);
             getForeignKeys(mt);
@@ -1188,12 +1191,58 @@ public class MetaDataFromDb extends MetaDataBase {
 
     }
 
+    /**
+     * 데이터베이스 테이블 별 사이즈를 구하여 세팅
+     *
+     * @param table
+     * @param metaTable
+     * @throws SQLException
+     */
+    private void getTableSize(Table table, MetaTable metaTable) throws SQLException {
+
+        String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
+        DataBase dataBase = DataBase.findByName(databaseProductName);
+
+        // TODO query modification
+        String query = switch (dataBase) {
+            case MYSQL -> "SELECT (data_length + index_length) AS size " +
+                    "FROM information_schema.tables " +
+                    "WHERE table_schema = ? AND table_name = ?";
+            case ORACLE -> "SELECT SUM(bytes) AS size " +
+                    "FROM user_segments WHERE segment_name = UPPER(?) AND segment_type = 'TABLE';";
+            case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
+            case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
+                    "FROM sys.tables t ...";
+            case CUBRiD -> "";
+            case TIBERO -> "";
+        };
+
+        String tableName = metaTable.getName();
+        String schemaName = metaTable.getParentMetaSchema().getName();
+
+        long size = 0;
+        try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
+            switch (dataBase) {
+                case MYSQL -> {
+                    stmt.setString(1, schemaName);
+                    stmt.setString(2, tableName);
+                }
+                case ORACLE -> stmt.setString(1, tableName);
+                case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
+                // TODO :: more db
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                size = rs.getLong(1);  // Assuming the size is in the first column
+            }
+        }
+
+        Schema parentSchema = table.getParentSchema();
+        parentSchema.addTableSize(size);
+
+        table.setFormattedTableSize(ByteFormatter.convertToBestFitUnit(size));
+        table.setTableSize(size);
+    }
+
 }
-
-
-
-
-/* Location:              C:\Users\lenovo\IdeaProjects\SIARD_KR_2.2\lib\siardcmd.jar!\ch\admin\bar\siard2\cmd\MetaDataFromDb.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

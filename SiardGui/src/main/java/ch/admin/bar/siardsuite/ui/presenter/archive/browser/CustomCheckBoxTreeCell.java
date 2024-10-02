@@ -32,7 +32,9 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
             setText(null);
             setGraphic(null);
         } else {
-            setText(item.getDisplayName());
+
+//            setText(item.getDisplayName());
+            setText(getDisplayText(item));
 
             if (item.shouldHaveCheckBox() && item.isTransferable(item.getDatabaseAttribute())) {
                 CheckBox checkBox = new CheckBox();
@@ -47,6 +49,17 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
                 setGraphic(null);
             }
         }
+    }
+
+    private String getDisplayText(TreeAttributeWrapper item) {
+        String displayName = item.getDisplayName();
+        String formattedByteCount = getFormattedByteCount(item);
+        return formattedByteCount == null ? displayName : displayName + formattedByteCount;
+    }
+
+    private String getFormattedByteCount(TreeAttributeWrapper item) {
+        String formattedByteCount = item.getFormattedSize();
+        return formattedByteCount == null || formattedByteCount.isBlank() ? null : " (" + item.getFormattedSize() + ")";
     }
     
     private void propagateSelection(TreeItem<TreeAttributeWrapper> currentTreeItem, boolean isSelected) {

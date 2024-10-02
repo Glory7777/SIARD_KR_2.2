@@ -1,5 +1,8 @@
 package ch.admin.bar.siard2.cmd.utils;
 
+import lombok.Getter;
+
+@Getter
 public class ByteFormatter {
 
     private final long bytes;
@@ -8,33 +11,17 @@ public class ByteFormatter {
     private static final long GIGABYTE = MEGABYTE * 1024;
     private static final long TERABYTE = GIGABYTE * 1024;
 
-    public static double convertBytesToKB(long bytes) {
-        return roundToTwoDecimalPlaces((double) bytes / KILOBYTE);
-    }
-
-    public static double convertBytesToMB(long bytes) {
-        return roundToTwoDecimalPlaces((double) bytes / MEGABYTE);
-    }
-
-    public static double convertBytesToGB(long bytes) {
-        return roundToTwoDecimalPlaces((double) bytes / GIGABYTE);
-    }
-
-    public static double convertBytesToTB(long bytes) {
-        return roundToTwoDecimalPlaces((double) bytes / TERABYTE);
-    }
-
-    public static double convertToBestFitUnit(long bytes) {
+    public static String convertToBestFitUnit(long bytes) {
         if (bytes >= TERABYTE) {
-            return convertBytesToTB(bytes);
+            return convertToTB(bytes);
         } else if (bytes >= GIGABYTE) {
-            return convertBytesToGB(bytes);
+            return convertToGB(bytes);
         } else if (bytes >= MEGABYTE) {
-            return convertBytesToMB(bytes);
+            return convertToMB(bytes);
         } else if (bytes >= KILOBYTE) {
-            return convertBytesToKB(bytes);
+            return convertToKB(bytes);
         } else {
-            return roundToTwoDecimalPlaces((double) bytes); // If less than 1 KB, keep it in bytes
+            return convertToByte(bytes);
         }
     }
 
@@ -51,24 +38,24 @@ public class ByteFormatter {
         return new ByteFormatter(bytes);
     }
 
-    public String convertToByte() {
-        return String.format(this.bytes + " Bytes");
+    public static String convertToByte(long bytes) {
+        return String.format(bytes + " Bytes");
     }
 
-    public String convertToKiloByte() {
+    public static String convertToKB(long bytes) {
         return String.format("%.2f KB", (double) bytes / KILOBYTE);
     }
 
-    public String convertToMegaByte() {
-        return String.format("%.2f MB", (double) bytes / MEGABYTE);
+    public static String convertToMB(long bytes) {
+        return java.lang.String.format("%.2f MB", (double) bytes / MEGABYTE);
     }
 
-    public String convertToGigaByte() {
-        return String.format("%.2f GB", (double) bytes / GIGABYTE);
+    public static String convertToGB(long bytes) {
+        return java.lang.String.format("%.2f GB", (double) bytes / GIGABYTE);
     }
 
-    public String convertToTerraByte() {
-        return String.format("%.2f GB", (double) bytes / GIGABYTE);
+    public static String convertToTB(long bytes) {
+        return java.lang.String.format("%.2f GB", (double) bytes / GIGABYTE);
     }
 
 }

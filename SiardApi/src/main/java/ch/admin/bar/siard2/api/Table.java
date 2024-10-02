@@ -30,9 +30,13 @@ public interface Table extends Search {
   
   void exportAsHtml(OutputStream paramOutputStream, File paramFile) throws IOException;
 
-  void setExpectedTableSize(long volumeSize);
+  void setTableSize(long byteCount);
 
-  long getExpectedTableSize();
+  long getTableSize();
+
+  void setFormattedTableSize(String formattedTableSize);
+
+  String getFormattedTableSize();
 }
 
 

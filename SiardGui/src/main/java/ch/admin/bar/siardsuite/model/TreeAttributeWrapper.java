@@ -22,13 +22,16 @@ public class TreeAttributeWrapper {
     DatabaseAttribute databaseAttribute;
     DatabaseTable databaseTable;
 
-    boolean shouldHaveCheckBox; // indicates if this item should have a checkbox
-    boolean transferable; // indicates if this item should be transferred.
-    boolean shouldPropagate;
+    boolean shouldHaveCheckBox; // 체크박스가 필요한 노드인지
+    boolean transferable; // 체크 여부가 필요한 노드인지
+    boolean shouldPropagate; // 부모 노드와 자식 노드의 값 연동 여부
 
     @NonNull DisplayableText name;
     @NonNull DisplayableText viewTitle;
     @NonNull RenderableForm<?> renderableForm;
+
+    long size; // 테이블 예상 바이트 크기
+    String formattedSize; // 테이블 사이즈
 
     @Override
     public String toString() {
