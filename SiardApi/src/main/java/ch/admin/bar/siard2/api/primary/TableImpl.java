@@ -358,8 +358,6 @@ public class TableImpl extends SearchImpl implements Table {
         SchemaImpl si = (SchemaImpl) getParentSchema();
         if (tt == null) {
             String sFolder = "table" + tts.getTable().size();
-            ArchiveImpl ai = getArchiveImpl();
-//            ai.createFolderEntry(si.getSchemaFolder() + sFolder + "/");
             tt = MetaTableImpl.createTableType(sName, sFolder);
             tts.getTable().add(tt);
         }

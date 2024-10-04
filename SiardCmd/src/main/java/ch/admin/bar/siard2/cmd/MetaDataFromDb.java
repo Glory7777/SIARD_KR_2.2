@@ -975,14 +975,18 @@ public class MetaDataFromDb extends MetaDataBase {
 
 
     private void getColumns(MetaTable mt) throws IOException, SQLException {
-        ResultSet rs = this._dmd.getColumns(
-                null,
-                ((BaseDatabaseMetaData) this._dmd)
-                        .toPattern(mt.getParentMetaSchema().getName()),
-                ((BaseDatabaseMetaData) this._dmd)
-                        .toPattern(mt.getName()),
-                "%"
-        );
+        //TODO :: orcl 테스트 필요
+//        String replace = mt.getName().replace("_", "\\\\_");
+//        String replaceSchema = mt.getParentMetaSchema().getName().replace("_", "\\\\_");
+        String tableName = mt.getName();
+        String schemaName = mt.getParentMetaSchema().getName();
+
+        ResultSet rs = this._dmd.getColumns(null,
+//                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
+//                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
+                schemaName,
+                tableName,
+                "%");
 
         while (rs.next()) {
             String sTableSchema = rs.getString("TABLE_SCHEM");
@@ -996,6 +1000,7 @@ public class MetaDataFromDb extends MetaDataBase {
 
             LOG.debug("Metadata for column '{}.{}.{}' loaded", sTableSchema, sTableName, sColumnName);
         }
+
         if (mt.getMetaColumns() == 0) throw new SQLException("Table " + mt.getName() + " has no columns!");
         rs.close();
     }
@@ -1203,17 +1208,16 @@ public class MetaDataFromDb extends MetaDataBase {
         String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
         DataBase dataBase = DataBase.findByName(databaseProductName);
 
-        // TODO query modification
         String query = switch (dataBase) {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
                     "FROM information_schema.tables " +
-                    "WHERE table_schema = ? AND table_name = ?";
-            case ORACLE -> "SELECT SUM(bytes) AS table_size " +
-                    "FROM user_segments WHERE segment_name = UPPER(?) AND segment_type = 'TABLE'";
+                    "WHERE table_schema = ? " +
+                    "AND table_name = ?";
+            case ORACLE -> getOracleQuery();
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";
-            case CUBRiD -> "";
+            case CUBRID -> "";
             case TIBERO -> "";
         };
 
@@ -1227,7 +1231,10 @@ public class MetaDataFromDb extends MetaDataBase {
                     stmt.setString(1, schemaName);
                     stmt.setString(2, tableName);
                 }
-                case ORACLE -> stmt.setString(1, tableName);
+                case ORACLE -> {
+                    stmt.setString(1, tableName);
+                    stmt.setString(2, tableName);
+                }
                 case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
                 // TODO :: more db
             }
@@ -1243,6 +1250,26 @@ public class MetaDataFromDb extends MetaDataBase {
 
         table.setFormattedTableSize(ByteFormatter.convertToBestFitUnit(size));
         table.setTableSize(size);
+    }
+
+    private String getOracleQuery() {
+        String databaseUser = this._md.getArchive().getMetaData().getDatabaseUser();
+        if (isSysdba(databaseUser)) {
+            return "SELECT bytes AS table_size " +
+                    "FROM dba_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        } else {
+            return "SELECT bytes AS table_size " +
+                    "FROM USER_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        }
+    }
+
+    private boolean isSysdba(String databaseUser) {
+        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
+        return !databaseUser.startsWith("C##");
     }
 
 }

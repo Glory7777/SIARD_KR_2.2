@@ -1,9 +1,7 @@
 package ch.admin.bar.siard2.cmd;
 
 import ch.admin.bar.siard2.api.MetaData;
-import ch.admin.bar.siard2.cmd.utils.Version;
 import ch.enterag.sqlparser.identifier.QualifiedId;
-import jdk.jfr.Frequency;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -113,7 +111,7 @@ public abstract class MetaDataBase {
         ORACLE("oracle"),
         POSTGRESQL("postgresql"),
         MSSQL("mssql"),
-        CUBRiD("cubrid"),
+        CUBRID("cubrid"),
         TIBERO("tibero"),
 
         ;
