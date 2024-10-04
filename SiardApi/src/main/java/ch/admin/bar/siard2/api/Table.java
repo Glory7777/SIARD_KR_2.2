@@ -29,6 +29,14 @@ public interface Table extends Search {
   int getSortColumn();
   
   void exportAsHtml(OutputStream paramOutputStream, File paramFile) throws IOException;
+
+  void setTableSize(long byteCount);
+
+  long getTableSize();
+
+  void setFormattedTableSize(String formattedTableSize);
+
+  String getFormattedTableSize();
 }
 
 

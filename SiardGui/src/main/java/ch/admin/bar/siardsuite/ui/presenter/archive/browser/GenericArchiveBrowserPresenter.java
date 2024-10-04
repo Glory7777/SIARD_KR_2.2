@@ -30,6 +30,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import lombok.Getter;
 import lombok.val;
 
 import static ch.admin.bar.siardsuite.util.I18n.localeProperty;
@@ -74,6 +75,10 @@ public class GenericArchiveBrowserPresenter {
     @FXML
     private AnchorPane contentPane;
 
+    @FXML
+    @Getter
+    private Label totalSizeLabel;
+
     private FormRenderer currentFormRenderer;
 
     private Dialogs dialogs;
@@ -94,7 +99,7 @@ public class GenericArchiveBrowserPresenter {
 
         this.borderPane.setBottom(footerNode);
         this.treeView.setRoot(rootTreeItem);
-        this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory());
+        this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory(this));
 
         this.metaSearchButton.textProperty().bind(DisplayableText.of(META_SEARCH).bindable());
         this.tableSearchButton.textProperty().bind(DisplayableText.of(TABLE_SEARCH).bindable());
@@ -257,5 +262,7 @@ public class GenericArchiveBrowserPresenter {
 
         return loaded;
     }
+
+
 
 }
