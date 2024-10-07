@@ -283,7 +283,6 @@ public class DbmsRegistry {
                     .exampleDbName("testDB")
                     .build(),
 
-
             ServerBasedDbms.builder()
                     .name("TIBERO")
                     .id("TIBERO")

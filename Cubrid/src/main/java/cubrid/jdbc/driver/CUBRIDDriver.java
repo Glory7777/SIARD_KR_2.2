@@ -84,7 +84,7 @@ public class CUBRIDDriver implements Driver {
 
 	private final static String URL_PATTERN =
 	    "jdbc:cubrid(-oracle|-mysql)?:([a-zA-Z_0-9\\.-]*):([0-9]*):([^:]+):([^:]*):([^:]*):(\\?[a-zA-Z_0-9]+=[^&=?]+(&[a-zA-Z_0-9]+=[^&=?]+)*)?";
-	private final static String CUBRID_JDBC_URL_HEADER = "jdbc:main.java.cubrid";
+	private final static String CUBRID_JDBC_URL_HEADER = "jdbc:cubrid";
 	private final static String JDBC_DEFAULT_CONNECTION = "jdbc:default:connection";
 
 	static {
@@ -178,7 +178,7 @@ public class CUBRIDDriver implements Driver {
 		pass = matcher.group(6);
 	    }
 
-	    resolvedUrl = "jdbc:main.java.cubrid:" + host + ":" + port + ":" + db + ":" + user + ":********:";
+	    resolvedUrl = "jdbc:cubrid:" + host + ":" + port + ":" + db + ":" + user + ":********:";
 	    if (prop != null) {
 		resolvedUrl += prop;
 	    }

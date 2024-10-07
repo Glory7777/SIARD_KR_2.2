@@ -207,7 +207,7 @@ public class CUBRIDDataSourceBase {
 				} catch (Exception e) {
 					host = hostName;
 				}
-				dataSourceID = "jdbc:main.java.cubrid:" + host + ":"
+				dataSourceID = "jdbc:cubrid:" + host + ":"
 						+ portNumber + ":"
 						+ ((databaseName != null) ? databaseName : "");
 			}
