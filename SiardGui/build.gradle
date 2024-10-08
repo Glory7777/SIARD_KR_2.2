@@ -79,6 +79,7 @@ dependencies {
     implementation project(':SiardCmd')
     implementation project(':JdbcCubrid')
     implementation project(':Cubrid')
+    implementation project(':JdbcBase')
 
 }
 

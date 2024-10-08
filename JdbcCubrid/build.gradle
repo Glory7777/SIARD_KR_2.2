@@ -20,6 +20,7 @@ dependencies {
 
     implementation project(':Cubrid')
     implementation project(':EnterUtils')
+    implementation project(":JdbcBase")
 
 }
 

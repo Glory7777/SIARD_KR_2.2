@@ -3,7 +3,7 @@
  */
 
 rootProject.name = 'siard-suite'
-include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid'
+include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid', ':JdbcBase'
 
 project(':SiardCmd').projectDir = file('../SiardCmd')
 project(':SiardApi').projectDir = file('../SiardApi')
@@ -11,3 +11,4 @@ project(':EnterUtils').projectDir = file('../EnterUtils')
 project(':SiardCmd').projectDir = file('../SiardCmd')
 project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
+project(':JdbcBase').projectDir = file('../JdbcBase')
