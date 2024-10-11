@@ -21,7 +21,7 @@
             stylesheets="@../css/root.css"
             xmlns="http://javafx.com/javafx/1.8"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ch.admin.bar.siardsuite.ui.presenter.archive.browser.GenericArchiveBrowserPresenter">
+            fx:controller="ch.admin.bar.siardsuite.ui.presenter.archive.browser.ColumnFileDownloadPresenter">
     <ScrollPane fitToHeight="true"
                 maxHeight="1.7976931348623157E308"
                 maxWidth="1.7976931348623157E308"

@@ -1,7 +1,6 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive;
 
 import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.cmd.Mapping;
 import ch.admin.bar.siardsuite.framework.ServicesFacade;
 import ch.admin.bar.siardsuite.framework.dialogs.Dialogs;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
@@ -148,27 +147,30 @@ public class ArchiveDownloadPresenter implements Destructible {
     private void downloadAndArchiveDatabase() {
         loadingSpinner.play();
 
-        dbInteractionService.execute(LoadDatabaseInstruction.builder()
-                .connectionData(connectionData)
-                .saveAt(Optional.of(userDefinedMetadata.getSaveAt()))
-                .externalLobs(userDefinedMetadata.getLobFolder())
-                .loadOnlyMetadata(false)
-                .viewsAsTables(userDefinedMetadata.getExportViewsAsTables())
-                .onSuccess(this::handleDownloadSuccess)
-                .onFailure(event -> handleDownloadFailure(event.getSource().getException()))
-                .onStepCompleted((observable, oldValue, newValue) -> {
-                    AtomicInteger pos = new AtomicInteger();
-                    newValue.forEach(p ->
-                            addLoadingData(p.getKey(), p.getValue(), pos.getAndIncrement())
-                    );
-                })
-                .onProgress((observable, oldValue, newValue) -> {
-                    double pos = newValue.doubleValue();
-                    progressBar.progressProperty().set(pos);
-                })
-                .selectedSchemaMap(userDefinedMetadata.getSelectedSchemaMap())
-                .selectedSchemaTableMap(userDefinedMetadata.getSelectedSchemaTableMap())
-                .build());
+        dbInteractionService.execute(
+                LoadDatabaseInstruction.builder()
+                        .connectionData(connectionData)
+                        .saveAt(Optional.of(userDefinedMetadata.getSaveAt()))
+                        .externalLobs(userDefinedMetadata.getLobFolder())
+                        .loadOnlyMetadata(false)
+                        .viewsAsTables(userDefinedMetadata.getExportViewsAsTables())
+                        .onSuccess(this::handleDownloadSuccess)
+                        .onFailure(event -> handleDownloadFailure(event.getSource().getException()))
+                        .onStepCompleted((observable, oldValue, newValue) -> {
+                            AtomicInteger pos = new AtomicInteger();
+                            newValue.forEach(p ->
+                                    addLoadingData(p.getKey(), p.getValue(), pos.getAndIncrement())
+                            );
+                        })
+                        .onProgress((observable, oldValue, newValue) -> {
+                            double pos = newValue.doubleValue();
+                            progressBar.progressProperty().set(pos);
+                        })
+                        .selectedSchemaMap(userDefinedMetadata.getSelectedSchemaMap())
+                        .selectedSchemaTableMap(userDefinedMetadata.getSelectedSchemaTableMap())
+                        .formDataSet(userDefinedMetadata.getFormDataSet())
+                        .build()
+        );
     }
 
     private void handleDownloadSuccess(Archive archive) {

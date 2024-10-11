@@ -24,4 +24,8 @@ public class ValidationProperty {
         }
         return this.isValid;
     }
+
+    public void reset() {
+        isValid = true;
+    }
 }
