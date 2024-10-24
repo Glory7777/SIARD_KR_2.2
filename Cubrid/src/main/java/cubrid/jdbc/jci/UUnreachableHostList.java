@@ -99,7 +99,7 @@ public class UUnreachableHostList {
 		Socket toBroker = null;
 		byte[] serverInfo;
 		byte[] casInfo;
-		String dummyUrl = "jdbc:main.java.cubrid:" + ip + ":" + port + ":"
+		String dummyUrl = "jdbc:cubrid:" + ip + ":" + port + ":"
 				+ HEALTH_CHECK_DUMMY_DB + "::********:";
 		UTimedDataInputStream is = null;
 		DataOutputStream os = null;

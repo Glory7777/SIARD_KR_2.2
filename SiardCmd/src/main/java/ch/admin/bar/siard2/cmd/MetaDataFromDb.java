@@ -1201,6 +1201,13 @@ public class MetaDataFromDb extends MetaDataBase {
         String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
         DataBase dataBase = DataBase.findByName(databaseProductName);
 
+        String tableName = metaTable.getName();
+        String schemaName = metaTable.getParentMetaSchema().getName();
+
+        if (dataBase.equals(DataBase.CUBRID)) {
+            return;
+        }
+
         String query = switch (dataBase) {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
                     "FROM information_schema.tables " +
@@ -1210,12 +1217,9 @@ public class MetaDataFromDb extends MetaDataBase {
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";
-            case CUBRID -> "";
+            case CUBRID -> ";info stats " + tableName;
             case TIBERO -> "";
         };
-
-        String tableName = metaTable.getName();
-        String schemaName = metaTable.getParentMetaSchema().getName();
 
         long size = 0;
         try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
@@ -1237,6 +1241,7 @@ public class MetaDataFromDb extends MetaDataBase {
                 size = rs.getLong(1);  // Assuming the size is in the first column
             }
         }
+
 
         Schema parentSchema = table.getParentSchema();
         parentSchema.addTableSize(size);

@@ -201,38 +201,6 @@ public class DbmsRegistry {
                     .exampleDbName("MS-SQL-Database")
                     .build(),
 
-            // TODO:: cubrid, tibero 드라이버 추가 시 경로 및 설정 변경 필요
-//            ServerBasedDbms.builder()
-//                    .name("CUBRID")
-//                    .id("cubrid")
-//                    .driverClassName("ch.admin.bar.siard2.jdbc.CUBRIDDriver")
-//                    .jdbcConnectionStringEncoder(config -> String.format(
-//                            "jdbc:cubrid:%s:%s:%s:dba::%s?charset=utf8",
-//                            config.getHost(),
-//                            config.getPort(),
-//                            config.getDbName(),
-//                            config.getOptions()
-//                                    .map(optionsString -> "?" + optionsString)
-//                                    .orElse("")))
-//                    .jdbcConnectionStringDecoder(encoded -> {
-//                        val splitEncoded = encoded.split(":");
-//                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
-//                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
-//
-//                        return ServerBasedDbmsConnectionProperties.builder()
-//                                .host(splitEncoded[2].replace("//", ""))
-//                                .port(splitPortAndDbNameWithOptions[0])
-//                                .dbName(splitDbNameAndOptions[0])
-//                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
-//                                .user("")
-//                                .password("")
-//                                .build();
-//                    })
-//                    .examplePort("30000")
-//                    .exampleHost("cubrid.exampleHost.org")
-//                    .exampleDbName("testDB")
-//                    .build(),
-
             ServerBasedDbms.builder()
                     .name("CUBRID")
                     .id("cubrid")
@@ -266,8 +234,14 @@ public class DbmsRegistry {
 
                         String password = ""; // 비밀번호가 없거나 필요 없는 경우
 
-                        String[] parts = splitEncoded[6].split("\\?", 2);
-                        String options = parts.length > 1 ? parts[1] : "";
+                        int length = splitEncoded.length;
+                        String options;
+                        if (length >= 7) {
+                            String[] parts = splitEncoded[6].split("\\?", 2);
+                            options = parts.length > 1 ? parts[1] : "";
+                        } else {
+                            options = "charset=utf8"; // cubrid 기본설정
+                        }
 
                         return ServerBasedDbmsConnectionProperties.builder()
                                 .host(host)
@@ -286,35 +260,67 @@ public class DbmsRegistry {
 
             ServerBasedDbms.builder()
                     .name("TIBERO")
-                    .id("TIBERO")
+                    .id("tibero")
                     .driverClassName("ch.admin.bar.siard2.jdbc.Tibero")
-                    .jdbcConnectionStringEncoder(config -> String.format(
-                            "jdbc:tibero://%s:%s/%s%s",
-                            config.getHost(),
-                            config.getPort(),
-                            config.getDbName(),
-                            config.getUser(),
-                            config.getOptions()
-                                    .map(optionsString -> "?" + optionsString)
-                                    .orElse("")))
+                    .jdbcConnectionStringEncoder(config -> {
+                        // JDBC URL 구성
+                        String baseUrl = String.format(
+                                "jdbc:tibero://%s:%s/%s",
+                                config.getHost(),
+                                config.getPort(),
+                                config.getDbName()
+                        );
+
+                        // 사용자 이름과 비밀번호를 URL의 쿼리 파라미터로 추가
+                        String options = String.format("?user=%s&password=%s",
+                                config.getUser(),
+                                config.getPassword());
+
+                        return baseUrl + options;
+                    })
                     .jdbcConnectionStringDecoder(encoded -> {
-                        val splitEncoded = encoded.split(":");
-                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
-                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
+                        String[] splitEncoded = encoded.split(":");
+
+                        // URL 형식 검증
+                        if (splitEncoded.length < 4) {
+                            throw new IllegalArgumentException("Invalid TIBERO JDBC URL format");
+                        }
+
+                        // 호스트, 포트, 데이터베이스 이름 추출
+                        String host = splitEncoded[2].replace("//", "");
+                        String[] portAndDbName = splitEncoded[3].split("/", 2);
+                        String port = portAndDbName[0];
+                        String dbName = portAndDbName[1].split("\\?")[0];
+
+                        // 쿼리 파라미터 처리
+                        String user = "";
+                        String password = "";
+
+                        if (portAndDbName.length > 1) {
+                            String[] options = portAndDbName[1].split("&");
+                            for (String option : options) {
+                                if (option.startsWith("user=")) {
+                                    user = option.substring("user=".length());
+                                } else if (option.startsWith("password=")) {
+                                    password = option.substring("password=".length());
+                                }
+                            }
+                        }
 
                         return ServerBasedDbmsConnectionProperties.builder()
-                                .host(splitEncoded[2].replace("//", ""))
-                                .port(splitPortAndDbNameWithOptions[0])
-                                .dbName(splitDbNameAndOptions[0])
-                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
-                                .user("")
-                                .password("")
+                                .host(host)
+                                .port(port)
+                                .dbName(dbName)
+                                .user(user)
+                                .password(password)
+                                .options(Optional.empty()) // 필요 시 추가 옵션 처리
                                 .build();
                     })
-                    .examplePort("30000")
+                    .examplePort("8629")
                     .exampleHost("tibero.exampleHost.org")
                     .exampleDbName("tibero")
                     .build()
+
     );
 
     public static Set<String> getSupportedDbms() {
