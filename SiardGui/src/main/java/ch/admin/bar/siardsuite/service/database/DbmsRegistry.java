@@ -201,38 +201,6 @@ public class DbmsRegistry {
                     .exampleDbName("MS-SQL-Database")
                     .build(),
 
-            // TODO:: cubrid, tibero 드라이버 추가 시 경로 및 설정 변경 필요
-//            ServerBasedDbms.builder()
-//                    .name("CUBRID")
-//                    .id("cubrid")
-//                    .driverClassName("ch.admin.bar.siard2.jdbc.CUBRIDDriver")
-//                    .jdbcConnectionStringEncoder(config -> String.format(
-//                            "jdbc:cubrid:%s:%s:%s:dba::%s?charset=utf8",
-//                            config.getHost(),
-//                            config.getPort(),
-//                            config.getDbName(),
-//                            config.getOptions()
-//                                    .map(optionsString -> "?" + optionsString)
-//                                    .orElse("")))
-//                    .jdbcConnectionStringDecoder(encoded -> {
-//                        val splitEncoded = encoded.split(":");
-//                        val splitPortAndDbNameWithOptions = splitEncoded[3].split("/", 2);
-//                        val splitDbNameAndOptions = splitPortAndDbNameWithOptions[1].split("\\?", 2);
-//
-//                        return ServerBasedDbmsConnectionProperties.builder()
-//                                .host(splitEncoded[2].replace("//", ""))
-//                                .port(splitPortAndDbNameWithOptions[0])
-//                                .dbName(splitDbNameAndOptions[0])
-//                                .options(splitDbNameAndOptions.length > 1 ? Optional.of(splitDbNameAndOptions[1]) : Optional.empty())
-//                                .user("")
-//                                .password("")
-//                                .build();
-//                    })
-//                    .examplePort("30000")
-//                    .exampleHost("cubrid.exampleHost.org")
-//                    .exampleDbName("testDB")
-//                    .build(),
-
             ServerBasedDbms.builder()
                     .name("CUBRID")
                     .id("cubrid")
@@ -266,8 +234,14 @@ public class DbmsRegistry {
 
                         String password = ""; // 비밀번호가 없거나 필요 없는 경우
 
-                        String[] parts = splitEncoded[6].split("\\?", 2);
-                        String options = parts.length > 1 ? parts[1] : "";
+                        int length = splitEncoded.length;
+                        String options;
+                        if (length >= 7) {
+                            String[] parts = splitEncoded[6].split("\\?", 2);
+                            options = parts.length > 1 ? parts[1] : "";
+                        } else {
+                            options = "charset=utf8"; // cubrid 기본설정
+                        }
 
                         return ServerBasedDbmsConnectionProperties.builder()
                                 .host(host)
@@ -282,6 +256,7 @@ public class DbmsRegistry {
                     .exampleHost("cubrid.exampleHost.org")
                     .exampleDbName("testDB")
                     .build(),
+
 
             ServerBasedDbms.builder()
                     .name("TIBERO")

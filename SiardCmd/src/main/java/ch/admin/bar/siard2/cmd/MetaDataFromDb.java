@@ -1210,7 +1210,6 @@ public class MetaDataFromDb extends MetaDataBase {
             return;
         }
 
-        // TODO query modification
         String query = switch (dataBase) {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
                     "FROM information_schema.tables " +
@@ -1223,7 +1222,6 @@ public class MetaDataFromDb extends MetaDataBase {
             case CUBRiD -> ";info stats " + tableName;
             case TIBERO -> "";
         };
-
 
         long size = 0;
 
@@ -1238,11 +1236,11 @@ public class MetaDataFromDb extends MetaDataBase {
                     // TODO :: more db
                 }
 
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    size = rs.getLong(1);  // Assuming the size is in the first column
-                }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                size = rs.getLong(1);  // Assuming the size is in the first column
             }
+        }
 
 
         Schema parentSchema = table.getParentSchema();
