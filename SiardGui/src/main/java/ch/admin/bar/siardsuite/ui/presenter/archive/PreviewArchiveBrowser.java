@@ -47,7 +47,7 @@ public class PreviewArchiveBrowser {
             final Dialogs dialogs,
             final ErrorHandler errorHandler
     ) {
-        val archiveBrowserView = new TreeBuilder(new SiardArchive("", archive, true), true);
+        val archiveBrowserView = new TreeBuilder(new SiardArchive("", archive, true), true, false);
         TreeItem<TreeAttributeWrapper> rootItem = archiveBrowserView.createRootItem();
         this.buttonsBox = new ButtonBox().make(DEFAULT);
 

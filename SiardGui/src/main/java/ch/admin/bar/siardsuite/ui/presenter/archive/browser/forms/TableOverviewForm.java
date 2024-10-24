@@ -11,8 +11,6 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.Converter;
 import lombok.NonNull;
 
-import static ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.Converter.catchExceptions;
-
 public class TableOverviewForm {
 
     private static final I18nKey LABEL_TABLE = I18nKey.of("tableContainer.labelTable");

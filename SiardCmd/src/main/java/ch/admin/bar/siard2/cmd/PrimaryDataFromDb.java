@@ -1,43 +1,32 @@
 package ch.admin.bar.siard2.cmd;
 
-import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.api.Cell;
-import ch.admin.bar.siard2.api.MetaColumn;
-import ch.admin.bar.siard2.api.MetaType;
 import ch.admin.bar.siard2.api.Record;
-import ch.admin.bar.siard2.api.RecordRetainer;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.api.Table;
-import ch.admin.bar.siard2.api.Value;
+import ch.admin.bar.siard2.api.*;
+import ch.admin.bar.siard2.api.ext.FileDownloadPathHolder;
+import ch.admin.bar.siard2.api.ext.SchemaTableKey;
+import ch.admin.bar.siard2.api.ext.SftpConnection;
+import ch.admin.bar.siard2.api.ext.SftpSender;
+import ch.admin.bar.siard2.api.ext.form.FormData;
+import ch.admin.bar.siard2.api.ext.form.FormDataHelper;
 import ch.admin.bar.siard2.api.generated.CategoryType;
-import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.StopWatch;
 import ch.enterag.utils.background.Progress;
+import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.Duration;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.HashMap;
+import java.sql.*;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import javax.xml.datatype.Duration;
+import java.util.Set;
 
-import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static ch.admin.bar.siard2.api.ext.SftpSender.buildSftpSender;
 
 public class PrimaryDataFromDb extends PrimaryDataTransfer {
     private static final Logger LOG = LoggerFactory.getLogger(PrimaryDataFromDb.class);
@@ -236,6 +225,23 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         this.setValue(cell, oValue, mimeTypeHandler);
         mimeTypeHandler.applyMimeType(cell);
         this.setValueStopWatch.stop();
+
+        Set<FormData> formDataSet = _archive.getFormDataSet();
+        Table parentTable = cell.getParentRecord().getParentTable();
+        String schema = parentTable.getParentSchema().getMetaSchema().getName();
+        String table = parentTable.getMetaTable().getName();
+        SchemaTableKey schemaTableKey = SchemaTableKey.of(schema, table);
+
+        for (FormData formData : formDataSet) {
+            FormDataHelper formDataHelper = FormDataHelper.builder()
+                    .formData(formData)
+                    .defaultTargetDirectory(_archive.getFile().getParent())
+                    .schemaTableKey(schemaTableKey)
+                    .cell(cell)
+                    .oValue(oValue)
+                    .build();
+            formDataHelper.send();
+        }
     }
 
     private int getDataType(MetaColumn mc) throws IOException {

@@ -975,14 +975,12 @@ public class MetaDataFromDb extends MetaDataBase {
 
 
     private void getColumns(MetaTable mt) throws IOException, SQLException {
-        ResultSet rs = this._dmd.getColumns(
-                null,
-                ((BaseDatabaseMetaData) this._dmd)
-                        .toPattern(mt.getParentMetaSchema().getName()),
-                ((BaseDatabaseMetaData) this._dmd)
-                        .toPattern(mt.getName()),
-                "%"
-        );
+
+        ResultSet rs = this._dmd.getColumns(null,
+                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
+                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
+                "%");
+
 
         while (rs.next()) {
             String sTableSchema = rs.getString("TABLE_SCHEM");
@@ -996,10 +994,10 @@ public class MetaDataFromDb extends MetaDataBase {
 
             LOG.debug("Metadata for column '{}.{}.{}' loaded", sTableSchema, sTableName, sColumnName);
         }
+
         if (mt.getMetaColumns() == 0) throw new SQLException("Table " + mt.getName() + " has no columns!");
         rs.close();
     }
-
 
     private void getGlobalMetaData() throws IOException, SQLException {
         getPrivileges();
@@ -1042,7 +1040,7 @@ public class MetaDataFromDb extends MetaDataBase {
             String sRemarks = rs.getString("REMARKS");
 
             // 특정 엔티티를 선택한 경우 선택되지 않은 엔티티는 메타 정보 조회 무시 1
-            if (hasSelected) { 
+            if (hasSelected) {
                 boolean selected = selectedSchemaTableMap.entrySet()
                         .stream()
                         .anyMatch(entry -> {
@@ -1054,7 +1052,7 @@ public class MetaDataFromDb extends MetaDataBase {
                         );
                 if (!selected) continue;
             }
-            
+
             Schema schema = this._md.getArchive().getSchema(sTableSchema);
             if (schema == null) schema = this._md.getArchive().createSchema(sTableSchema);
             Table table = schema.getTable(sTableName);
@@ -1206,35 +1204,37 @@ public class MetaDataFromDb extends MetaDataBase {
         String tableName = metaTable.getName();
         String schemaName = metaTable.getParentMetaSchema().getName();
 
-        if (dataBase.equals(DataBase.CUBRiD)) {
+        if (dataBase.equals(DataBase.CUBRID)) {
             return;
         }
 
         String query = switch (dataBase) {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
                     "FROM information_schema.tables " +
-                    "WHERE table_schema = ? AND table_name = ?";
-            case ORACLE -> "SELECT SUM(bytes) AS table_size " +
-                    "FROM user_segments WHERE segment_name = UPPER(?) AND segment_type = 'TABLE'";
+                    "WHERE table_schema = ? " +
+                    "AND table_name = ?";
+            case ORACLE -> getOracleQuery();
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";
-            case CUBRiD -> ";info stats " + tableName;
+            case CUBRID -> ";info stats " + tableName;
             case TIBERO -> "";
         };
 
         long size = 0;
-
-            try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
-                switch (dataBase) {
-                    case MYSQL -> {
-                        stmt.setString(1, schemaName);
-                        stmt.setString(2, tableName);
-                    }
-                    case ORACLE -> stmt.setString(1, tableName);
-                    case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
-                    // TODO :: more db
+        try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
+            switch (dataBase) {
+                case MYSQL -> {
+                    stmt.setString(1, schemaName);
+                    stmt.setString(2, tableName);
                 }
+                case ORACLE -> {
+                    stmt.setString(1, tableName);
+                    stmt.setString(2, tableName);
+                }
+                case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
+                // TODO :: more db
+            }
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -1248,6 +1248,26 @@ public class MetaDataFromDb extends MetaDataBase {
 
         table.setFormattedTableSize(ByteFormatter.convertToBestFitUnit(size));
         table.setTableSize(size);
+    }
+
+    private String getOracleQuery() {
+        String databaseUser = this._md.getArchive().getMetaData().getDatabaseUser();
+        if (isSysdba(databaseUser)) {
+            return "SELECT bytes AS table_size " +
+                    "FROM dba_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        } else {
+            return "SELECT bytes AS table_size " +
+                    "FROM USER_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        }
+    }
+
+    private boolean isSysdba(String databaseUser) {
+        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
+        return !databaseUser.startsWith("C##");
     }
 
 }

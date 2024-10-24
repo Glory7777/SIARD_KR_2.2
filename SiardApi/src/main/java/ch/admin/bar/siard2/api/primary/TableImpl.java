@@ -2,6 +2,7 @@ package ch.admin.bar.siard2.api.primary;
 
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.Record;
+import ch.admin.bar.siard2.api.ext.SftpConnection;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ObjectFactory;
 import ch.admin.bar.siard2.api.generated.TableType;
@@ -52,8 +53,9 @@ public class TableImpl extends SearchImpl implements Table {
     @Getter @Setter private long tableSize;
     @Getter @Setter private String formattedTableSize;
 
-    static DocumentBuilder _db = null;
+    private SftpConnection sftpConnection;
 
+    static DocumentBuilder _db = null;
 
     static DocumentBuilder getDocumentBuilder() throws IOException {
         try {
@@ -358,8 +360,6 @@ public class TableImpl extends SearchImpl implements Table {
         SchemaImpl si = (SchemaImpl) getParentSchema();
         if (tt == null) {
             String sFolder = "table" + tts.getTable().size();
-            ArchiveImpl ai = getArchiveImpl();
-//            ai.createFolderEntry(si.getSchemaFolder() + sFolder + "/");
             tt = MetaTableImpl.createTableType(sName, sFolder);
             tts.getTable().add(tt);
         }
@@ -617,4 +617,13 @@ public class TableImpl extends SearchImpl implements Table {
         oswr.flush();
     }
 
+    @Override
+    public SftpConnection getSftpConnection() {
+        return this.sftpConnection;
+    }
+
+    @Override
+    public void setSftpConnection(SftpConnection sftpConnection) {
+        this.sftpConnection = sftpConnection;
+    }
 }

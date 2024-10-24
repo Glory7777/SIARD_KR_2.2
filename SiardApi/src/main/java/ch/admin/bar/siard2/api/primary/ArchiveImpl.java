@@ -1,6 +1,7 @@
 package ch.admin.bar.siard2.api.primary;
 
 import ch.admin.bar.siard2.api.*;
+import ch.admin.bar.siard2.api.ext.form.FormData;
 import ch.admin.bar.siard2.api.generated.*;
 import ch.admin.bar.siard2.api.meta.MetaDataImpl;
 import ch.admin.bar.siard2.api.meta.MetaSchemaImpl;
@@ -51,6 +52,7 @@ public class ArchiveImpl implements Archive {
     private final Map<String, Schema> _mapSchemas = new HashMap();
     private final Map<String, Schema> _mapSelectedSchemas = new HashMap<>();
     private final Map<String, List<String>> _mapSelectedSchemaTableMap = new HashMap<>();
+    private final Set<FormData> _formDataSet = new LinkedHashSet<>();
 
     public static String getHeaderFolder() {
         return "header/";
@@ -555,21 +557,10 @@ public class ArchiveImpl implements Archive {
      *
      * @param selectedSchemaTableMap
      */
+    @Deprecated
     @Override
     public void replaceWithSelectedSchemas(Map<String, List<String>> selectedSchemaTableMap) {
         HashMap<String, Schema> nSchemaMap = new HashMap<>();
-
-        // 선택된 엔티티 추출
-//        selectedSchemaTableMap.forEach(
-//                (schemaName, tableList) -> tableList.forEach(
-//                        tableName -> {_mapSchemas.computeIfPresent(
-//                                schemaName, ( schema) -> nSchemaMap.get(schemaName)
-//                        )
-//                )
-//        );
-
-//        _mapSchemas.clear();
-//        _mapSchemas.putAll(nSchemaMap);
 
         replaceSchemas(
                 selectedSchemaTableMap.entrySet()
@@ -589,6 +580,7 @@ public class ArchiveImpl implements Archive {
 
     }
 
+    @Deprecated
     private void replaceSchemas(Map<String, Schema> newSchemaMap) {
         _mapSchemas.clear();
         _mapSchemas.putAll(newSchemaMap);
@@ -622,7 +614,14 @@ public class ArchiveImpl implements Archive {
 
     @Override
     public Map<String, List<String>> getSelectedSchemaTableMap() {
-
         return this._mapSelectedSchemaTableMap;
     }
+
+    @Override
+    public Set<FormData> getFormDataSet() {
+        return this._formDataSet;
+    }
+
+    @Override
+    public void setFormDataSet(Set<FormData> formDataSet) { this._formDataSet.addAll(formDataSet); }
 }

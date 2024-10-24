@@ -1,11 +1,6 @@
 package ch.admin.bar.siardsuite.ui.component.rendering;
 
-import ch.admin.bar.siardsuite.ui.component.rendering.model.ReadOnlyStringProperty;
-import ch.admin.bar.siardsuite.ui.component.rendering.model.ReadWriteStringProperty;
-import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableForm;
-import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableFormGroup;
-import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableLazyLoadingTable;
-import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableTable;
+import ch.admin.bar.siardsuite.ui.component.rendering.model.*;
 import ch.admin.bar.siardsuite.util.I18n;
 import ch.admin.bar.siardsuite.util.OptionalHelper;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;

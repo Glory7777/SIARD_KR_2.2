@@ -1,11 +1,14 @@
 package ch.admin.bar.siard2.api;
 
+import ch.admin.bar.siard2.api.ext.form.FormData;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface Archive {
     String sSIARD2_META_DATA_XSD_RESOURCE = "/ch/admin/bar/siard2/api/res/metadata.xsd";
@@ -90,10 +93,8 @@ public interface Archive {
 
     Map<String, List<String>> getSelectedSchemaTableMap();
 
+    Set<FormData> getFormDataSet();
+
+    void setFormDataSet(Set<FormData> formDataSet);
+
 }
-
-
-/* Location:              C:\Users\lenovo\IdeaProjects\siardapi.jar!\ch\admin\bar\siard2\api\Archive.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

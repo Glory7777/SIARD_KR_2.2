@@ -21,6 +21,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: "$rootDir/lib")
 
     implementation project(':SiardApi')
+    implementation project(':JdbcBase')
+    implementation project(':JdbcMysql')
 
 }
 

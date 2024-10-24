@@ -1,11 +1,8 @@
 package ch.admin.bar.siardsuite.service.database;
 
 import ch.admin.bar.siard2.api.Archive;
-import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siard2.cmd.ArchiveMapping;
 import ch.admin.bar.siard2.cmd.MetaDataFromDb;
 import ch.admin.bar.siard2.cmd.PrimaryDataFromDb;
-import ch.admin.bar.siard2.cmd.PrimaryDataTransfer;
 import ch.admin.bar.siardsuite.service.ArchiveHandler;
 import ch.admin.bar.siardsuite.service.database.model.LoadDatabaseInstruction;
 import ch.admin.bar.siardsuite.service.preferences.UserPreferences;
@@ -18,10 +15,6 @@ import javafx.util.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-
-import java.sql.Connection;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class DatabaseLoadService extends Service<ObservableList<Pair<String, Long>>> {
@@ -69,6 +62,9 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
             Archive archive = instruction.getSaveAt()
                     .map(archiveHandler::init)
                     .orElseGet(archiveHandler::init);
+
+            // sftp & file copy
+            archive.setFormDataSet(instruction.getFormDataSet());
 
             val metaDataFromDb = MetaDataFromDb.newInstance(connection.getMetaData(), archive.getMetaData());
             metaDataFromDb.setQueryTimeout(timeout);

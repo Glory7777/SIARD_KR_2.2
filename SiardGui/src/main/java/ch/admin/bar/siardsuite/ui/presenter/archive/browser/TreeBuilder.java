@@ -3,21 +3,7 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 import ch.admin.bar.siard2.api.MetaParameter;
 import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.admin.bar.siardsuite.ui.common.Icon;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.AttributeDetailsForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.ColumnDetailsForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.MetadataDetailsForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.ParameterOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.PrivilegesOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.RoutineOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.RoutinesOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.RowsOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.SchemaOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.TableOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.TypeDetailsForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.TypesOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.UsersOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.ViewOverviewForm;
-import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.ViewsOverviewForm;
+import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.*;
 import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import ch.admin.bar.siardsuite.model.database.DatabaseAttribute;
 import ch.admin.bar.siardsuite.model.database.DatabaseColumn;
@@ -37,7 +23,7 @@ import javafx.scene.image.ImageView;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ch.admin.bar.siardsuite.model.TreeAttributeWrapper.DatabaseAttribute.*;
@@ -87,6 +73,7 @@ public class TreeBuilder {
 
     private final SiardArchive siardArchive;
     private final boolean readonly;
+    private final boolean columnSelectable;
 
     public TreeItem<TreeAttributeWrapper> createRootItem() {
         val rootItem = new TreeItem<>(
@@ -115,6 +102,30 @@ public class TreeBuilder {
         return rootItem;
     }
 
+    /**
+     * create root item with schemas and entities chosen in the previous step
+     *
+     * @return
+     */
+    public TreeItem<TreeAttributeWrapper> createRootItemWithSelectedSchemas() {
+        val rootItem = new TreeItem<>(
+                TreeAttributeWrapper.builder()
+                        .name(DisplayableText.of(this.siardArchive.getName().orElse("")))
+                        .viewTitle(DisplayableText.of(ROOT_ELEMENT_NAME))
+                        .renderableForm(MetadataDetailsForm.create(siardArchive)
+                                .toBuilder()
+                                .readOnlyForm(readonly)
+                                .build())
+                        .shouldPropagate(true)
+                        .build(),
+                new ImageView(Icon.DB.toResizedImageOfHeight(16)));
+
+        rootItem.setExpanded(true);
+        rootItem.getChildren().add(createItemForSchemas());
+
+        return rootItem;
+    }
+
     private TreeItem<TreeAttributeWrapper> createItemForPrivileges(List<Privilige> priviliges) {
         return new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(PRIVILEGES_ELEMENT_NAME, priviliges.size()))
@@ -136,7 +147,8 @@ public class TreeBuilder {
     }
 
     private TreeItem<TreeAttributeWrapper> createItemForSchemas() {
-        val schemas = this.siardArchive.schemas();
+        Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
+        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
 
         long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
         String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
@@ -175,8 +187,8 @@ public class TreeBuilder {
                                 .readOnlyForm(readonly)
                                 .build())
                         .databaseAttribute(SCHEMA)
-                        .shouldPropagate(true)
-                        .shouldHaveCheckBox(true)
+                        .shouldPropagate(!columnSelectable)
+                        .shouldHaveCheckBox(!columnSelectable)
                         .size(schemaSize)
                         .formattedSize(formattedSchemaSize)
                         .build());
@@ -355,6 +367,9 @@ public class TreeBuilder {
                 .renderableForm(ViewOverviewForm.create(view.getMetaView()).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(COLUMN)
+                .transferable(columnSelectable)
+                .shouldHaveCheckBox(columnSelectable)
                 .build());
 
         val columnItems = view.columns().stream()
@@ -379,20 +394,30 @@ public class TreeBuilder {
                 .renderableForm(ColumnDetailsForm.create(column).toBuilder()
                         .readOnlyForm(readonly)
                         .build())
+                .databaseAttribute(COLUMN)
+                .shouldHaveCheckBox(columnSelectable)
+                .transferable(columnSelectable)
+                .columnSelectable(columnSelectable)
                 .build());
     }
 
     private TreeItem<TreeAttributeWrapper> createItemForTables(DatabaseSchema schema) {
-        val tables = schema.getTables();
+
+        List<String> strings = siardArchive.getArchive().getSelectedSchemaTableMap().get(schema.getName());
+        Set<String> selectedTableSet = strings != null ? new HashSet<>(strings) : Collections.emptySet();
+
+        val tables = selectedTableSet.isEmpty() ? schema.getTables() : schema.getTables().stream().filter(databaseTable -> selectedTableSet.contains(databaseTable.getName())).toList();
 
         val tablesItem = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(TABLES_ELEMENT_NAME, tables.size()))
                 .viewTitle(DisplayableText.of(TABLES_VIEW_TITLE))
-                .renderableForm(SchemaOverviewForm.create(schema).toBuilder()
-                        .readOnlyForm(readonly)
-                        .build())
+                .renderableForm(
+                        SchemaOverviewForm.create(schema).toBuilder()
+                                .readOnlyForm(readonly)
+                                .build()
+                )
                 .databaseAttribute(TABLE_TITLE)
-                .shouldPropagate(true)
+                .shouldPropagate(!columnSelectable)
                 .build());
 
         tablesItem.getChildren()
@@ -410,15 +435,16 @@ public class TreeBuilder {
                 .name(DisplayableText.of(table.getName()))
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
                 .renderableForm(TableOverviewForm.create(table).toBuilder()
-                        .readOnlyForm(readonly)
-                        .build())
+                                        .readOnlyForm(readonly)
+                                        .build())
                 .databaseAttribute(TABLE)
                 .databaseTable(table)
                 .shouldPropagate(false)
-                .transferable(true)
-                .shouldHaveCheckBox(true)
+                .transferable(!columnSelectable)
+                .shouldHaveCheckBox(!columnSelectable)
                 .size(table.getTable().getTableSize())
                 .formattedSize(table.getTable().getFormattedTableSize())
+                .columnSelectable(columnSelectable)
                 .build());
 
         if (!siardArchive.onlyMetaData()) {
@@ -449,6 +475,8 @@ public class TreeBuilder {
                         .readOnlyForm(readonly)
                         .build())
                 .databaseAttribute(COLUMN)
+                .shouldHaveCheckBox(columnSelectable)
+                .transferable(columnSelectable)
                 .build());
 
         val columnItems = columns.stream()
