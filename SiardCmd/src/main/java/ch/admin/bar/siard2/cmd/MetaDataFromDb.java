@@ -1203,6 +1203,13 @@ public class MetaDataFromDb extends MetaDataBase {
         String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
         DataBase dataBase = DataBase.findByName(databaseProductName);
 
+        String tableName = metaTable.getName();
+        String schemaName = metaTable.getParentMetaSchema().getName();
+
+        if (dataBase.equals(DataBase.CUBRiD)) {
+            return;
+        }
+
         // TODO query modification
         String query = switch (dataBase) {
             case MYSQL -> "SELECT (data_length + index_length) AS size " +
@@ -1213,30 +1220,30 @@ public class MetaDataFromDb extends MetaDataBase {
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";
-            case CUBRiD -> "";
+            case CUBRiD -> ";info stats " + tableName;
             case TIBERO -> "";
         };
 
-        String tableName = metaTable.getName();
-        String schemaName = metaTable.getParentMetaSchema().getName();
 
         long size = 0;
-        try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
-            switch (dataBase) {
-                case MYSQL -> {
-                    stmt.setString(1, schemaName);
-                    stmt.setString(2, tableName);
+
+            try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
+                switch (dataBase) {
+                    case MYSQL -> {
+                        stmt.setString(1, schemaName);
+                        stmt.setString(2, tableName);
+                    }
+                    case ORACLE -> stmt.setString(1, tableName);
+                    case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
+                    // TODO :: more db
                 }
-                case ORACLE -> stmt.setString(1, tableName);
-                case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
-                // TODO :: more db
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    size = rs.getLong(1);  // Assuming the size is in the first column
+                }
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                size = rs.getLong(1);  // Assuming the size is in the first column
-            }
-        }
 
         Schema parentSchema = table.getParentSchema();
         parentSchema.addTableSize(size);
