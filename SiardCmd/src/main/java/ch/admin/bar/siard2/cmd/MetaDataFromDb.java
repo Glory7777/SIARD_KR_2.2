@@ -981,6 +981,7 @@ public class MetaDataFromDb extends MetaDataBase {
                 ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
                 "%");
 
+
         while (rs.next()) {
             String sTableSchema = rs.getString("TABLE_SCHEM");
             if (!sTableSchema.equals(mt.getParentMetaSchema().getName()))

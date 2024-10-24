@@ -9,7 +9,6 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.framework.steps.StepperNavigator;
 import ch.admin.bar.siardsuite.framework.view.FXMLLoadHelper;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
-import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import ch.admin.bar.siardsuite.model.Tuple;
 import ch.admin.bar.siardsuite.model.UserDefinedMetadata;
 import ch.admin.bar.siardsuite.service.ArchiveHandler;
@@ -36,7 +35,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,8 +114,7 @@ public class ArchiveMetaDataEditorPresenter {
 
     private Archive archive;
 
-    public void
-    init(
+    public void init(
             final Archive archive,
             final DbmsConnectionData connectionData,
             final StepperNavigator<Tuple<UserDefinedMetadata, DbmsConnectionData>> navigator,
@@ -204,18 +201,21 @@ public class ArchiveMetaDataEditorPresenter {
                     });
 
             if (targetArchive != null) {
-                return Optional.of(UserDefinedMetadata.builder()
-                        .dbName(this.name.getText())
-                        .description(Optional.ofNullable(this.description.getText()).filter(text -> !text.isEmpty()))
-                        .owner(this.owner.getText())
-                        .dataOriginTimespan(this.dataOriginTimespan.getText())
-                        .archiverName(Optional.ofNullable(this.archiverName.getText()).filter(text -> !text.isEmpty()))
-                        .archiverContact(Optional.ofNullable(this.archiverContact.getText()).filter(text -> !text.isEmpty()))
-                        .lobFolder(lobFolder)
-                        .saveAt(targetArchive)
-                        .exportViewsAsTables(exportViewsAsTables.isSelected())
-                        .selectedSchemaTableMap(archive.getSelectedSchemaTableMap())
-                        .build());
+                return Optional.of(
+                        UserDefinedMetadata.builder()
+                                .dbName(this.name.getText())
+                                .description(Optional.ofNullable(this.description.getText()).filter(text -> !text.isEmpty()))
+                                .owner(this.owner.getText())
+                                .dataOriginTimespan(this.dataOriginTimespan.getText())
+                                .archiverName(Optional.ofNullable(this.archiverName.getText()).filter(text -> !text.isEmpty()))
+                                .archiverContact(Optional.ofNullable(this.archiverContact.getText()).filter(text -> !text.isEmpty()))
+                                .lobFolder(lobFolder)
+                                .saveAt(targetArchive)
+                                .exportViewsAsTables(exportViewsAsTables.isSelected())
+                                .selectedSchemaTableMap(archive.getSelectedSchemaTableMap())
+                                .formDataSet(archive.getFormDataSet())
+                                .build()
+                );
             }
         }
 

@@ -26,6 +26,7 @@ public class ArchiveStepperPresenter implements Destructible {
     private static final I18nKey SELECT_DBMS_TITLE = I18nKey.of("archive.step.name.dbms");
     private static final I18nKey DB_CONNECTION_TITLE = I18nKey.of("archive.step.name.databaseConnectionURL");
     private static final I18nKey DB_PREVIEW_TITLE = I18nKey.of("archive.step.name.preview");
+    private static final I18nKey COLUMN_FILE_DOWNLOAD = I18nKey.of("archive.step.name.fileDownload");
     private static final I18nKey EDIT_META_DATA_TITLE = I18nKey.of("archive.step.name.metadata");
     private static final I18nKey DB_DOWNLOAD_TITLE = I18nKey.of("archive.step.name.download");
 
@@ -40,6 +41,9 @@ public class ArchiveStepperPresenter implements Destructible {
 
     private static final StepDefinition<Tuple<Archive, DbmsConnectionData>, Tuple<Archive, DbmsConnectionData>> PREVIEW_METADATA =
             new StepDefinition<>(DB_PREVIEW_TITLE, PreviewArchiveBrowser::load);
+
+    private static final StepDefinition<Tuple<Archive, DbmsConnectionData>, Tuple<Archive, DbmsConnectionData>> FILE_DOWNLOAD =
+            new StepDefinition<>(COLUMN_FILE_DOWNLOAD, ColumnFileDownLoadPresenter::load);
 
     private static final StepDefinition<Tuple<Archive, DbmsConnectionData>, Tuple<UserDefinedMetadata, DbmsConnectionData>> EDIT_USER_DEFINED_METADATA =
             new StepDefinition<>(EDIT_META_DATA_TITLE, ArchiveMetaDataEditorPresenter::load);
@@ -75,6 +79,7 @@ public class ArchiveStepperPresenter implements Destructible {
                 .register(EDIT_DB_CONNECTION_PROPERTIES)
                 .register(DOWNLOAD_METADATA)
                 .register(PREVIEW_METADATA)
+                .register(FILE_DOWNLOAD)
                 .register(EDIT_USER_DEFINED_METADATA)
                 .register(DOWNLOAD_DB)
                 .build();

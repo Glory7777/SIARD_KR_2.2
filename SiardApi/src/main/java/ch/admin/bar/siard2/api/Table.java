@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.api;
 
+import ch.admin.bar.siard2.api.ext.SftpConnection;
 import ch.enterag.utils.background.Progress;
 import java.io.File;
 import java.io.IOException;
@@ -37,10 +38,9 @@ public interface Table extends Search {
   void setFormattedTableSize(String formattedTableSize);
 
   String getFormattedTableSize();
+
+  SftpConnection getSftpConnection();
+
+  void setSftpConnection(SftpConnection sftpConnection);
 }
 
-
-/* Location:              C:\Users\lenovo\IdeaProjects\siardapi.jar!\ch\admin\bar\siard2\api\Table.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

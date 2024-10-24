@@ -1,16 +1,14 @@
 package ch.admin.bar.siardsuite.model;
 
 import ch.admin.bar.siard2.api.Schema;
+import ch.admin.bar.siard2.api.ext.form.FormData;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.io.File;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Value
 @Builder
@@ -31,4 +29,7 @@ public class UserDefinedMetadata {
 
     @Builder.Default
     Map<String, List<String>> selectedSchemaTableMap = new HashMap<>();
+
+    @Builder.Default
+    Set<FormData> formDataSet = new LinkedHashSet<>();
 }

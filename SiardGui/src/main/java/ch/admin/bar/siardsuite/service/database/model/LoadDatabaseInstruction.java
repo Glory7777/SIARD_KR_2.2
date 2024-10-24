@@ -2,7 +2,7 @@ package ch.admin.bar.siardsuite.service.database.model;
 
 import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.Schema;
-import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
+import ch.admin.bar.siard2.api.ext.form.FormData;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
@@ -11,7 +11,6 @@ import javafx.util.Pair;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.net.URI;
@@ -68,5 +67,8 @@ public class LoadDatabaseInstruction {
 
     @Builder.Default
     Boolean preview = true;
+
+    @Builder.Default
+    Set<FormData> formDataSet = new LinkedHashSet<>();
 
 }

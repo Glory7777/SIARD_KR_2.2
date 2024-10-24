@@ -82,6 +82,8 @@ dependencies {
     implementation project(':JdbcBase')
     implementation project(':JdbcMysql')
 
+//    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+
 }
 
 tasks.withType(JavaCompile) {

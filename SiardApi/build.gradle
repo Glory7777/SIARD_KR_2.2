@@ -20,6 +20,8 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: "$rootDir/lib")
 
+    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+
 }
 
 test {

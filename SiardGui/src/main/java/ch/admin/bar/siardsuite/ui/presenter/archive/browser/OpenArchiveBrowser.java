@@ -34,7 +34,7 @@ public class OpenArchiveBrowser {
             final ErrorHandler errorHandler,
             final ArchiveHandler archiveHandler
     ) {
-        val archiveBrowserView = new TreeBuilder(new SiardArchive(archive.getFile().getName(), archive, false), false);
+        val archiveBrowserView = new TreeBuilder(new SiardArchive(archive.getFile().getName(), archive, false), false, false);
 
         val buttonsBox = new ButtonBox().make(OPEN_PREVIEW);
         buttonsBox.cancel().setOnAction(event -> dialogs.open(
