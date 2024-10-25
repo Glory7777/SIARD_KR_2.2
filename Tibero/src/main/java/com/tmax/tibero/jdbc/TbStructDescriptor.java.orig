@@ -1,0 +1,361 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLInput;
+import java.sql.SQLOutput;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Map;
+
+import tibero.Debug;
+import tibero.jdbc.data.*;
+import tibero.jdbc.driver.TbConnection;
+import tibero.jdbc.driver.TbResultSetBase;
+import tibero.jdbc.err.TbError;
+import tibero.jdbc.util.TbDatabaseMetaQuery;
+
+/**
+ * TbStructDescriptor describes an struct class.
+ * 
+ * @author  Sungjin Cho
+ * @version $Id: TbStructDescriptor.java 144661 2017-06-08 08:41:13Z sunghee_jung $ 
+ */
+public class TbStructDescriptor extends TbTypeDescriptor {
+
+    private TbConnection conn;
+
+    private int memberNo;
+    private int numOfFields;
+    private int[] attributeTypes;
+    private String[] attributeTypeNames;
+    private String[] attributeOIDs;
+    private boolean isFinal = true;
+
+    public final static String _DESC_OID_PREFIX = DataTypeConverter._DESC_OID_PREFIX;
+    public final static String _DESC_TOBJ_ID_PREFIX = DataTypeConverter._DESC_TOBJ_ID_PREFIX;
+    public final static String _DESC_VERSION_NO_PREFIX = DataTypeConverter._DESC_VERSION_NO_PREFIX;
+
+    protected TbStructDescriptor(String typeName, Connection conn) throws SQLException {
+        init(DataType.OBJECT, null, typeName.toUpperCase());
+        this.conn = (TbConnection) conn;
+    }
+
+    protected TbStructDescriptor(int kind, String hexEncodedOID,
+                                 String sqlTypeName, int[] attrTypes,
+                                 String[] attrTypeNames, String[] attrOIDs,
+                                 TbConnection conn) throws SQLException {
+        init(kind, hexEncodedOID, sqlTypeName);
+        this.attributeTypes = attrTypes;
+        this.numOfFields = attrTypes.length;
+        this.attributeTypeNames = attrTypeNames;
+        this.attributeOIDs = attrOIDs;
+        this.conn = conn;
+    }
+
+    public static TbStructDescriptor
+            createDescriptor(String sqlTypeName, Connection conn)
+                    throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStructDescriptor.createDescriptor",
+                            new Object[] {
+                                    sqlTypeName, conn
+            });
+        }
+
+        if (sqlTypeName == null || sqlTypeName.length() == 0)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                                          "sqlTypeName[" + sqlTypeName + "]");
+
+        TbConnection tbconn = (TbConnection) conn;
+        if (!tbconn.getExtFeatureInfo()
+                .supports(ExtFeatureInfo.ID_UDT_OWNER_OF_COLUMN)) {
+            throw TbError.newSQLException(TbError.UNSUPPORTED_SVR_VERSION);
+        }
+        String fullTypeName = sqlTypeName.toUpperCase();
+        Object obj = tbconn.getDescriptor(fullTypeName);
+
+        if (obj instanceof TbStructDescriptor) {
+            return (TbStructDescriptor) obj;
+        }
+        else if (obj != null) {
+            throw TbError.newSQLException(TbError.MU_ANOTHER_KIND_UDT_EXIST);
+        }
+
+        String[] tokens = TbTypeDescriptor.splitSQLTypeName(fullTypeName);
+        if (tokens.length != 2) {
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                    "sqlTypeName[" + sqlTypeName + "]");
+        }
+
+        return lookupUdtMeta(tokens[0], tokens[1], tbconn);
+    }
+
+    public static TbStructDescriptor
+            createDescriptor(int kind, String hexEncodedOID, Connection conn)
+                    throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStructDescriptor.createDescriptor", new Object[] {
+                    String.valueOf(kind), hexEncodedOID, conn
+            });
+        }
+
+        if (hexEncodedOID == null || hexEncodedOID.length() == 0)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                                          "OID(hex)[" + hexEncodedOID + "]");
+
+        TbConnection tbconn = (TbConnection) conn;
+        Object obj = tbconn.getDescriptor(_DESC_OID_PREFIX + hexEncodedOID);
+        if (obj instanceof TbStructDescriptor) {
+            return (TbStructDescriptor) obj;
+        }
+        else if (obj != null) {
+            throw TbError.newSQLException(TbError.MU_ANOTHER_KIND_UDT_EXIST);
+        }
+
+        return lookupUdtMeta(hexEncodedOID, tbconn);
+    }
+
+    public static TbStructDescriptor
+    createDescriptor(int kind, String hexEncodedOID, int tobjID, int versionNo, Connection conn)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStructDescriptor.createDescriptor", new Object[] {
+                    String.valueOf(kind), hexEncodedOID, conn
+            });
+        }
+
+        if (hexEncodedOID == null || hexEncodedOID.length() == 0)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                    "OID(hex)[" + hexEncodedOID + "]");
+        else if (!(conn instanceof TbConnection))
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                    "conn[" + conn + "]");
+
+        TbConnection tbconn = (TbConnection) conn;
+        Object obj = tbconn.getDescriptor(_DESC_OID_PREFIX + hexEncodedOID
+                + _DESC_TOBJ_ID_PREFIX + tobjID + _DESC_VERSION_NO_PREFIX + versionNo);
+        if (obj instanceof TbStructDescriptor) {
+            return (TbStructDescriptor) obj;
+        }
+        else if (obj != null) {
+            throw TbError.newSQLException(TbError.MU_ANOTHER_KIND_UDT_EXIST);
+        }
+
+        return lookupUdtMeta(hexEncodedOID, tbconn);
+    }
+
+    public static TbStructDescriptor lookupUdtMeta(String hexEncodedOID, TbConnection conn)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStructDescriptor.lookupUdtMeta", new Object[] {
+                    hexEncodedOID, conn
+            });
+        }
+
+        if (TbTypeDescriptor.UDT_META_OID.equalsIgnoreCase(hexEncodedOID))
+            return null;
+
+        if (hexEncodedOID == null || hexEncodedOID.length() == 0)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                                          "OID(hex)[" + hexEncodedOID + "]");
+
+        // XXX: BIND-PARAM���� ������ �Ϸ���� ���� �����̱� ������ SELECT�� ó���Ѵ�.
+        PreparedStatement pstmt = conn
+                .prepareStatement(TbDatabaseMetaQuery.QUERY_UDTMETA__BY_OID);
+        pstmt.setString(1, hexEncodedOID);
+        ResultSet rs = pstmt.executeQuery();
+
+        return lookupUdtMetaInternal((TbResultSetBase) rs, conn);
+    }
+
+    public static TbStructDescriptor lookupUdtMeta(String schemaName, String typeName,
+                                     TbConnection conn) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStructDescriptor.lookupUdtMeta", new Object[] {
+                    schemaName, typeName, conn
+            });
+        }
+
+        if (TbTypeDescriptor.UDT_META_SQLTYPENAME
+                .equalsIgnoreCase(schemaName + "." + typeName))
+            return null;
+
+        if (typeName == null || typeName.length() == 0)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
+                                          "typeName[" + typeName + "]");
+
+        PreparedStatement pstmt = conn
+                .prepareStatement(TbDatabaseMetaQuery.QUERY_UDTMETA__BY_TYPENAME);
+        pstmt.setString(1, schemaName);
+        pstmt.setString(2, typeName);
+        ResultSet rs = pstmt.executeQuery();
+
+        return lookupUdtMetaInternal((TbResultSetBase) rs, conn);
+    }
+
+    private static TbStructDescriptor lookupUdtMetaInternal(TbResultSetBase rs, TbConnection conn)
+            throws SQLException {
+        if (!rs.next())
+            throw TbError.newSQLException(TbError.MU_UDT_NOT_EXIST);
+
+        try {
+            Object o = rs.getObject(1, TbTypeDescriptor.getUdtMeta2ClsMap());
+            if (!(o instanceof UdtMeta))
+                throw TbError
+                        .newSQLException(TbError.MU_UDT_META_DATA_LOAD_FAIL);
+
+            UdtMeta udt = (UdtMeta) o;
+            int udtInfoVersionNo = udt.getUdtId().getVersionNo();
+            int udtInfoTobjID = udt.getUdtId().getTobjID();
+            Object[] attrMetaArr = (Object[]) udt.getAttrMetaArr().getArray();
+            Object[] hierInfoArr = (Object[]) udt.getHierarchyInfoArr()
+                    .getArray();
+            TbStructDescriptor returnDesc = null;
+            for (int i = 0; i < udt.getHierarchyCnt(); i++) {
+                UdtHierarchyInfo hInfo = (UdtHierarchyInfo) hierInfoArr[i];
+                byte[] isFinal = hInfo.getProperties();
+                UdtInfo udtId = hInfo.getUdtId();
+                BigDecimal[] idxArr =
+                        (BigDecimal[]) hInfo.getAttrIdxArr().getArray();
+                int attrTypes[] = new int[idxArr.length];
+
+                /*
+                 * GETUDTMETA�� �̿��ϴ� ���, ����� Attribute�� UDT Name�� ���޵��� �ʴ´�.
+                 * �� ������ descriptor ������ attrTypeNames[]���� �켱 null���� ��� ó���Ѵ�.
+                 * ��� ���� subtype ó���ÿ��� OID�� �켱 üũ�ϵ��� �Ѵ�.
+                 */
+                String attrTypeNames[] = new String[idxArr.length];
+                String attrOIDs[] = new String[idxArr.length];
+                String sqlTypeName = udtId.getSchemaName() + "." +
+                        udtId.getUdtName();
+
+                for (int j = 0; j < idxArr.length; j++) {
+                    UdtAttrMeta attrMeta =
+                            (UdtAttrMeta) attrMetaArr[idxArr[j].intValue() - 1];
+                    attrTypes[j] = attrMeta.getTypeNo();
+                    attrOIDs[j] = attrMeta.getOid();
+                }
+                TbStructDescriptor newDesc =
+                        new TbStructDescriptor(udtId.getTypeNo(),
+                                               udtId.getOid(), sqlTypeName,
+                                               attrTypes, attrTypeNames,
+                                               attrOIDs, conn);
+                newDesc.setVersionNo(udtInfoVersionNo);
+                newDesc.setTobjID(udtInfoTobjID);
+                newDesc.setIsFinal(isFinal);
+
+                if (i == 0) {
+                    returnDesc = newDesc;
+                }
+
+                conn.putDescriptor(sqlTypeName, newDesc);
+                conn.putDescriptor(_DESC_OID_PREFIX + udtId.getOid(), newDesc);
+            }
+            return returnDesc;
+        }
+        catch (SQLException e) {
+            int ec = e.getErrorCode();
+            if ((ec <= TbError.COMM_ERROR && ec > TbError.SVR_BACKEND_ERROR) ||
+                    ec == TbError.MU_UDT_META_DATA_LOAD_FAIL) {
+                throw e;
+            }
+            else
+                throw TbError
+                        .newSQLException(TbError.MU_UDT_META_DATA_LOAD_FAIL, e);
+        }
+        catch (Exception e) {
+            throw TbError.newSQLException(TbError.MU_UDT_META_DATA_LOAD_FAIL,
+                                          e);
+        }
+    }
+
+    public SQLInput toSQLInput(TbStruct struct, Map
+                               // #ifdef JDK1.5
+                               <String, Class<?>>
+                               // #endif
+                               map) throws SQLException {
+        return new TbSQLInput(struct, this, map);
+    }
+
+    public SQLOutput toSQLOutput() {
+        return new TbSQLOutput(this, conn);
+    }
+
+    public int getNumOfFields() {
+        return numOfFields;
+    }
+
+    public String[] getAttributeOIDs() {
+        return attributeOIDs;
+    }
+
+    public int[] getAttributeTypes() {
+        return attributeTypes;
+    }
+
+    public String[] getAttributeTypeNames() {
+        return attributeTypeNames;
+    }
+
+    public int getMemberNo() {
+        return memberNo;
+    }
+
+    public Class
+            // #ifdef JDK1.5
+            <?>
+            // #endif
+            getClass(Map
+                     // #ifdef JDK1.5
+                     <String, Class<?>>
+                     // #endif
+                     map) throws SQLException {
+        
+        String sqlTypeName = getSQLTypeName();
+
+        // #ifdef JDK1.5
+        Class<?> c = map.get(sqlTypeName);
+//        // #else
+//        Class c = (Class) map.get(sqlTypeName);
+        // #endif
+
+        if (c == null && conn != null) {
+            Object cls = conn.getTypeMap().get(sqlTypeName);
+            if (cls instanceof Class) {
+                c = ((Class
+                        // #ifdef JDK1.5
+                        <?>
+                        // #endif
+                        ) cls);
+            }
+        }
+
+        return c;
+    }
+
+    public boolean isFinal() {
+        return isFinal;
+    }
+    public void setIsFinal(byte[] fin) throws SQLException {
+        if (fin[0] == (byte) 1){
+            isFinal = true;
+        } else if (fin[0] == (byte) 0) {
+            isFinal = false;
+        } else {
+            throw TbError.newSQLException(TbError.MU_UDT_META_DATA_LOAD_FAIL);
+        }
+    }
+}

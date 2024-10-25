@@ -1,0 +1,395 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.util;
+
+/**
+ * TbSQLTypeScanner class.
+ * 
+ * @author ��Ի�, gusami@tmax.co.kr
+ * @version $Id: TbSQLTypeScanner.java 123272 2016-05-13 06:50:50Z jeys $
+ */
+public class TbSQLTypeScanner {
+    private static final char NULL = '\0';
+
+    private static final int STATE_START = 0; /* start state */
+    private static final int STATE_1 = 1; /* 1 state -> '/' */
+    private static final int STATE_2 = 2; /* 2 state -> '/' */
+    private static final int STATE_3 = 3; /* 3 state -> '/ XXX' */
+    private static final int STATE_4 = 4; /* 4 state -> '-' */
+    private static final int STATE_5 = 5; /* 5 state -> '--' */
+    private static final int STATE_6 = 6; /* 6 state -> '\'' */
+    private static final int STATE_DONE = 10; /* done state */
+
+    public static final int STMT_UNKNOWN = 0;
+    public static final int STMT_QUERY = 0x10;
+    public static final int STMT_DML = 0x20;
+    public static final int STMT_DML_DELETE = 0x21;
+    public static final int STMT_DML_UPDATE = 0x22;
+    public static final int STMT_DML_INSERT = 0x24;
+    public static final int STMT_DML_MERGE = 0x28;
+    public static final int STMT_PSM = 0x40;
+    public static final int STMT_PSM_BEGIN = 0x41;
+    public static final int STMT_PSM_CALL = 0x42;
+    public static final int STMT_PSM_DECLARE = 0x44;
+    public static final int STMT_DDL = 0x80;
+    public static final int STMT_DDL_JAVA_SRC = 0x88;
+
+    private int state, index;
+    private int textLen;
+    private String text;
+
+    public int getCurrentIndex() {
+        return index;
+    }
+
+    private char getNextChar() {
+        if (index < textLen)
+            return text.charAt(index++);
+        else
+            return NULL;
+    }
+
+    public synchronized String callDeclareSyntax(String sql){
+        index = 0;
+        textLen = sql.length();
+        text = sql;
+
+        String token = getToken();
+        String[] bracedCallTkns = {
+                "{", "CALL", "DECLARE", "<<", ">>"
+        };
+        if (token.startsWith(bracedCallTkns[0])) {
+            token = (token.length() == bracedCallTkns[0].length())? getToken() :
+                            token.substring(bracedCallTkns[0].length());
+            if (token.equals(bracedCallTkns[1])) {
+                token = getToken();
+                if(token.equals(bracedCallTkns[2])) {
+                    text = text.replaceFirst("CALL", "")
+                             .replaceFirst("call", "")   
+                             .replaceFirst("\\{", "");
+                    text = replaceLast(text, "}", ";"); //problem
+                }
+                else if (token.startsWith(bracedCallTkns[3])) {
+                    while (!token.equals(bracedCallTkns[4])) {
+                        token = (token.length() == bracedCallTkns[3].length()) ? getToken() :
+                                token.substring(bracedCallTkns[3].length());
+                    }
+                    token = getToken();
+                    if (token.equals(bracedCallTkns[2])) {
+                        text = text.replaceFirst("CALL", "")
+                                 .replaceFirst("call", "")   
+                                 .replaceFirst("\\{", "");
+                        text = replaceLast(text, "}", ";");
+                    }
+                }
+            }
+        }
+        return text;
+    }
+
+    private static String replaceLast(String text, String regex, String replacement) {
+        return text.replaceFirst("(?s)(.*)" + regex, "$1" + replacement);
+    }
+
+    public synchronized int getSQLType(String sql) {
+        index = 0;
+        textLen = sql.length();
+        text = sql;
+
+        String token = getToken();
+
+        if (token.equals("("))
+            token = getToken();
+
+        if (token.equals("SELECT") || token.equals("WITH"))
+            return STMT_QUERY;
+        else if (token.equals("DELETE"))
+        	return STMT_DML_DELETE;
+        else if (token.equals("INSERT"))
+        	return STMT_DML_INSERT;
+        else if (token.equals("UPDATE"))
+        	return STMT_DML_UPDATE;
+        else if (token.equals("MERGE"))
+        	return STMT_DML_MERGE;
+        else if (token.equals("BEGIN"))
+        	return STMT_PSM_BEGIN;
+        else if (token.equals("DECLARE"))
+        	return STMT_PSM_DECLARE;
+        else if (token.equals("CALL"))
+        	return STMT_PSM_CALL;
+        else {
+            String[] ddlJavaSrcTkns = {
+                    "CREATE", "OR", "REPLACE", "AND", "RESOLVE", "JAVA", "SOURCE"
+            };
+            if (token.equals(ddlJavaSrcTkns[0])) {
+                int nextStartIdx = 1;
+                int matchFlag = 1; // CREATE flag on.
+                while (matchFlag > 0) {
+                    String next = getToken();
+                    int i = nextStartIdx;
+                    for (; i < ddlJavaSrcTkns.length; i++) {
+                        if (ddlJavaSrcTkns[i].equals(next)) {
+                            nextStartIdx = i + 1;
+                            matchFlag |= (1 << i);
+                            break;
+                        }
+                    }
+                    // "CREATE", "JAVA" and "SOURCE" exists..
+                    if ((matchFlag & 1) > 0 && (matchFlag & (1 << 5)) > 0 &&
+                            ((matchFlag & (1 << 6)) > 0))
+                        return STMT_DDL_JAVA_SRC;
+
+                    // no match.
+                    if (i == ddlJavaSrcTkns.length) {
+                        matchFlag = 0; // all flags off.
+                    }
+                }
+                return STMT_DDL;
+            }
+            String[] bracedCallTkns = {
+                    "{", "?", "=", "CALL"
+            };
+            if (token.startsWith(bracedCallTkns[0])) {
+                int nextStartIdx = 1;
+                int matchFlag = 1; // '{' flag on.
+                String next = token;
+                int prevItmLen = bracedCallTkns[0].length();
+                while (matchFlag > 0) {
+                    next = next.length() == prevItmLen ? getToken() : next
+                            .substring(prevItmLen);
+                    int i = nextStartIdx;
+                    for (; i < bracedCallTkns.length; i++) {
+                        if (next.startsWith(bracedCallTkns[i])) {
+                            nextStartIdx = i + 1;
+                            prevItmLen = bracedCallTkns[i].length();
+                            matchFlag |= (1 << i);
+                            break;
+                        }
+                        // check named parameter format
+                        else if (i == 1 && next.length() > 1 && next.charAt(0) == ':') {
+                            nextStartIdx = i + 1;
+                            int eqIdx = next.indexOf('=');
+                            prevItmLen = eqIdx > 0 ? eqIdx : next.length();
+                            matchFlag |= (1 << i);
+                            break;
+                        }
+                    }
+                    // "{" and "CALL" exists..
+                    if ((matchFlag & 1) > 0 && (matchFlag & (1 << 3)) > 0)
+                        return STMT_PSM_CALL;
+
+                    // no match.
+                    if (i == bracedCallTkns.length) {
+                        matchFlag = 0; // all flags off.
+                    }
+                }
+            }
+            return STMT_UNKNOWN;
+        }
+    }
+
+    private String getToken() {
+        boolean save;
+        char chr;
+
+        state = STATE_START;
+        StringBuffer token = new StringBuffer(32);
+
+        while (state != STATE_DONE) {
+            chr = getNextChar();
+            save = true;
+
+            switch (state) {
+            case STATE_START:
+                switch (chr) {
+                case '/':
+                    state = STATE_1;
+                    break;
+                case '-':
+                    state = STATE_4;
+                    break;
+                case '\'':
+                    state = STATE_6;
+                    break;
+                case '(':
+                case ')':
+                    if (token.length() > 0) {
+                        state = STATE_DONE;
+                        save = false;
+                        ungetNextChar();
+                    }
+                    else {
+                        state = STATE_DONE;
+                        save = true;
+                    }
+                    break;
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n':
+                    if (token.length() > 0) {
+                        state = STATE_DONE;
+                    }
+
+                    save = false;
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+
+                default:
+                }
+                break;
+
+            case STATE_1:
+                switch (chr) {
+                case '*':
+                    state = STATE_2;
+                    save = false;
+                    /** delete char '/' **/
+                    token.delete(token.length() - 1, token.length());
+                    break;
+                case '(':
+                case ')':
+                    state = STATE_DONE;
+                    save = false;
+                    ungetNextChar();
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                    state = STATE_START;
+                }
+                break;
+
+            case STATE_2:
+                switch (chr) {
+                case '*':
+                    state = STATE_3;
+                    save = false;
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                    save = false;
+                }
+                break;
+
+            case STATE_3:
+                switch (chr) {
+                case '*':
+                    save = false;
+                    break;
+                case '/':
+                    state = STATE_START;
+
+                    save = false;
+
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                    state = STATE_2;
+                    save = false;
+                }
+                break;
+
+            case STATE_4:
+                switch (chr) {
+                case '-':
+                    state = STATE_5;
+                    save = false;
+                    /** delete char '-' **/
+                    token.delete(token.length() - 1, token.length());
+                    break;
+                case '(':
+                case ')':
+                    state = STATE_DONE;
+                    save = false;
+                    ungetNextChar();
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                    state = STATE_START;
+                }
+                break;
+
+            case STATE_5:
+                switch (chr) {
+                case '\r':
+                case '\n':
+                    state = STATE_START;
+
+                    ungetNextChar();
+
+                    save = false;
+
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                    save = false;
+                }
+                break;
+
+            case STATE_6:
+                switch (chr) {
+                case '\'':
+                    state = STATE_START;
+                    break;
+                case NULL:
+                    state = STATE_DONE;
+                    save = false;
+                    break;
+                default:
+                }
+                break;
+            }
+
+            if (save) {
+                token.append(chr);
+            }
+        }
+
+        return token.substring(0, token.length()).toUpperCase();
+    }
+
+    private void ungetNextChar() {
+        index--;
+    }
+    
+    public static boolean isDMLStmt(int type) {
+    	return (type & STMT_DML) > 0;
+    }
+    
+    public static boolean isPSMStmt(int type) {
+    	return (type & STMT_PSM) > 0;
+    }
+    
+    public static boolean isQueryStmt(int type) {
+    	return (type & STMT_QUERY) > 0;
+    }
+
+    public static boolean isDDLStmt(int type) {
+        return (type & STMT_DDL) > 0;
+    }
+}

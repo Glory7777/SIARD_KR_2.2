@@ -1,0 +1,1235 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.util;
+
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import tibero.DriverConstants;
+import tibero.jdbc.data.BigLiteral;
+import tibero.jdbc.err.TbError;
+
+/**
+ * TbSQLParser class.
+ * 
+ * @author ��Ի�, gusami@tmax.co.kr
+ * @version $Id: TbSQLParser.java 179261 2020-06-30 01:50:39Z jihun_park $
+ */
+public class TbSQLParser {
+    // Escape Syntax parser added. author: Kim Kyu-Sham
+    /* original SQL Statement */
+    private String originalSql;
+    private int length;
+
+    /* parsed SQL Statement */
+    private StringBuffer parsedSql;
+
+    /* elements for Parsing */
+    private StringBuffer token;
+    private char chr;
+    private int index;
+    private int openParenCnt;
+    private boolean isString;
+    
+    private static final byte[] IDEOGRAPHIC_SPACE = { (byte) 0xe3, (byte) 0x80,
+        (byte) 0x80 };
+
+    public TbSQLParser() {
+    }
+    
+    private void appendFunctionName(String newName) throws SQLException {
+        parsedSql.append(newName);
+        skipWhitespace();
+        processSQL();
+    }
+    
+    private void appendFunctionPrefix(String newPrefix)
+        throws SQLException {
+        skipWhitespace();
+
+        if ((index < length) && ((chr = originalSql.charAt(index)) == '(')) {
+            index++;
+        }
+        else {
+            String errorDescription = new String(index + ": '(' is expected");
+            throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, errorDescription);
+        }
+
+        parsedSql.append(newPrefix);
+        skipWhitespace();
+        processSQL();
+    }
+    
+    private void checkCurrentChar(char dueChar) throws SQLException {
+        /* get Current Character */
+        chr = originalSql.charAt(index - 1);
+
+        if (chr != dueChar) {
+            String errorDescription =
+                new String(index + ": '" + dueChar + "' is expected");
+            throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, errorDescription);
+        }
+
+        return;
+    }
+
+    public static String getBigLiteral(String sql, int maxByteCount,
+                                       ArrayList
+                                           // #ifdef JDK1.5
+                                           <BigLiteral>
+                                           // #endif
+                                               literal) {
+        StringBuffer sb = new StringBuffer();
+        int index = 0;
+        int paramIndex = 0;
+        char sqlChars[] = new char[sql.length() + 1];
+
+        sql.getChars(0, sql.length(), sqlChars, 0);
+
+        while (true) {
+            if ((sqlChars[index] == '-') && (sqlChars[index + 1] == '-')) {
+                sb.append(sqlChars[index++]);
+                sb.append(sqlChars[index++]);
+                while (sqlChars[index] != '\n') {
+                    if (sqlChars[index] == '\0')
+                        return sb.toString();
+
+                    sb.append(sqlChars[index++]);
+                }
+                sb.append(sqlChars[index++]);
+                continue;
+            }
+
+            if (sqlChars[index] == '"') {
+                sb.append(sqlChars[index++]);
+                while (sqlChars[index] != '"') {
+                    if (sqlChars[index] == '\0')
+                        return sb.toString();
+
+                    sb.append(sqlChars[index++]);
+                }
+                sb.append(sqlChars[index++]);
+                continue;
+            }
+
+            if (sqlChars[index] == '\'' && sqlChars[index+1] == '\'') { //''�� �ǳʶ��
+                sb.append(sqlChars[index++]);
+                sb.append(sqlChars[index++]);
+            }
+            else {
+                if (sqlChars[index] == '\'') {
+                    int beginIndex = ++index;
+                    StringBuffer temp = new StringBuffer();
+
+                    while (sqlChars[index] != '\'') {
+                        if (sqlChars[index] == '\0') {
+                            sb.append('\'');
+                            sb.append(temp);
+                            return sb.toString();
+                        }
+                        temp.append(sqlChars[index++]);
+                        while ((sqlChars[index] == '\'' && sqlChars[index+1] == '\'')){ //''�� �ǳʶ��
+                            temp.append(sqlChars[index++]);
+                            temp.append(sqlChars[index++]);
+                        }
+                    }
+
+                    if (index - beginIndex > DriverConstants.MAX_FIELD_SIZE / maxByteCount) {
+                        BigLiteral bl =
+                                new BigLiteral(paramIndex++,
+                                        sql.substring(beginIndex, index));
+                        literal.add(bl);
+                        sb.append('?');
+                    } else {
+                        sb.append('\'');
+                        sb.append(temp);
+                        sb.append('\'');
+                    }
+                    index++;
+                    continue;
+                }
+            }
+
+            if (sqlChars[index] == '/' && sqlChars[index + 1] == '*') {
+                sb.append(sqlChars[index++]);
+                sb.append(sqlChars[index++]);
+
+                while (sqlChars[index] != '*' || sqlChars[index + 1] != '/') {
+                    if (sqlChars[index] == '\0')
+                        return sb.toString();
+
+                    sb.append(sqlChars[index++]);
+                }
+                sb.append(sqlChars[index++]);
+                sb.append(sqlChars[index++]);
+                continue;
+            }
+
+            if (sqlChars[index] == '\0')
+                return sb.toString();
+
+            if ((sqlChars[index] == '?') ||
+                ((sqlChars[index] == ':') && (sqlChars[index + 1] != '='))) {
+                sb.append(sqlChars[index++]);
+                paramIndex++;
+                continue;
+            }
+
+            sb.append(sqlChars[index++]);
+        }
+    }
+
+    public static int getParamCount(String sql, int sqlType) {
+        if (TbSQLTypeScanner.isDDLStmt(sqlType))
+            return 0;
+
+        int index = 0;
+        int paramCount = 0;
+        boolean isIntoStarted = false;
+        char sqlChars[] = new char[sql.length() + 1];
+
+        sql.getChars(0, sql.length(), sqlChars, 0);
+
+        while (true) {
+            if (sqlChars[index] == '-' && sqlChars[index + 1] == '-') {
+                index += 2;
+                while (sqlChars[index] != '\n') {
+                    if (sqlChars[index] == '\0')
+                        return paramCount;
+
+                    index++;
+                }
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '"') {
+                index++;
+                while (sqlChars[index] != '"') {
+                    if (sqlChars[index] == '\0')
+                        return paramCount;
+
+                    index++;
+                }
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '\'') {
+                index++;
+                while (sqlChars[index] != '\'') {
+                    if (sqlChars[index] == '\0')
+                        return paramCount;
+
+                    index++;
+                }
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '/' && sqlChars[index + 1] == '*') {
+                index += 2;
+                while (sqlChars[index] != '*' || sqlChars[index + 1] != '/') {
+                    if (sqlChars[index] == '\0')
+                        return paramCount;
+
+                    index++;
+                }
+                index += 2;
+                continue;
+            }
+
+            // returning ������ ���� ��� ���Ŀ� bind parameter�� �����Ѵ�(PSM�� ���� ����).
+            // server���� returning ���� ����  bind parameter�� �����ϱ� ����(������ resultSet�� ���ƿ´�).
+            if (!TbSQLTypeScanner.isPSMStmt(sqlType)
+                    && (sql.regionMatches(true, index, "returning", 0, 9)
+                            && index > 1 && index + 9 < sqlChars.length
+                            && Character.isWhitespace(sqlChars[index - 1]) && Character
+                                .isWhitespace(sqlChars[index + 9]))
+                    || isIntoStarted) {
+                int returningEnd = index;
+                if (!isIntoStarted) {
+                    returningEnd = index += 9;
+                }
+                while (sqlChars[index] != ';' && sqlChars[index] != ')') {
+                    if (sqlChars[index] == '\0') {
+                        return paramCount;
+                    }
+                    if (!isIntoStarted && sql.regionMatches(true, index, "into", 0, 3)) {
+                        isIntoStarted = true;
+                        index = returningEnd;
+                        break;
+                    }
+                    index++;
+                }
+                index++;
+                if (!isIntoStarted)
+                    continue;
+            }
+
+            if (sqlChars[index] == '\0')
+                return paramCount;
+
+            if (sqlChars[index] == '?' ||
+                (sqlChars[index] == ':' && sqlChars[index + 1] != '='))
+                paramCount++;
+
+            index++;
+        }
+    }
+    
+    public static String[] getParamNames(String sql) {
+        int chrIndex = 0;
+        char sqlChars[] = new char[sql.length() + 1];
+        ArrayList
+            // #ifdef JDK1.5
+            <String>
+            // #endif
+            paramNames = new ArrayList
+                                // #ifdef JDK1.5
+                                <String>
+                                // #endif
+                                ();
+        StringBuffer sb = new StringBuffer();
+        
+        sql.getChars(0, sql.length(), sqlChars, 0);
+
+        while (true) {
+            if (sqlChars[chrIndex] == '-' && sqlChars[chrIndex + 1] == '-') {
+                chrIndex += 2;
+                while (sqlChars[chrIndex] != '\n') {
+                    if (sqlChars[chrIndex] == '\0')
+                        return (String [])paramNames.toArray(new String[0]);
+
+                    chrIndex++;
+                }
+                chrIndex++;
+                continue;
+            }
+
+            if (sqlChars[chrIndex] == '"') {
+                chrIndex++;
+                while (sqlChars[chrIndex] != '"') {
+                    if (sqlChars[chrIndex] == '\0')
+                        return (String [])paramNames.toArray(new String[0]);;
+
+                    chrIndex++;
+                }
+                chrIndex++;
+                continue;
+            }
+
+            if (sqlChars[chrIndex] == '\'') {
+                chrIndex++;
+                while (sqlChars[chrIndex] != '\'') {
+                    if (sqlChars[chrIndex] == '\0')
+                        return (String [])paramNames.toArray(new String[0]);;
+
+                    chrIndex++;
+                }
+                chrIndex++;
+                continue;
+            }
+
+            if (sqlChars[chrIndex] == '/' && sqlChars[chrIndex + 1] == '*') {
+                chrIndex += 2;
+                while (sqlChars[chrIndex] != '*' || sqlChars[chrIndex + 1] != '/') {
+                    if (sqlChars[chrIndex] == '\0')
+                        return (String [])paramNames.toArray(new String[0]);;
+
+                    chrIndex++;
+                }
+                chrIndex += 2;
+                continue;
+            }
+
+            if (sqlChars[chrIndex] == '\0')
+                return (String [])paramNames.toArray(new String[0]);;
+
+            if (sqlChars[chrIndex] == '?') {
+                paramNames.add("?");
+            }
+            else if (sqlChars[chrIndex] == ':' && sqlChars[chrIndex + 1] != '=') {
+                chrIndex++;
+                sb.delete(0, sb.length());
+                while (true) {
+                    if (sqlChars[chrIndex] == '\0')
+                        return (String [])paramNames.toArray(new String[0]);;
+
+                    if (Character.isLetterOrDigit(sqlChars[chrIndex]) ||
+                        sqlChars[chrIndex] == '_') {
+                        sb.append(sqlChars[chrIndex]);
+                    }
+                    else {
+                        if (sb.length() > 0)
+                            paramNames.add(sb.toString());
+                        break;
+                    }
+                    chrIndex++;
+                }
+                continue;
+            }
+            chrIndex++;
+        }
+    }
+
+    public static String getRowIdAddedRefetchSql(String originalSql, int cnt)
+            throws SQLException {
+        if (originalSql == null)
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER, "null");
+
+        if (cnt <= 0)
+            return originalSql;
+
+        StringBuffer retSql = new StringBuffer();
+
+        String upperSql = originalSql.toUpperCase();
+        int index1 = upperSql.lastIndexOf("FOR");
+        int index2 = upperSql.lastIndexOf("UPDATE");
+
+        if (upperSql.lastIndexOf("\"") < index1 && index1 < index2) {
+            retSql.append(originalSql);
+            retSql.delete(index1, index1 + 3);
+            retSql.delete(index2 - 3, index2 + 3);
+            retSql.insert(0, "select * from (");
+            retSql.append(") ");
+        } else {
+            retSql.append("select * from (").append(originalSql).append(") ");
+        }
+
+        if (cnt > 0) {
+            retSql.append(" WHERE _ROWID_CHAR0_ = ? ");
+        }
+
+        for (int i = 1; i < cnt; i++) {
+           retSql.append(" OR _ROWID_CHAR0_ = ? ");
+        }
+
+        return retSql.toString();
+    }
+
+    private void init() {
+        index = 0;
+        openParenCnt = 0;
+        isString = false;
+    }
+
+    private void makeToken() {
+        for (; (index < length) &&
+            (Character.isJavaIdentifierPart(chr = originalSql.charAt(index)) || (chr == '?')); index++) {
+            token.append(chr);
+        }
+    }
+
+    public String parse(String sql) throws SQLException {
+        init();
+
+        parsedSql = new StringBuffer(sql.length());
+        token = new StringBuffer(32);
+
+        originalSql = sql;
+        length = originalSql.length();
+
+        processSQL();
+
+        return parsedSql.substring(0, parsedSql.length());
+    }
+
+    private void processCall() throws SQLException {
+        parsedSql.append("CALL");
+        processSQL();
+    }
+
+    private void processDate() throws SQLException {
+        parsedSql.append("TO_DATE (");
+        skipWhitespace();
+        processSQL();
+        parsedSql.append(", 'YYYY-MM-DD')");
+    }
+
+    private void processEscape() throws SQLException {
+        parsedSql.append("ESCAPE ");
+        skipWhitespace();
+        processSQL();
+    }
+
+    private void processFunction() throws SQLException {
+        parsedSql.append("?");
+        processSQL();
+    }
+
+    private void processOuterJoin() throws SQLException {
+        parsedSql.append(" ( ");
+        skipWhitespace();
+        processSQL();
+        parsedSql.append(" ) ");
+    }
+
+    private void processScalarFunction() throws SQLException {
+        /* JDBC Escape syntax���� �����ϴ� function
+         * 
+         * �̰����� �����ϴ� �Լ����� ���� API������ Ȯ�ΰ����ؾ� �Ѵ�.
+         * TbDatabaseMetaData.getNumericFunctions()
+         * TbDatabaseMetaData.getTimeDateFunctions()
+         * TbDatabaseMetaData.getStringFunctions()
+         * TbDatabaseMetaData.getSystemFunctions()
+         * TbDatabaseMetaData.supportConvert()
+         */
+        token.delete(0, token.length());
+        skipWhitespace();
+
+        makeToken();
+
+        String functionName =
+            token.substring(0, token.length()).toUpperCase().intern();
+
+        /* function name�� argument�� tibero function�� ������ ���̽� */
+        if (/* Numeric */
+            "ABS".equalsIgnoreCase(functionName) ||
+            "ACOS".equalsIgnoreCase(functionName) ||
+            "ASIN".equalsIgnoreCase(functionName) ||
+            "ATAN".equalsIgnoreCase(functionName) ||
+            "ATAN2".equalsIgnoreCase(functionName) ||
+            "COS".equalsIgnoreCase(functionName) ||
+            "EXP".equalsIgnoreCase(functionName) ||
+            "FLOOR".equalsIgnoreCase(functionName) ||
+            "MOD".equalsIgnoreCase(functionName) ||
+            "POWER".equalsIgnoreCase(functionName) ||
+            "ROUND".equalsIgnoreCase(functionName) ||
+            "SIGN".equalsIgnoreCase(functionName) ||
+            "SIN".equalsIgnoreCase(functionName) ||
+            "SQRT".equalsIgnoreCase(functionName) ||
+            "TAN".equalsIgnoreCase(functionName) ||
+            /* String */
+            "ASCII".equalsIgnoreCase(functionName) ||
+            "CHAR_LENGTH".equalsIgnoreCase(functionName) ||
+            "CHARACTER_LENGTH".equalsIgnoreCase(functionName) ||
+            "CONCAT".equalsIgnoreCase(functionName) ||
+            "LENGTH".equalsIgnoreCase(functionName) ||
+            "LTRIM".equalsIgnoreCase(functionName) ||
+            "REPLACE".equalsIgnoreCase(functionName) ||
+            "RTRIM".equalsIgnoreCase(functionName) ||
+            /* Time/Date */
+            "EXTRACT".equalsIgnoreCase(functionName)) {
+            appendFunctionName(functionName);
+        }
+        /* Numeric functions.  */
+        else if ("CEILING".equalsIgnoreCase(functionName)) {
+            appendFunctionName("CEIL");
+        }
+        else if ("LOG".equalsIgnoreCase(functionName)) {
+            appendFunctionName("LN");
+        }
+        else if ("LOG10".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("LOG ( 10, ");
+        }                           
+        else if ("PI".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("( 3.141592653589793238462643383279502884197169399375 ");
+        }
+        else if ("TRUNCATE".equalsIgnoreCase(functionName)) {
+            appendFunctionName("TRUNC");
+        }
+        /* String Functions. */
+        else if ("CHAR".equalsIgnoreCase(functionName)) {
+            appendFunctionName("CHR");
+        }
+        else if ("INSERT".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 4) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=4, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            parsedSql.append("SUBSTR(").append(args.get(0)).append(", 1, (")
+                    .append(args.get(1)).append(")-1) || ").append(args.get(3))
+                    .append(" || SUBSTR(").append(args.get(0)).append(", (")
+                    .append(args.get(1)).append(")+(").append(args.get(2))
+                    .append("))");
+            processSQL();
+        }
+        else if ("LCASE".equalsIgnoreCase(functionName)) {
+            appendFunctionName("LOWER");
+        }
+        else if ("LEFT".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 2) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=2, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            parsedSql.append("SUBSTR(").append(args.get(0)).append(", 1,")
+                    .append(args.get(1)).append(')');
+            processSQL();
+        }
+        else if ("LOCATE".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 2) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=2, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            parsedSql.append("INSTR(").append(args.get(1)).append(", ")
+                    .append(args.get(0)).append(')');
+            processSQL();
+        }
+        else if ("REPEAT".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 2) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=2, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            parsedSql.append("RPAD(").append(args.get(0)).append(", ")
+                    .append(args.get(1)).append(" * LENGTH(")
+                    .append(args.get(0)).append("), ").append(args.get(0))
+                    .append(')');
+            processSQL();
+        }
+        else if ("RIGHT".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 2) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=2, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            parsedSql.append("SUBSTR(").append(args.get(0)).append(", - ")
+                    .append(args.get(1)).append(')');
+            processSQL();
+        }
+        else if ("SPACE".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("LPAD(' ', ");
+        }
+        else if ("SUBSTRING".equalsIgnoreCase(functionName)) {
+            appendFunctionName("SUBSTR");
+        }
+        else if ("UCASE".equalsIgnoreCase(functionName)) {
+            appendFunctionName("UPPER");
+        }
+        /* Time/Data Functions */
+        else if ("CURDATE".equalsIgnoreCase(functionName) ||
+                 "CURRENT_DATE".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("(CURRENT_DATE");
+        }
+        else if ("CURRENT_TIME".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("(CURRENT_TIME");
+        }
+        else if ("CURTIME".equalsIgnoreCase(functionName) ||
+                 "CURRENT_TIMESTAMP".equalsIgnoreCase(functionName) ||
+                 "NOW".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("(CURRENT_TIMESTAMP");
+        }
+        else if ("DAYOFMONTH".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( DAY FROM ");
+        }
+        else if ("HOUR".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( HOUR FROM ");
+        }
+        else if ("MINUTE".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( MINUTE FROM ");
+        }
+        else if ("MONTH".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( MONTH FROM ");
+        }
+        else if ("SECOND".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( SECOND FROM ");
+        }
+        else if ("YEAR".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("EXTRACT ( YEAR FROM ");
+        }
+        /* System functions */
+        else if ("DATABASE".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("USERENV('DB_NAME'");
+        }
+        else if ("IFNULL".equalsIgnoreCase(functionName)) {
+            appendFunctionName("NVL");
+        }
+        else if ("USER".equalsIgnoreCase(functionName)) {
+            appendFunctionPrefix("(USER");
+        }
+        /* Conversion functions */
+        else if ("CONVERT".equalsIgnoreCase(functionName)) {
+            // @formatter:off
+            ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                args = processArguments();
+            // @formatter:on
+            int numOfArgs = (args == null) ? 0 : args.size();
+            if (numOfArgs != 2) {
+                String err = new String("The number of arguments is wrong." +
+                                        " expected=2, actual=" + numOfArgs);
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, err);
+            }
+            String argType = args.get(1).toString().trim();
+            String fconvName = null;
+            if ("SQL_VARCHAR".equalsIgnoreCase(argType) ||
+                "SQL_CHAR".equalsIgnoreCase(argType)) {
+                fconvName = "TO_CHAR";
+            }
+            else if ("SQL_INTEGER".equalsIgnoreCase(argType) ||
+                     "SQL_NUMERIC".equalsIgnoreCase(argType) ||
+                     "SQL_DECIMAL".equalsIgnoreCase(argType)) {
+                fconvName = "TO_NUMBER";
+            }
+            else if ("SQL_DATE".equalsIgnoreCase(argType)) {
+                fconvName = "TO_DATE";
+            }
+            else if ("SQL_TIME".equalsIgnoreCase(argType)) {
+                fconvName = "TO_TIME";
+            }
+            else if ("SQL_TIMESTAMP".equalsIgnoreCase(argType)) {
+                fconvName = "TO_TIMESTAMP";
+            }
+            // TODO: tibero���� ��ȯ �����ϴ� Ÿ�Կ� ���� ó�� �߰�
+            else {
+                String errorDescription = new String("NOT implemented option: \"" +
+                                                     argType + "\"");
+                throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX,
+                                              errorDescription);
+            }
+
+            parsedSql.append(fconvName).append('(').append(args.get(0))
+                    .append(')');
+            processSQL();
+        }
+        else {
+            /*
+             * unsupported SQL92 Scalar Function in Tibero: "COT", "DEGREES",
+             * "RADIANS", "RAND", "DIFFERENCE", "SOUNDEX", "DAYNAME",
+             * "DAYOFWEEK", "DAYOFYEAR", "MONTHNAME", "QUARTER",
+             * "TIMESTAMPADD", "TIMESTAMPDIFF", "WEEK", "DATABASE", "IFNULL"
+             */
+            String errorDescription =
+                new String("unsuppoted SQL92 Token: \"" + functionName + "\"");
+            throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, errorDescription);
+        }
+    }
+
+    private void processSQL() throws SQLException {
+        char nextChr;
+
+        for (;;) {
+            if (index >= length) {
+                break;
+            }
+
+            chr = originalSql.charAt(index++);
+            nextChr = '\0';
+
+            if (isString) {
+                parsedSql.append(chr);
+
+                if (chr == '\'') {
+                    isString = false;
+                }
+            }
+            else {
+                switch (chr) {
+                case '\'':
+                    parsedSql.append(chr);
+                    isString = true;
+                    break;
+
+                case '{':
+                    openParenCnt++;
+                    token.delete(0, token.length());
+                    skipWhitespace();
+                    makeToken();
+                    processToken();
+                    checkCurrentChar('}');
+                    break;
+
+                case '}':
+                    openParenCnt--;
+                    if (openParenCnt < 0) {
+                        String errorDescription =
+                            new String(index + ": Unnecessary '" + chr +
+                                "' exists");
+                        throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX,
+                                                 errorDescription);
+                    }
+                    return;
+                    
+                case '/':
+                    /* block comments */
+                    if (index < length &&
+                        (nextChr = originalSql.charAt(index)) == '*') {
+                        parsedSql.append(chr).append(nextChr);
+                        for (index++; index < length && ((chr = originalSql
+                                .charAt(index)) != '*' || (nextChr = originalSql
+                                        .charAt(index + 1)) != '/'); index++) {
+                            /* append comments body */
+                            parsedSql.append(chr);
+                        }
+                        /* append '*' */
+                        parsedSql.append((chr = originalSql.charAt(index++)));
+                        /* append '/' */
+                        parsedSql.append((chr = originalSql.charAt(index++)));
+                        
+                    } else {
+                        parsedSql.append(chr);
+                    }
+                    break;
+
+                case '-':
+                    /* line comments */
+                    if (index < length &&
+                        (nextChr = originalSql.charAt(index)) == '-') {
+                        parsedSql.append(chr).append(nextChr);
+                        for (index++; index < length && (chr = originalSql
+                                .charAt(index)) != '\n'; index++) {
+                            parsedSql.append(chr);
+                        }
+                        /* append last new line character */
+                        parsedSql.append(chr);
+                        index++;
+                    } else {
+                        parsedSql.append(chr);
+                    }
+                    break;
+
+                default:
+                    parsedSql.append(chr);
+                }
+            }
+        }
+    }
+
+    private ArrayList
+    // @formatter:off
+            // #ifdef JDK1.5
+            <StringBuffer>
+            // #endif
+            processArguments() throws SQLException {
+        // @formatter:on
+        /* start with '(' */
+        skipWhitespace();
+        if (index < length && (chr = originalSql.charAt(index)) == '(') {
+            index++;
+        } else {
+            String errorDescription = new String(index + ": '(' is expected");
+            throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, errorDescription);
+        }
+
+        ArrayList
+        // @formatter:off
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                ret = new ArrayList
+                // #ifdef JDK1.5
+                <StringBuffer>
+                // #endif
+                ();
+        // @formatter:on
+
+        /* backup org buffer */
+        StringBuffer orgBuf = parsedSql;
+
+        parsedSql = new StringBuffer();
+        int argParenCnt = 0;
+        
+        char chr, nextChr;
+        PA_MAIN_LOOP:
+        for (; index < length;) {
+            chr = originalSql.charAt(index++);
+
+            if (isString) {
+                parsedSql.append(chr);
+
+                if (chr == '\'') {
+                    isString = false;
+                }
+            }
+            else {
+                switch (chr) {
+                case '\'':
+                    parsedSql.append(chr);
+                    isString = true;
+                    break;
+
+                case '{':
+                    openParenCnt++;
+                    token.delete(0, token.length());
+                    skipWhitespace();
+                    makeToken();
+                    processToken();
+                    checkCurrentChar('}');
+                    break;
+
+                case ',':
+                    if (argParenCnt != 0) {
+                        parsedSql.append(chr);
+                    } else {
+                        ret.add(parsedSql);
+                        parsedSql = new StringBuffer();
+                    }
+                    break;
+
+                case '(':
+                    argParenCnt++;
+                    skipWhitespace();
+                    makeToken();
+                    processToken();
+                    checkCurrentChar(')');
+                    break;
+
+                case ')':
+                    if (argParenCnt == 0) {
+                        ret.add(parsedSql);
+                        break PA_MAIN_LOOP;
+                    } else if (argParenCnt > 0) {
+                        argParenCnt--;
+                    }
+                    break;
+                    
+                case '/':
+                    /* block comments */
+                    if (index < length &&
+                        (nextChr = originalSql.charAt(index)) == '*') {
+                        parsedSql.append(chr).append(nextChr);
+                        for (index++; index < length && ((chr = originalSql
+                                .charAt(index)) != '*' || (nextChr = originalSql
+                                        .charAt(index + 1)) != '/'); index++) {
+                            /* append comments body */
+                            parsedSql.append(chr);
+                        }
+                        /* append '*' */
+                        parsedSql.append((chr = originalSql.charAt(index++)));
+                        /* append '/' */
+                        parsedSql.append((chr = originalSql.charAt(index++)));
+                    } else {
+                        parsedSql.append(chr);
+                    }
+                    break;
+
+                case '-':
+                    /* line comments */
+                    if (index < length &&
+                        (nextChr = originalSql.charAt(index)) == '-') {
+                        parsedSql.append(chr).append(nextChr);
+                        for (index++; index < length && (chr = originalSql
+                                .charAt(index)) != '\n'; index++) {
+                            parsedSql.append(chr);
+                        }
+                        /* append last new line character */
+                        parsedSql.append(chr);
+                        index++;
+                    } else {
+                        parsedSql.append(chr);
+                    }
+                    break;
+
+                default:
+                    parsedSql.append(chr);
+                }
+            }
+        }
+
+        /* restore org buffer */
+        parsedSql = orgBuf;
+        return ret;
+    }
+
+    private void processTime() throws SQLException {
+        parsedSql.append("TO_DATE (");
+        skipWhitespace();
+        processSQL();
+        parsedSql.append(", 'HH24:MI:SS')");
+    }
+
+    private void processTimestamp() throws SQLException {
+        parsedSql.append("TO_TIMESTAMP (");
+        skipWhitespace();
+        processSQL();
+        parsedSql.append(", 'YYYY-MM-DD HH24:MI:SS.FF')");
+    }
+
+    private void processToken() throws SQLException {
+        String curToken = token.substring(0, token.length());
+
+        if (curToken.equalsIgnoreCase("?")) {
+            processFunction();
+        }
+        else if (curToken.equalsIgnoreCase("CALL")) {
+            processCall();
+        }
+        else if (curToken.equalsIgnoreCase("TS")) {
+            processTimestamp();
+        }
+        else if (curToken.equalsIgnoreCase("T")) {
+            processTime();
+        }
+        else if (curToken.equalsIgnoreCase("D")) {
+            processDate();
+        }
+        else if (curToken.equalsIgnoreCase("ESCAPE")) {
+            processEscape();
+        }
+        else if (curToken.equalsIgnoreCase("FN")) {
+            processScalarFunction();
+        }
+        else if (curToken.equalsIgnoreCase("OJ")) {
+            processOuterJoin();
+        }
+        else {
+            String errorDescription =
+                new String(index + ": \"" + token + "\" token is not supported");
+            throw TbError.newSQLException(TbError.MU_ESCAPE_SYNTAX, errorDescription);
+        }
+    }
+
+    public static String replace(String sql) {
+        int index = 0;
+        char sqlChars[] = new char[sql.length() + 1];
+        StringBuffer returnedSql = new StringBuffer(sql.length());
+
+        // copy sql statement to char array
+        sql.getChars(0, sql.length(), sqlChars, 0);
+
+        while (true) {
+            if ((sqlChars[index] == '-') && (sqlChars[index + 1] == '-')) {
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                while (sqlChars[index] != '\n') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '"') {
+                returnedSql.append(sqlChars[index]);
+                index++;
+                while (sqlChars[index] != '"') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '\'') {
+                returnedSql.append(sqlChars[index]);
+                index++;
+                while (sqlChars[index] != '\'') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if ((sqlChars[index] == '/') && (sqlChars[index + 1] == '*')) {
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                while (!((sqlChars[index] == '*') && (sqlChars[index + 1] == '/'))) {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                continue;
+            }
+
+            if (sqlChars[index] == '\0') {
+                return returnedSql.toString();
+            }
+
+            if (sqlChars[index] == '?' &&
+                Character.isDigit(sqlChars[index + 1])) {
+                int beginIndex = index;
+
+                index += 2;
+                while (Character.isDigit(sqlChars[index])) {
+                    index++;
+                }
+
+                if (Character.isLetter(sqlChars[index])) {
+                    returnedSql.append(sql.substring(beginIndex, index));
+                }
+                else {
+                    returnedSql.append(":");
+                    returnedSql.append(sql.substring(beginIndex + 1, index));
+                }
+                continue;
+            }
+            returnedSql.append(sqlChars[index]);
+            index++;
+        }
+    }
+
+    public static String replaceIDEOGraphicSpace(String sql) {
+        char ideoGraphicSpaceCh;
+        try {
+            ideoGraphicSpaceCh = new String(IDEOGRAPHIC_SPACE, "utf8").charAt(0);
+        } catch (UnsupportedEncodingException e) {
+            return sql;
+        }
+        if (sql == null || sql.indexOf(ideoGraphicSpaceCh) < 0) {
+            return sql;
+        }
+        
+        int index = 0;
+        char sqlChars[] = new char[sql.length() + 1];
+        StringBuffer returnedSql = new StringBuffer(sql.length());
+
+        // copy sql statement to char array
+        sql.getChars(0, sql.length(), sqlChars, 0);
+
+        while (true) {
+            if ((sqlChars[index] == '-') && (sqlChars[index + 1] == '-')) {
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                while (sqlChars[index] != '\n') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '"') {
+                returnedSql.append(sqlChars[index]);
+                index++;
+                while (sqlChars[index] != '"') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if (sqlChars[index] == '\'') {
+                returnedSql.append(sqlChars[index]);
+                index++;
+                while (sqlChars[index] != '\'') {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                index++;
+                continue;
+            }
+
+            if ((sqlChars[index] == '/') && (sqlChars[index + 1] == '*')) {
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                while (!((sqlChars[index] == '*') && (sqlChars[index + 1] == '/'))) {
+                    if (sqlChars[index] == '\0') {
+                        return returnedSql.toString();
+                    }
+                    returnedSql.append(sqlChars[index]);
+                    index++;
+                }
+                returnedSql.append(sqlChars[index]);
+                returnedSql.append(sqlChars[index + 1]);
+                index += 2;
+                continue;
+            }
+
+            if (sqlChars[index] == '\0') {
+                return returnedSql.toString();
+            }
+
+            if (sqlChars[index] == ideoGraphicSpaceCh) {
+
+                returnedSql.append(" ");
+                index++;
+                continue;
+            }
+
+            returnedSql.append(sqlChars[index]);
+            index++;
+        }
+    }
+
+    private void skipWhitespace() {
+        for (; index < length; index++) {
+            chr = originalSql.charAt(index);
+
+            if (!((chr == ' ') || (chr == '\t') || (chr == '\r') || (chr == '\n'))) {
+                break;
+            }
+
+            parsedSql.append(chr);
+        }
+    }
+
+}

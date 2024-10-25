@@ -1,0 +1,4253 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ * 
+ * This document contains proprietary and confidential information. No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.driver;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Vector;
+import java.util.*;
+import java.sql.Date;
+
+import tibero.Debug;
+import tibero.DriverConstants;
+import tibero.TbTypes;
+import tibero.jdbc.*;
+import tibero.jdbc.data.BatchInfo;
+import tibero.jdbc.data.BatchUpdateInfo;
+import tibero.jdbc.data.BigLiteral;
+import tibero.jdbc.data.BindData;
+import tibero.jdbc.data.BindItem;
+import tibero.jdbc.data.BytesStreamWrapper;
+import tibero.jdbc.data.Column;
+import tibero.jdbc.data.DataType;
+import tibero.jdbc.data.ExtFeatureInfo;
+import tibero.jdbc.data.ParamContainer;
+import tibero.jdbc.data.ReaderWrapper;
+import tibero.jdbc.data.RsetType;
+import tibero.jdbc.data.ServerInfo;
+import tibero.jdbc.data.TbDate;
+import tibero.jdbc.data.TbTimestamp;
+import tibero.jdbc.data.TbTimestampTZ;
+import tibero.jdbc.data.*;
+import tibero.jdbc.data.binder.Binder;
+import tibero.jdbc.data.binder.StaticBinder;
+import tibero.jdbc.dbconst.DBConst;
+import tibero.jdbc.err.TbError;
+import tibero.jdbc.msg.TbColumnDesc;
+import tibero.jdbc.util.TbSQLParser;
+import tibero.jdbc.util.TbSQLTypeScanner;
+
+// #ifdef JDK1.4
+// #endif
+// #ifdef JDK1.6
+
+
+// #endif
+
+/**
+ * TbPreparedStatement class.
+ * 
+ * @author �̿���(yjlee@tmax.co.kr), �ֿ���(wyvern@tmax.co.kr), ��Ի�(gusami@tmax.co.kr)
+ * @version $Id: TbPreparedStatementImpl.java 186284 2020-10-20 09:17:47Z kyungtak_min $
+ */
+public class TbPreparedStatementImpl extends TbStatement
+        implements PreparedStatement, ParamContainer {
+    // prepared information
+    protected byte[] ppid;
+    private static byte[] PPID_NULL = new byte[] {
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+    protected int bindParamCnt = 0;
+    private int hiddenColCnt = 0;
+    private int outColCnt = 0;
+    private TbColumnDesc[] colMeta;
+    private ResultSetMetaData resultSetMetaData;
+
+    // private boolean forcePrepare = false;
+    // BigLiteral
+    private String processedBigLiteralSql;
+    private ArrayList
+    // #ifdef JDK1.5
+    <BigLiteral>
+    // #endif
+    bigLiterals;
+    // current bind parameter meta
+    protected BindData bindData;
+    // for batch update
+    private BatchUpdateInfo batchUpdateInfo;
+    private int batchFlag = DBConst.CS_BATCH_UNIFORM_BIND_DATATYPE;
+    protected int allocatedBatchRowCount = 1;
+    protected int currentRowIndex = 0;
+    // actual bind parameter data
+    private int[][] paramInt;
+    private long[][] paramLong;
+    private float[][] paramFloat;
+    private double[][] paramDouble;
+    private BigDecimal[][] paramBigDecimal;
+    private String[][] paramString;
+    private Timestamp[][] paramTimestamp;
+    private TbTimestampTZ[][] paramTbTimestampTZ;
+    private TbTimestamp[][] paramTbTimestamp;
+    private TbDate[][] paramTbDate;
+    private Calendar[][] paramCalendar;
+    private byte[][][] paramBytes;
+    private InputStream[][] paramStream;
+    private Reader[][] paramReader;
+    private byte[][] paramTypes;
+    private Struct[][] paramStruct;
+    private Array[][] paramArray;
+
+    // binder
+    protected Binder[][] binder;
+    protected Binder staticNullBinder;
+    protected Binder staticStringBinder;
+    protected Binder staticReaderBinder;
+    protected Binder staticIntBinder;
+    protected Binder staticLongBinder;
+    protected Binder staticFloatBinder;
+    protected Binder staticDoubleBinder;
+    protected Binder staticBinaryFloatBinder;
+    protected Binder staticBinaryDoubleBinder;
+    protected Binder staticBigDecimalBinder;
+    protected Binder staticDateBinder;
+    protected Binder staticTimeBinder;
+    protected Binder staticTimestampBinder;
+    protected Binder staticTimestampTZBinder;
+    protected Binder staticTbDateBinder;
+    protected Binder staticTbTimestampBinder;
+    protected Binder staticBytesBinder;
+    protected Binder staticStreamBinder;
+    protected Binder staticNStringBinder;
+    protected Binder staticNReaderBinder;
+    protected Binder staticStructInBinder;
+    protected Binder staticStructOutBinder;
+    protected Binder staticArrayInBinder;
+    protected Binder staticArrayOutBinder;
+
+    /* TODO: VARCHAR_MAX 65532�� �����ϴ� ������ ������ �� �ִ� ����� �ʿ� */
+    private int varcharMax;
+    private int deferrableStrLen;
+    private int deferrableNStrLen;
+
+    // for auto generated values
+    protected Object autoGenKeyArr;
+
+    private boolean supportBinaryDoubleFloatType;
+
+    private void initializeBinder(ServerInfo info) {
+        supportBinaryDoubleFloatType = isSupportBinaryDoubleFloatType(info);
+
+        staticNullBinder = StaticBinder.getNullBinder();
+        staticStringBinder = StaticBinder.getStringBinder();
+        staticReaderBinder = StaticBinder.getReaderBinder();
+        staticIntBinder = StaticBinder.getIntBinder();
+        staticLongBinder = StaticBinder.getLongBinder();
+        staticFloatBinder = StaticBinder.getFloatBinder();
+        staticDoubleBinder = StaticBinder.getDoubleBinder();
+        staticBinaryFloatBinder = StaticBinder
+                .getBinaryFloatBinder(supportBinaryDoubleFloatType);
+        staticBinaryDoubleBinder = StaticBinder
+                .getBinaryDoubleBinder(supportBinaryDoubleFloatType);
+        staticBigDecimalBinder = StaticBinder.getBigDecimalBinder();
+        staticDateBinder = StaticBinder.getDateBinder();
+        staticTimeBinder = StaticBinder.getTimeBinder();
+        staticTimestampBinder = StaticBinder.getTimestampBinder();
+        staticTimestampTZBinder = StaticBinder.getTbTimestampTZBinder();
+        staticTbDateBinder = StaticBinder.getTbDateBinder();
+        staticTbTimestampBinder = StaticBinder.getTbTimestampBinder();
+        staticBytesBinder = StaticBinder.getBytesBinder();
+        staticStreamBinder = StaticBinder.getStreamBinder();
+        staticNStringBinder = StaticBinder.getNStringBinder();
+        staticNReaderBinder = StaticBinder.getNReaderBinder();
+        staticStructInBinder = StaticBinder.getStructInBinder();
+        staticStructOutBinder = StaticBinder.getStructOutBinder();
+        staticArrayInBinder = StaticBinder.getArrayInBinder();
+        staticArrayOutBinder = StaticBinder.getArrayOutBinder();
+    }
+
+    public TbPreparedStatementImpl(TbConnection conn, String sql)
+            throws SQLException {
+        this(conn, sql, ResultSet.TYPE_FORWARD_ONLY,
+                ResultSet.CONCUR_READ_ONLY, DriverConstants.PRE_FETCH_SIZE,
+                false);
+        initializeBinder(conn.getServerInfo());
+
+        if (conn.getExtFeatureInfo().supports(ExtFeatureInfo.ID_64K_VARCHAR))
+            varcharMax = DBConst.TB_VARCHAR2_SIZE_MAX;
+        else
+            varcharMax = DriverConstants.MAX_VARCHAR_COLUMN_BYTE_SIZE_V5;
+
+        deferrableStrLen = varcharMax /
+                Math.max(2, typeConverter.getMaxBytesPerChar()) + 1;
+        deferrableNStrLen = varcharMax /
+                Math.max(2, typeConverter.getMaxBytesPerNChar()) + 1;
+    }
+
+    public TbPreparedStatementImpl(TbConnection conn, String sql, int rsetType,
+                               int rsetConcurrency, int preFetchSize,
+                               boolean forcePrepare) throws SQLException {
+        super(conn, rsetType, rsetConcurrency, preFetchSize);
+
+        if (Debug.TRACE)
+            Debug.logMethod("TbPreparedStatement", null, null);
+
+        poolable = conn.info.isStmtCache();
+        sqlTypeScanner = new TbSQLTypeScanner();
+
+        // this.forcePrepare = forcePrepare;
+
+        // process original SQL statement..
+        // check sqlType : SELECT_DML, UPDATE_DML ....
+        initSql(sql);
+
+        if (forcePrepare)
+            forcePrepare();
+        else
+            initParameter();
+
+        initializeBinder(conn.getServerInfo());
+
+        if (conn.getExtFeatureInfo().supports(ExtFeatureInfo.ID_64K_VARCHAR))
+            varcharMax = DBConst.TB_VARCHAR2_SIZE_MAX;
+        else
+            varcharMax = DriverConstants.MAX_VARCHAR_COLUMN_BYTE_SIZE_V5;
+
+        deferrableStrLen = varcharMax /
+                Math.max(2, typeConverter.getMaxBytesPerChar()) + 1;
+        deferrableNStrLen = varcharMax /
+                Math.max(2, typeConverter.getMaxBytesPerNChar()) + 1;
+    }
+
+    public void addBatch() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.addBatch", new Object[] {
+                this
+            });
+        }
+
+        BindItem item;
+        int deferredParamCount = bindData.getDFRParameterCnt();
+
+        for (int i = 0; i < bindParamCnt; i++) {
+            if (binder[currentRowIndex][i] == null) {
+                setCachedBindParameter(i);
+            }
+
+            item = bindData.getBindItem(i);
+
+            if (item.isOUTParameter())
+                throw TbError.newSQLException(TbError.MU_OUTPARAM_BATCHUPDATE);
+
+            if (deferredParamCount > 0)
+                continue;
+
+            if (paramTypes[0][i] != paramTypes[currentRowIndex][i])
+                batchFlag = 0;
+        }
+
+        if (batchUpdateInfo == null) {
+            batchUpdateInfo = new BatchUpdateInfo();
+        }
+
+        BindData binds = new BindData();
+        bindData.clone(binds);
+        bindData.clearDFRParameter();
+        batchUpdateInfo.add(new BatchInfo(binds, currentRowIndex));
+
+        if (currentRowIndex == allocatedBatchRowCount - 1)
+            growBatchArray(allocatedBatchRowCount, 0);
+
+        currentRowIndex++;
+    }
+
+    private void setCachedBindParameter(int i) throws SQLException {
+        if (currentRowIndex > 0) {
+
+            BindItem item = bindData.getBindItem(i);
+            int sqlType = item.getSQLType();
+            switch (sqlType) {
+            case Types.INTEGER:
+                paramInt[currentRowIndex][i] = paramInt[currentRowIndex - 1][i];
+                break;
+
+            case Types.BIGINT:
+                paramBigDecimal[currentRowIndex][i] = paramBigDecimal[currentRowIndex - 1][i];
+                break;
+
+            case Types.FLOAT:
+                paramFloat[currentRowIndex][i] = paramFloat[currentRowIndex - 1][i];
+                break;
+
+            case Types.DOUBLE:
+                paramDouble[currentRowIndex][i] = paramDouble[currentRowIndex - 1][i];
+                break;
+
+            case Types.NUMERIC:
+                paramLong[currentRowIndex][i] = paramLong[currentRowIndex - 1][i];
+                break;
+
+            case Types.VARCHAR:
+                paramString[currentRowIndex][i] = paramString[currentRowIndex - 1][i];
+                break;
+
+            case Types.LONGVARCHAR:
+                paramReader[currentRowIndex][i] = paramReader[currentRowIndex - 1][i];
+                break;
+
+            case Types.DATE:
+            case Types.TIME: {
+                int previousDataType = paramTypes[currentRowIndex - 1][i];
+                switch (previousDataType) {
+                case DataType.DATE:
+                    if (paramCalendar != null &&
+                        paramCalendar[currentRowIndex - 1][i] != null) {
+                        paramCalendar[currentRowIndex][i] = paramCalendar[currentRowIndex - 1][i];
+                    }
+                    else if (paramTbDate != null &&
+                        paramTbDate[currentRowIndex - 1][i] != null) {
+                        paramTbDate[currentRowIndex][i] = paramTbDate[currentRowIndex - 1][i];
+                    }
+                    else {
+                        throw TbError
+                                .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                                 Integer.toString(sqlType));
+                    }
+                    break;
+                case DataType.TIMESTAMP:
+                    if (paramTimestamp != null &&
+                        paramTimestamp[currentRowIndex - 1][i] != null) {
+                        paramTimestamp[currentRowIndex][i] = paramTimestamp[currentRowIndex - 1][i];
+                    }
+                    else if (paramTbTimestamp != null &&
+                        paramTbTimestamp[currentRowIndex - 1][i] != null) {
+                        paramTbTimestamp[currentRowIndex][i] = paramTbTimestamp[currentRowIndex - 1][i];
+                    }
+                    else {
+                        throw TbError
+                                .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                                 Integer.toString(sqlType));
+                    }
+                    break;
+                default:
+                    throw TbError
+                            .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                             Integer.toString(sqlType));
+                }
+                break;
+            }
+            case Types.TIMESTAMP: {
+                int previousDataType = paramTypes[currentRowIndex - 1][i];
+                switch (previousDataType) {
+                case DataType.DATE:
+                    if (paramCalendar != null &&
+                        paramCalendar[currentRowIndex - 1][i] != null) {
+                        paramCalendar[currentRowIndex][i] = paramCalendar[currentRowIndex - 1][i];
+                    }
+                    else if (paramTbDate != null &&
+                        paramTbDate[currentRowIndex - 1][i] != null) {
+                        paramTbDate[currentRowIndex][i] = paramTbDate[currentRowIndex - 1][i];
+                    }
+                    else if (paramBytes != null &&
+                        paramBytes[currentRowIndex - 1][i] != null) {
+                        paramBytes[currentRowIndex][i] = paramBytes[currentRowIndex - 1][i];
+                    }
+                    else {
+                        throw TbError
+                                .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                                 Integer.toString(sqlType));
+                    }
+
+                    break;
+                case DataType.TIMESTAMP:
+                    if (paramTimestamp != null &&
+                        paramTimestamp[currentRowIndex - 1][i] != null) {
+                        paramTimestamp[currentRowIndex][i] = paramTimestamp[currentRowIndex - 1][i];
+                    }
+                    else if (paramTbTimestamp != null &&
+                        paramTbTimestamp[currentRowIndex - 1][i] != null) {
+                        paramTbTimestamp[currentRowIndex][i] = paramTbTimestamp[currentRowIndex - 1][i];
+                    }
+                    else {
+                        throw TbError
+                                .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                                 Integer.toString(sqlType));
+                    }
+                    break;
+                case DataType.TIMESTAMP_TZ:
+                    if (paramTbTimestampTZ != null &&
+                        paramTbTimestampTZ[currentRowIndex - 1][i] != null) {
+                        paramTbTimestampTZ[currentRowIndex][i] = paramTbTimestampTZ[currentRowIndex - 1][i];
+                    }
+                    else {
+                        throw TbError
+                                .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                                 Integer.toString(sqlType));
+                    }
+                    break;
+                default:
+                    throw TbError
+                            .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                             Integer.toString(sqlType));
+                }
+                break;
+            }
+
+            case Types.BINARY:
+                paramBytes[currentRowIndex][i] = paramBytes[currentRowIndex - 1][i];
+                break;
+
+            case Types.LONGVARBINARY:
+                paramStream[currentRowIndex][i] = paramStream[currentRowIndex - 1][i];
+                break;
+
+            case Types.NULL:
+                break;
+
+            default:
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         Integer.toString(sqlType));
+            }
+
+            binder[currentRowIndex][i] = binder[currentRowIndex - 1][i];
+            paramTypes[currentRowIndex][i] = paramTypes[currentRowIndex - 1][i];
+        }
+        else {
+            throw TbError.newSQLException(TbError.MU_ALL_PARAM_NOT_BOUND);
+        }
+    }
+
+    private void addBigLiteral(ArrayList
+    // #ifdef JDK1.5
+    <BigLiteral>
+    // #endif
+    literal) throws SQLException {
+        int count = literal.size();
+
+        if (bindParamCnt == 0) {
+            binder = new Binder[allocatedBatchRowCount][count];
+            paramTypes = new byte[allocatedBatchRowCount][count];
+            bindData = new BindData(count);
+
+            for (int i = 0; i < count; i++) {
+                BigLiteral bl = (BigLiteral) literal.get(i);
+                String x = bl.getLiteralValue();
+                int paramIndex = bl.getLiteralIndex();
+
+                if (paramReader == null)
+                    paramReader = new Reader[allocatedBatchRowCount][count];
+
+                bindData.setDFRParam(paramIndex, Types.LONGVARCHAR, x.length());
+                paramReader[currentRowIndex][paramIndex] = new StringReader(x);
+                paramTypes[currentRowIndex][paramIndex] = DataType.CLOB;
+                binder[currentRowIndex][paramIndex] = staticReaderBinder;
+            }
+
+            return;
+        }
+
+        growBatchArray(0, count);
+        bindData.resize(bindParamCnt +
+            count);
+
+        for (int i = 0; i < count; i++) {
+            BigLiteral bl = (BigLiteral) literal.get(i);
+            int paramIndex = bl.getLiteralIndex();
+            String x = bl.getLiteralValue();
+
+            if (paramReader == null)
+                paramReader = new Reader[allocatedBatchRowCount][bindParamCnt +
+                    count];
+
+            if (paramIndex < bindParamCnt)
+                pushParamData(count, paramIndex);
+
+            bindData.insertDFRLiteral(paramIndex, Types.LONGVARCHAR, x.length());
+            paramReader[currentRowIndex][paramIndex] = new StringReader(x);
+            paramTypes[currentRowIndex][paramIndex] = DataType.CLOB;
+            binder[currentRowIndex][paramIndex] = staticReaderBinder;
+        }
+    }
+
+    public void
+            buildColMetaArray(int colCnt, int hiddenCnt, TbColumnDesc[] meta) {
+        outColCnt = colCnt;
+        hiddenColCnt = hiddenCnt;
+        colMeta = meta;
+    }
+
+    protected void checkParameterIndex(int pos) throws SQLException {
+        if (pos < 0 ||
+            pos > bindParamCnt)
+            throw TbError.newSQLException(TbError.MU_INVALID_COLUMN_INDEX);
+    }
+
+    public synchronized void clearBatch() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.clearBatch", new Object[] {
+                this
+            });
+        }
+
+        if (batchUpdateInfo != null)
+            batchUpdateInfo.clear();
+
+        for (int i = currentRowIndex; i >= 0; i--) {
+            for (int j = 0; j < bindParamCnt; j++) {
+                binder[i][j] = null;
+            }
+        }
+
+        currentRowIndex = 0;
+    }
+
+    private void clearBigLiteral(ArrayList
+    // #ifdef JDK1.5
+    <BigLiteral>
+    // #endif
+    literal) throws SQLException {
+        int count = literal.size();
+        int[] index = new int[count];
+        int sqlType;
+        BindItem item;
+        BigLiteral bl;
+
+        for (int i = count - 1; i >= 0; i--) {
+            bl = (BigLiteral) literal.get(i);
+            index[i] = bl.getLiteralIndex();
+
+            item = bindData.getBindItem(i);
+            sqlType = item.getSQLType();
+
+            for (int j = index[i]; j < bindParamCnt +
+                count - 1; j++) {
+                binder[currentRowIndex][j] = binder[currentRowIndex][j + 1];
+                binder[currentRowIndex][j + 1] = null;
+            }
+
+            for (int j = index[i]; j < bindParamCnt +
+                count - 1; j++) {
+                paramTypes[currentRowIndex][j] = paramTypes[currentRowIndex][j + 1];
+            }
+
+            switch (sqlType) {
+            case Types.INTEGER:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramInt[currentRowIndex][j] = paramInt[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.BIGINT:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramBigDecimal[currentRowIndex][j] = paramBigDecimal[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.FLOAT:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramFloat[currentRowIndex][j] = paramFloat[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.DOUBLE:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramDouble[currentRowIndex][j] = paramDouble[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.NUMERIC:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramLong[currentRowIndex][j] = paramLong[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.VARCHAR:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramString[currentRowIndex][j] = paramString[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.LONGVARCHAR:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramReader[currentRowIndex][j] = paramReader[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.DATE:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    if (paramTbDate != null) {
+                        paramTbDate[currentRowIndex][j] = paramTbDate[currentRowIndex][j + 1];
+                    }
+                }
+                // no break and check paramCalendar
+
+            case Types.TIME:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    if (paramCalendar != null) {
+                        paramCalendar[currentRowIndex][j] = paramCalendar[currentRowIndex][j + 1];
+                    }
+                }
+                break;
+
+            case Types.TIMESTAMP:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    if (paramTimestamp != null) {
+                        paramTimestamp[currentRowIndex][j] = paramTimestamp[currentRowIndex][j + 1];
+                    }
+                    if (paramTbTimestamp != null) {
+                        paramTbTimestamp[currentRowIndex][j] = paramTbTimestamp[currentRowIndex][j + 1];
+                    }
+                    if (paramTbTimestampTZ != null) {
+                        paramTbTimestampTZ[currentRowIndex][j] = paramTbTimestampTZ[currentRowIndex][j + 1];
+                    }
+                }
+                break;
+
+            case Types.BINARY:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramBytes[currentRowIndex][j] = paramBytes[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.LONGVARBINARY:
+                for (int j = index[i]; j < bindParamCnt +
+                    count - 1; j++) {
+                    paramStream[currentRowIndex][j] = paramStream[currentRowIndex][j + 1];
+                }
+                break;
+
+            case Types.NULL:
+                break;
+
+            default:
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         Integer.toString(sqlType));
+            }
+        }
+
+        bindData.removeDFRLiteral(index);
+    }
+
+    public void clearParameters() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.clearParameters",
+                            new Object[] {
+                                this
+                            });
+        }
+
+        if (bindData != null)
+            bindData.reuse();
+
+        for (int i = 0; i < bindParamCnt; i++) {
+            binder[currentRowIndex][i] = null;
+        }
+    }
+
+    protected void copyBindParamInfo(ParamContainer pc) throws SQLException {
+        int newParamCount = pc.getParameterCnt();
+
+        getBindData().set(pc.getBindData());
+
+        Binder[][] tempBinder = pc.getBinder();
+        binder = new Binder[allocatedBatchRowCount][bindParamCnt];
+        if (tempBinder != null) {
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(tempBinder[0], 0, binder[i], 0, newParamCount);
+            }
+        }
+
+        byte[] tempTypes = pc.getParamTypesOfRow(currentRowIndex);
+        paramTypes = new byte[allocatedBatchRowCount][bindParamCnt];
+        if (tempTypes != null)
+            System.arraycopy(tempTypes, 0, paramTypes[currentRowIndex], 0,
+                             newParamCount);
+
+        int[] tempInt = pc.getParamIntOfRow(currentRowIndex);
+        if (tempInt != null) {
+            paramInt = new int[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempInt, 0, paramInt[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        long[] tempLong = pc.getParamLongOfRow(currentRowIndex);
+        if (tempLong != null) {
+            paramLong = new long[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempLong, 0, paramLong[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        float[] tempFloat = pc.getParamFloatOfRow(currentRowIndex);
+        if (tempFloat != null) {
+            paramFloat = new float[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempFloat, 0, paramFloat[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        double[] tempDouble = pc.getParamDoubleOfRow(currentRowIndex);
+        if (tempDouble != null) {
+            paramDouble = new double[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempLong, 0, paramDouble[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        BigDecimal[] tempBigDecimal = pc
+                .getParamBigDecimalOfRow(currentRowIndex);
+        if (tempBigDecimal != null) {
+            paramBigDecimal = new BigDecimal[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempBigDecimal, 0,
+                             paramBigDecimal[currentRowIndex], 0, newParamCount);
+        }
+
+        String[] tempString = pc.getParamStringOfRow(currentRowIndex);
+        if (tempString != null) {
+            paramString = new String[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempString, 0, paramString[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        Calendar[] tempCalendar = pc.getParamCalendarOfRow(currentRowIndex);
+        if (tempCalendar != null) {
+            paramCalendar = new Calendar[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempCalendar, 0, paramCalendar[currentRowIndex],
+                             0, newParamCount);
+        }
+
+        Timestamp[] tempTimestamp = pc
+                .getParamTimestampOfRow(currentRowIndex);
+        if (tempTimestamp != null) {
+            paramTimestamp = new Timestamp[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempTimestamp, 0, paramTimestamp[currentRowIndex],
+                             0, newParamCount);
+        }
+
+        TbDate[] tempTbDate = pc.getParamTbDateOfRow(currentRowIndex);
+        if (tempTbDate != null) {
+            paramTbDate = new TbDate[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempTbDate, 0, paramTbDate[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        TbTimestamp[] tempTbTimestamp = pc
+                .getParamTbTimestampOfRow(currentRowIndex);
+        if (tempTbTimestamp != null) {
+            paramTbTimestamp = new TbTimestamp[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempTbTimestamp, 0,
+                             paramTbTimestamp[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        TbTimestampTZ[] tempTbTimestampTZ = pc
+                .getParamTbTimestampTZOfRow(currentRowIndex);
+        if (tempTbTimestampTZ != null) {
+            paramTbTimestampTZ = new TbTimestampTZ[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempTbTimestampTZ, 0,
+                             paramTbTimestampTZ[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        byte[][] tempBytes = pc.getParamBytesOfRow(currentRowIndex);
+        if (tempBytes != null) {
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+            System.arraycopy(tempBytes, 0, paramBytes[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        InputStream[] tempStream = pc.getParamStreamOfRow(currentRowIndex);
+        if (tempStream != null) {
+            paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempStream, 0, paramStream[currentRowIndex], 0,
+                             newParamCount);
+        }
+
+        Reader[] tempReader = pc.getParamReaderOfRow(currentRowIndex);
+        if (tempReader != null) {
+            paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
+            System.arraycopy(tempReader, 0, paramReader[currentRowIndex], 0,
+                             newParamCount);
+        }
+    }
+
+    public boolean execute() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.execute", null, null);
+        }
+
+        checkConnectionOpen();
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return currentRs != null;
+    }
+
+    public boolean execute(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.execute", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = false;
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return currentRs != null;
+    }
+
+    // #ifdef JDK1.4
+    public boolean execute(String sql, int autoGeneratedKeys)
+            throws SQLException {
+        if (autoGeneratedKeys == Statement.NO_GENERATED_KEYS) {
+            return execute(sql);
+        }
+        else if (autoGeneratedKeys != Statement.RETURN_GENERATED_KEYS) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_AUTO_GENERATED_KEY);
+        }
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.execute", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(null);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return currentRs != null;
+    }
+
+    // #endif
+
+    public boolean execute(String sql, int[] columnIndexes) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.execute", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        if (columnIndexes == null ||
+            columnIndexes.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_INDEX);
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(columnIndexes);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return currentRs != null;
+    }
+
+    public boolean execute(String sql, String[] columnNames)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.execute", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        if (columnNames == null ||
+            columnNames.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_NAME);
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(columnNames);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return currentRs != null;
+    }
+
+    public synchronized int[] executeBatch() throws SQLException,
+            BatchUpdateException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeBatch", new Object[] {
+                this
+            });
+        }
+
+        int maxByteCount = conn.typeConverter.getMaxBytesPerChar();
+
+        checkConnectionOpen();
+
+        initBeforeExecute();
+
+        if (currentRowIndex == 0) {
+            batchCounts = new int[0];
+            return batchCounts;
+        }
+
+        if (originalSql.length() > DriverConstants.MAX_FIELD_SIZE /
+            maxByteCount) {
+            ArrayList
+            // #ifdef JDK1.5
+            <BigLiteral>
+            // #endif
+            literal = new ArrayList
+            // #ifdef JDK1.5
+            <BigLiteral>
+            // #endif
+            ();
+
+            TbSQLParser.getBigLiteral(originalSql, maxByteCount, literal);
+
+            if (literal.size() > 0)
+                throw TbError
+                        .newSQLException(TbError.MU_NOT_ALLOWED_LITERAL_IN_BATCH);
+        }
+
+        try {
+            if (queryTimeout != 0)
+                conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+            isExecuting = true;
+
+            synchronized (conn) {
+                batchCounts = conn.getTbComm().batchUpdateLoop(this, batchUpdateInfo);
+            }
+
+            return batchCounts;
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+
+            clearBatch();
+        }
+    }
+
+    private int executeBigLiteral(String sql, ArrayList
+    // #ifdef JDK1.5
+                                  <BigLiteral>
+                                  // #endif
+                                  literal) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeBigLiteral",
+                            new Object[] {
+                                this
+                            });
+        }
+
+        addBigLiteral(literal);
+
+        try {
+            return executeCompleteSQL(sql);
+        }
+        catch (SQLException e) {
+            if (Debug.TRACE)
+                Debug.log("TbPreparedStatement.executeBigLiteral (PPID CLEARED)");
+
+            ppid = null;
+
+            throw e;
+        }
+        finally {
+            clearBigLiteral(literal);
+        }
+    }
+
+    private void prepareBigLiteralInternal(String sql, ArrayList
+    // #ifdef JDK1.5
+                                           <BigLiteral>
+                                           // #endif
+                                           literal) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.prepareBigLiteral",
+                            new Object[] {
+                                this
+                            });
+        }
+
+        addBigLiteral(literal);
+
+        try {
+            prepareSQLInternal(sql);
+        }
+        catch (SQLException e) {
+            if (Debug.TRACE)
+                Debug.log("TbPreparedStatement.prepareBigLiteral (PPID CLEARED)");
+
+            ppid = null;
+
+            throw e;
+        }
+        finally {
+            clearBigLiteral(literal);
+        }
+    }
+
+    private int executeCompleteSQL(String sql) throws SQLException {
+        if (!isInsertStmt(sql)) {
+            returnAutoGeneratedKeys = false;
+        }
+
+        if (TbSQLTypeScanner.isQueryStmt(sqlType)) {
+            if (userRsetType.getType() == ResultSet.TYPE_SCROLL_SENSITIVE ||
+                    userRsetType
+                            .getConcurrency() == ResultSet.CONCUR_UPDATABLE) {
+                if (rsetTypeDowngraded) {
+                    realRsetType = RsetType
+                            .getDownGradedRsetType(userRsetType.getRank());
+
+                    synchronized (conn) {
+                        int ret = conn.getTbComm()
+                                .prepareExecute(this, sql, currentRowIndex);
+                        rsetTypeDowngraded = true;
+                        return ret;
+                    }
+                }
+                else {
+                    sqlWithRowId = getQueryWithRowId(sql);
+
+                    try {
+                        realRsetType = userRsetType;
+
+                        synchronized (conn) {
+                            return conn.getTbComm()
+                                    .prepareExecute(this, sqlWithRowId,
+                                                    currentRowIndex);
+                        }
+                    }
+                    catch (SQLException se) {
+                        realRsetType = RsetType
+                                .getDownGradedRsetType(userRsetType.getRank());
+
+                        synchronized (conn) {
+                            int ret = conn.getTbComm()
+                                    .prepareExecute(this, sql, currentRowIndex);
+                            rsetTypeDowngraded = true;
+                            return ret;
+                        }
+                    }
+                }
+            }
+            else {
+                try {
+                    realRsetType = userRsetType;
+                    synchronized (conn) {
+                        return conn.getTbComm().prepareExecute(this, sql,
+                                                               currentRowIndex);
+                    }
+                }
+                catch (SQLException e) {
+                    // Failover CURSOR ��忡�� execute ������ failover�� �߻��� ���, ������Ѵ�.
+                    ppid = null;
+                    if (conn.isClosed() ||
+                            !conn.info.isFailoverCursorEnabled() ||
+                            e.getErrorCode() != TbError.FO_RECONNECTED)
+                        throw e;
+
+                    if (Debug.TRACE || Debug.FAILOVER) {
+                        Debug.log("Failover cursor: re-execute query " + this);
+                    }
+                    int ucnt = conn.getTbComm().prepareExecute(this, sql,
+                                                           currentRowIndex);
+                    addWarning(TbError.newSQLWarning(TbError.FO_RECONNECTED, e));
+                    return ucnt;
+                }
+            }
+        }
+        else if (TbSQLTypeScanner.isDMLStmt(sqlType) ||
+            (!TbSQLTypeScanner.isQueryStmt(sqlType) && !TbSQLTypeScanner
+                    .isPSMStmt(sqlType))) {
+            realRsetType = userRsetType;
+
+            String autoGeneratedValuesSql = sql;
+            if (returnAutoGeneratedKeys) {
+                if (realRsetType.isSensitive() ||
+                    realRsetType.isUpdatable()) {
+                    realRsetType = RsetType.SIRD;
+                }
+
+                if (autoGenKeyArr == null)
+                    autoGeneratedValuesSql = getAutoGenSql(originalSql);
+                else {
+                    if (autoGenKeyArr instanceof int[]) {
+                        autoGeneratedValuesSql = getAutoGenSql(originalSql,
+                                                               (int[]) autoGenKeyArr);
+                    }
+                    else if (autoGenKeyArr instanceof String[]) {
+                        autoGeneratedValuesSql = getAutoGenSql(originalSql,
+                                                               (String[]) autoGenKeyArr);
+                    }
+                }
+            }
+
+            synchronized (conn) {
+                rowsUpdated = conn.getTbComm()
+                        .prepareExecute(this, autoGeneratedValuesSql,
+                                        currentRowIndex);
+            }
+
+            return rowsUpdated;
+        }
+        else {
+            if (TbSQLTypeScanner.isPSMStmt(sqlType) &&
+                    userRsetType.isScrollable() || userRsetType.isUpdatable()) {
+                realRsetType = RsetType
+                        .getDownGradedRsetType(userRsetType.getRank());
+            }
+            else {
+                realRsetType = userRsetType;
+            }
+
+            synchronized (conn) {
+                return conn.getTbComm().prepareExecute(this, sql,
+                                                       currentRowIndex);
+            }
+        }
+    }
+
+    private void prepareSQLInternal(String sql) throws SQLException {
+        if (!isInsertStmt(sql)) {
+            returnAutoGeneratedKeys = false;
+        }
+
+        if (TbSQLTypeScanner.isQueryStmt(sqlType)) {
+            realRsetType = userRsetType;
+
+            Vector
+            // #ifdef JDK1.5
+            <Integer>
+            // #endif
+            serverTypes = new Vector
+            // #ifdef JDK1.5
+            <Integer>
+            // #endif
+            ();
+
+            synchronized (conn) {
+                conn.getTbComm().prepare(this, sql, serverTypes);
+            }
+
+            allocatedBatchRowCount = 1;
+            currentRowIndex = 0;
+
+            bindData = new BindData(bindParamCnt);
+            binder = new Binder[allocatedBatchRowCount][bindParamCnt];
+            paramTypes = new byte[allocatedBatchRowCount][bindParamCnt];
+
+            int dataType;
+            for (int i = 0; i < bindParamCnt; i++) {
+                dataType = ((Integer) serverTypes.get(i)).intValue();
+
+                DataType.checkValidDataType(dataType);
+
+                paramTypes[currentRowIndex][i] = (byte) dataType;
+            }
+
+            serverTypes.clear();
+            serverTypes = null;
+        }
+    }
+
+    protected synchronized int executeInternal(final String sql)
+            throws SQLException {
+        int maxByteCount = conn.typeConverter.getMaxBytesPerChar();
+
+        if (sql.length() > DriverConstants.MAX_FIELD_SIZE /
+                maxByteCount && this.sqlType != 0x80) { //STMT_DDL == 0x80
+            if (processedBigLiteralSql == null) {
+                if (bigLiterals == null)
+                    bigLiterals = new ArrayList
+                    // #ifdef JDK1.5
+                    <BigLiteral>
+                    // #endif
+                    ();
+
+                processedBigLiteralSql = TbSQLParser
+                        .getBigLiteral(sql, maxByteCount, bigLiterals);
+            }
+
+            if (bigLiterals.size() > 0)
+                return executeBigLiteral(processedBigLiteralSql, bigLiterals);
+        }
+
+        try {
+            return executeCompleteSQL(sql);
+        }
+        catch (SQLException e) {
+            if (Debug.TRACE)
+                Debug.log("TbPreparedStatement.executeInternal (PPID CLEARED)");
+
+            ppid = null;
+
+            throw e;
+        }
+    }
+
+    protected synchronized void prepareInternal(final String sql)
+            throws SQLException {
+        int maxByteCount = conn.typeConverter.getMaxBytesPerChar();
+
+        if (sql.length() > DriverConstants.MAX_FIELD_SIZE /
+            maxByteCount) {
+            if (processedBigLiteralSql == null) {
+                if (bigLiterals == null)
+                    bigLiterals = new ArrayList
+                    // #ifdef JDK1.5
+                    <BigLiteral>
+                    // #endif
+                    ();
+
+                processedBigLiteralSql = TbSQLParser
+                        .getBigLiteral(sql, maxByteCount, bigLiterals);
+            }
+
+            if (bigLiterals.size() > 0)
+                prepareBigLiteralInternal(processedBigLiteralSql, bigLiterals);
+        }
+
+        try {
+            prepareSQLInternal(sql);
+        }
+        catch (SQLException e) {
+            if (Debug.TRACE)
+                Debug.log("TbPreparedStatement.prepareSQLInternal (PPID CLEARED)");
+
+            ppid = null;
+
+            throw e;
+        }
+    }
+
+    public ResultSet executeQuery() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeQuery", null, null);
+        }
+
+        checkConnectionOpen();
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+
+        if (queryTimeout > 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout > 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        if (currentRs == null) {
+            currentRs = TbResultSetFactory.buildResultSet(this,
+                                                          TbResultSetBase.EMPTY_CURSOR_ID,
+                                                          0, 0, null);
+        }
+
+        return currentRs;
+    }
+
+    public ResultSet executeQuery(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeQuery", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+
+        if (queryTimeout > 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout > 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        if (currentRs == null) {
+            currentRs = TbResultSetFactory.buildResultSet(this,
+                                                          TbResultSetBase.EMPTY_CURSOR_ID,
+                                                          0, 0, null);
+        }
+
+        return currentRs;
+    }
+
+    public int executeUpdate() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeUpdate", null, null);
+        }
+
+        checkConnectionOpen();
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+
+            return executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+    }
+
+    public int executeUpdate(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeUpdate", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = false;
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+
+            return executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+    }
+
+    // #ifdef JDK1.4
+    public int executeUpdate(String sql, int autoGeneratedKeys)
+            throws SQLException {
+        if (autoGeneratedKeys == Statement.NO_GENERATED_KEYS) {
+            return executeUpdate(sql);
+        }
+        else if (autoGeneratedKeys != Statement.RETURN_GENERATED_KEYS) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_AUTO_GENERATED_KEY);
+        }
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeUpdate", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(null);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+
+            return executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+    }
+
+    // #endif
+
+    public int executeUpdate(String sql, int[] columnIndexes)
+            throws SQLException {
+        if (columnIndexes == null ||
+            columnIndexes.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_INDEX);
+        }
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeUpdate", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(columnIndexes);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+
+            return executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+    }
+
+    public int executeUpdate(String sql, String[] columnNames)
+            throws SQLException {
+        if (columnNames == null ||
+            columnNames.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_INDEX);
+        }
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executeUpdate", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        checkConnectionOpen();
+
+        initSQLInfo(sql);
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+        returnAutoGeneratedKeys = true;
+        setAutoGenKeyArr(columnNames);
+
+        if (queryTimeout != 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+
+            return executeInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout != 0)
+                conn.getTimeout().cancelTimeout();
+        }
+    }
+
+    private void forcePrepare() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.forcePrepare", new Object[] {
+                this
+            });
+        }
+
+        Vector
+        // #ifdef JDK1.5
+        <Integer>
+        // #endif
+        serverTypes = new Vector
+        // #ifdef JDK1.5
+        <Integer>
+        // #endif
+        ();
+
+        synchronized (conn) {
+            conn.getTbComm().prepare(this, originalSql, serverTypes);
+        }
+
+        allocatedBatchRowCount = 1;
+        currentRowIndex = 0;
+
+        bindData = new BindData(bindParamCnt);
+        binder = new Binder[allocatedBatchRowCount][bindParamCnt];
+        paramTypes = new byte[allocatedBatchRowCount][bindParamCnt];
+
+        int dataType;
+        for (int i = 0; i < bindParamCnt; i++) {
+            dataType = ((Integer) serverTypes.get(i)).intValue();
+
+            DataType.checkValidDataType(dataType);
+
+            paramTypes[currentRowIndex][i] = (byte) dataType;
+        }
+
+        serverTypes.clear();
+        serverTypes = null;
+    }
+
+    public int getBatchFlag() {
+        return batchFlag;
+    }
+
+    public int getBatchRowCount() {
+        return currentRowIndex;
+    }
+
+    public BindData getBindData() {
+        return bindData;
+    }
+
+    public Binder[][] getBinder() {
+        return binder;
+    }
+
+    public Binder getBinder(int rowIndex, int colIndex) {
+        return binder[rowIndex][colIndex];
+    }
+
+    public TbColumnDesc[] getColMetaArray() {
+        return colMeta;
+    }
+
+    public int getHiddenColCnt() {
+        return hiddenColCnt;
+    }
+
+    public ResultSetMetaData getMetaData() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.getMetaData", new Object[] {
+                this
+            });
+        }
+
+        ResultSet rs = getResultSet();
+        if (rs != null)
+            return rs.getMetaData();
+
+        if (rs == null) {
+            prepareInternal();
+            int colCnt = getColumnCount();
+            Column[] cols = new Column[colCnt];
+            for (int i = 0; i < colCnt; i++) {
+                cols[i] = new Column(conn.getMapDateToTimestamp());
+            }
+            typeConverter.buildColumnMetaData(colMeta, hiddenColCnt, colCnt, cols);
+            resultSetMetaData = new TbResultSetMetaData(cols, 0);
+        }
+
+        return resultSetMetaData;
+    }
+
+    private void prepareInternal() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.executePrepare", null, null);
+        }
+
+        checkConnectionOpen();
+
+        if (batchStmts != null) {
+            checkBatchStmtRemained();
+            initBatchStmts();
+        }
+
+        initBeforeExecute();
+
+        if (queryTimeout > 0)
+            conn.getTimeout().setTimeout(queryTimeout * 1000, this);
+
+        try {
+            isExecuting = true;
+            prepareInternal(originalSql);
+        }
+        finally {
+            isExecuting = false;
+
+            if (queryTimeout > 0)
+                conn.getTimeout().cancelTimeout();
+        }
+
+        return;
+    }
+
+    int getColumnCount() {
+        int hiddenColumnCount = getHiddenColCnt();
+
+        int beginColumnIndex = 0;
+
+        if (getRealRsetType() != null) {
+            beginColumnIndex = hiddenColumnCount +
+                (getRealRsetType().useRowId() == true ? 1 : 0);
+        }
+
+        return getOutColCnt() -
+            beginColumnIndex;
+    }
+
+    public int getOutColCnt() {
+        return outColCnt;
+    }
+
+    public BigDecimal getParamBigDecimal(int rowIndex, int columnIndex) {
+        return paramBigDecimal[rowIndex][columnIndex];
+    }
+
+    public BigDecimal[] getParamBigDecimalOfRow(int rowIndex) {
+        return paramBigDecimal == null ? null : paramBigDecimal[rowIndex];
+    }
+
+    public byte[] getParamBytes(int rowIndex, int columnIndex) {
+        return paramBytes[rowIndex][columnIndex];
+    }
+
+    public byte[][] getParamBytesOfRow(int rowIndex) {
+        return paramBytes == null ? null : paramBytes[rowIndex];
+    }
+
+    public Calendar getParamCalendar(int rowIndex, int columnIndex) {
+        return paramCalendar[rowIndex][columnIndex];
+    }
+
+    public Calendar[] getParamCalendarOfRow(int rowIndex) {
+        return paramCalendar == null ? null : paramCalendar[rowIndex];
+    }
+
+    public double getParamDouble(int rowIndex, int columnIndex) {
+        return paramDouble[rowIndex][columnIndex];
+    }
+
+    public double[] getParamDoubleOfRow(int rowIndex) {
+        return paramDouble == null ? null : paramDouble[rowIndex];
+    }
+
+    public int getParameterCnt() {
+        return bindParamCnt;
+    }
+
+    // #ifdef JDK1.4
+    public ParameterMetaData getParameterMetaData() throws SQLException {
+        return new TbParameterMetaData(bindParamCnt);
+    }
+
+    // #endif
+
+    public float getParamFloat(int rowIndex, int columnIndex) {
+        return paramFloat[rowIndex][columnIndex];
+    }
+
+    public float[] getParamFloatOfRow(int rowIndex) {
+        return paramFloat == null ? null : paramFloat[rowIndex];
+    }
+
+    public int getParamInt(int rowIndex, int columnIndex) {
+        return paramInt[rowIndex][columnIndex];
+    }
+
+    public int[] getParamIntOfRow(int rowIndex) {
+        return paramInt == null ? null : paramInt[rowIndex];
+    }
+
+    public long getParamLong(int rowIndex, int columnIndex) {
+        return paramLong[rowIndex][columnIndex];
+    }
+
+    public long[] getParamLongOfRow(int rowIndex) {
+        return paramLong == null ? null : paramLong[rowIndex];
+    }
+
+    public Reader getParamReader(int rowIndex, int columnIndex) {
+        return paramReader[rowIndex][columnIndex];
+    }
+
+    public Reader[] getParamReaderOfRow(int rowIndex) {
+        return paramReader == null ? null : paramReader[rowIndex];
+    }
+
+    public InputStream getParamStream(int rowIndex, int columnIndex) {
+        return paramStream[rowIndex][columnIndex];
+    }
+
+    public InputStream[] getParamStreamOfRow(int rowIndex) {
+        return paramStream == null ? null : paramStream[rowIndex];
+    }
+
+    public String getParamString(int rowIndex, int columnIndex) {
+        return paramString[rowIndex][columnIndex];
+    }
+
+    public String[] getParamStringOfRow(int rowIndex) {
+        return paramString == null ? null : paramString[rowIndex];
+    }
+
+    public Timestamp getParamTimestamp(int rowIndex, int columnIndex) {
+        return paramTimestamp[rowIndex][columnIndex];
+    }
+
+    public TbDate getParamTbDate(int rowIndex, int columnIndex) {
+        return paramTbDate[rowIndex][columnIndex];
+    }
+
+    public TbDate[] getParamTbDateOfRow(int rowIndex) {
+        return paramTbDate == null ? null : paramTbDate[rowIndex];
+    }
+
+    public TbTimestamp getParamTbTimestamp(int rowIndex, int columnIndex) {
+        return paramTbTimestamp[rowIndex][columnIndex];
+    }
+
+    public TbTimestamp[] getParamTbTimestampOfRow(int rowIndex) {
+        return paramTbTimestamp == null ? null : paramTbTimestamp[rowIndex];
+    }
+
+    public TbTimestampTZ getParamTbTimestampTZ(int rowIndex, int columnIndex) {
+        return paramTbTimestampTZ[rowIndex][columnIndex];
+    }
+
+    public TbTimestampTZ[] getParamTbTimestampTZOfRow(int rowIndex) {
+        return paramTbTimestampTZ == null ? null : paramTbTimestampTZ[rowIndex];
+    }
+
+    public Timestamp[] getParamTimestampOfRow(int rowIndex) {
+        return paramTimestamp == null ? null : paramTimestamp[rowIndex];
+    }
+
+    public Array getParamArray(int rowIndex, int columnIndex) {
+        return paramArray[rowIndex][columnIndex];
+    }
+
+    public Array[] getParamArrayOfRow(int rowIndex) {
+        return paramArray == null ? null : paramArray[rowIndex];
+    }
+
+    public Struct getParamStruct(int rowIndex, int columnIndex) {
+        return paramStruct[rowIndex][columnIndex];
+    }
+
+    public Struct[] getParamStructOfRow(int rowIndex) {
+        return paramStruct == null ? null : paramStruct[rowIndex];
+    }
+
+    public byte getParamType(int rowIndex, int colIndex) {
+        return paramTypes[rowIndex][colIndex];
+    }
+
+    public byte[][] getParamTypes() {
+        return paramTypes;
+    }
+
+    public byte[] getParamTypesOfRow(int rowIndex) {
+        return paramTypes == null ? null : paramTypes[rowIndex];
+    }
+
+    public byte[] getPPID() {
+        return ppid;
+    }
+
+    private void growBatchArray(int addBatchCount, int addParamCount) {
+        int newParamCount = bindParamCnt +
+            addParamCount;
+        int newBatchCount = allocatedBatchRowCount +
+            addBatchCount;
+
+        Binder[][] tempBinder = binder;
+        binder = new Binder[newBatchCount][newParamCount];
+        if (tempBinder != null) {
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(tempBinder[i], 0, binder[i], 0, bindParamCnt);
+            }
+        }
+
+        byte[][] tempTypes = paramTypes;
+        paramTypes = new byte[newBatchCount][newParamCount];
+        if (tempTypes != null) {
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(tempTypes[i], 0, paramTypes[i], 0,
+                                 bindParamCnt);
+            }
+        }
+
+        if (paramInt != null) {
+            int[][] temp = paramInt;
+            paramInt = new int[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramInt[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramLong != null) {
+            long[][] temp = paramLong;
+            paramLong = new long[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramLong[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramFloat != null) {
+            float[][] temp = paramFloat;
+            paramFloat = new float[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramFloat[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramDouble != null) {
+            double[][] temp = paramDouble;
+            paramDouble = new double[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramDouble[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramBigDecimal != null) {
+            BigDecimal[][] temp = paramBigDecimal;
+            paramBigDecimal = new BigDecimal[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramBigDecimal[i], 0,
+                                 bindParamCnt);
+            }
+        }
+
+        if (paramString != null) {
+            String[][] temp = paramString;
+            paramString = new String[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramString[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramCalendar != null) {
+            Calendar[][] temp = paramCalendar;
+            paramCalendar = new Calendar[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramCalendar[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramTimestamp != null) {
+            Timestamp[][] temp = paramTimestamp;
+            paramTimestamp = new Timestamp[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramTimestamp[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramTbDate != null) {
+            TbDate[][] temp = paramTbDate;
+            paramTbDate = new TbDate[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramTbDate[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramTbTimestamp != null) {
+            TbTimestamp[][] temp = paramTbTimestamp;
+            paramTbTimestamp = new TbTimestamp[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramTbTimestamp[i], 0,
+                                 bindParamCnt);
+            }
+        }
+
+        if (paramTbTimestampTZ != null) {
+            TbTimestampTZ[][] temp = paramTbTimestampTZ;
+            paramTbTimestampTZ = new TbTimestampTZ[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramTbTimestampTZ[i], 0,
+                                 bindParamCnt);
+            }
+        }
+
+        if (paramBytes != null) {
+            byte[][][] temp = paramBytes;
+            paramBytes = new byte[newBatchCount][newParamCount][];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramBytes[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramStream != null) {
+            InputStream[][] temp = paramStream;
+            paramStream = new InputStream[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramStream[i], 0, bindParamCnt);
+            }
+        }
+
+        if (paramReader != null) {
+            Reader[][] temp = paramReader;
+            paramReader = new Reader[newBatchCount][newParamCount];
+            for (int i = 0; i < allocatedBatchRowCount; i++) {
+                System.arraycopy(temp[i], 0, paramReader[i], 0, bindParamCnt);
+            }
+        }
+
+        allocatedBatchRowCount = newBatchCount;
+    }
+
+    public void initParameter() throws SQLException {
+        bindParamCnt = TbSQLParser.getParamCount(originalSql, sqlType);
+        allocatedBatchRowCount = 1;
+        currentRowIndex = 0;
+
+        if (bindData == null) {
+            bindData = new BindData(bindParamCnt);
+        }
+        else {
+            bindData.reuse();
+            bindData.resize(bindParamCnt);
+        }
+
+        paramTypes = new byte[allocatedBatchRowCount][bindParamCnt];
+        binder = new Binder[allocatedBatchRowCount][bindParamCnt];
+    }
+
+    private void initSQLInfo(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.initSQLInfo", new String[] {
+                "SQL"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        if (originalSql.equals(sql))
+            return;
+
+        if (ppid != null)
+            ppid = null;
+
+        // process original SQL statement..
+        // check sqlType : SELECT_DML, UPDATE_DML ....
+        initSql(sql);
+
+        initParameter();
+    }
+
+    public boolean isPoolable() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbStatement.isPoolable", new Object[] {
+                this
+            });
+        }
+
+        if (isClosed())
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_STATEMENT);
+
+        return poolable;
+    }
+
+    private void pushParamData(int count, int paramIndex) throws SQLException {
+        BindItem item = bindData.getBindItem(paramIndex);
+        int sqlType = item.getSQLType();
+
+        for (int j = bindParamCnt +
+            count - 1; j > paramIndex; j--) {
+            binder[currentRowIndex][j] = binder[currentRowIndex][j - 1];
+        }
+
+        for (int j = bindParamCnt +
+            count - 1; j > paramIndex; j--) {
+            paramTypes[currentRowIndex][j] = paramTypes[currentRowIndex][j - 1];
+        }
+
+        switch (sqlType) {
+        case Types.INTEGER:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramInt[currentRowIndex][j] = paramInt[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.BIGINT:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramBigDecimal[currentRowIndex][j] = paramBigDecimal[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.FLOAT:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramFloat[currentRowIndex][j] = paramFloat[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.DOUBLE:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramDouble[currentRowIndex][j] = paramDouble[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.NUMERIC:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramLong[currentRowIndex][j] = paramLong[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.VARCHAR:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramString[currentRowIndex][j] = paramString[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.LONGVARCHAR:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramReader[currentRowIndex][j] = paramReader[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.DATE:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                if (paramTbDate != null) {
+                    paramTbDate[currentRowIndex][j] = paramTbDate[currentRowIndex][j - 1];
+                }
+            }
+            // no break and check paramCalendar
+
+        case Types.TIME:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                if (paramCalendar != null) {
+                    paramCalendar[currentRowIndex][j] = paramCalendar[currentRowIndex][j - 1];
+                }
+            }
+            break;
+
+        case Types.TIMESTAMP:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                if (paramTimestamp != null) {
+                    paramTimestamp[currentRowIndex][j] = paramTimestamp[currentRowIndex][j - 1];
+                }
+                if (paramTbTimestamp != null) {
+                    paramTbTimestamp[currentRowIndex][j] = paramTbTimestamp[currentRowIndex][j - 1];
+                }
+                if (paramTbTimestampTZ != null) {
+                    paramTbTimestampTZ[currentRowIndex][j] = paramTbTimestampTZ[currentRowIndex][j - 1];
+                }
+            }
+            break;
+
+        case Types.BINARY:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramBytes[currentRowIndex][j] = paramBytes[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.LONGVARBINARY:
+            for (int j = bindParamCnt +
+                count - 1; j > paramIndex; j--) {
+                paramStream[currentRowIndex][j] = paramStream[currentRowIndex][j - 1];
+            }
+            break;
+
+        case Types.NULL:
+            break;
+
+        default:
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                     Integer.toString(sqlType));
+        }
+    }
+
+    protected void reset() {
+        super.reset();
+
+        ppid = null;
+        colMeta = null;
+
+        paramInt = null;
+        paramLong = null;
+        paramFloat = null;
+        paramDouble = null;
+        paramBigDecimal = null;
+        paramString = null;
+        paramCalendar = null;
+        paramTimestamp = null;
+        paramTbDate = null;
+        paramTbTimestamp = null;
+        paramTbTimestampTZ = null;
+        paramBytes = null;
+        paramStream = null;
+        paramReader = null;
+        paramTypes = null;
+        binder = null;
+        processedBigLiteralSql = null;
+        resultSetMetaData = null;
+
+        if (bigLiterals != null) {
+            bigLiterals.clear();
+            bigLiterals = null;
+        }
+
+        if (bindData != null) {
+            bindData.reset();
+            bindData = null;
+        }
+
+        if (batchUpdateInfo != null) {
+            batchUpdateInfo.clear();
+            batchUpdateInfo = null;
+        }
+
+        autoGenKeyArr = null;
+    }
+
+    public synchronized void resetForCache() {
+        super.resetForCache();
+
+        paramInt = null;
+        paramLong = null;
+        paramFloat = null;
+        paramDouble = null;
+        paramBigDecimal = null;
+        paramString = null;
+        paramCalendar = null;
+        paramTimestamp = null;
+        paramTbDate = null;
+        paramTbTimestamp = null;
+        paramTbTimestampTZ = null;
+        paramBytes = null;
+        paramStream = null;
+        paramReader = null;
+        paramTypes = null;
+        binder = null;
+        allocatedBatchRowCount = 1;
+        currentRowIndex = 0;
+        processedBigLiteralSql = null;
+        resultSetMetaData = null;
+
+        if (bigLiterals != null) {
+            bigLiterals.clear();
+            bigLiterals = null;
+        }
+
+        if (bindData != null) {
+            bindData.reset();
+            bindData = null;
+        }
+
+        if (batchUpdateInfo != null) {
+            batchUpdateInfo.clear();
+            batchUpdateInfo = null;
+        }
+    }
+
+    public void setArray(int i, Array x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setArray", new Object[] {
+                this, x
+            });
+        }
+
+        setArrayInternal(i, x);
+    }
+
+    public void setAsciiStream(int i, InputStream x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setAsciiStream", new Object[] {
+                this, x
+            });
+        }
+
+        setAsciiStreamInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setAsciiStream(int i, InputStream x, int len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setAsciiStream", new Object[] {
+                this, x, Integer.toString(len)
+            });
+        }
+
+        setAsciiStreamInternal(i, x, len);
+    }
+
+    public void setAsciiStream(int i, InputStream x, long len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setAsciiStream", new Object[] {
+                this, x, Long.toString(len)
+            });
+        }
+
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setAsciiStreamInternal(i, x, (int) len);
+    }
+
+    void setAsciiStreamInternal(int i, InputStream x, int len)
+            throws SQLException {
+        if (x == null ||
+            len <= 0) {
+            setNullInternal(i, DataType.VARCHAR);
+            return;
+        }
+
+        int bufLen = DriverConstants.MIN_DEFERRED_BYTE_SIZE < len
+                ? DriverConstants.MIN_DEFERRED_BYTE_SIZE + 1 : len;
+        byte[] byteBuf = new byte[bufLen];
+        int readLen = 0;
+        
+        try {
+            readLen = x.read(byteBuf, 0, bufLen);
+        } catch (IOException e) {
+            throw TbError.newSQLException(TbError.READER_READ_ERROR,
+                                          e.getMessage());
+        }
+
+        if (readLen < 0) {
+            setNullInternal(i, DataType.VARCHAR);
+        }
+        else if (readLen > DriverConstants.MIN_DEFERRED_BYTE_SIZE) {
+            if (paramStream == null)
+                paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, Types.LONGVARCHAR, len);
+            paramStream[currentRowIndex][i - 1] = new BytesStreamWrapper(x, byteBuf, readLen);
+            binder[currentRowIndex][i - 1] = staticStreamBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+        }
+        else {
+            if (paramBytes == null)
+                paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+            bindData.setINParam(i - 1, Types.VARCHAR, readLen);
+            paramBytes[currentRowIndex][i - 1] = byteBuf;
+            binder[currentRowIndex][i - 1] = staticBytesBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
+        }
+    }
+
+    public void setBigDecimal(int i, BigDecimal x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBigDecimal", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setBigDecimalInternal(i, x);
+    }
+
+    void setBigDecimalInternal(int i, BigDecimal x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.NUMBER);
+            return;
+        }
+
+        if (paramBigDecimal == null)
+            paramBigDecimal = new BigDecimal[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.BIGINT, -1);
+        paramBigDecimal[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+        binder[currentRowIndex][i - 1] = staticBigDecimalBinder;
+    }
+
+    public void setBinaryStream(int i, InputStream x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBinaryStream",
+                            new Object[] {
+                                this, Integer.toString(i), x
+                            });
+        }
+
+        setBinaryStreamInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setBinaryStream(int i, InputStream x, int len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBinaryStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Integer.toString(len)
+                            });
+        }
+
+        setBinaryStreamInternal(i, x, len);
+    }
+
+    public void setBinaryStream(int i, InputStream x, long len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBinaryStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Long.toString(len)
+                            });
+        }
+
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setBinaryStreamInternal(i, x, (int) len);
+    }
+
+    void setBinaryStreamInternal(int i, InputStream x, int len)
+            throws SQLException {
+        if (x == null ||
+            len <= 0) {
+            setNullInternal(i, DataType.RAW);
+            return;
+        }
+
+        int bufLen = DriverConstants.MIN_DEFERRED_BYTE_SIZE < len
+                ? DriverConstants.MIN_DEFERRED_BYTE_SIZE + 1 : len;
+        byte[] byteBuf = new byte[bufLen];
+        int readLen = 0;
+        
+        try {
+            readLen = x.read(byteBuf, 0, bufLen);
+        } catch (IOException e) {
+            throw TbError.newSQLException(TbError.READER_READ_ERROR,
+                                          e.getMessage());
+        }
+
+        if (readLen < 0) {
+            setNullInternal(i, DataType.RAW);
+        }
+        else if (readLen > DriverConstants.MIN_DEFERRED_BYTE_SIZE) {
+            if (paramStream == null)
+                paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, Types.LONGVARBINARY, len);
+            paramStream[currentRowIndex][i - 1] = new BytesStreamWrapper(x, byteBuf, readLen);
+            binder[currentRowIndex][i - 1] = staticStreamBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.BLOB;
+        }
+        else {
+            if (paramBytes == null)
+                paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+            bindData.setINParam(i - 1, Types.BINARY, readLen);
+            paramBytes[currentRowIndex][i - 1] = byteBuf;
+            binder[currentRowIndex][i - 1] = staticBytesBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.RAW;
+        }
+    }
+
+    public void setBindData(BindData data) {
+        bindData = data;
+    }
+
+    public void setBlob(int i, Blob x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBlob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setBlobInternal(i, x);
+    }
+
+    public void setBlob(int i, InputStream x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBlob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setBlobInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setBlob(int i, InputStream x, long length) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBlob", new Object[] {
+                this, Integer.toString(i), x, Long.toString(length)
+            });
+        }
+
+        setBlobInternal(i, x, length);
+    }
+
+    void setBlobInternal(int i, Blob x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.BLOB);
+            return;
+        }
+
+        if (paramBytes == null)
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+        bindData.setINParam(i - 1, Types.BINARY, ((TbLob) x).getLocatorLength());
+        paramBytes[currentRowIndex][i - 1] = ((TbLob) x).getLocator();
+        paramTypes[currentRowIndex][i - 1] = DataType.BLOB;
+        binder[currentRowIndex][i - 1] = staticBytesBinder;
+    }
+
+    void setBlobInternal(int i, InputStream x, long length) throws SQLException {
+        if (length > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(length));
+
+        setBinaryStreamInternal(i, x, (int) length);
+    }
+
+    public void setBoolean(int i, boolean x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBoolean", new Object[] {
+                this, Integer.toString(i), new Boolean(x)
+            });
+        }
+
+        setBooleanInternal(i, x);
+    }
+
+    void setBooleanInternal(int i, boolean x) throws SQLException {
+        if (paramString == null)
+            paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.CHAR, 1); // length of "1" or "0"
+        paramString[currentRowIndex][i - 1] = x ? "1" : "0";
+        paramTypes[currentRowIndex][i - 1] = DataType.CHAR;
+        binder[currentRowIndex][i - 1] = staticStringBinder;
+    }
+
+    public void setByte(int i, byte x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setByte", new Object[] {
+                this, Integer.toString(i), new Byte(x)
+            });
+        }
+
+        setByteInternal(i, x);
+    }
+
+    void setByteInternal(int i, byte x) throws SQLException {
+        if (paramInt == null)
+            paramInt = new int[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.INTEGER, -1);
+        paramInt[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+        binder[currentRowIndex][i - 1] = staticIntBinder;
+    }
+
+    public void setBytes(int i, byte[] x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBytes", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setBytesInternal(i, DataType.RAW, x);
+    }
+
+    public void setBytes(int i, int dataType, byte[] x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBytes", new Object[] {
+                this, Integer.toString(i), Integer.toString(dataType), x
+            });
+        }
+
+        DataType.checkValidDataType(dataType);
+
+        setBytesInternal(i, dataType, x);
+    }
+
+    void setBytesInternal(int i, int dataType, byte[] x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, dataType);
+            return;
+        }
+
+        if (x.length >= DriverConstants.MIN_DEFERRED_BYTE_SIZE) {
+            if (paramStream == null)
+                paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, Types.LONGVARBINARY, x.length);
+            paramStream[currentRowIndex][i - 1] = new ByteArrayInputStream(x);
+            binder[currentRowIndex][i - 1] = staticStreamBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.BLOB;
+        }
+        else {
+            if (paramBytes == null)
+                paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+            if (!supportBinaryDoubleFloatType &&
+                (dataType == DataType.BIN_DOUBLE || dataType == DataType.BIN_FLOAT)) {
+                dataType = DataType.NUMBER;
+            }
+
+            bindData.setINParam(i - 1, Types.BINARY, x.length);
+            paramBytes[currentRowIndex][i - 1] = x;
+            binder[currentRowIndex][i - 1] = staticBytesBinder;
+            paramTypes[currentRowIndex][i - 1] = (byte) dataType;
+        }
+    }
+
+    public void setCharacterStream(int i, Reader x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setCharacterStream",
+                            new Object[] {
+                                this, Integer.toString(i), x
+                            });
+        }
+
+        setCharacterStreamInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setCharacterStream(int i, Reader x, int len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setCharacterStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Integer.toString(len)
+                            });
+        }
+
+        setCharacterStreamInternal(i, x, len);
+    }
+
+    public void setCharacterStream(int i, Reader x, long len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setCharacterStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Long.toString(len)
+                            });
+        }
+
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setCharacterStreamInternal(i, x, (int) len);
+    }
+
+    void setCharacterStreamInternal(int i, Reader x, int length)
+            throws SQLException {
+        if (x == null ||
+            length <= 0) {
+            setNullInternal(i, DataType.VARCHAR);
+            return;
+        }
+
+        /*
+         * length�� ���������� �ǹ̸� ������, ���� ���̿ʹ� �ٸ� �� �ֱ� ������
+         * DeferredParam ó���� ���� �Ǵ��ϱ� ���ؼ��� Reader�� �о� Ȯ���ؾ� �Ѵ�.
+         */
+        int cBufLen = length < varcharMax + 1 ? length : varcharMax + 1;
+        char[] cb = new char[cBufLen];
+        int readCh = 0;
+
+        try {
+            readCh = x.read(cb, 0, cBufLen);
+        } 
+        catch (IOException e) {
+            throw TbError.newSQLException(TbError.READER_READ_ERROR,
+                                          e.getMessage());
+        }
+
+        /* read length�� deferrableStrLen �̸��̸� VARCHAR�� ó�� */
+        if (readCh < 0) {
+            setNullInternal(i, DataType.VARCHAR);
+        }
+        else if (readCh < deferrableStrLen) {
+            if (paramString == null)
+                paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, Types.VARCHAR, length);
+            paramString[currentRowIndex][i - 1] = new String(cb, 0, readCh);
+            binder[currentRowIndex][i - 1] = staticStringBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
+        }
+        /* character ���̸����ε� DEFERRED ó���� Ȯ�ǽ� �Ǵ� ��� */
+        else if (readCh > varcharMax) {
+            if (paramReader == null)
+                paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, Types.LONGVARCHAR, length);
+            paramReader[currentRowIndex][i - 1] = ReaderWrapper
+                    .getInstance(x, cb, readCh);
+            binder[currentRowIndex][i - 1] = staticReaderBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+        }
+        /* VARCHAR�� �������� serialize ���̸� ���ؾ� �Ǵ� ������ ��� */
+        else {
+            byte[] buf = new byte[readCh * typeConverter.getMaxBytesPerChar()];
+            int byteLen = typeConverter.charsToBytes(cb, 0, readCh, buf, 0, buf.length);
+            /* serialize ���̰� VARCHAR �� ó�� ������ ��� */
+            if (byteLen < varcharMax) {
+                if (paramBytes == null)
+                    paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+                bindData.setINParam(i - 1, Types.VARCHAR, byteLen);
+                paramBytes[currentRowIndex][i - 1] = buf;
+                binder[currentRowIndex][i - 1] = staticBytesBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
+            }
+            /* ���̸� �ʰ��Ͽ� Deferred�� ó���ϴ� ��� */
+            else {
+                if (paramStream == null)
+                    paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+                bindData.setDFRParam(i - 1, Types.LONGVARCHAR, byteLen);
+                paramStream[currentRowIndex][i - 1] = new ByteArrayInputStream(buf, 0, byteLen);
+                binder[currentRowIndex][i - 1] = staticStreamBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+            }
+        }
+    }
+
+    public void setClob(int i, Clob x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setClob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setClobInternal(i, DataType.CLOB, x);
+    }
+
+    public void setClob(int i, Reader x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setClob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        // ���̸� �о� ���̱� ���� �̸� �˼� ���⶧���� Integer.MAX_VALUE�� �ش�.
+        // Binder���� ���̰� Integer.MAX_VALUE�� ������ reader�� ������ �о�鿩 server�� ������.
+        setClobInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setClob(int i, Reader x, long length) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setClob", new Object[] {
+                this, Integer.toString(i), x, Long.toString(length)
+            });
+        }
+
+        setClobInternal(i, x, length);
+    }
+
+    public void setClobInternal(int i, int dataType, Clob x)
+            throws SQLException {
+        // TbAdmin���� �� �Լ��� ���� �ҷ��� ����ϰ� �����Ƿ� package-private���� ���� �� ����.
+        if (x == null) {
+            setNullInternal(i, dataType);
+            return;
+        }
+
+        if (!(x instanceof TbClob || x instanceof TbNClob))
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_INVALID_ARGUMENT_INVALID_LOB,
+                                     x.toString());
+
+        if (paramBytes == null)
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+        bindData.setINParam(i - 1, Types.BINARY, ((TbLob) x).getLocator().length);
+        paramBytes[currentRowIndex][i - 1] = ((TbLob) x).getLocator();
+        paramTypes[currentRowIndex][i - 1] = (byte) dataType;
+        binder[currentRowIndex][i - 1] = staticBytesBinder;
+    }
+
+    void setClobInternal(int i, Reader x, long len) throws SQLException {
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setCharacterStreamInternal(i, x, (int) len);
+    }
+
+    public void setDate(int i, Date x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setDate", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setDateInternal(i, x);
+    }
+
+    public void setDate(int i, Date x, Calendar cal) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setDate", new Object[] {
+                this, Integer.toString(i), x, cal
+            });
+        }
+
+        if (x == null) {
+            setNullInternal(i, DataType.DATE);
+            return;
+        }
+
+        if (paramBytes == null)
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+        if (cal == null)
+            cal = Calendar.getInstance();
+
+        cal.setTime(x);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        byte[] buf = new byte[DBConst.TB_DATE_SIZE];
+        typeConverter.fromDate(buf, 0, cal);
+
+        bindData.setINParam(i - 1, Types.DATE, buf.length);
+        paramBytes[currentRowIndex][i - 1] = buf;
+        paramTypes[currentRowIndex][i - 1] = DataType.DATE;
+        binder[currentRowIndex][i - 1] = staticBytesBinder;
+    }
+
+    void setDateInternal(int i, Date x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.DATE);
+            return;
+        }
+
+        if (paramCalendar == null)
+            paramCalendar = new Calendar[allocatedBatchRowCount][bindParamCnt];
+        Calendar cal = Calendar.getInstance();
+
+        if (conn.getNlsCalendar().equals(DataTypeConverter.BUDDHA_CALENDAR)) {
+            int y = cal.get(Calendar.YEAR);
+            cal.set(Calendar.YEAR, y - DataTypeConverter.BUDDHA_YEAR_GAP);
+        } else {
+            cal.setTime(x);
+        }
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        bindData.setINParam(i - 1, Types.DATE, -1);
+        paramCalendar[currentRowIndex][i - 1] = cal;
+        paramTypes[currentRowIndex][i - 1] = DataType.DATE;
+        binder[currentRowIndex][i - 1] = staticDateBinder;
+    }
+
+    public void setTbDate(int i, TbDate x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTbDate", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setTbDateInternal(i, x);
+    }
+
+    void setTbDateInternal(int i, TbDate x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.DATE);
+            return;
+        }
+
+        if (paramTbDate == null)
+            paramTbDate = new TbDate[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.DATE, -1);
+        paramTbDate[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.DATE;
+        binder[currentRowIndex][i - 1] = staticTbDateBinder;
+    }
+
+    public void setDouble(int i, double x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setDouble", new Object[] {
+                this, Integer.toString(i), Double.toString(x)
+            });
+        }
+
+        setDoubleInternal(i, x);
+    }
+
+    void setDoubleInternal(int i, double x) throws SQLException {
+        if (paramDouble == null)
+            paramDouble = new double[allocatedBatchRowCount][bindParamCnt];
+
+        if (supportBinaryDoubleFloatType &&
+            (Double.compare(x, Double.NaN) == 0 ||
+                Double.compare(x, Double.NEGATIVE_INFINITY) == 0 || Double
+                    .compare(x, Double.POSITIVE_INFINITY) == 0)) {
+            setBinaryDoubleInternal(i, x);
+        }
+        else {
+            bindData.setINParam(i - 1, Types.DOUBLE, -1);
+            paramDouble[currentRowIndex][i - 1] = x;
+            paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+            binder[currentRowIndex][i - 1] = staticDoubleBinder;
+        }
+    }
+
+    public void setBinaryDouble(int i, double x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBinaryDouble",
+                            new Object[] {
+                                this, Integer.toString(i),
+                                Long.toHexString(Double.doubleToLongBits(x))
+                            });
+        }
+
+        setBinaryDoubleInternal(i, x);
+    }
+
+    void setBinaryDoubleInternal(int i, double x) throws SQLException {
+        if (paramDouble == null)
+            paramDouble = new double[allocatedBatchRowCount][bindParamCnt];
+
+        if (supportBinaryDoubleFloatType) {
+            bindData.setINParam(i - 1, TbTypes.BINARY_DOUBLE, -1);
+            paramDouble[currentRowIndex][i - 1] = x;
+            paramTypes[currentRowIndex][i - 1] = DataType.BIN_DOUBLE;
+            binder[currentRowIndex][i - 1] = staticBinaryDoubleBinder;
+        }
+        else {
+            setDoubleInternal(i, x);
+        }
+    }
+
+    /**
+     * Use this method when binding to a CHAR column in the where clause of a
+     * Select statement.
+     * A non padded comparision will be done.
+     * 
+     * @param i
+     *            the first parameter is 1, the second is 2, ...
+     * @param x
+     *            the parameter value
+     * @exception SQLException
+     *                if parameterIndex does not correspond to a paramter
+     *                marker in the SQL statement.
+     * 
+     */
+    public void setFixedCHAR(int i, String x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setFixedCHAR", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setFixedCHARInternal(i, x);
+    }
+
+    void setFixedCHARInternal(int i, String x) throws SQLException {
+        if (x == null ||
+            x.length() == 0) {
+            setNullInternal(i, DataType.VARCHAR);
+            return;
+        }
+
+        if (paramString == null)
+            paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.CHAR, x.length());
+        paramString[currentRowIndex][i - 1] = x;
+        binder[currentRowIndex][i - 1] = staticStringBinder;
+        paramTypes[currentRowIndex][i - 1] = DataType.CHAR;
+    }
+
+    public void setFloat(int i, float x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setFloat", new Object[] {
+                this, Integer.toString(i), Float.toString(x)
+            });
+        }
+
+        setFloatInternal(i, x);
+    }
+
+    void setFloatInternal(int i, float x) throws SQLException {
+        if (paramFloat == null)
+            paramFloat = new float[allocatedBatchRowCount][bindParamCnt];
+
+        if (supportBinaryDoubleFloatType &&
+            (Float.compare(x, Float.NaN) == 0 ||
+                Float.compare(x, Float.NEGATIVE_INFINITY) == 0 || Float
+                    .compare(x, Float.POSITIVE_INFINITY) == 0)) {
+            setBinaryFloatInternal(i, x);
+        }
+        else {
+            bindData.setINParam(i - 1, Types.FLOAT, -1);
+            paramFloat[currentRowIndex][i - 1] = x;
+            paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+            binder[currentRowIndex][i - 1] = staticFloatBinder;
+        }
+    }
+
+    public void setBinaryFloat(int i, float x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setBinaryFloat",
+                            new Object[] {
+                                this, Integer.toString(i),
+                                Long.toHexString(Float.floatToIntBits(x))
+                            });
+        }
+
+        setBinaryFloatInternal(i, x);
+    }
+
+    void setBinaryFloatInternal(int i, float x) throws SQLException {
+        if (paramFloat == null)
+            paramFloat = new float[allocatedBatchRowCount][bindParamCnt];
+
+        if (supportBinaryDoubleFloatType) {
+            bindData.setINParam(i - 1, TbTypes.BINARY_FLOAT, -1);
+            paramFloat[currentRowIndex][i - 1] = x;
+            paramTypes[currentRowIndex][i - 1] = DataType.BIN_FLOAT;
+            binder[currentRowIndex][i - 1] = staticBinaryFloatBinder;
+        }
+        else {
+            setFloatInternal(i, x);
+        }
+    }
+
+    public void setInt(int i, int x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setInt", new Object[] {
+                this, Integer.toString(i), Integer.toString(x)
+            });
+        }
+
+        setIntInternal(i, x);
+    }
+
+    void setIntInternal(int i, int x) throws SQLException {
+        if (paramInt == null)
+            paramInt = new int[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.INTEGER, -1);
+        paramInt[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+        binder[currentRowIndex][i - 1] = staticIntBinder;
+    }
+
+    public void setLong(int i, long x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setLong", new Object[] {
+                this, Integer.toString(i), Long.toString(x)
+            });
+        }
+
+        setLongInternal(i, x);
+    }
+
+    void setLongInternal(int i, long x) throws SQLException {
+        if (paramLong == null)
+            paramLong = new long[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.NUMERIC, -1);
+        paramLong[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+        binder[currentRowIndex][i - 1] = staticLongBinder;
+    }
+
+    public void setNCharacterStream(int i, Reader x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNCharacterStream",
+                            new Object[] {
+                                this, Integer.toString(i), x
+                            });
+        }
+
+        setNCharacterStreamInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setNCharacterStream(int i, Reader x, long len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNCharacterStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Long.toString(len)
+                            });
+        }
+
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setNCharacterStreamInternal(i, x, (int) len);
+    }
+
+    void setNCharacterStreamInternal(int i, Reader x, int length)
+            throws SQLException {
+        if (x == null ||
+            length <= 0) {
+            setNullInternal(i, DataType.NVARCHAR);
+            return;
+        }
+
+        /*
+         * length�� ���������� �ǹ̸� ������, ���� ���̿ʹ� �ٸ� �� �ֱ� ������
+         * DeferredParam ó���� ���� �Ǵ��ϱ� ���ؼ��� Reader�� �о� Ȯ���ؾ� �Ѵ�.
+         */
+        int cBufLen = length < varcharMax + 1 ? length : varcharMax + 1;
+        char[] cb = new char[cBufLen];
+        int readCh = 0;
+
+        try {
+            readCh = x.read(cb, 0, cBufLen);
+        } 
+        catch (IOException e) {
+            throw TbError.newSQLException(TbError.READER_READ_ERROR,
+                                          e.getMessage());
+        }
+
+        /* read length�� deferrableStrLen �̸��̸� NVARCHAR�� ó�� */
+        if (readCh < 0) {
+            setNullInternal(i, DataType.NVARCHAR);
+        }
+        else if (readCh < deferrableNStrLen) {
+            if (paramString == null)
+                paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, TbTypes.NVARCHAR, length);
+            paramString[currentRowIndex][i - 1] = new String(cb, 0, readCh);
+            binder[currentRowIndex][i - 1] = staticNStringBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
+        }
+        /* character �� ������ ����ص� Deferred ó���� Ȯ�ǽ� �Ǵ� ��� */
+        else if (readCh > varcharMax) {
+            if (paramReader == null)
+                paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, TbTypes.LONGNVARCHAR, length);
+            paramReader[currentRowIndex][i - 1] = ReaderWrapper
+                    .getInstance(x, cb, readCh);
+            binder[currentRowIndex][i - 1] = staticNReaderBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.NCLOB;
+        }
+        /* NVARCHAR�� ó������ serialize ���̸� ���ؾ� �Ǵ� ������ ��� */
+        else {
+            /* reader�� ��� ó���� ���̽��̱� ������ �о �����ͷθ� �����Ѵ� */ 
+            byte[] buf = new byte[readCh * typeConverter.getMaxBytesPerNChar()];
+            int byteLen = typeConverter.nCharsToBytes(cb, 0, readCh, buf, 0, buf.length);
+            /* serialize ���̰� NVARCHAR �� ó�� ������ ��� */
+            if (byteLen < varcharMax) {
+                if (paramBytes == null)
+                    paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+                bindData.setINParam(i - 1, TbTypes.NVARCHAR, byteLen);
+                paramBytes[currentRowIndex][i - 1] = buf;
+                binder[currentRowIndex][i - 1] = staticBytesBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
+            }
+            /* ���̸� �ʰ��Ͽ� Deferred�� ó���ϴ� ��� */
+            else {
+                if (paramStream == null)
+                    paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+                bindData.setDFRParam(i - 1, TbTypes.LONGNVARCHAR, byteLen);
+                paramStream[currentRowIndex][i - 1] = new ByteArrayInputStream(buf, 0, byteLen);
+                binder[currentRowIndex][i - 1] = staticStreamBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.NCLOB;
+            }
+        }
+    }
+
+    public void setNClob(int i, Clob x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNClob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setClobInternal(i, DataType.NCLOB, x);
+    }
+
+    // #ifdef JDK1.6
+    public void setNClob(int i, NClob x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNClob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setClobInternal(i, DataType.NCLOB, x);
+    }
+    // #endif
+
+    public void setNClob(int i, Reader x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNClob", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        // ���̸� �о� ���̱� ���� �̸� �˼� ���⶧���� Integer.MAX_VALUE�� �ش�.
+        // ����� Integer.MAX_VALUE���� ū ���̸� �������� �ʴ´�.
+        setNClobInternal(i, x, Integer.MAX_VALUE);
+    }
+
+    public void setNClob(int i, Reader x, long len) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNClob", new Object[] {
+                this, Integer.toString(i), x, Long.toString(len)
+            });
+        }
+
+        if (len > Integer.MAX_VALUE)
+            throw TbError.newSQLException(TbError.MU_EXCEED_MAX_LENGTH_LIMIT,
+                                          Long.toString(len));
+
+        setNClobInternal(i, x, (int) len);
+    }
+
+    void setNClobInternal(int i, Reader x, int len) throws SQLException {
+        if (x == null ||
+            len <= 0) {
+            setNullInternal(i, DataType.NVARCHAR);
+            return;
+        }
+
+        if (len >= conn.getMaxDFRNCharCount()) {
+            if (paramReader == null)
+                paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, TbTypes.LONGNVARCHAR, len);
+            paramReader[currentRowIndex][i - 1] = x;
+            binder[currentRowIndex][i - 1] = staticNReaderBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.NCLOB;
+        }
+        else {
+            int readLen = 0;
+            char[] cbuf = new char[len];
+
+            try {
+                readLen = x.read(cbuf, 0, len);
+            }
+            catch (IOException e) {
+                throw TbError.newSQLException(TbError.READER_READ_ERROR,
+                                              e.getMessage());
+            }
+
+            if (readLen != len) {
+                char[] temp = cbuf;
+                cbuf = new char[readLen];
+                System.arraycopy(temp, 0, cbuf, 0, readLen);
+            }
+
+            if (paramString == null)
+                paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, TbTypes.NVARCHAR, len);
+            paramString[currentRowIndex][i - 1] = new String(cbuf);
+            binder[currentRowIndex][i - 1] = staticStringBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
+        }
+    }
+
+    public void setNString(int i, String x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNString", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setNStringInternal(i, x);
+    }
+
+    void setNStringInternal(int i, String x) throws SQLException {
+        if (x == null ||
+            x.length() == 0) {
+            setNullInternal(i, DataType.NVARCHAR);
+            return;
+        }
+
+        if (x.length() < deferrableNStrLen) {
+            if (paramString == null)
+                paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, TbTypes.NVARCHAR, x.length());
+            paramString[currentRowIndex][i - 1] = x;
+            binder[currentRowIndex][i - 1] = staticNStringBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
+        }
+        else {
+            byte[] buf = new byte[x.length() * typeConverter.getMaxBytesPerNChar()];
+            int byteLen = typeConverter.fromNString(buf, 0, x);
+            if (byteLen > varcharMax) {
+                if (paramStream == null)
+                    paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+                
+                bindData.setDFRParam(i - 1, TbTypes.LONGNVARCHAR, byteLen);
+                paramStream[currentRowIndex][i - 1] = new ByteArrayInputStream(buf, 0, byteLen);
+                binder[currentRowIndex][i - 1] = staticStreamBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.NCLOB;
+            }
+            else {
+                if (paramBytes == null)
+                    paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+                
+                bindData.setINParam(i - 1, TbTypes.NVARCHAR, byteLen);
+                paramBytes[currentRowIndex][i - 1] = buf;
+                binder[currentRowIndex][i - 1] = staticBytesBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
+            }
+        }
+    }
+
+    public void setNull(int i, int sqlType) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNull", new Object[] {
+                this, Integer.toString(i), Integer.toString(sqlType)
+            });
+        }
+
+        setNullInternal(i, DataType.getDataType(sqlType));
+    }
+
+    /* Third parameter, "typeName" is the parameter that support REF, UDT, ARRAY
+     * and JAVA OBJECT. Tibero does not support these types. Thus, we will
+     * ignore third parameter. */
+    public void setNull(int i, int sqlType, String typeName)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setNull", new Object[] {
+                this, Integer.toString(i), Integer.toString(sqlType), typeName
+            });
+        }
+
+        setNullInternal(i, DataType.getDataType(sqlType));
+    }
+
+    void setNullInternal(int i, int dataType) throws SQLException {
+        if (dataType==DataType.VARRAY)
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_UNSUPPORTED_DATA_TYPE,
+                            DataType.getDBTypeName(dataType));
+        bindData.setINParam(i - 1, Types.NULL, 0);
+        paramTypes[currentRowIndex][i - 1] = (byte) dataType;
+        binder[currentRowIndex][i - 1] = staticNullBinder;
+    }
+
+    public void setObject(int i, Object x) throws SQLException {
+         setObject(i, x, DataType.getSqlType(x), 0);
+    }
+
+    public void setObject(int i, Object x, int targetSqlType)
+            throws SQLException {
+        setObject(i, x, targetSqlType, 0);
+    }
+
+    public void setObject(int i, Object x, int sqlType, int scale)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setObject", new Object[] {
+                this, Integer.toString(i), x, Integer.toString(sqlType),
+                Integer.toString(scale)
+            });
+        }
+
+        setObjectInternal(i, x, sqlType, scale);
+    }
+
+    void setObjectInternal(int i, Object x, int sqlType, int scale)
+            throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.CHAR);
+            return;
+        }
+
+        switch (sqlType) {
+        case Types.BIT:
+            setBooleanInternal(i, new Boolean(x.toString()).booleanValue());
+            break;
+
+        case TbTypes.NCHAR:
+        case TbTypes.NVARCHAR:
+            setNStringInternal(i, x.toString());
+            break;
+
+        case Types.CHAR:
+        case Types.VARCHAR:
+        case Types.LONGVARCHAR:
+            if (x instanceof Boolean)
+                setStringInternal(i, ((Boolean) x).booleanValue() ? "1" : "0");
+            else
+                setStringInternal(i, x.toString());
+            break;
+
+        case Types.BINARY:
+        case Types.VARBINARY:
+        case Types.LONGVARBINARY:
+            setBytesInternal(i, DataType.RAW, (byte[]) x);
+            break;
+
+        case Types.TINYINT:
+        case Types.SMALLINT:
+            if (x instanceof Number)
+                setShortInternal(i, ((Number) x).shortValue());
+            else if (x instanceof String)
+                setShortInternal(i, Short.parseShort((String) x));
+            else if (x instanceof Boolean)
+                setShortInternal(i, (short) (((Boolean) x).booleanValue() ? 1
+                        : 0));
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.INTEGER:
+            if (x instanceof Number)
+                setIntInternal(i, ((Number) x).intValue());
+            else if (x instanceof String)
+                setIntInternal(i, Integer.parseInt((String) x));
+            else if (x instanceof Boolean)
+                setIntInternal(i, ((Boolean) x).booleanValue() ? 1 : 0);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.BIGINT:
+            if (x instanceof Number)
+                setLongInternal(i, ((Number) x).longValue());
+            else if (x instanceof String)
+                setLongInternal(i, Long.parseLong((String) x));
+            else if (x instanceof Boolean)
+                setLongInternal(i, ((Boolean) x).booleanValue() ? 1 : 0);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.DECIMAL:
+            if (x instanceof BigDecimal)
+                setBigDecimalInternal(i, (BigDecimal) x);
+            else if (x instanceof Number)
+                setBigDecimalInternal(i,
+                                      new BigDecimal(((Number) x).doubleValue()));
+            else if (x instanceof String)
+                setBigDecimalInternal(i, new BigDecimal((String) x));
+            else if (x instanceof Boolean)
+                setBigDecimalInternal(i,
+                                      new BigDecimal(((Boolean) x)
+                                              .booleanValue() ? 1.0D : 0.0D));
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.REAL:
+            if (x instanceof Number)
+                setFloatInternal(i, ((Number) x).floatValue());
+            else if (x instanceof String)
+                setFloatInternal(i, Float.valueOf((String) x).floatValue());
+            else if (x instanceof Boolean)
+                setFloatInternal(i, ((Boolean) x).booleanValue() ? 1.0F : 0.0F);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.FLOAT:
+        case Types.DOUBLE:
+            /* FLOAT��� ����ϰ�, DOUBLE�θ� ǥ�������� ���ڰ� ���� */
+            if (x instanceof Number)
+                setDoubleInternal(i, ((Number) x).doubleValue());
+            else if (x instanceof String)
+                setDoubleInternal(i, Double.valueOf((String) x).doubleValue());
+            else if (x instanceof Boolean)
+                setDoubleInternal(i, ((Boolean) x).booleanValue() ? 1.0D : 0.0D);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.NUMERIC:
+            if (x instanceof Short)
+                setShortInternal(i, ((Short) x).shortValue());
+            else if (x instanceof Integer)
+                setIntInternal(i, ((Integer) x).intValue());
+            else if (x instanceof Long)
+                setLongInternal(i, ((Long) x).longValue());
+            else if (x instanceof Float)
+                setFloatInternal(i, ((Float) x).floatValue());
+            else if (x instanceof Double)
+                setDoubleInternal(i, ((Double) x).doubleValue());
+            else if (x instanceof BigDecimal)
+                setBigDecimalInternal(i, (BigDecimal) x);
+            else if (x instanceof Boolean)
+                setBooleanInternal(i, ((Boolean) x).booleanValue());
+            else if (x instanceof String)
+                setBigDecimalInternal(i, new BigDecimal((String) x));
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case TbTypes.BINARY_FLOAT:
+            if (x instanceof Number) {
+                setBinaryFloatInternal(i, ((Number) x).floatValue());
+            } else if (x instanceof String) {
+                setBinaryFloatInternal(i, Float.valueOf((String) x)
+                        .floatValue());
+            } else if (x instanceof Boolean) {
+                setBinaryFloatInternal(i, ((Boolean) x).booleanValue() ? 1.0F
+                        : 0.0F);
+            } else {
+                throw TbError.newSQLException(
+                        TbError.INTERNAL_UNSUPPORTED_SQL_TYPE, x.toString()
+                                + "," + sqlType);
+            }
+            break;
+
+        case TbTypes.BINARY_DOUBLE:
+            if (x instanceof Number) {
+                setBinaryDoubleInternal(i, ((Number) x).doubleValue());
+            } else if (x instanceof String) {
+                setBinaryDoubleInternal(i, Double.valueOf((String) x)
+                        .doubleValue());
+            } else if (x instanceof Boolean) {
+                setBinaryDoubleInternal(i, ((Boolean) x).booleanValue() ? 1.0D
+                        : 0.0D);
+            } else {
+                throw TbError.newSQLException(
+                        TbError.INTERNAL_UNSUPPORTED_SQL_TYPE, x.toString()
+                                + "," + sqlType);
+            }
+            break;
+
+        case Types.DATE:
+            if (x instanceof Date)
+                setDateInternal(i, (Date) x);
+            else if (x instanceof Timestamp)
+                setDateInternal(i, (Date) x);
+            else if (x instanceof String)
+                setDateInternal(i, Date.valueOf((String) x));
+            else if (x instanceof TbDate)
+                setTbDate(i, (TbDate) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.TIME:
+            if (x instanceof Time)
+                setTimeInternal(i, (Time) x);
+            else if (x instanceof Timestamp)
+                setTimeInternal(i, new Time(((Timestamp) x).getTime()));
+            else if (x instanceof Date)
+                setTimeInternal(i, new Time(((Date) x).getTime()));
+            else if (x instanceof String)
+                setTimeInternal(i, Time.valueOf((String) x));
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.TIMESTAMP:
+            if (x instanceof Timestamp)
+                setTimestampInternal(i, (Timestamp) x);
+            else if (x instanceof Date)
+                setDateInternal(i, (Date) x);
+            else if (x instanceof String)
+                setTimestampInternal(i, Timestamp.valueOf((String) x));
+            else if (x instanceof TbTimestamp)
+                setTbTimestamp(i, (TbTimestamp) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        case Types.BLOB:
+            if (x instanceof Blob)
+                setBlobInternal(i, (Blob) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        // #ifdef JDK1.6
+        case Types.NCLOB:
+            if (x instanceof NClob)
+                setClobInternal(i, DataType.NCLOB, (NClob) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+        // #endif
+
+        case Types.CLOB:
+            if (x instanceof Clob)
+                setClobInternal(i, DataType.CLOB, (Clob) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+
+        // #ifdef JDK1.6
+        case Types.ROWID:
+            if (x instanceof RowId) {
+                setRowIdInternal(i, (RowId) x);
+            }
+            else {
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            }
+            break;
+
+        case Types.SQLXML:
+            if (x instanceof SQLXML)
+                setSQLXMLInternal(i, (SQLXML) x);
+            else
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                         x.toString() +
+                                             "," + sqlType);
+            break;
+        // #endif
+
+        case Types.STRUCT:
+            if (x instanceof Struct)
+                setStructInternal(i, (Struct) x);
+            else if (x instanceof SQLData)
+                setStructInternal(i, (Struct) TbStruct.toStruct(x, conn));
+            else
+                throw TbError.newSQLException(
+                                              TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                              x.toString() + "," + sqlType);
+            break;
+
+        case Types.ARRAY:
+        case TbTypes.TABLE:
+            if (x instanceof Array)
+                setArrayInternal(i, (Array) x);
+            else
+                throw TbError.newSQLException(
+                        TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                        x.toString() + "," + sqlType);
+            break;
+
+        case Types.JAVA_OBJECT:
+        case Types.NULL:
+        case Types.OTHER:
+        case Types.DISTINCT:
+        case Types.REF:
+        default:
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_UNSUPPORTED_SQL_TYPE,
+                                     x.toString() +
+                                         "," + sqlType);
+        }
+    }
+
+    private void setStructInternal(int i, Struct x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.RECORD);
+            return;
+        }
+
+        if (paramStruct == null)
+            paramStruct = new TbStruct[allocatedBatchRowCount][bindParamCnt];
+
+        TbStruct struct = (TbStruct) x;
+        int structKind = struct.getDescriptor().getDataType();
+        bindData.setINParam(i - 1, structKind, 0);
+        paramStruct[currentRowIndex][i - 1] = struct;
+        paramTypes[currentRowIndex][i - 1] = (byte) structKind;
+        binder[currentRowIndex][i - 1] = staticStructInBinder;
+
+        TbStructDescriptor desc = struct.getDescriptor();
+        bindData.getBindItem(i - 1).setTypeDescriptor(desc);
+    }
+
+    private void setArrayInternal(int i, Array x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.VARRAY);
+            return;
+        }
+
+        if (paramArray == null)
+            paramArray = new TbArray[allocatedBatchRowCount][bindParamCnt];
+
+        TbArray array = (TbArray) x;
+        int arrayKind = array.getDescriptor().getDataType();
+        bindData.setINParam(i - 1, arrayKind, 0);
+        paramArray[currentRowIndex][i - 1] = array;
+        paramTypes[currentRowIndex][i - 1] = (byte) arrayKind;
+        binder[currentRowIndex][i - 1] = staticArrayInBinder;
+
+        TbArrayDescriptor desc = array.getDescriptor();
+        bindData.getBindItem(i - 1).setTypeDescriptor(desc);
+    }
+
+    private void setTableInternal(int i, Array x) throws SQLException {
+//        if (x == null) {
+//            setNullInternal(i, DataType.VARRAY);
+//            return;
+//        }
+//
+//        if (paramArray == null)
+//            paramArray = new TbArray[allocatedBatchRowCount][bindParamCnt];
+//
+//        bindData.setINParam(i - 1, TbTypes.TABLE, 0);
+//        paramArray[currentRowIndex][i - 1] = x;
+//        paramTypes[currentRowIndex][i - 1] = DataType.TABLE;
+//        binder[currentRowIndex][i - 1] = staticArrayBinder;
+        // TODO: UDT In parameter
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+    public void setParameterCnt(int count) {
+        bindParamCnt = count;
+    }
+
+    protected void setParamTypes(int colIndex, byte dataType) {
+        paramTypes[currentRowIndex][colIndex] = dataType;
+    }
+
+    public void setPoolable(boolean poolable) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setPoolable", new Object[] {
+                this, new Boolean(poolable)
+            });
+        }
+
+        if (isClosed())
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_STATEMENT);
+
+        this.poolable = poolable;
+    }
+
+    public void setPPID(byte[] ppid) {
+        if (ppid == null ||
+            Arrays.equals(ppid, PPID_NULL)) {
+            this.ppid = null;
+        }
+        else {
+            this.ppid = ppid;
+        }
+    }
+
+    public void setRef(int i, Ref x) throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+    // #ifdef JDK1.6
+    public void setRowId(int i, RowId x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setRowId", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        if (!(x instanceof TbRowId))
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_INVALID_ARGUMENT_INVALID_ROWID,
+                                     String.valueOf(x));
+
+        setRowIdInternal(i, x);
+    }
+    // #endif
+
+    // #ifdef JDK1.6
+    void setRowIdInternal(int i, RowId x) throws SQLException {
+        if (paramBytes == null)
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+        bindData.setINParam(i - 1, Types.ROWID, x.getBytes().length);
+        paramBytes[currentRowIndex][i - 1] = x.getBytes();
+        paramTypes[currentRowIndex][i - 1] = DataType.ROWID;
+        binder[currentRowIndex][i - 1] = staticBytesBinder;
+    }
+    // #endif
+
+    public void setShort(int i, short x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setShort", new Object[] {
+                this, Integer.toString(i), new Short(x)
+            });
+        }
+
+        setShortInternal(i, x);
+    }
+
+    void setShortInternal(int i, short x) throws SQLException {
+        if (paramInt == null)
+            paramInt = new int[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.INTEGER, -1);
+        paramInt[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.NUMBER;
+        binder[currentRowIndex][i - 1] = staticIntBinder;
+    }
+
+    // #ifdef JDK1.6
+    public void setSQLXML(int i, SQLXML x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setSQLXML", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setSQLXMLInternal(i, x);
+    }
+    // #endif
+
+    // #ifdef JDK1.6
+    void setSQLXMLInternal(int i, SQLXML x) throws SQLException {
+        InputStream stream = ((TbSQLXML) x).getValue();
+
+        if (paramStream == null)
+            paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+        // XXX: ���� üũ
+        bindData.setDFRParam(i - 1, Types.SQLXML, Integer.MAX_VALUE);
+        paramStream[currentRowIndex][i - 1] = stream;
+        paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+        binder[currentRowIndex][i - 1] = staticStreamBinder;
+    }
+    // #endif
+
+    public void setString(int i, String x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setString", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setStringInternal(i, x);
+    }
+
+    void setStringInternal(int i, String x) throws SQLException {
+        if (this.defaultNChar) {
+            setNStringInternal(i, x);
+            return;
+        }
+
+        if (x == null ||
+            x.length() == 0) {
+            setNullInternal(i, DataType.VARCHAR);
+            return;
+        }
+
+        if (x.length() < deferrableStrLen) {
+            if (paramString == null)
+                paramString = new String[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, Types.VARCHAR, x.length());
+            paramString[currentRowIndex][i - 1] = x;
+            binder[currentRowIndex][i - 1] = staticStringBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
+        }
+        else if (x.length() > varcharMax) {
+            if (paramReader == null)
+                paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setDFRParam(i - 1, Types.LONGVARCHAR, x.length());
+            paramReader[currentRowIndex][i - 1] = new StringReader(x);
+            binder[currentRowIndex][i - 1] = staticReaderBinder;
+            paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+        }
+        else {
+            byte[] buf = new byte[x.length() * typeConverter.getMaxBytesPerChar()];
+            int byteLen = typeConverter.fromString(buf, 0, x);
+            if (byteLen > varcharMax) {
+                if (paramStream == null)
+                    paramStream =
+                    new InputStream[allocatedBatchRowCount][bindParamCnt];
+
+                bindData.setDFRParam(i - 1, Types.LONGVARCHAR, byteLen);
+                paramStream[currentRowIndex][i - 1] = new ByteArrayInputStream(buf, 0, byteLen);
+                binder[currentRowIndex][i - 1] = staticStreamBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
+            }
+            else {
+                if (paramBytes == null)
+                    paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+                
+                bindData.setINParam(i - 1, Types.VARCHAR, byteLen);
+                paramBytes[currentRowIndex][i - 1] = buf;
+                binder[currentRowIndex][i - 1] = staticBytesBinder;
+                paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
+            }
+        }
+    }
+
+    public void setTime(int i, Time x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTime", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setTimeInternal(i, x);
+    }
+
+    public void setTime(int i, Time x, Calendar cal) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTime", new Object[] {
+                this, Integer.toString(i), x, cal
+            });
+        }
+
+        if (x == null) {
+            setNullInternal(i, DataType.DATE);
+            return;
+        }
+
+        if (paramBytes == null)
+            paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
+
+        if (cal == null)
+            cal = Calendar.getInstance();
+
+        cal.setTime(x);
+        byte[] buf = new byte[DBConst.TB_TIME_SIZE];
+        typeConverter.fromTime(buf, 0, cal, 0);
+
+        bindData.setINParam(i - 1, Types.TIME, buf.length);
+        paramBytes[currentRowIndex][i - 1] = buf;
+        paramTypes[currentRowIndex][i - 1] = DataType.DATE;
+        binder[currentRowIndex][i - 1] = staticBytesBinder;
+    }
+
+    void setTimeInternal(int i, Time x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.DATE);
+            return;
+        }
+
+        if (paramCalendar == null)
+            paramCalendar = new Calendar[allocatedBatchRowCount][bindParamCnt];
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(x);
+
+        bindData.setINParam(i - 1, Types.TIME, 0);
+        paramCalendar[currentRowIndex][i - 1] = cal;
+        paramTypes[currentRowIndex][i - 1] = DataType.DATE;
+        binder[currentRowIndex][i - 1] = staticTimeBinder;
+    }
+
+    public void setTimestamp(int i, Timestamp x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTimestamp", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setTimestampInternal(i, x);
+    }
+
+    public void setTimestamp(int i, Timestamp x, Calendar cal)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTimestamp", new Object[] {
+                this, Integer.toString(i), x, cal
+            });
+        }
+
+        if (x == null) {
+            setNullInternal(i, DataType.TIMESTAMP);
+            return;
+        }
+
+        if (cal == null){
+            cal = Calendar.getInstance();
+        }
+
+        DatabaseMetaData dbMeta = new TbDatabaseMetaData(conn);
+        if (dbMeta.getDatabaseMajorVersion() < 5) {
+            cal.setTimeInMillis(x.getTime());
+            TbTimestamp tts = new TbTimestamp(cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH) + 1,
+                    cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                    cal.get(Calendar.SECOND), x.getNanos());
+
+            if (paramTbTimestamp == null)
+                paramTbTimestamp = new TbTimestamp[allocatedBatchRowCount][bindParamCnt];
+
+            bindData.setINParam(i - 1, Types.TIMESTAMP, -1);
+            paramTbTimestamp[currentRowIndex][i - 1] = tts;
+            paramTypes[currentRowIndex][i - 1] = DataType.TIMESTAMP;
+            binder[currentRowIndex][i - 1] = staticTbTimestampBinder;
+        }
+        else {
+            if (paramTbTimestampTZ == null)
+                paramTbTimestampTZ = new TbTimestampTZ[allocatedBatchRowCount][bindParamCnt];
+
+            TbTimestampTZ tbTimestampTZ = new TbTimestampTZ(x,
+                    cal.getTimeZone());
+
+            bindData.setINParam(i - 1, Types.TIMESTAMP, -1);
+            paramTbTimestampTZ[currentRowIndex][i - 1] = tbTimestampTZ;
+            paramTypes[currentRowIndex][i - 1] = DataType.TIMESTAMP_TZ;
+            binder[currentRowIndex][i - 1] = staticTimestampTZBinder;
+        }
+    }
+
+    void setTimestampInternal(int i, Timestamp x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.TIMESTAMP);
+            return;
+        }
+
+        if (paramTimestamp == null)
+            paramTimestamp = new Timestamp[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.TIMESTAMP, -1);
+        paramTimestamp[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.TIMESTAMP;
+        binder[currentRowIndex][i - 1] = staticTimestampBinder;
+    }
+
+    public void setTbTimestamp(int i, TbTimestamp x) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setTbTimestamp", new Object[] {
+                this, Integer.toString(i), x
+            });
+        }
+
+        setTbTimestampInternal(i, x);
+    }
+
+    void setTbTimestampInternal(int i, TbTimestamp x) throws SQLException {
+        if (x == null) {
+            setNullInternal(i, DataType.TIMESTAMP);
+            return;
+        }
+
+        if (paramTbTimestamp == null)
+            paramTbTimestamp = new TbTimestamp[allocatedBatchRowCount][bindParamCnt];
+
+        bindData.setINParam(i - 1, Types.TIMESTAMP, -1);
+        paramTbTimestamp[currentRowIndex][i - 1] = x;
+        paramTypes[currentRowIndex][i - 1] = DataType.TIMESTAMP;
+        binder[currentRowIndex][i - 1] = staticTbTimestampBinder;
+    }
+
+    // #ifdef JDK1.5
+    @Deprecated
+    // #endif
+    public void setUnicodeStream(int i, InputStream x, int length)
+                    throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.setUnicodeStream",
+                            new Object[] {
+                                this, Integer.toString(i), x,
+                                Integer.toString(length)
+                            });
+        }
+
+        setUnicodeStreamInternal(i, x, length);
+    }
+
+    void setUnicodeStreamInternal(int i, InputStream x, int length)
+            throws SQLException {
+        if (x == null ||
+            length <= 0) {
+            setNullInternal(i, DataType.VARCHAR);
+            return;
+        }
+
+        InputStreamReader reader = new InputStreamReader(x);
+
+        setCharacterStreamInternal(i, reader, length);
+    }
+
+    public void setURL(int i, URL x) throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+    public void addBatch(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbPreparedStatement.addBatch", new String[] {
+                "sql"
+            }, new Object[] {
+                sql
+            });
+        }
+
+        initSQLInfo(sql);
+
+        BindItem item;
+        int deferredParamCount = bindData.getDFRParameterCnt();
+
+        for (int i = 0; i < bindParamCnt; i++) {
+            if (binder[currentRowIndex][i] == null)
+                setCachedBindParameter(i);
+
+            item = bindData.getBindItem(i);
+
+            /* BatchUpdate�ÿ��� OUT parameter ������� ���� */
+            if (item.isOUTParameter())
+                throw TbError.newSQLException(TbError.MU_OUTPARAM_BATCHUPDATE);
+
+            if (deferredParamCount > 0)
+                continue;
+
+            /* ���� batch������ Ÿ���� �ٸ� �Ķ���Ͱ� �ִ� ��� UNIFORM flag�� ���� */
+            if (paramTypes[0][i] != paramTypes[currentRowIndex][i])
+                batchFlag = 0;
+        }
+
+        if (batchUpdateInfo == null)
+            batchUpdateInfo = new BatchUpdateInfo();
+
+        BindData binds = new BindData();
+        bindData.clone(binds);
+        bindData.clearDFRParameter();
+        batchUpdateInfo.add(new BatchInfo(binds, currentRowIndex));
+
+        if (currentRowIndex == allocatedBatchRowCount - 1)
+            growBatchArray(allocatedBatchRowCount, 0);
+
+        currentRowIndex++;
+    }
+
+    public void setAutoGenKeyArr(Object autoGenKeyArr) {
+        this.autoGenKeyArr = autoGenKeyArr;
+    }
+
+    private static boolean isSupportBinaryDoubleFloatType(ServerInfo info) {
+        if (info.getProtocolMajorVersion() *
+            100 + info.getProtocolMinorVersion() >= 206) {
+            return true;
+        }
+
+        return false;
+    }
+}

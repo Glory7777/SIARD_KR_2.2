@@ -1,0 +1,41 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package .tibero.jdbc;
+
+import java.sql.Ref;
+import java.sql.SQLException;
+import java.util.Map;
+
+import .tibero.jdbc.err.TbError;
+
+/**
+ * TbRef class.
+ * 
+ * @author �̿���, yjlee@tmax.co.kr
+ * @version $Id: TbRef.java 85872 2014-06-17 07:37:57Z sjcho $
+ */
+public class TbRef implements Ref {
+    public String getBaseTypeName() throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+	public Object getObject(Map map) throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+	public Object getObject() throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+	public void setObject(Object value) throws SQLException {
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+}
+

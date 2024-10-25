@@ -1,0 +1,108 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.data.binder;
+
+import java.sql.SQLException;
+
+import tibero.jdbc.comm.TbStreamDataWriter;
+import tibero.jdbc.data.ParamContainer;
+import tibero.jdbc.data.DataTypeConverter;
+import tibero.jdbc.dbconst.DBConst;
+import tibero.jdbc.driver.TbConnection;
+
+/**
+ * StringBinder class.
+ * 
+ * @version $Id: StringBinder.java 173938 2020-01-20 03:05:30Z jihun_park $
+ */
+public class StringBinder extends Binder {
+    public StringBinder() {
+    }
+
+    public void bind(TbConnection conn, ParamContainer bpc,
+                     TbStreamDataWriter writer, int rowIndex, int paramIndex, int length)
+        throws SQLException {
+        DataTypeConverter conv = conn.getTypeConverter();
+        String bindParam = bpc.getParamString(rowIndex, paramIndex);
+        byte[] byteBuf;
+        int maxLength = bindParam.length() * conv.getMaxBytesPerChar();
+        int offset = writer.getBufferedDataSize();
+        int convertedLen;
+        int rpcolLen;
+
+        writer.makeBufferAvailable(maxLength + 3);
+        byteBuf = writer.getStreamBuf().getRawBytes();
+
+        if (maxLength <= DBConst.RPCOL_1BYTE) {
+            convertedLen = conv.fromString(byteBuf, offset + 1, bindParam);
+            byteBuf[offset] = (byte)convertedLen;
+            rpcolLen = 1;
+        }
+        else {
+            convertedLen = conv.fromString(byteBuf, offset + 3, bindParam);
+            if(convertedLen <= DBConst.RPCOL_1BYTE) {
+                byteBuf[offset] = (byte)convertedLen;
+                rpcolLen = 1;
+                System.arraycopy(byteBuf, offset + 3, byteBuf, offset + 1, convertedLen);
+            } else {
+                byteBuf[offset] = (byte)DBConst.RPCOL_LARGE;
+                byteBuf[offset + 1] = (byte)(0xff & (convertedLen >> 8));
+                byteBuf[offset + 2] = (byte)(0xff & convertedLen);
+                rpcolLen = 3;
+            }
+        }
+
+        writer.moveOffset(convertedLen + rpcolLen);
+        writer.writePadding(convertedLen + rpcolLen);
+    }
+
+    public void bindDFR(TbConnection conn, ParamContainer bpc,
+                        TbStreamDataWriter writer, int rowIndex, int paramIndex, long length)
+        throws SQLException {
+    }
+
+    public void bind(TbConnection conn, ParamContainer bpc,
+                     TbStreamDataWriter writer, int rowIndex, int paramIndex, int length, boolean pad)
+            throws SQLException {
+        DataTypeConverter conv = conn.getTypeConverter();
+        String bindParam = bpc.getParamString(rowIndex, paramIndex);
+        byte[] byteBuf;
+        int maxLength = bindParam.length() * conv.getMaxBytesPerChar();
+        int offset = writer.getBufferedDataSize();
+        int convertedLen;
+        int rpcolLen;
+
+        writer.makeBufferAvailable(maxLength + 3);
+        byteBuf = writer.getStreamBuf().getRawBytes();
+
+        if (maxLength <= DBConst.RPCOL_1BYTE) {
+            convertedLen = conv.fromString(byteBuf, offset + 1, bindParam);
+            byteBuf[offset] = (byte)convertedLen;
+            rpcolLen = 1;
+        }
+        else {
+            convertedLen = conv.fromString(byteBuf, offset + 3, bindParam);
+            if(convertedLen <= DBConst.RPCOL_1BYTE) {
+                byteBuf[offset] = (byte)convertedLen;
+                rpcolLen = 1;
+                System.arraycopy(byteBuf, offset + 3, byteBuf, offset + 1, convertedLen);
+            } else {
+                byteBuf[offset] = (byte)DBConst.RPCOL_LARGE;
+                byteBuf[offset + 1] = (byte)(0xff & (convertedLen >> 8));
+                byteBuf[offset + 2] = (byte)(0xff & convertedLen);
+                rpcolLen = 3;
+            }
+        }
+
+        writer.moveOffset(convertedLen + rpcolLen);
+        if (pad)
+            writer.writePadding(convertedLen + rpcolLen);
+    }
+}

@@ -1,0 +1,1442 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ *
+ * This document contains proprietary and confidential information.  No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.driver;
+
+import tibero.Debug;
+import tibero.DriverConstants;
+import tibero.jdbc.*;
+import tibero.jdbc.comm.*;
+import tibero.jdbc.data.*;
+import tibero.jdbc.dpl.TbDirPathMetaData;
+import tibero.jdbc.dpl.TbDirPathStream;
+import tibero.jdbc.err.TbError;
+import tibero.jdbc.ext.TbStatementCache;
+import tibero.jdbc.util.TbDTFormat;
+import tibero.jdbc.util.TbDTFormatParser;
+import tibero.jdbc.util.TbSQLTypeScanner;
+import tibero.jdbc.data.DataTypeConverter;
+
+import java.sql.*;
+import java.util.*;
+
+// #ifdef JDK1.4
+// #endif
+//#ifdef JDK1.6
+// #endif
+
+/**
+ * TbConnection class.
+ * 
+ * @author �̿���, yjlee@tmax.co.kr ��Ի� gusami@tmax.co.kr
+ * @version $Id: TbConnection.java 186284 2020-10-20 09:17:47Z kyungtak_min $
+ */
+public class TbConnection extends tibero.jdbc.TbConnection {
+    final String _DESC_TOBJ_ID_PREFIX = DataTypeConverter._DESC_TOBJ_ID_PREFIX;
+    final String _DESC_VERSION_NO_PREFIX = DataTypeConverter._DESC_VERSION_NO_PREFIX;
+
+
+    // #ifdef JDK1.6
+    public static final String CLIENT_INFO_IDENTIFIER = "client_identifier";
+    public static final String[] CLIENT_INFO_KEYS =
+            new String[] { CLIENT_INFO_IDENTIFIER };
+    // #endif
+
+    private TbComm dbComm;
+    public ConnectionInfo info;
+    protected boolean isPooledConnection;
+    public ServerInfo serverInfo;
+    private String sessKey;
+    protected DataTypeConverter typeConverter;
+    protected SQLWarning warnings;
+    protected boolean autoCommit;
+    protected boolean connClosed;
+    protected boolean sessionClosed;
+    protected TbDatabaseMetaData dbMetaData = null;
+    protected Map
+        // #ifdef JDK1.5
+        <String, Class<?>>
+        // #endif
+        typeMap;
+    protected Map
+        // #ifdef JDK1.5
+        <String, TbTypeDescriptor>
+        // #endif
+        descriptorMap;
+
+    private String nlsDate = null;
+    private String nlsTimestamp = null;
+    private String nlsCalendar = "GREGORIAN";
+    private boolean nlsWarning = false;
+    private int sessionId;
+    private int serialNo;
+    private int mthrPid = -1; /* server m thread id */
+    private int txnMode;
+    private boolean readOnly;
+    protected int isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+    private TbTimeout timeout;
+    private int preFetchSize = DriverConstants.PRE_FETCH_SIZE;
+    private TbStatementCache stmtCache = null;
+    public String[] clientInfo;
+    private boolean middleOfFailover;
+    private boolean reconnected;
+    private long waitingTime;
+    private boolean checkWaitingTimer = false;
+    private int maxDFRCharCount = 0;
+    private int maxDFRNCharCount = 0;
+    private ExtFeatureInfo efInfo;
+
+    private TbDTFormat parsedNlsDateFormat = null;
+    private TbDTFormat parsedNlsTimestampFormat = null;
+
+    /* active result set list for fail-over */
+    private LinkedList
+        // #ifdef JDK1.5
+        <TbResultSetBase>
+        // #endif
+        foActiveRsets;
+
+    public void activateTimer() {
+        checkWaitingTimer = true;
+    }
+
+    public boolean addFOActiveResultSet(TbResultSetBase rs) {
+        return foActiveRsets.add(rs);
+    }
+
+    public void addWaitingTime(long time) {
+        waitingTime += time;
+    }
+
+    public void addWarning(SQLWarning warning) {
+        if (warnings != null)
+            warnings.setNextWarning(warning);
+        else
+            warnings = warning;
+    }
+
+    public void clearWarnings() throws SQLException {
+        warnings = null;
+    }
+
+    public synchronized void close() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.close", new Object[] { this });
+        }
+
+        try {
+        	if (timeout !=null) {
+        		timeout.close();
+        	}
+            if (dbComm != null) {
+                dbComm.close();
+                dbComm = null;
+            }
+            connClosed = true;
+        } finally {
+            reset();
+        }
+    }
+
+    public synchronized void closeCursor(TbResultSet rs, int cursorId)
+            throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.closeCursor",
+                    new String[] { "cursorId" },
+                    new Object[] { this, Integer.toString(cursorId) });
+        }
+
+        dbComm.closeCursor(rs, cursorId);
+    }
+
+    // #ifdef JDK1.5
+	@Deprecated
+	// #endif
+    public synchronized void closeSession() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.closeSession", new Object[] { this });
+        }
+
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+    public synchronized void commit() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.commit", new Object[] { this });
+        }
+
+        if (connClosed || dbComm.getStream() == null)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        dbComm.commit();
+    }
+
+    // #ifdef JDK1.6
+    public Array createArrayOf(String typeName, Object[] elements)
+            throws SQLException {
+        TbArray arr = null;
+
+        // schemaName, typeName, sqlTypeName ���ϱ�
+        String schemaName = this.info.getUser();
+        String delim = ".";
+        String[] tokens = typeName.split("[delim]{1}");
+
+        if (tokens.length == 1) {
+            // do nothing
+        } else if (tokens.length == 2) {
+            schemaName = tokens[0];
+            typeName = tokens[1];
+        } else {
+            throw TbError
+                    .newSQLException(TbError.MU_INVALID_NAME_PATTERN);
+        }
+        String sqlTypeName = schemaName + delim + typeName;
+
+        // typeName�� �ش��ϴ� ArrayDescriptor�� �� subType�� arrayDescriptor�� TbConnection.descMap�� ���
+        TbArrayDescriptor desc = TbArrayDescriptor.lookupUdtMeta(schemaName, typeName, this);
+
+        // ArrayDescriptor, elements�� �̿��� Array ���� �� ����
+        arr = new TbArray(desc, this, elements);
+
+        return arr;
+    }
+    // #endif
+
+    // #ifdef JDK1.6
+    public Blob createBlob() throws SQLException {
+        return createTbBlob();
+    }
+    // #endif
+
+    public TbBlob createTbBlob() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.createTbBlob", new Object[] { this });
+        }
+
+        byte[] locator = getBlobAccessor().createTemporaryBlob();
+        return new TbBlob(this, locator, false);
+    }
+
+    // #ifdef JDK1.6
+    public Clob createClob() throws SQLException {
+        return createTbClob();
+    }
+    // #endif
+
+    public TbClob createTbClob() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.createTbClob", new Object[] { this });
+        }
+
+        byte[] locator = getClobAccessor().createTemporaryClob();
+        return new TbClob(this, locator, false);
+    }
+
+    public TbDirPathStream
+            createDirPathStream(TbDirPathMetaData dirPathMetaData)
+                    throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.createDirPathStream", new Object[] {
+                    this, dirPathMetaData });
+        }
+
+        return new TbDirPathStream(this, dirPathMetaData);
+    }
+
+    // #ifdef JDK1.6
+    public NClob createNClob() throws SQLException {
+        return createTbNClob();
+    }
+    // #endif
+
+    public TbNClob createTbNClob() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.createTbNClob", new Object[] { this });
+        }
+
+        byte[] locator = getClobAccessor().createTemporaryNClob();
+        return new TbNClob(this, locator, false);
+    }
+
+    // #ifdef JDK1.6
+    public SQLXML createSQLXML() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.createSQLXML", new Object[] { this });
+        }
+
+        return new TbSQLXML(this);
+    }
+    // #endif
+
+    public synchronized Statement createStatement() throws SQLException {
+        return createStatement(RsetType.DEFAULT_TYPE,
+                RsetType.DEFAULT_CONCURRENCY);
+    }
+
+    public synchronized Statement createStatement(int resultSetType,
+            int resultSetConcurrency) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.createStatement", new Object[] {
+                    new Integer(resultSetType),
+                    new Integer(resultSetConcurrency) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(null,
+                            TbStatementCache.ENTRY_TYPE_TBSTATEMENT, RsetType
+                                    .getRsetType(resultSetType,
+                                            resultSetConcurrency));
+
+            if (stmt != null) {
+                return stmt;
+            }
+        }
+
+        return new TbStatement(this, resultSetType, resultSetConcurrency,
+                preFetchSize);
+    }
+
+    public Statement createStatement(int resultSetType,
+            int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.createStatement", new Object[] {
+                    new Integer(resultSetType),
+                    new Integer(resultSetConcurrency),
+                    new Integer(resultSetHoldability) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        /* Default holdability value is the only supported type */
+        // #ifdef JDK1.4
+        if (resultSetHoldability != getHoldability()) {
+            addWarning(TbError
+                    .newSQLWarning(TbError.MU_UNSUPPORTED_RSET_HOLDABILITY_TYPE));
+        }
+        // #endif
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(null,
+                            TbStatementCache.ENTRY_TYPE_TBSTATEMENT, RsetType
+                                    .getRsetType(resultSetType,
+                                            resultSetConcurrency));
+
+            if (stmt != null) {
+                return stmt;
+            }
+        }
+
+        TbStatement stmt =
+                new TbStatement(this, resultSetType, resultSetConcurrency,
+                        preFetchSize);
+
+        return stmt;
+    }
+
+    // #ifdef JDK1.6
+    public Struct createStruct(String typeName, Object[] attributes)
+            throws SQLException {
+        String schemaName = this.info.getUser();
+        String delim = ".";
+        String[] tokens = typeName.split("["+delim+"]{1}");
+        if (tokens.length == 1) {
+            // do nothing
+        } else if (tokens.length == 2) {
+            schemaName = tokens[0];
+            typeName = tokens[1];
+        } else {
+            throw TbError
+                    .newSQLException(TbError.MU_INVALID_NAME_PATTERN);
+        }
+
+        TbStructDescriptor desc = TbStructDescriptor.lookupUdtMeta(schemaName, typeName, this);
+        TbStruct struct = new TbStruct(desc, this, attributes);
+        return struct;
+    }
+    // #endif
+
+    public void disableStmtCache() {
+        info.setStmtCache(false);
+    }
+
+    void disallowGlobalTxnMode(int errorCode) throws SQLException {
+        if (txnMode == GLOBAL_TXN)
+            throw TbError.newSQLException(errorCode);
+    }
+
+    public void enableStmtCache() {
+        info.setStmtCache(true);
+    }
+
+    public boolean getAutoCommit() throws SQLException {
+        return autoCommit;
+    }
+
+    public TbBlobAccessor getBlobAccessor() {
+        return (TbBlobAccessor) dbComm;
+    }
+
+    public String getCatalog() throws SQLException {
+        return null;
+    }
+    
+    public boolean getIncludeSynonyms() {
+        return info.getIncludeSynonyms();
+    }
+    
+    public boolean getMapDateToTimestamp() {
+        return info.getMapDateToTimestamp();
+    }
+
+    public void setIncludeSynonyms(boolean flag) {
+        info.setIncludeSynonyms(flag);
+    }
+
+    // #ifdef JDK1.6
+    public Properties getClientInfo() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.getClientInfo", new Object[] { this });
+        }
+
+        Properties prop = new Properties();
+        return prop;
+    }
+    // #endif
+
+    // #ifdef JDK1.6
+    public String getClientInfo(String name) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.getClientInfo", new Object[] { this,
+                    name });
+        }
+
+        if (clientInfo == null)
+            return null;
+
+        for (int i = 0; i < CLIENT_INFO_KEYS.length; i++) {
+            if (CLIENT_INFO_KEYS[i].equals(name)) {
+                return clientInfo[i];
+            }
+        }
+
+        return null;
+    }
+    // #endif
+
+    public TbClobAccessor getClobAccessor() {
+        return (TbClobAccessor) dbComm;
+    }
+
+    public int getDefaultRowPrefetch() {
+        return preFetchSize;
+    }
+
+    public List
+        // #ifdef JDK1.5
+        <TbResultSetBase>
+        // #endif
+        getFOActiveRSetList() {
+        return foActiveRsets;
+    }
+
+    // #ifdef JDK1.4
+    public int getHoldability() throws SQLException {
+        return ResultSet.HOLD_CURSORS_OVER_COMMIT;
+    }
+    // #endif
+
+    public TbSQLInfo getLastExecutedSqlinfo() throws SQLException {
+        return dbComm.getLastExecutedSqlinfo();
+    }
+
+    public TbSQLInfo2 getLastExecutedSqlinfo2() throws SQLException {
+        return dbComm.getLastExecutedSqlinfo2();
+    }
+
+    public int getMaxDFRCharCount() {
+        return maxDFRCharCount;
+    }
+
+    public int getMaxDFRNCharCount() {
+        return maxDFRNCharCount;
+    }
+
+    public DatabaseMetaData getMetaData() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.getMetaData", new Object[] { this });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        dbMetaData = new TbDatabaseMetaData(this);
+
+        return dbMetaData;
+    }
+
+    public int getMthrPid() {
+        return mthrPid;
+    }
+
+    public String getNlsCalendar() {
+       return nlsCalendar;
+    }
+
+    public String getNlsDate() {
+        return nlsDate;
+    }
+
+    public String getNlsTimestamp() {
+        return nlsTimestamp;
+    }
+
+    public int getSerialNo() {
+        return serialNo;
+    }
+
+    public int getServerCharSet() {
+        return serverInfo.getServerCharSet();
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+    public String getSessKey() {
+        return this.sessKey;
+    }
+
+    public int getServerNCharSet() {
+        return serverInfo.getServerNCharSet();
+    }
+
+    public int getSessionId() {
+        return sessionId;
+    }
+
+    public TbStatementCache getStmtCache() {
+        return stmtCache;
+    }
+
+    public TbComm getTbComm() {
+        return dbComm;
+    }
+    
+    public TbXAComm getTbXAComm() {
+        return (TbXAComm) dbComm;
+    }
+
+    public TbTimeout getTimeout() throws SQLException {
+        if (timeout == null)
+            timeout = TbTimeout.newTimeout();
+
+        return timeout;
+    }
+
+    public synchronized int getTransactionIsolation() throws SQLException {
+        return isolationLevel;
+    }
+
+    public int getTxnMode() {
+        return txnMode;
+    }
+
+    public DataTypeConverter getTypeConverter() {
+        return typeConverter;
+    }
+
+    public Map
+            // #ifdef JDK1.5
+            <String, Class<?>>
+            // #endif
+            getTypeMap() throws SQLException {
+        return typeMap;
+    }
+
+    public long getWaitingTime() {
+        return waitingTime;
+    }
+
+    public SQLWarning getWarnings() throws SQLException {
+        return warnings;
+    }
+
+    public boolean isActivatedTimer() {
+        return checkWaitingTimer;
+    }
+
+    public boolean isClosed() {
+        return connClosed;
+    }
+
+    public boolean isMiddleOfFailover() {
+        return middleOfFailover;
+    }
+
+    public boolean isPooledConnection() {
+        return isPooledConnection;
+    }
+
+    public boolean isReadOnly() throws SQLException {
+        return readOnly;
+    }
+
+    public boolean isReconnected() {
+        return reconnected;
+    }
+
+    public boolean isSessionClosed() {
+        return sessionClosed;
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.isValid", new String[] {
+                    "TbConnection", "timeout" },
+                    new Object[] { this, Integer.toString(timeout) });
+        }
+
+        if (isClosed() || dbComm == null)
+            return false;
+
+        if (timeout == 0) {
+            try {
+                dbComm.ping();
+            } catch (SQLException e) {
+                return false;
+            }
+            return true;
+        }
+
+        Statement statement = null;
+        statement = createStatement();
+        ((TbStatement) statement).setQueryTimeout(timeout);
+
+        try {
+            statement.execute("SELECT 1 FROM DUAL");
+        } catch (SQLException e) {
+            return false;
+        } finally {
+            if (statement != null)
+                statement.close();
+        }
+        return true;
+    }
+
+    // #ifdef JDK1.6
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.isWrapperFor", new Object[] { iface });
+        }
+
+        return iface.isInstance(this);
+    }
+    // #endif
+
+    public String nativeSQL(String sql) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.nativeSQL", new String[] {sql});
+        }
+        return sql;
+    }
+
+    public void openConnection(ConnectionInfo infos,
+            boolean logonWithNewPassword) throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION || Debug.FAILOVER) {
+            Debug.logMethod(
+                    "TbConnection.openConnection",
+                    new String[] { "TbConnection", "ConnectionInfo",
+                            "logonWithNewPassword" },
+                    new Object[] { this, infos,
+                            Boolean.valueOf(logonWithNewPassword) });
+        }
+
+        reuse();
+
+        if (!middleOfFailover) {
+            typeMap = new HashMap
+                // #ifdef JDK1.5
+                <String, Class<?>>
+                // #endif
+                ();
+            descriptorMap = new HashMap
+                // #ifdef JDK1.5
+                <String, TbTypeDescriptor>
+                // #endif
+                ();
+            TbTypeDescriptor.genPredefUDTDescs(this);
+
+            foActiveRsets = new LinkedList
+                // #ifdef JDK1.5
+                <TbResultSetBase>
+                // #endif
+                ();
+        }
+
+        info = (ConnectionInfo) infos.clone();
+        typeConverter = new DataTypeConverter(this);
+
+        if (info.isStmtCache())
+            stmtCache = new TbStatementCache(info.getStmtCacheMaxSize());
+
+        String driverType = info.getDriverType();
+
+        if (driverType.equals(DriverConstants.DEFAULT_DRIVER)) {
+            if (info.isXA())
+                dbComm = new TbXACommType4(this);
+            else
+                dbComm = new TbCommType4(this);
+        } else {
+            throw TbError.newSQLException(TbError.INTERNAL_UNSUPPORTED_OPERATION_INVALID_DRIVER, 
+                    driverType);
+        }
+
+        dbComm.createStream();
+        /* 
+         * login_timeout ������ ������ �����ϹǷ�, 
+         * self keepalive ����� logon �Ϸ�ñ����� ��Ȱ��ȭ ó���Ѵ�.
+         */
+        dbComm.getStream().setSelfKeepAliveEnabled(false);
+
+        if (info.isInternal()) {
+            dbComm.describeConnectInfo();
+            dbComm.describeSessInfo();
+            setAutoCommit(false);
+        } else {
+            try {
+                dbComm.logon(logonWithNewPassword);
+            } catch (SQLException e) {
+                /*
+                 * reconnect�� ���� ������ �����Ͽ����� Ȯ���Ѵ�. ������ ��ȿ�ϴٸ�
+                 * Exception�� throw���� �ʰ� ���� �����Ѵ�.
+                 */
+                if (!sessionClosed && !connClosed) {
+                    if (Debug.TRACE) {
+                        Debug.log("Reconnected successfully and ignore exception: ["
+                                + e.getErrorCode() + "] " + e.getMessage());
+                    }
+                    return;
+                }
+                throw e;
+            }
+        }
+
+        dbComm.getStream().setSelfKeepAliveEnabled(info.useSelfKeepAlive());
+        dbComm.getStream().setSoTimeout(info.getReadTimeout());
+
+        sessionClosed = false;
+        connClosed = false;
+        efInfo = new ExtFeatureInfo(this);
+
+        if (middleOfFailover)
+            reconnected = true;
+    }
+
+    // #ifdef JDK1.5
+	@Deprecated
+	// #endif
+    public void openSession() throws SQLException {
+		if (Debug.TRACE || Debug.CONNECTION) {
+			Debug.logMethod("TbConnection.openSession", new Object[] { this });
+		}
+        
+		throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+
+    public synchronized CallableStatement prepareCall(String sql)
+            throws SQLException {
+        return prepareCall(sql, RsetType.DEFAULT_TYPE,
+                RsetType.DEFAULT_CONCURRENCY);
+    }
+
+    public synchronized CallableStatement prepareCall(String sql,
+            int resultSetType, int resultSetConcurrency) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.prepareCall", new Object[] { sql,
+                    new Integer(resultSetType),
+                    new Integer(resultSetConcurrency) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(sql,
+                            TbStatementCache.ENTRY_TYPE_TBCALLABLESTATEMENT,
+                            RsetType.getRsetType(resultSetType,
+                                    resultSetConcurrency));
+
+            if (stmt instanceof TbCallableStatement)
+                return (TbCallableStatement) stmt;
+        }
+
+        return new TbCallableStatement(this, sql, resultSetType,
+                resultSetConcurrency, preFetchSize);
+    }
+
+    public CallableStatement prepareCall(String sql, int resultSetType,
+            int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.prepareCall", new Object[] { sql,
+                    new Integer(resultSetType),
+                    new Integer(resultSetConcurrency),
+                    new Integer(resultSetHoldability) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(sql,
+                            TbStatementCache.ENTRY_TYPE_TBCALLABLESTATEMENT,
+                            RsetType.getRsetType(resultSetType,
+                                    resultSetConcurrency));
+
+            if (stmt instanceof TbCallableStatement)
+                return (TbCallableStatement) stmt;
+        }
+
+        /* Default holdability value is the only supported type */
+        // #ifdef JDK1.4
+        if (resultSetHoldability != getHoldability()) {
+            addWarning(TbError
+                    .newSQLWarning(TbError.MU_UNSUPPORTED_RSET_HOLDABILITY_TYPE));
+        }
+        // #endif
+
+        return new TbCallableStatement(this, sql, resultSetType,
+                resultSetConcurrency, preFetchSize);
+    }
+
+    public synchronized PreparedStatement prepareStatement(String sql)
+            throws SQLException {
+        return prepareStatement(sql, RsetType.DEFAULT_TYPE,
+                RsetType.DEFAULT_CONCURRENCY, false);
+    }
+
+    public synchronized PreparedStatement prepareStatement(String sql,
+            boolean forcePrepare) throws SQLException {
+        return prepareStatement(sql, RsetType.DEFAULT_TYPE,
+                RsetType.DEFAULT_CONCURRENCY, forcePrepare);
+    }
+
+    public PreparedStatement
+            prepareStatement(String sql, int autoGeneratedKeys)
+                    throws SQLException {
+        TbPreparedStatement pstmt = (TbPreparedStatement) prepareStatement(sql);
+
+        // #ifdef JDK1.4
+        if (TbSQLTypeScanner.STMT_DML_INSERT == pstmt.getSqlType()) {
+            pstmt.setReturnAutoGeneratedKeys((autoGeneratedKeys == Statement.RETURN_GENERATED_KEYS));
+        }
+        // #endif
+        return pstmt;
+    }
+
+    public synchronized PreparedStatement prepareStatement(String sql,
+            int rsetType, int rsetConcurrency) throws SQLException {
+        return prepareStatement(sql, rsetType, rsetConcurrency, false);
+    }
+
+    public synchronized PreparedStatement prepareStatement(String sql,
+            int rsetType, int rsetConcurrency, boolean forcePrepare)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.prepareStatement", new Object[] {
+                    sql, new Integer(rsetType), new Integer(rsetConcurrency) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(sql,
+                            TbStatementCache.ENTRY_TYPE_TBPREPAREDSTATEMENT,
+                            RsetType.getRsetType(rsetType, rsetConcurrency));
+
+            if (stmt instanceof TbPreparedStatement)
+                return (TbPreparedStatement) stmt;
+        }
+
+        return new TbPreparedStatement(this, sql, rsetType, rsetConcurrency,
+                preFetchSize, forcePrepare);
+    }
+
+    public PreparedStatement prepareStatement(String sql, int rsetType,
+            int rsetConcurrency, int rsetHoldability) throws SQLException {
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.prepareStatement", new Object[] {
+                    sql, new Integer(rsetType), new Integer(rsetConcurrency),
+                    new Integer(rsetHoldability) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (stmtCache != null) {
+            tibero.jdbc.TbStatement stmt =
+                    stmtCache.get(sql,
+                            TbStatementCache.ENTRY_TYPE_TBPREPAREDSTATEMENT,
+                            RsetType.getRsetType(rsetType, rsetConcurrency));
+
+            if (stmt instanceof TbPreparedStatement)
+                return (TbPreparedStatement) stmt;
+        }
+
+        /* Default holdability value is the only supported type */
+        // #ifdef JDK1.4
+        if (rsetHoldability != getHoldability()) {
+            addWarning(TbError
+                    .newSQLWarning(TbError.MU_UNSUPPORTED_RSET_HOLDABILITY_TYPE));
+        }
+        // #endif
+
+        return new TbPreparedStatement(this, sql, rsetType, rsetConcurrency,
+                preFetchSize, false);
+    }
+
+    public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
+            throws SQLException {
+        if (columnIndexes == null || columnIndexes.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_INDEX);
+        }
+
+        TbPreparedStatement pstmt = (TbPreparedStatement) prepareStatement(sql);
+
+        if (TbSQLTypeScanner.STMT_DML_INSERT == pstmt.getSqlType()) {
+            pstmt.setReturnAutoGeneratedKeys(true);
+            pstmt.setAutoGenKeyArr(columnIndexes);
+        }
+        return pstmt;
+    }
+
+    public PreparedStatement prepareStatement(String sql, String[] columnNames)
+            throws SQLException {
+        if (columnNames == null || columnNames.length == 0) {
+            TbError.newSQLException(TbError.INTERNAL_MU_INVALID_PARAMETER_COLUMN_INDEX);
+        }
+
+        TbPreparedStatement pstmt = (TbPreparedStatement) prepareStatement(sql);
+
+        if (TbSQLTypeScanner.STMT_DML_INSERT == pstmt.getSqlType()) {
+            pstmt.setReturnAutoGeneratedKeys(true);
+            pstmt.setAutoGenKeyArr(columnNames);
+        }
+        return pstmt;
+    }
+
+    public void reconnect(boolean middleOfFailover) {
+        if (info.isFailoverSessionEnabled()) {
+            if (Debug.TRACE)
+                Debug.log("TbStream.reconnect (BEGIN)");
+
+            boolean autoCommit = true;
+            /* close() �����ϸ鼭 info �ʵ带 null�� �ٲٹǷ�, ���ú����� ���۷��� ���� */
+            ConnectionInfo oldInfo = info;
+
+            if (!middleOfFailover)
+                setMiddleOfFailover(true);
+
+            try {
+                autoCommit = getAutoCommit();
+                close();
+            }
+            catch (SQLException e) { }
+
+            try {
+                openConnection(oldInfo, false);
+                setAutoCommit(autoCommit);
+
+                if (Debug.TRACE)
+                    Debug.log("TbStream.reconnect (RECONNECTED)");
+            }
+            catch (SQLException e) {
+                /* Failover ��Ȳ���� �翬���� �õ��ϴ� �����߿� ������ ��Ʈ��ũ ��Ȳ�� 
+                 * ���� �ٽ� �翬���ϴ� ��Ȳ�� �߻��ϸ� ������ �����ϴ��� ������ 
+                 * �߻��ϹǷ� �� ��츦 ó���ϱ� ���� �翬���� �����ߴ����� �Ǵ��Ͽ�
+                 * ������ ������ �����Ѵ�.
+                 */
+                if (!isReconnected()) {
+                    if (Debug.TRACE)
+                        Debug.log("TbStream.reconnect (FAILED TO RECONNECT): " +
+                            e.getMessage());
+
+                    try {
+                        close();
+                    }
+                    catch (SQLException se) { }
+                }
+                else {
+                    if (Debug.TRACE)
+                        Debug.log("TbStream.reconnect (RECONNECTED)");
+
+                    try {
+                        setAutoCommit(autoCommit);
+                    }
+                    catch (SQLException se) { }
+                    
+                    setReconnected(false);
+                }
+            }
+
+            /*
+             * failover�� ��ø�ؼ� �߻����� ��, recursive�ϰ� reconnect�� ����ȴ�.
+             * �̶�, failover flag�� �̸� off���� �ʵ��� ȣ���� ���°� �������� �����Ѵ�.
+             */
+            setMiddleOfFailover(middleOfFailover);
+        }
+        else {
+            /* End of Stream ���� �߻��� physical connection�� �ݴ´�. */
+            try {
+                close();
+            }
+            catch (SQLException e) { }
+        }
+    }
+    
+    // #ifdef JDK1.4
+    public synchronized void releaseSavepoint(Savepoint savepoint)
+            throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.releaseSavepoint", null,
+                    new Object[0]);
+        }
+
+        throw TbError.newSQLException(TbError.UNSUPPORTED_OPERATION);
+    }
+    // #endif
+
+    public boolean removeFOActiveResultSet(TbResultSetBase rs) {
+        return foActiveRsets.remove(rs);
+    }
+
+    /* physical connection�� ���� �� */
+    public void reset() {
+        info = null;
+        serverInfo = null;
+        sessKey = null;
+        warnings = null;
+        dbMetaData = null;
+        autoCommit = true;
+        sessionClosed = true;
+        txnMode = NO_TXN;
+        readOnly = false;
+        isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+        nlsDate = null;
+        nlsTimestamp = null;
+        preFetchSize = DriverConstants.PRE_FETCH_SIZE;
+        clientInfo = null;
+        reconnected = false;
+        efInfo = null;
+
+        if (typeConverter != null) {
+            typeConverter.reset();
+            typeConverter = null;
+        }
+
+        if (stmtCache != null) {
+            stmtCache.clear();
+            stmtCache = null;
+        }
+
+        if (!isMiddleOfFailover()) {
+            typeMap = null;
+            descriptorMap = null;
+        }
+    }
+
+    public synchronized void resetSession() throws SQLException {
+        if (serverInfo != null) {
+            int major = serverInfo.getProtocolMajorVersion();
+            int minor = serverInfo.getProtocolMinorVersion();
+
+            if (major > 2 || (major == 2 && minor > 1)) {
+                /* protocol version 2.2 �̻��� ��쿡�� reset_sess �޽����� ������ */
+                if (Debug.TRACE || Debug.CONNECTION) {
+                    Debug.logMethod("TbConnection.resetSession", null,
+                            new Object[0]);
+                }
+
+                dbComm.resetSession();
+            }
+        }
+    }
+
+    /* logical connection�� ���� �� */
+    public void reuse() {
+        warnings = null;
+        autoCommit = true;
+        sessionClosed = true;
+        txnMode = NO_TXN;
+        readOnly = false;
+        isolationLevel = Connection.TRANSACTION_READ_COMMITTED;
+        preFetchSize = DriverConstants.PRE_FETCH_SIZE;
+        clientInfo = null;
+        reconnected = false;
+
+        if (typeMap != null) {
+            typeMap.clear();
+        }
+
+        if (descriptorMap != null) {
+            descriptorMap.clear();
+        }
+    }
+
+    public synchronized void rollback() throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.rollback", null, new Object[0]);
+        }
+
+        if (connClosed || dbComm.getStream() == null)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        dbComm.rollback();
+    }
+
+    // #ifdef JDK1.4
+    public synchronized void rollback(Savepoint savepoint) throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.rollback", null, new Object[0]);
+        }
+
+        if (connClosed || dbComm.getStream() == null)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (autoCommit)
+            throw TbError.newSQLException(TbError.MU_ACTION_ON_AUTOCOMMIT);
+
+        dbComm.rollback((TbSavepoint) savepoint);
+    }
+    // #endif
+
+    public synchronized void setAutoCommit(boolean flag) throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.setAutoCommit",
+                    new String[] { "AutoCommit" }, new Object[] { new Boolean(
+                            flag) });
+        }
+
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        if (info.isInternal())
+            autoCommit = false;
+        else
+            autoCommit = flag;
+    }
+
+    public void setCatalog(String catalog) throws SQLException {
+    }
+
+    // #ifdef JDK1.6
+    public synchronized void setClientInfo(Properties prop)
+            throws SQLClientInfoException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.setClientInfo", new Object[] { this,
+                    prop });
+        }
+
+        if (clientInfo == null)
+            clientInfo = new String[CLIENT_INFO_KEYS.length];
+
+        for (int i = 0; i < CLIENT_INFO_KEYS.length; i++) {
+            clientInfo[i] = (String) prop.get(CLIENT_INFO_KEYS[i]);
+        }
+
+        dbComm.setClientInfo(clientInfo);
+    }
+    // #endif
+
+    // #ifdef JDK1.6
+    public synchronized void setClientInfo(String name, String value)
+            throws SQLClientInfoException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.setClientInfo", new Object[] { this,
+                    name, value });
+        }
+
+        if (clientInfo == null)
+            clientInfo = new String[CLIENT_INFO_KEYS.length];
+
+        for (int i = 0; i < CLIENT_INFO_KEYS.length; i++) {
+            if (CLIENT_INFO_KEYS[i].equals(name)) {
+                clientInfo[i] = value;
+            }
+        }
+
+        dbComm.setClientInfo(clientInfo);
+    }
+    // #endif
+
+    public void setClosed(boolean flag) {
+        connClosed = flag;
+    }
+
+    public void setDefaultRowPrefetch(int fetchSize) {
+        preFetchSize = fetchSize;
+    }
+
+    // #ifdef JDK1.4
+    public void setHoldability(int holdability) throws SQLException {
+        /* This api can change default holdability values, but
+         * ResultSet.HOLD_CURSORS_OVER_COMMIT value is the only supported type. */
+        switch (holdability) {
+        case ResultSet.HOLD_CURSORS_OVER_COMMIT:
+            // Do Nothing.
+            return;
+        case ResultSet.CLOSE_CURSORS_AT_COMMIT:
+            throw TbError
+                    .newSQLException(TbError.MU_UNSUPPORTED_RSET_HOLDABILITY_TYPE);
+
+        default:
+            throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER);
+        }
+    }
+    // #endif
+
+    public void setMaxDFRCharCount() {
+        int maxBytesPerChar = typeConverter.getMaxBytesPerChar();
+        if (maxBytesPerChar == 1)
+            maxBytesPerChar = 2;
+        maxDFRCharCount =
+                DriverConstants.MIN_DEFERRED_BYTE_SIZE / maxBytesPerChar;
+
+        int maxBytesPerNChar = typeConverter.getMaxBytesPerNChar();
+        if (maxBytesPerNChar == 1)
+            maxBytesPerNChar = 2;
+        maxDFRNCharCount =
+                DriverConstants.MIN_DEFERRED_BYTE_SIZE / maxBytesPerNChar;
+    }
+
+    public void setMiddleOfFailover(boolean flag) {
+        middleOfFailover = flag;
+    }
+
+    public void setMthrPid(int mpid) {
+        mthrPid = mpid;
+    }
+
+    public void setNLSDate(String nlsdate) {
+        nlsDate = nlsdate;
+        try {
+            parsedNlsDateFormat = TbDTFormatParser.parse(nlsDate);
+        }
+        catch (SQLWarning w) {
+            addWarning(w);
+            parsedNlsDateFormat = null;
+        }
+    }
+
+    public void setNLSTimestamp(String nlsts) {
+        nlsTimestamp = nlsts;
+        try {
+            parsedNlsTimestampFormat = TbDTFormatParser.parse(nlsTimestamp);
+        }
+        catch (SQLWarning w) {
+            addWarning(w);
+            parsedNlsTimestampFormat = null;
+        }
+    }
+
+    public void setNLSCalandar(String nlsCal) {
+       nlsCalendar = nlsCal;
+    }
+
+    public boolean isNLSWarning() {
+        return nlsWarning;
+    }
+
+    public void setNLSWarning(boolean flag) {
+        nlsWarning = flag;
+    }
+
+    public void setPooledConnection(boolean flag) {
+        isPooledConnection = flag;
+    }
+
+    public void setReadOnly(boolean flag) throws SQLException {
+        readOnly = flag;
+    }
+
+    public void setReconnected(boolean flag) {
+        reconnected = flag;
+    }
+
+    // #ifdef JDK1.4
+    public synchronized Savepoint setSavepoint() throws SQLException {
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        TbSavepoint savepoint = new TbSavepoint();
+        dbComm.setSavePoint(savepoint);
+
+        return savepoint;
+    }
+
+    public synchronized Savepoint setSavepoint(String name) throws SQLException {
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        TbSavepoint savepoint = new TbSavepoint(name);
+        dbComm.setSavePoint(savepoint);
+
+        return savepoint;
+    }
+    // #endif
+
+    public void setSerialNo(int sno) {
+        serialNo = sno;
+    }
+
+    public void setServerInfo(ServerInfo info) {
+        serverInfo = info;
+    }
+
+    public void setSessKey(String sessKey) {
+        this.sessKey = sessKey;
+    }
+
+    public void setSessionId(int sessid) {
+        sessionId = sessid;
+    }
+
+    public synchronized void setTransactionIsolation(int level)
+            throws SQLException {
+        if (Debug.TRACE || Debug.CONNECTION) {
+            Debug.logMethod("TbConnection.setTransactionIsolation",
+                    new String[] { "TransactionLevel" },
+                    new Object[] { new Integer(level) });
+        }
+
+        if ((level != TRANSACTION_READ_COMMITTED) &&
+                (level != TRANSACTION_SERIALIZABLE))
+            throw TbError.newSQLException(TbError.INTERNAL_UNSUPPORTED_OPERATION_TX_ISOLATION_LVL);
+
+        Statement stmt = null;
+
+        try {
+            stmt = createStatement();
+
+            if (level == TRANSACTION_SERIALIZABLE)
+                stmt.execute("alter session set isolation_level=serializable");
+            else
+                stmt.execute("alter session set isolation_level=read committed");
+        } finally {
+            if (stmt != null)
+                stmt.close();
+        }
+
+        isolationLevel = level;
+    }
+
+    public void setTxnMode(int mode) {
+        txnMode = mode;
+    }
+
+    public synchronized void setTypeMap(Map
+                                        // #ifdef JDK1.5
+                                        <String, Class<?>>
+                                        // #endif
+                                        typemap) throws SQLException {
+        typeMap = typemap;
+    }
+
+    public void switchTxnMode(int fromMode, int toMode) {
+        if (txnMode == fromMode)
+            txnMode = toMode;
+    }
+
+    public synchronized void putDescriptor(String name, TbTypeDescriptor desc) throws SQLException {
+        if (name == null || desc == null)
+            throw TbError.newSQLException(TbError.INTERNAL_INVALID_ARGUMENT);
+
+        if (descriptorMap == null)
+            descriptorMap = new HashMap
+            // #ifdef JDK1.5
+            <String, TbTypeDescriptor>
+            // #endif
+            ();
+
+        int tobjID = desc.getTobjID();
+        int versionNo = desc.getVersionNo();
+        String key = name + _DESC_TOBJ_ID_PREFIX + tobjID + _DESC_VERSION_NO_PREFIX + versionNo;
+        descriptorMap.put(key, desc);
+
+        if (TbTypeDescriptor.preDefinedOIDList.contains(name)
+                || TbTypeDescriptor.preDefinedTypeNameList.contains(name)) {
+            descriptorMap.put(name, desc);
+        }
+    }
+
+    public synchronized Object getDescriptor(String name) throws SQLException {
+        if (name == null)
+            throw TbError.newSQLException(TbError.INTERNAL_INVALID_ARGUMENT);
+
+        if (descriptorMap == null)
+            return null;
+
+        return descriptorMap.get(name);
+    }
+
+    public ExtFeatureInfo getExtFeatureInfo() throws SQLException {
+        if (connClosed)
+            throw TbError
+                    .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
+
+        return efInfo;
+    }
+
+    // #ifdef JDK1.6
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbConnection.unwrap", new Object[] { iface });
+        }
+
+        try {
+            return iface.cast(this);
+        } catch (ClassCastException e) {
+            throw TbError.newSQLException(TbError.MU_FAILED_TO_CAST);
+        }
+    }
+    // #endif
+
+    public TbDTFormat getParsedNlsDateFormat() {
+        return parsedNlsDateFormat;
+    }
+
+    public TbDTFormat getParsedNlsTimestampFormat() {
+        return parsedNlsTimestampFormat;
+    }
+}

@@ -1,0 +1,77 @@
+/**
+ * TmaxData, Co. Copyright(C) 2014-, All rights reserved.
+ */
+package tibero.jdbc.data.binder;
+
+import tibero.jdbc.TbStruct;
+import tibero.jdbc.TbStructDescriptor;
+import tibero.jdbc.comm.TbStreamDataWriter;
+import tibero.jdbc.data.BindItem;
+import tibero.jdbc.data.DataType;
+import tibero.jdbc.data.DataTypeConverter;
+import tibero.jdbc.data.ParamContainer;
+import tibero.jdbc.dbconst.DBConst;
+import tibero.jdbc.driver.TbConnection;
+import tibero.jdbc.err.TbError;
+
+import java.sql.SQLData;
+import java.sql.SQLException;
+import java.util.LinkedList;
+
+/**
+ * Binder for struct
+ *
+ * @author Jin, Seonkyun (seonkyun_jin@tmaxdata.com) 2015. 8. 21.
+ * @version $Id: StructOutBinder.java 173938 2020-01-20 03:05:30Z jihun_park $
+ */
+public class StructOutBinder extends Binder {
+    public void bind(TbConnection conn, ParamContainer bpc,
+                     TbStreamDataWriter writer, int rowIndex, int paramIndex,
+                     int length) throws SQLException {
+        DataTypeConverter conv = conn.getTypeConverter();
+        final int STRUCT_META_LENGTH = DataTypeConverter.STRUCT_META_LENGTH;
+
+        BindItem item = bpc.getBindData().getBindItem(paramIndex);
+        TbStruct bindParam = null;
+
+        TbStructDescriptor desc = (TbStructDescriptor) item.getTypeDescriptor();
+
+        String oid = desc.getOID();
+        int tbojID = desc.getTobjID();
+        int versionNo = desc.getVersionNo();
+
+        byte[] byteBuf;
+        int offset = writer.getBufferedDataSize();
+        int convertedLen;
+
+        // prepare buffer
+        writer.makeBufferAvailable(STRUCT_META_LENGTH + 3);
+        byteBuf = writer.getStreamBuf().getRawBytes();
+        byteBuf[offset] = (byte) STRUCT_META_LENGTH;
+        int rpcolLen = 1;
+
+        // write oid
+        convertedLen = conv.fromString(byteBuf, offset + rpcolLen, oid);
+        writer.moveOffset(convertedLen + rpcolLen);
+
+        // write tobjID
+        writer.writeInt(tbojID, 4);
+
+        // write versionNo
+        writer.writeInt(versionNo, 4);
+
+        // write attribute array for in bind parameter only
+        writer.writePadding(STRUCT_META_LENGTH + rpcolLen);
+    }
+
+    public void bind(TbConnection conn, ParamContainer bpc, TbStreamDataWriter writer, int rowIndex, int paramIndex,
+                     int length, boolean pad) throws SQLException {
+        throw TbError.newSQLException(TbError.INTERNAL_DATA_CONVERSION_FAIL);
+    }
+
+    public void bindDFR(TbConnection conn, ParamContainer bpc,
+                        TbStreamDataWriter writer, int rowIndex, int paramIndex,
+                        long length) throws SQLException {
+        throw TbError.newSQLException(TbError.INTERNAL_DATA_CONVERSION_FAIL);
+    }
+}

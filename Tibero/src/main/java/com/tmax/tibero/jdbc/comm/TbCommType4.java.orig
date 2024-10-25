@@ -1,0 +1,3620 @@
+/**
+ * Copyright (c) 2011-, TmaxData, Inc. / Seoul, Republic of Korea
+ * 
+ * This document contains proprietary and confidential information. No
+ * parts of this document or the computer program it embodies may be in
+ * any way copied, duplicated, reproduced, translated into a different
+ * programming language, or distributed to any person, company, or
+ * corporation without the prior written consent of Tibero, Inc.
+ */
+package tibero.jdbc.comm;
+
+import java.io.ByteArrayOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.sql.BatchUpdateException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.Vector;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.Cipher;
+
+import tibero.Debug;
+import tibero.DriverConstants;
+import tibero.jdbc.TbBlob;
+import tibero.jdbc.TbClob;
+import tibero.jdbc.TbClobBase;
+import tibero.jdbc.TbLob;
+import tibero.jdbc.TbNClob;
+import tibero.jdbc.TbSQLInfo;
+import tibero.jdbc.TbSQLInfo2;
+import tibero.jdbc.data.BatchInfo;
+import tibero.jdbc.data.BatchUpdateInfo;
+import tibero.jdbc.data.BindData;
+import tibero.jdbc.data.BindItem;
+import tibero.jdbc.data.ConnectionInfo;
+import tibero.jdbc.data.DataType;
+import tibero.jdbc.data.DataTypeConverter;
+import tibero.jdbc.data.NodeInfo;
+import tibero.jdbc.data.ServerInfo;
+import tibero.jdbc.data.ZoneInfo;
+import tibero.jdbc.data.binder.ArrayInBinder;
+import tibero.jdbc.data.binder.Binder;
+import tibero.jdbc.data.charset.Charset;
+import tibero.jdbc.data.charset.CharsetMetaData;
+import tibero.jdbc.dbconst.DBConst;
+import tibero.jdbc.dpl.TbDirPathMetaData;
+import tibero.jdbc.dpl.TbDirPathStream;
+import tibero.jdbc.driver.TbCallableStatementImpl;
+import tibero.jdbc.driver.TbConnection;
+import tibero.jdbc.driver.TbPreparedStatementImpl;
+import tibero.jdbc.driver.TbResultSet;
+import tibero.jdbc.driver.TbResultSetBase;
+import tibero.jdbc.driver.TbSavepoint;
+import tibero.jdbc.driver.TbStatement;
+import tibero.jdbc.err.TbError;
+import tibero.jdbc.msg.TbClntInfoParam;
+import tibero.jdbc.msg.TbColNameList;
+import tibero.jdbc.msg.TbColumnDesc;
+import tibero.jdbc.msg.TbMsgBatchUpdateReply;
+import tibero.jdbc.msg.TbMsgConnectReply;
+import tibero.jdbc.msg.TbMsgDplLoadStreamReply;
+import tibero.jdbc.msg.TbMsgDplPrepareReply;
+import tibero.jdbc.msg.TbMsgEreply;
+import tibero.jdbc.msg.TbMsgExecuteCallReply;
+import tibero.jdbc.msg.TbMsgExecuteCountReply;
+import tibero.jdbc.msg.TbMsgExecuteNeedDataReply;
+import tibero.jdbc.msg.TbMsgExecutePivotReply;
+import tibero.jdbc.msg.TbMsgExecutePrefetchNoDescReply;
+import tibero.jdbc.msg.TbMsgExecutePrefetchReply;
+import tibero.jdbc.msg.TbMsgExecutePsmPrefetchReply;
+import tibero.jdbc.msg.TbMsgExecutePsmReply;
+import tibero.jdbc.msg.TbMsgExecuteRsetNoDescReply;
+import tibero.jdbc.msg.TbMsgExecuteRsetReply;
+import tibero.jdbc.msg.TbMsgFetchPivotReply;
+import tibero.jdbc.msg.TbMsgFetchReply;
+import tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfoReply;
+import tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfo2Reply;
+import tibero.jdbc.msg.TbMsgLobCloseReply;
+import tibero.jdbc.msg.TbMsgLobCreateTempReply;
+import tibero.jdbc.msg.TbMsgLobInlobReply;
+import tibero.jdbc.msg.TbMsgLobInstrReply;
+import tibero.jdbc.msg.TbMsgLobLengthReply;
+import tibero.jdbc.msg.TbMsgLobOpenReply;
+import tibero.jdbc.msg.TbMsgLobReadReply;
+import tibero.jdbc.msg.TbMsgLobTruncReply;
+import tibero.jdbc.msg.TbMsgLobWriteReply;
+import tibero.jdbc.msg.TbMsgLongReadReply;
+import tibero.jdbc.msg.TbMsgOkReply;
+import tibero.jdbc.msg.TbMsgPrepareReply;
+import tibero.jdbc.msg.TbMsgSend;
+import tibero.jdbc.msg.TbMsgSessInfoReply;
+import tibero.jdbc.msg.TbMsgSesskeyReply;
+import tibero.jdbc.msg.TbNlsParam;
+import tibero.jdbc.msg.TbOutParam;
+import tibero.jdbc.msg.TbPivotInfo;
+import tibero.jdbc.msg.TbPvValType;
+import tibero.jdbc.msg.TbSessAttrDesc;
+import tibero.jdbc.msg.common.TbMsg;
+import tibero.jdbc.util.TbCommon;
+import tibero.jdbc.util.TbSQLTypeScanner;
+
+// #ifdef JDK1.4
+// #endif
+
+
+// #ifdef JDK1.6
+import java.sql.ClientInfoStatus;
+import java.sql.SQLClientInfoException;
+
+// #endif
+
+/**
+ * TbCommType4 class.
+ * JDBC Type 4 Driver - java�� �̿��� ��� module
+ *
+ * @author �̿���, ������, ��Ի�
+ * @version $Id: TbCommType4.java 186284 2020-10-20 09:17:47Z kyungtak_min $
+ */
+public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
+    public TbConnection conn = null;
+    public TbStream stream = null;
+    public DataTypeConverter typeConverter = null;
+    private Cipher rsa = null;
+
+    public TbCommType4() {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbCommType4", null);
+        }
+    }
+
+    public TbCommType4(TbConnection conn) {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbCommType4", new Object[] {
+                conn
+            });
+        }
+
+        this.conn = conn;
+        typeConverter = conn.getTypeConverter();
+    }
+
+    private int[] batchUpdate(TbPreparedStatementImpl stmt,
+                              BatchUpdateInfo batchUpdateInfo, int startIndex,
+                              int endIndex, int flag) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.batchUpdate",
+                            new Object[] {
+                                conn, stmt, Integer.toString(startIndex),
+                                Integer.toString(endIndex),
+                                Integer.toString(flag)
+                            });
+        }
+
+        int paramFlag;
+        int batchMetaOffset;
+        int paramDataOffset;
+        int currentBatchCount = 0;
+        int bindParamCnt = stmt.getParameterCnt();
+        int totalBatchCount = endIndex -
+            startIndex;
+        boolean isFirstBatch = true;
+        byte[][] paramTypes = stmt.getParamTypes();
+        Binder[][] binder = stmt.getBinder();
+        BatchUpdateException exOnBind = null;
+
+        synchronized (stream) {
+            try {
+            	synchronized (stream.getWriteStreamBuffer()) {
+                TbStreamDataWriter writer = stream.getMsgWriter();
+                
+                stream.startWritingPacketData();
+                
+                /* message type */
+                writer.writeInt(DBConst.TBMSG_PREPARE_BATCHUPDATE, 4);
+                
+                /* message body size */
+                writer.writeInt(0, 4);
+                
+                /* write tsn */
+                writer.writeLong(0, 8);
+                
+                /* SQL */
+                writer.writeLenAndDBEncodedPadString(stmt.getOriginalSql());
+                
+                batchMetaOffset = writer.getBufferedDataSize();
+                
+                /* meta info */
+                writer.makeBufferAvailable(20);
+                writer.moveOffset(20);
+                
+                paramDataOffset = writer.getBufferedDataSize();
+                
+                for (int i = startIndex; i < endIndex; i++) {
+                    BindData bindData = batchUpdateInfo.get(i).getBindData();
+                    for (int j = 0; j < binder[i].length; j++) {
+                        paramFlag = DBConst.CS_PARAM_KIND_IN & 0x000000ff;
+                        paramFlag |= (paramTypes[i][j] << 8) & 0xffffff00;
+                        
+                        writer.writeInt(paramFlag, 4);
+                        
+                        binder[i][j].bind(conn, stmt, writer, i, j,
+                                          bindData.getBindItem(j).getLength());
+                    }
+                    
+                    currentBatchCount++;
+                    
+                    if (writer.getBufferedDataSize() > DriverConstants.BATCH_SEND_SIZE) {
+                        batchUpdateFlush(stmt, batchMetaOffset, totalBatchCount,
+                                         currentBatchCount, flag, isFirstBatch);
+                        
+                        isFirstBatch = false;
+                        currentBatchCount = 0;
+                        
+                        writer.setCurDataSize(paramDataOffset);
+                    }
+                }
+                
+                if (isFirstBatch ||
+                        writer.getBufferedDataSize() -
+                        paramDataOffset > 0)
+                    batchUpdateFlush(stmt, batchMetaOffset, totalBatchCount,
+                                     currentBatchCount, flag, isFirstBatch);
+            	}
+            }
+            catch (SQLException se) {
+                int errCode = se.getErrorCode();
+                // check communication error and re-throw. 
+                if (errCode <= TbError.COMM_ERROR &&
+                        errCode > TbError.SVR_BACKEND_ERROR) {
+                    throw se;
+                }
+                exOnBind = new BatchUpdateException(se.getMessage(),
+                                                    se.getSQLState(),
+                                                    se.getErrorCode(),
+                                                    new int[0]);
+                if (isFirstBatch)
+                    throw exOnBind;
+                else
+                    cancelStatement();
+            }
+            catch (Exception e) {
+                SQLException se = TbError
+                        .newSQLException(TbError.MU_FAILED_TO_CONVERT, e);
+
+                exOnBind = new BatchUpdateException(se.getMessage(),
+                                                    se.getSQLState(),
+                                                    se.getErrorCode(),
+                                                    new int[0]);
+                if (isFirstBatch)
+                    throw exOnBind;
+                else
+                    cancelStatement();
+            }
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_BATCH_UPDATE_REPLY:
+                return batchUpdateReply((TbMsgBatchUpdateReply) replyMsg,
+                                        totalBatchCount, bindParamCnt);
+
+            case DBConst.TBMSG_EREPLY:
+                if (exOnBind == null)
+                    throwEreply(TbError.SVR_BATCHUPDATE_FAIL, replyMsg);
+                else
+                    throw exOnBind;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+        return null;
+    }
+
+    private void batchUpdateFlush(TbPreparedStatementImpl stmt, int offset,
+                                  int totalBatchCount, int currentBatchCount,
+                                  int flag, boolean isFirstBatch)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.batchUpdateFlush",
+                            new Object[] {
+                                conn, stmt, Integer.toString(offset),
+                                Integer.toString(totalBatchCount),
+                                Integer.toString(currentBatchCount),
+                                Integer.toString(flag),
+                                new Boolean(isFirstBatch)
+                            });
+        }
+
+        int bindParamCount = stmt.getParameterCnt();
+        TbStreamDataWriter writer = stream.getMsgWriter();
+
+        /* totalArrayCnt */
+        writer.reWriteInt(offset, totalBatchCount, 4);
+
+        /* arrayBindingCnt */
+        writer.reWriteInt(offset + 4, currentBatchCount, 4);
+
+        /* bindParamCnt */
+        writer.reWriteInt(offset + 8, bindParamCount, 4);
+
+        /* flag */
+        if (conn.getAutoCommit())
+            flag |= DBConst.CS_AUTO_COMMIT;
+        if (!isFirstBatch)
+            flag |= DBConst.CS_BATCH_NONFIRST_MSG;
+
+        writer.reWriteInt(offset + 12, flag, 4);
+
+        /* paramInfoArrayCnt */
+        writer.reWriteInt(offset + 16, currentBatchCount *
+            bindParamCount, 4);
+
+        /* rewrite body size */
+        writer.reWriteInt(4, writer.getBufferedDataSize() -
+            DBConst.TBMSG_HDR_SIZE, 4);
+
+        stream.flush();
+    }
+
+    public int[] batchUpdateLoop(TbPreparedStatementImpl stmt,
+                                 BatchUpdateInfo batchUpdateInfo)
+                                         throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.batchUpdateLoop", new Object[] {
+                conn, stmt
+            });
+        }
+
+        int flag = stmt.getBatchFlag();
+        int deferredRowCount = batchUpdateInfo.getDeferredRowCount();
+        int totalBatchRowCount = stmt.getBatchRowCount();
+        int nextExecRowIndex = 0;
+        int updateCntOffset = 0;
+        int[] eachUpdateCnt;
+        int[] totalUpdateCnt = new int[totalBatchRowCount];
+
+        try {
+            if (deferredRowCount == 0) {
+                return batchUpdate(stmt, batchUpdateInfo, 0, totalBatchRowCount,
+                                   flag);
+            }
+            else {
+                for (int k = 0; k < deferredRowCount; k++) {
+                    int deferredRowIndex = batchUpdateInfo
+                            .getDeferredRowIndex(k);
+                    BatchInfo info = batchUpdateInfo.get(deferredRowIndex);
+
+                    if (nextExecRowIndex < deferredRowIndex) {
+                        /* normal batch update */
+                        eachUpdateCnt = batchUpdate(stmt, batchUpdateInfo,
+                                                    nextExecRowIndex,
+                                                    deferredRowIndex, flag);
+
+                        System.arraycopy(eachUpdateCnt, 0, totalUpdateCnt,
+                                         updateCntOffset, eachUpdateCnt.length);
+                        updateCntOffset += eachUpdateCnt.length;
+
+                        nextExecRowIndex = deferredRowIndex;
+                    }
+
+                    /* deferred batch update */
+                    stmt.setBindData(info.getBindData());
+
+                    totalUpdateCnt[updateCntOffset] = prepareExecute(stmt, stmt
+                            .getOriginalSql(), info.getCurrentRowIndex());
+                    updateCntOffset++;
+                    nextExecRowIndex++;
+                }
+
+                if (nextExecRowIndex < totalBatchRowCount) {
+                    /* remain normal batch update */
+                    eachUpdateCnt = batchUpdate(stmt, batchUpdateInfo,
+                                                nextExecRowIndex,
+                                                totalBatchRowCount, flag);
+
+                    System.arraycopy(eachUpdateCnt, 0, totalUpdateCnt,
+                                     updateCntOffset, eachUpdateCnt.length);
+                }
+
+                return totalUpdateCnt;
+            }
+        }
+        catch (BatchUpdateException e) {
+            int updateCntSize = e.getUpdateCounts().length;
+            int[] newUpdateCnt = new int[updateCntOffset + updateCntSize];
+
+            System.arraycopy(totalUpdateCnt, 0, newUpdateCnt, 0,
+                             updateCntOffset);
+            System.arraycopy(e.getUpdateCounts(), 0, newUpdateCnt,
+                             updateCntOffset, updateCntSize);
+
+            // #ifdef JDK1.6
+            throw new BatchUpdateException(e.getMessage(), e.getSQLState(),
+                                           e.getErrorCode(), newUpdateCnt,
+                                           e.getCause());
+//            // #else
+//            throw new BatchUpdateException(e.getMessage(), e.getSQLState(),
+//                    e.getErrorCode(), newUpdateCnt);
+            // #endif
+        }
+        catch (SQLException se) {
+            int errCode = se.getErrorCode();
+            // check communication error and re-throw. 
+            if (errCode <= TbError.COMM_ERROR &&
+                    errCode > TbError.SVR_BACKEND_ERROR) {
+                throw se;
+            }
+            int[] newUpdateCnt = new int[updateCntOffset];
+            System.arraycopy(totalUpdateCnt, 0, newUpdateCnt, 0, updateCntOffset);
+            // #ifdef JDK1.6
+            throw new BatchUpdateException(se.getMessage(), se.getSQLState(),
+                                           se.getErrorCode(), newUpdateCnt, se);
+//            // #else
+//            throw new BatchUpdateException(se.getMessage(), se.getSQLState(),
+//                    se.getErrorCode(), newUpdateCnt);
+            // #endif
+        }
+    }
+
+    private int[] batchUpdateReply(TbMsgBatchUpdateReply replyMsg,
+                                   int batchCnt, int bindParamCnt)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.batchUpdateReply",
+                            new Object[] {
+                                conn,
+                                Integer.toString(batchCnt),
+                                Integer.toString(bindParamCnt),
+                                Integer.toString(replyMsg.executedCnt),
+                                Integer.toString(replyMsg.affectedCnt != null
+                                        ? replyMsg.affectedCnt.length : 0)
+                            });
+        }
+
+        int[] updateCnt = new int[replyMsg.executedCnt];
+
+        if (replyMsg.affectedCnt == null) {
+            /* Uniform INSERT */
+            for (int i = 0; i < replyMsg.executedCnt; i++) {
+                updateCnt[i] = 1;
+            }
+        }
+        else {
+            for (int i = 0; i < replyMsg.executedCnt; i++) {
+                updateCnt[i] = replyMsg.affectedCnt[i].cnt;
+            }
+        }
+
+        /* bindParamCnt <= 0�� ���� DDL�̳� �Ϲ� DML�� ������ ���̹Ƿ� ����ڰ� addBatch()�� ������
+         * Ƚ���� ������ ����� Ƚ���� �ٸ� �� �ִ�. �׷���, batchCnt�� executedCnt�� �ٸ� ���� �κ������θ�
+         * ����� ���̹Ƿ� ������ �߻���Ų��. */
+        if (bindParamCnt > 0 &&
+            batchCnt != replyMsg.executedCnt) {
+            SQLException e = replyMsg
+                    .getException(TbError.SVR_BATCHUPDATE_FAIL);
+
+            // #ifdef JDK1.6
+            throw new BatchUpdateException(e.getMessage(), e.getSQLState(),
+                                           e.getErrorCode(), updateCnt, e);
+//            // #else
+//            throw new BatchUpdateException(e.getMessage(), e.getSQLState(),
+//                    e.getErrorCode(), updateCnt);
+            // #endif
+        }
+
+        return updateCnt;
+    }
+
+    public void cancel() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.cancel", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.CANCEL(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_CANCEL_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void cancelStatement() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.cancelStatement", new Object[] {
+                conn
+            });
+        }
+
+        TbMsgSend
+                .STMTCANCEL(stream, conn.getSessionId(), conn.getSerialNo(), 0);
+    }
+
+    public void close() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.close", new Object[] {
+                conn
+            });
+        }
+
+        // close socket
+        reset();
+    }
+
+    public boolean close(TbLob lob) throws SQLException {
+        return lobClose(lob);
+    }
+
+    public void closeCursor(TbResultSet rs, int cursorId) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.closeCursor", new Object[] {
+                conn, Integer.toString(cursorId)
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.CLOSE_CSR(stream, cursorId);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_CLOSE_CURSOR_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void closeSession() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.closeSession", new Object[] {
+                conn
+            });
+        }
+
+        int autoCommit = conn.getAutoCommit() ? DBConst.CS_AUTO_COMMIT : 0;
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.CLOSE_SESS(stream, autoCommit);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_CLOSE_SESSION_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void commit() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.commit", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.COMMIT(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_COMMIT_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void createStream() throws SQLException {
+        if (Debug.TRACE)
+            Debug.logMethod("TbComm.createStream", new Object[] {
+                conn
+            });
+
+        String address = null;
+
+        if (conn.info.isInternal()) {
+            /* Internal connection for java external procedure */
+            Socket socket = TbSocketRegistry.getSocket();
+
+            if (socket == null)
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_COMM_ERROR_INTERNAL_SOCKET);
+
+            address = "server internally";
+
+            if (stream != null) {
+                synchronized (stream) {
+                    stream = new TbStream(conn, socket, typeConverter,
+                            conn.info);
+                }
+            }
+            else {
+                stream = new TbStream(conn, socket, typeConverter, conn.info);
+            }
+        }
+        else {
+            NodeInfo node = conn.info.getClusterNode();
+            if (node == null)
+                throw TbError
+                        .newSQLException(TbError.INTERNAL_COMM_ERROR_NODES_EMPTY);
+
+            while (true) {
+                address = node.getAddress() +
+                    ":" + node.getPort();
+
+                if (stream != null) {
+                    synchronized (stream) {
+                        try {
+                            stream = new TbStream(conn, node.getAddress(),
+                                    node.getPort(), typeConverter, conn.info);
+                            break;
+                        }
+                        catch (SQLException e) {
+                            if (Debug.TRACE)
+                                Debug.log("TbComm.createStream (FAILED TO CONNECT " +
+                                    address + ")");
+
+                            stream = null;
+                            node = conn.info.getSecondaryNode();
+                            if (node == null)
+                                throw e;
+                        }
+                    }
+                }
+                else {
+                    try {
+                        stream = new TbStream(conn, node.getAddress(),
+                                node.getPort(), typeConverter, conn.info);
+                        break;
+                    }
+                    catch (SQLException e) {
+                        if (Debug.TRACE)
+                            Debug.log("TbComm.createStream (FAILED TO CONNECT " +
+                                address + ")");
+
+                        stream = null;
+                        node = conn.info.getSecondaryNode();
+                        if (node == null)
+                            throw e;
+                    }
+                }
+            }
+            node = null;
+        }
+
+        if (Debug.TRACE)
+            Debug.log("TbComm.createStream (CONNECTED TO " +
+                address + ")");
+    }
+
+    public byte[] createTemporaryBlob() throws SQLException {
+        return lobCreateTemporary(DataType.BLOB);
+    }
+
+    public byte[] createTemporaryClob() throws SQLException {
+        return lobCreateTemporary(DataType.CLOB);
+    }
+
+    public byte[] createTemporaryNClob() throws SQLException {
+        return lobCreateTemporary(DataType.NCLOB);
+    }
+
+    public void describeConnectInfo() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.descConnectInfo", new String[] {
+                "Connection"
+            }, new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DESCRIBE_CONNECT_INFO(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_CONNECT_REPLY:
+                logonConnectReply((TbMsgConnectReply) replyMsg, false);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_AUTHENTICATION_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void describeSessInfo() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.descSessInfo", new String[] {
+                "Connection"
+            }, new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DESCRIBE_SESS_INFO(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_SESS_INFO_REPLY:
+                logonSessInfoReply((TbMsgSessInfoReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_AUTHENTICATION_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void dirPathAbort() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathAbort", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_ABORT(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_ABORT, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void dirPathDataSave(int action) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathDataSave", new Object[] {
+                conn, new Integer(action)
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_DATASAVE(stream, action);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_DATASAVE, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void dirPathFinish() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathFinish", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_FINISH(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_FINISH, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void dirPathFlushRow() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathFinish", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_FLUSH_ROW(stream);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_FLUSH_ROW, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void dirPathLoadStream(TbDirPathStream dirPathStream,
+                                  TbStreamDataWriter writer, int partialFlag)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathLoadStream", new Object[] {
+                conn, Integer.toString(partialFlag)
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            try {
+                /* write msg Type */
+                writer.reWriteInt(0, DBConst.TBMSG_DPL_LOAD_STREAM, 4);
+
+                /* write tsn */
+                writer.reWriteLong(8, 0, 8);
+
+                /* write partial Flag */
+                writer.reWriteInt(16, partialFlag, 4);
+
+                /* write data length */
+                writer.reWriteInt(20, writer.getBufferedDataSize() -
+                    TbDirPathStream.DPL_PARAM_INFO_OFFSET, 4);
+
+                writer.putPadding(4);
+
+                /* write msg body size */
+                writer.reWriteInt(4, writer.getBufferedDataSize() -
+                    DBConst.TBMSG_HDR_SIZE, 4);
+
+                stream.flush(writer);
+            }
+            finally {
+                /* clear Stream Buffer */
+                writer.clearDPLBuffer();
+            }
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_DPL_LOAD_STREAM_REPLY:
+                TbMsgDplLoadStreamReply loadStreamReply = (TbMsgDplLoadStreamReply) replyMsg;
+
+                int rowCnt = loadStreamReply.rowCnt;
+                int returnCode = loadStreamReply.returnCode;
+
+                /* setting rowCnt and returnCode */
+                dirPathStream.addRowCnt(rowCnt);
+                dirPathStream.addTotalRowCnt(rowCnt);
+                dirPathStream.setReturnCode(returnCode);
+
+                if (returnCode == TbDirPathStream.DPL_LOAD_STREAM_FAIL)
+                    throw loadStreamReply
+                            .getException(TbError.SVR_DPL_LOADSTREAM);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_LOADSTREAM, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    /**
+     * prepare Direct path Load
+     *
+     * @return TbSQLInfo
+     * @exception SQLException
+     *                if a database access error occurs
+     */
+    public void dirPathPrepare(TbDirPathStream dplStream) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.prepareDirPathLoad", new Object[] {
+                conn, dplStream
+            });
+        }
+
+        TbDirPathMetaData dplMeta = dplStream.getDPLMetaData();
+
+        int columnCnt = dplMeta.getColumnCnt();
+        TbColNameList[] colNameList = new TbColNameList[columnCnt];
+
+        for (int i = 0; i < columnCnt; i++) {
+            colNameList[i] = new TbColNameList();
+
+            colNameList[i].set(dplMeta.getColumn(i + 1));
+        }
+
+        int logFlag = (dplMeta.getLogFlag() == TbDirPathMetaData.LOG) ? 1 : 0;
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_PREPARE(stream, logFlag, dplMeta.getSchema(),
+                                  dplMeta.getTable(), columnCnt, colNameList);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_DPL_PREPARE_REPLY:
+                if (columnCnt != ((TbMsgDplPrepareReply) replyMsg).colMeta.length)
+                    throw TbError
+                            .newSQLException(TbError.SVR_DPL_COLUMN_CNT_MISMATCH);
+
+                TbColumnDesc[] metas = ((TbMsgDplPrepareReply) replyMsg).colMeta;
+
+                dplStream.getDPLMetaData().setColumnMetas(metas);
+                return;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_PREPARE, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    /**
+     * prepare Parallel Direct path Load
+     *
+     * @return TbSQLInfo
+     * @exception SQLException
+     *                if a database access error occurs
+     */
+    public void dirPathPrepareParallel(TbDirPathStream dplStream)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.dirPathPrepareParallel", new Object[] {
+                conn, dplStream
+            });
+        }
+
+        TbDirPathMetaData dplMeta = dplStream.getDPLMetaData();
+
+        int columnCnt = dplMeta.getColumnCnt();
+        TbColNameList[] colNameList = new TbColNameList[columnCnt];
+
+        for (int i = 0; i < columnCnt; i++) {
+            colNameList[i] = new TbColNameList();
+
+            colNameList[i].set(dplMeta.getColumn(i + 1));
+        }
+
+        int logFlag = (dplMeta.getLogFlag() == TbDirPathMetaData.LOG) ? 1 : 0;
+        int parallelFlag = (dplMeta.getParallelFlag() == TbDirPathMetaData.PARALLEL)
+                ? 1 : 0;
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.DPL_PREPARE_PARALLEL(stream, logFlag, parallelFlag,
+                                           dplMeta.getSchema(),
+                                           dplMeta.getTable(),
+                                           dplMeta.getPartition(), columnCnt,
+                                           colNameList);
+
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_DPL_PREPARE_REPLY:
+                if (columnCnt != ((TbMsgDplPrepareReply) replyMsg).colMeta.length)
+                    throw TbError
+                            .newSQLException(TbError.SVR_DPL_COLUMN_CNT_MISMATCH);
+
+                TbColumnDesc[] metas = ((TbMsgDplPrepareReply) replyMsg).colMeta;
+
+                dplStream.getDPLMetaData().setColumnMetas(metas);
+                return;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_DPL_PREPARE, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    /**
+     * execute protocol ResultSet: true, updateCount -1 update count: false,
+     * updateCount result set�� ������: false, updateCount -1
+     */
+    public int execute(TbPreparedStatementImpl stmt, String sql, int rowIndex)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.execute", new Object[] {
+                conn, stmt
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            processExecute(stmt, sql, rowIndex, true);
+
+            replyMsg = stream.readMsg();
+
+            while (true) {
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_OK_REPLY:
+                    justOKReply((TbMsgOkReply) replyMsg);
+                    return TbSQLTypeScanner.isPSMStmt(stmt.getSqlType()) ? 1
+                            : 0;
+
+                case DBConst.TBMSG_SESS_INFO_REPLY:
+                    executeSessInfoReply((TbMsgSessInfoReply) replyMsg);
+                    return 0;
+
+                case DBConst.TBMSG_EXECUTE_PREFETCH_NO_DESC_REPLY:
+                    return executePrefetchNoDescReply(stmt,
+                                                      (TbMsgExecutePrefetchNoDescReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_COUNT_REPLY:
+                    return executeCountReply(stmt,
+                                             (TbMsgExecuteCountReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_RSET_REPLY:
+                    return executeRsetReply(stmt,
+                                            (TbMsgExecuteRsetReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_RSET_NO_DESC_REPLY:
+                    return executeRsetNoDescReply(stmt,
+                                                  (TbMsgExecuteRsetNoDescReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_NEED_DATA_REPLY:
+                    return executeNeedDataReply(replyMsg, stmt, rowIndex);
+
+                case DBConst.TBMSG_EXECUTE_PSM_REPLY:
+                    TbMsgExecutePsmReply psmReply = (TbMsgExecutePsmReply) replyMsg;
+
+                    return executeCallReply(stmt, rowIndex, psmReply.paramData);
+
+                case DBConst.TBMSG_EXECUTE_PIVOT_REPLY:
+                    replyMsg = executePivotReply(stmt,
+                                                 (TbMsgExecutePivotReply) replyMsg);
+                    break;
+
+                case DBConst.TBMSG_EXECUTE_PSM_PREFETCH_REPLY:
+                    TbMsgExecutePsmPrefetchReply psmPrefetchMsg = (TbMsgExecutePsmPrefetchReply) replyMsg;
+                    stmt.buildColMetaArray(psmPrefetchMsg.colCnt,
+                                           psmPrefetchMsg.hiddenColCnt,
+                                           psmPrefetchMsg.colMeta);
+
+                    if (!(stmt instanceof TbCallableStatementImpl))
+                        return 1;
+
+                    return executePsmPrefetchReply((TbCallableStatementImpl) stmt,
+                                                   rowIndex, psmPrefetchMsg);
+
+                case DBConst.TBMSG_EREPLY:
+                    return executeEreply(stmt, sql, replyMsg, rowIndex);
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+    }
+
+    private int executeCallReply(TbPreparedStatementImpl pstmt, int rowIndex,
+                                 TbOutParam[] paramData) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeCallReply", new Object[] {
+                conn, pstmt, Integer.toString(rowIndex)
+            });
+        }
+
+        int index = -1;
+        int colCnt = paramData == null ? 0 : paramData.length;
+        BindData bindData = pstmt.getBindData();
+        int bindCnt = pstmt.getParameterCnt();
+
+        if (bindData.getOutParameterCnt() != colCnt)
+            throw TbError.newSQLException(TbError.MU_OUT_PARAMETER_MISMATCH);
+
+        if (paramData == null ||
+            !(pstmt instanceof TbCallableStatementImpl))
+            return 1;
+
+        TbCallableStatementImpl cstmt = (TbCallableStatementImpl) pstmt;
+
+        for (int i = 0; i < colCnt; i++) {
+            for (index++; (index < bindCnt) &&
+                !bindData.isOutParameterOn(index); index++) {}
+
+            if (index >= bindCnt)
+                throw TbError
+                        .newSQLException(TbError.MU_OUT_PARAMETER_MISMATCH);
+
+            BindItem bindItem = bindData.getBindItem(index);
+            BindItem outItem = cstmt.getOutItems(index);
+
+            outItem.set(bindItem.getSQLType(), paramData[i].value.length,
+                        paramData[i].colMeta, null);
+
+            cstmt.setOutParam(index, paramData[i].dataType, paramData[i].value,
+                              null);
+        }
+
+        return 1;
+    }
+
+    private int executePsmPrefetchReply(TbCallableStatementImpl cstmt,
+                                        int rowIndex,
+                                        TbMsgExecutePsmPrefetchReply reply)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePsmPrefetchReply", new Object[] {
+                conn, cstmt, Integer.toString(rowIndex)
+            });
+        }
+
+        TbOutParam[] paramData = reply.paramData;
+
+        int index = -1;
+        int colCnt = paramData == null ? 0 : paramData.length;
+        BindData bindData = cstmt.getBindData();
+        int bindCnt = cstmt.getParameterCnt();
+
+        if (bindData.getOutParameterCnt() != colCnt)
+            throw TbError.newSQLException(TbError.MU_OUT_PARAMETER_MISMATCH);
+
+        if (paramData == null)
+            return 1;
+
+        /* ��Ʈ�� ���ۿ� �����ִ� rowchunk�� �̸� ó���Ѵ�. */
+        TbResultSet prefetchedRs = processPrefetchedRset(cstmt, reply.colCnt,
+                                                         reply.hiddenColCnt,
+                                                         reply.csrId,
+                                                         reply.colMeta,
+                                                         reply.rowChunkSize,
+                                                         reply.rowCnt,
+                                                         reply.isFetchCompleted,
+                                                         reply.getTsn());
+
+        for (int i = 0; i < colCnt; i++) {
+            for (index++; (index < bindCnt) &&
+                          !bindData.isOutParameterOn(index); index++) {}
+
+            if (index >= bindCnt)
+                throw TbError
+                        .newSQLException(TbError.MU_OUT_PARAMETER_MISMATCH);
+
+            BindItem bindItem = bindData.getBindItem(index);
+            BindItem outItem = cstmt.getOutItems(index);
+
+            outItem.set(bindItem.getSQLType(), paramData[i].value.length,
+                        paramData[i].colMeta, null);
+
+            /* CURSOR�� �������ΰ�� ���� �� index�� REF CURSOR�� Prefetch ����̴�. */
+            if (prefetchedRs != null &&
+                    paramData[i].dataType == DataType.CURSOR) {
+                cstmt.setOutParam(index, paramData[i].dataType,
+                                  paramData[i].value, prefetchedRs);
+                prefetchedRs = null;
+
+                // prefetch case�� ���� ������ �������� pivot ������ paramIndex�� �����ش�.
+                cstmt.setPivotInfo(index, cstmt.getPivotInfo());
+                Vector
+                // #ifdef JDK1.5
+                <byte[]>
+                // #endif
+                prefetchedPvData = cstmt.getPivotData();
+                if (prefetchedPvData != null) {
+                    Iterator
+                    // #ifdef JDK1.5
+                    <byte[]>
+                    // #endif
+                    iter = prefetchedPvData.iterator();
+                    while (iter.hasNext()) {
+                        byte[] pvData = (byte[]) iter.next();
+                        cstmt.addPivotData(index, pvData);
+                    }
+                }
+            }
+            else {
+                cstmt.setOutParam(index, paramData[i].dataType,
+                                  paramData[i].value, null);
+            }
+        }
+
+        return 1;
+    }
+
+    private int
+            executeCountReply(TbStatement stmt, TbMsgExecuteCountReply reply)
+                    throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeCountReply", new Object[] {
+                conn, stmt, reply
+            });
+        }
+
+        // ����!! count�� long(64)��.
+        long updateCount = (0xffffffff00000000L & ((long) reply.cntHigh << 32)) +
+            (0xffffffffL & (long) reply.cntLow);
+
+        return (int) updateCount;
+    }
+
+    public int executeDirect(TbStatement stmt, final String sql)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeDirect", new Object[] {
+                conn, stmt
+            });
+        }
+
+        int autoCommit = conn.getAutoCommit() ? DBConst.CS_AUTO_COMMIT : 0;
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.EXECDIR(stream, autoCommit, stmt.getPreFetchSize(), sql);
+
+            replyMsg = stream.readMsg();
+
+            while (true) {
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_OK_REPLY:
+                    justOKReply((TbMsgOkReply) replyMsg);
+                    return TbSQLTypeScanner.isPSMStmt(stmt.getSqlType()) ? 1
+                            : 0;
+
+                case DBConst.TBMSG_SESS_INFO_REPLY:
+                    executeSessInfoReply((TbMsgSessInfoReply) replyMsg);
+                    return 0;
+
+                case DBConst.TBMSG_EXECUTE_COUNT_REPLY:
+                    return executeCountReply(stmt,
+                                             (TbMsgExecuteCountReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_RSET_REPLY:
+                    return executeRsetReply(stmt,
+                                            (TbMsgExecuteRsetReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_CALL_REPLY:
+                case DBConst.TBMSG_EXECUTE_PSM_REPLY:
+                    return 1;
+
+                case DBConst.TBMSG_EXECUTE_PREFETCH_REPLY:
+                    return executePrefetchReply(stmt,
+                                                (TbMsgExecutePrefetchReply) replyMsg);
+
+                case DBConst.TBMSG_EXECUTE_PIVOT_REPLY:
+                    replyMsg = executePivotReply(stmt,
+                                                 (TbMsgExecutePivotReply) replyMsg);
+                    break;
+
+                case DBConst.TBMSG_EREPLY:
+                    return executeDirectEreply(stmt, sql, replyMsg);
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+    }
+
+    private int executeDirectEreply(TbStatement stmt, String sql, TbMsg reply)
+            throws SQLException {
+        SQLException ex = getErrorMessage(TbError.SVR_EXECUTE_FAIL, reply);
+
+        if (ex.getErrorCode() == DBConst.ERROR_CLIMSG_INVAL_PPID) {
+            if (Debug.TRACE) {
+                Debug.log("TbComm.executeDirectEreply (INVALID_PPID_DETECTED)");
+            }
+
+            return executeDirect(stmt, sql);
+        }
+        else {
+            throw ex;
+        }
+    }
+
+    private int executeEreply(TbPreparedStatementImpl stmt, String sql,
+                              TbMsg reply, int rowIndex) throws SQLException {
+        SQLException ex = getErrorMessage(TbError.SVR_EXECUTE_FAIL, reply);
+
+        if (ex.getErrorCode() == DBConst.ERROR_CLIMSG_INVAL_PPID) {
+            if (Debug.TRACE) {
+                Debug.log("TbComm.executeEreply (INVALID_PPID_DETECTED)");
+            }
+
+            stmt.setPPID(null);
+            stmt.buildColMetaArray(0, 0, null);
+
+            return prepareExecute(stmt, sql, rowIndex);
+        }
+        else {
+            throw ex;
+        }
+    }
+
+    private int executeNeedDataReply(TbMsg reply, TbPreparedStatementImpl stmt,
+                                     int rowIndex) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeNeedDataReply", new Object[] {
+                conn, stmt
+            });
+        }
+
+        BindData bindData = stmt.getBindData();
+        Binder[][] binder = stmt.getBinder();
+        BindItem item;
+        TbMsg msg = reply;
+        int csrId = stmt.getCurCsrId();
+        int deferredParamCnt = bindData.getDFRParameterCnt();
+
+        TbStreamDataWriter writer = stream.getMsgWriter();
+
+        while (true) {
+            /* parameter �ϳ��� �����͸� ������ ���� */
+            int paramIndex = ((TbMsgExecuteNeedDataReply) msg).paramIndex;
+
+            item = bindData.getBindItem(paramIndex);
+
+            if (!(binder[rowIndex][paramIndex] instanceof ArrayInBinder)) {
+                if (item.getParamMode() != DBConst.CS_PARAM_KIND_DEFERRED)
+                    throw TbError
+                            .newSQLException(TbError.INTERNAL_INVALID_DEFERRED_PARAM,
+                                    item.toString());
+            }
+            stream.startWritingPacketData();
+            writer.writeInt(DBConst.TBMSG_PUT_DATA, 4);
+            writer.writeInt(0, 4);
+            writer.writeLong(0, 8);
+
+            writer.writeInt(paramIndex, 4);
+            writer.writeInt(csrId, 4);
+
+            binder[rowIndex][paramIndex].bindDFR(conn, stmt, writer, rowIndex,
+                                                 paramIndex, item.getLength());
+
+            /* �� �÷��� ���� PUT_DATA ����(SEND NULL)�� ������ */
+            TbMsgSend.PUT_DATA(stream, paramIndex, csrId, new byte[0], 0);
+
+            msg = stream.readMsg();
+
+            if (msg.getMsgType() == DBConst.TBMSG_EXECUTE_NEED_DATA_REPLY)
+                stmt.setCurCsrId(((TbMsgExecuteNeedDataReply) msg).csrId);
+            else if (msg.getMsgType() == DBConst.TBMSG_EREPLY)
+                throwEreply(TbError.SVR_EXECUTE_FAIL, msg);
+            else
+                break;
+
+            deferredParamCnt--;
+        }
+
+        switch (msg.getMsgType()) {
+        case DBConst.TBMSG_EXECUTE_CALL_REPLY:
+            TbMsgExecuteCallReply callMsg = (TbMsgExecuteCallReply) msg;
+
+            return executeCallReply(stmt, rowIndex, callMsg.paramData);
+
+        case DBConst.TBMSG_EXECUTE_COUNT_REPLY:
+            return executeCountReply(stmt, (TbMsgExecuteCountReply) msg);
+
+        case DBConst.TBMSG_OK_REPLY:
+            justOKReply((TbMsgOkReply) msg);
+            return TbSQLTypeScanner.isPSMStmt(stmt.getSqlType()) ? 1 : 0;
+
+        case DBConst.TBMSG_EXECUTE_RSET_REPLY:
+            return executeRsetReply(stmt, (TbMsgExecuteRsetReply) msg);
+
+        case DBConst.TBMSG_EXECUTE_PREFETCH_REPLY:
+            TbMsgExecutePrefetchReply prefetchMsg = (TbMsgExecutePrefetchReply) msg;
+            stmt.setPPID(prefetchMsg.ppid);
+            stmt.buildColMetaArray(prefetchMsg.colCnt,
+                                   prefetchMsg.hiddenColCnt,
+                                   prefetchMsg.colMeta);
+            return executePrefetchReply(stmt, prefetchMsg);
+
+        case DBConst.TBMSG_EXECUTE_PREFETCH_NO_DESC_REPLY:
+            return executePrefetchNoDescReply(stmt,
+                                              (TbMsgExecutePrefetchNoDescReply) msg);
+        case DBConst.TBMSG_EXECUTE_PSM_REPLY:
+                        TbMsgExecutePsmReply psmMsg = (TbMsgExecutePsmReply) msg;
+            return executeCallReply(stmt, rowIndex, psmMsg.paramData);
+
+        default:
+            throwProtocolError(msg.getMsgType());
+        }
+
+        return 0;
+    }
+
+    public void executePivot(TbCallableStatementImpl cstmt, int paramIdx,
+                              int csrId) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePivot", new Object[] {
+                    conn, cstmt, Integer.toString(paramIdx),
+                    Integer.toString(csrId)
+            });
+        }
+        TbMsgSend.EXECUTE_PIVOT(stream, csrId);
+
+        TbMsg replyMsg = stream.readMsg();
+
+        switch (replyMsg.getMsgType()) {
+        case DBConst.TBMSG_EXECUTE_PIVOT_REPLY:
+            executePivotReply(cstmt, paramIdx, (TbMsgExecutePivotReply) replyMsg);
+            break;
+
+        case DBConst.TBMSG_EREPLY:
+            throwEreply(TbError.SVR_FETCH_FAIL, replyMsg);
+        }
+    }
+
+    private void executePivotReply(TbCallableStatementImpl cstmt,
+                                   int paramIdx,
+                                   TbMsgExecutePivotReply exPvReply)
+                                           throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePivotReply", new Object[] {
+                    conn, cstmt, Integer.toString(paramIdx)
+            });
+        }
+
+        TbPivotInfo pivotInfo[] = new TbPivotInfo[exPvReply.pivotInfo.length];
+
+        for (int i = 0; i < exPvReply.pivotInfo.length; i++) {
+            pivotInfo[i] = new TbPivotInfo();
+
+            pivotInfo[i].colIdx = exPvReply.pivotInfo[i].colIdx;
+            pivotInfo[i].chunkCnt = exPvReply.pivotInfo[i].chunkCnt;
+
+            if (exPvReply.pivotInfo[i].valType == null)
+                continue;
+
+            pivotInfo[i].valType = new TbPvValType[exPvReply.pivotInfo[i].valType.length];
+
+            for (int j = 0; j < exPvReply.pivotInfo[i].valType.length; j++) {
+                pivotInfo[i].valType[j] = new TbPvValType();
+                pivotInfo[i].valType[j].type = exPvReply.pivotInfo[i].valType[j].type;
+            }
+        }
+
+        cstmt.setPivotInfo(paramIdx, pivotInfo);
+        cstmt.addPivotData(paramIdx, exPvReply.chunk);
+
+        do {
+            TbMsgSend.FETCH_PIVOT(stream);
+            TbMsg reply = stream.readMsg();
+
+            switch (reply.getMsgType()) {
+            case DBConst.TBMSG_FETCH_PIVOT_REPLY:
+                TbMsgFetchPivotReply fetchPvReply = (TbMsgFetchPivotReply) reply;
+                if (fetchPvReply.chunkLen <= 0)
+                    return;
+
+                cstmt.addPivotData(paramIdx, fetchPvReply.chunk);
+                break;
+            case DBConst.TBMSG_OK_REPLY:
+                return;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_FETCH_FAIL, reply);
+
+            default:
+                throwProtocolError(reply.getMsgType());
+            }
+        }
+        while (true);
+    }
+
+    private TbMsg executePivotReply(TbStatement stmt,
+                                    TbMsgExecutePivotReply reply)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePivotReply", new Object[] {
+                conn, stmt, reply
+            });
+        }
+
+        TbPivotInfo pivotInfo[] = new TbPivotInfo[reply.pivotInfo.length];
+
+        for (int i = 0; i < reply.pivotInfo.length; i++) {
+            pivotInfo[i] = new TbPivotInfo();
+
+            pivotInfo[i].colIdx = reply.pivotInfo[i].colIdx;
+            pivotInfo[i].chunkCnt = reply.pivotInfo[i].chunkCnt;
+
+            if (reply.pivotInfo[i].valType == null)
+                continue;
+
+            pivotInfo[i].valType = new TbPvValType[reply.pivotInfo[i].valType.length];
+
+            for (int j = 0; j < reply.pivotInfo[i].valType.length; j++) {
+                pivotInfo[i].valType[j] = new TbPvValType();
+                pivotInfo[i].valType[j].type = reply.pivotInfo[i].valType[j].type;
+            }
+
+        }
+
+        stmt.setPivotInfo(pivotInfo);
+        stmt.addPivotData(reply.chunk);
+
+        do {
+            TbMsgSend.FETCH_PIVOT(stream);
+
+            TbMsg fetchReply = stream.readMsg();
+
+            switch (fetchReply.getMsgType()) {
+            case DBConst.TBMSG_FETCH_PIVOT_REPLY:
+                stmt.addPivotData(((TbMsgFetchPivotReply) fetchReply).chunk);
+                break;
+
+            default:
+                return fetchReply;
+            }
+        }
+        while (true);
+    }
+
+    private int
+            executePrefetchNoDescReply(TbPreparedStatementImpl stmt,
+                                       TbMsgExecutePrefetchNoDescReply reply)
+                    throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePrefetchNoDescReply", new Object[] {
+                conn, stmt, Integer.toString(reply.csrId)
+            });
+        }
+
+        TbResultSet rs = processPrefetchedRset(stmt, stmt.getOutColCnt(),
+                                               stmt.getHiddenColCnt(),
+                                               reply.csrId,
+                                               stmt.getColMetaArray(),
+                                               reply.rowChunkSize, reply.rowCnt,
+                                               reply.isFetchCompleted,
+                                               reply.getTsn());
+
+        stmt.setResultSet(rs);
+
+        return (int) rs.getUpdateCount();
+    }
+
+    private int executePrefetchReply(TbStatement stmt,
+                                     TbMsgExecutePrefetchReply reply)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executePrefetchReply", new Object[] {
+                conn, stmt, reply
+            });
+        }
+
+        TbResultSet rs = processPrefetchedRset(stmt, reply.colCnt,
+                                               reply.hiddenColCnt, reply.csrId,
+                                               reply.colMeta,
+                                               reply.rowChunkSize, reply.rowCnt,
+                                               reply.isFetchCompleted,
+                                               reply.getTsn());
+
+        stmt.setResultSet(rs);
+
+        return (int) rs.getUpdateCount();
+    }
+
+    private int executeRsetNoDescReply(TbPreparedStatementImpl stmt,
+                                       TbMsgExecuteRsetNoDescReply reply)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeRsetNoDescReply", new Object[] {
+                conn, stmt
+            });
+        }
+
+        TbResultSet rs = typeConverter
+                .toResultSet(stmt.getOutColCnt(), stmt.getHiddenColCnt(),
+                             reply.csrId, stmt.getColMetaArray(), stmt, null);
+
+        rs.setTsn(reply.getTsn());
+        stmt.setResultSet(rs);
+
+        return (int) rs.getUpdateCount();
+    }
+
+    private int executeRsetReply(TbStatement stmt, TbMsgExecuteRsetReply reply)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeRsetReply", new Object[] {
+                conn, stmt, reply
+            });
+        }
+
+        TbResultSet rs = typeConverter
+                .toResultSet(reply.colCnt, reply.hiddenColCnt, reply.csrId,
+                             reply.colMeta, stmt, null);
+
+        rs.setTsn(reply.getTsn());
+        stmt.setResultSet(rs);
+
+        return (int) reply.affectedCnt;
+    }
+
+    private void executeSessInfoReply(TbMsgSessInfoReply msg) {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.executeSessInfoReply", new Object[] {
+                conn, msg
+            });
+            StringBuffer sb = new StringBuffer(128);
+            sb.append("nlsData[");
+            if (msg.nlsData != null) {
+                int i = 0;
+                for (; i < msg.nlsData.length; i++) {
+                    sb.append(msg.nlsData[i].nlsParamId).append("=")
+                            .append(msg.nlsData[i].nlsParamVal).append("/");
+                }
+                if (i > 0) {
+                    sb.setLength(sb.length() - 1);
+                }
+            }
+            else {
+                sb.append("null");
+            }
+            sb.append("]");
+            Debug.log(sb.toString());
+        }
+
+        conn.setSessionId(msg.sessionId);
+        conn.setSerialNo(msg.serialNo);
+        conn.setNLSDate(msg.nlsData[DBConst.TB_NLS_PARAM_DATE_FORMAT].nlsParamVal);
+        conn.setNLSTimestamp(msg.nlsData[DBConst.TB_NLS_PARAM_TIMESTAMP_FORMAT].nlsParamVal);
+        conn.setNLSCalandar(msg.nlsData[DBConst.TB_NLS_PARAM_DATE_CAL].nlsParamVal);
+    }
+
+    public void fetch(TbStatement stmt, TbResultSetBase rs) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.fetch", new Object[] {
+                conn, stmt
+            });
+        }
+
+        synchronized (stream) {
+            int preparedFetchedSize = rs.getFetchSize();
+            int preparedFetchCnt = rs.getPreparedFetchCnt();
+            if (preparedFetchCnt <= 0) {
+                TbMsgSend.FETCH(stream, rs.getCursorId(), preparedFetchedSize);
+                preparedFetchCnt = preparedFetchedSize *
+                    (-1);
+            }
+
+            TbMsg msg = stream.readMsg();
+
+            switch (msg.getMsgType()) {
+            case DBConst.TBMSG_FETCH_REPLY:
+                fetchReply(stmt, (TbMsgFetchReply) msg, rs);
+                preparedFetchCnt--;
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                /* INVALID_PPID�� ��� ����ڿ��� server�� internal�� ������� �Ǵ��� ������ �־� ������
+                 * ���� INVALID_CURSOR_STATE�� message�� �ٲ��ش�. ��� ���� ��������� �𸣰���. */
+                SQLException ex = getErrorMessage(TbError.SVR_FETCH_FAIL, msg);
+                String sqlState = ex.getSQLState();
+
+                if (ex.getErrorCode() == DBConst.ERROR_CLIMSG_INVAL_PPID) {
+                    ((TbMsgEreply) msg).changeRootException(new SQLException(
+                            TbError.getMsg(DBConst.ERROR_INVALID_CURSOR_STATE),
+                            sqlState, DBConst.ERROR_INVALID_CURSOR_STATE));
+                }
+
+                throwEreply(TbError.SVR_FETCH_FAIL, msg);
+                break;
+
+            default:
+                throwProtocolError(msg.getMsgType());
+            }
+
+            rs.setPreparedFetchCnt(preparedFetchCnt);
+        }
+    }
+
+    private void fetchReply(TbStatement stmt, TbMsgFetchReply reply,
+                            TbResultSetBase rs) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.fetchReply", new Object[] {
+                conn, stmt, reply, rs
+            });
+        }
+
+        byte[] buf = rs.getRowChunk(reply.rowChunkSize);
+        stream.readChunkData(buf, reply.rowChunkSize);
+        rs.setFetchCompleted(reply.isFetchCompleted);
+        rs.setTsn(reply.getTsn());
+        rs.buildRowTable(reply.rowCnt, buf);
+    }
+
+    public void freeTemporary(TbLob lob) throws SQLException {
+        lobFreeTemporary(lob);
+    }
+
+    public TbResultSet describeCSRReply(TbStatement stmt, int csrId)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.getColumnDescribes", new Object[] {
+                conn, stmt, Integer.toString(csrId)
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.DESCRIBE_CSR(stream, csrId);
+
+            TbMsg msg = stream.readMsg();
+
+            switch (msg.getMsgType()) {
+            case DBConst.TBMSG_EXECUTE_PREFETCH_REPLY:
+                /* msg ����ü�� execute_prefetch_reply�� ���⶧���� ���� msg�� �������� �ʰ� ����Ѵ�. */
+                return doDescribeCSRPrefetch(stmt,
+                                             (TbMsgExecutePrefetchReply) msg);
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_GET_COLUMN_DESC_FAIL, msg);
+                break;
+
+            default:
+                throwProtocolError(msg.getMsgType());
+            }
+        }
+        return null;
+    }
+
+    private TbResultSet doDescribeCSRPrefetch(TbStatement stmt,
+                                              TbMsgExecutePrefetchReply reply)
+            throws SQLException {
+        if (reply.colMeta == null)
+            throw TbError.newSQLException(TbError.MU_NO_META_DATA);
+
+        TbResultSet rs = processPrefetchedRset(stmt, reply.colCnt,
+                                               reply.hiddenColCnt, reply.csrId,
+                                               reply.colMeta,
+                                               reply.rowChunkSize, reply.rowCnt,
+                                               reply.isFetchCompleted,
+                                               reply.getTsn());
+
+        stmt.addSubResultSet(rs);
+
+        return rs;
+    }
+
+    public SQLException getErrorMessage(int code, TbMsg reply)
+            throws SQLException {
+        TbMsgEreply ereply = (TbMsgEreply) reply;
+
+        if (ereply.flag == DBConst.CS_DISCONNECT) {
+            if (Debug.TRACE) {
+                Debug.log("TbComm.getErrorMessage (DISCONNECTED)");
+            }
+
+            reset();
+        }
+
+        return ereply.getException(code);
+    }
+
+    /**
+     * Retrieves last executed SQL information
+     *
+     * @return TbSQLInfo
+     * @exception SQLException
+     *                if a database access error occurs
+     */
+    public TbSQLInfo getLastExecutedSqlinfo() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.getLastExecutedSqlinfo", new Object[] {
+                conn
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.GET_LAST_EXECUTED_SQLINFO(stream, conn.getSessionId());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_GET_LAST_EXECUTED_SQLINFO_REPLY:
+                TbMsgGetLastExecutedSqlinfoReply sqlinfoReply = (TbMsgGetLastExecutedSqlinfoReply) replyMsg;
+
+                TbSQLInfo tbSQLInfo = new TbSQLInfo();
+                tbSQLInfo.setSqlid(sqlinfoReply.sqlid);
+                tbSQLInfo.setHashval(sqlinfoReply.hashval);
+
+                return tbSQLInfo;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_GET_LAST_SQL_INFO, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves last executed SQL information
+     *
+     * @return TbSQLInfo
+     * @exception SQLException
+     *                if a database access error occurs
+     */
+    public TbSQLInfo2 getLastExecutedSqlinfo2() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.getLastExecutedSqlinfo", new Object[] { conn
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.GET_LAST_EXECUTED_SQLINFO2(stream, conn.getSessionId());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_GET_LAST_EXECUTED_SQLINFO2_REPLY:
+                TbMsgGetLastExecutedSqlinfo2Reply sqlinfo2Reply = (TbMsgGetLastExecutedSqlinfo2Reply) replyMsg;
+
+                TbSQLInfo2 tbSQLInfo = new TbSQLInfo2();
+                tbSQLInfo.setSqlId(sqlinfo2Reply.sqlid);
+                tbSQLInfo.setChildNum(sqlinfo2Reply.childNum);
+
+                return tbSQLInfo;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_GET_LAST_SQL_INFO, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+        return null;
+    }
+
+    public TbStream getStream() {
+        return stream;
+    }
+
+    protected TbConnection getTbConnection() {
+        return conn;
+    }
+
+    public SQLWarning getWarningMessage() throws SQLException {
+        return null;
+    }
+
+    private void justOKReply(TbMsgOkReply msg) {
+        if (msg.warningMsg != null &&
+            msg.warningMsg.length() > 0)
+            conn.addWarning(TbError.newSQLWarning(TbError.SVR_BACKEND_ERROR,
+                                                  msg.warningMsg));
+    }
+
+    public long length(TbLob lob) throws SQLException {
+        long length = lobLength(lob);
+
+        return lob instanceof TbBlob ? length : length /
+            typeConverter.getUCS2MaxBytesPerChar();
+    }
+
+    private boolean lobClose(TbLob lob) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobClose", new Object[] {
+                conn, lob
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.LOB_CLOSE(stream, lob.getLocator(),
+                                lob.getLocatorLength());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_LOB_CLOSE_REPLY:
+                lob.setLocator(((TbMsgLobCloseReply) replyMsg).slobLoc);
+                return true;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_CLOSE_FAIL, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+        return false;
+    }
+
+    private byte[] lobCreateTemporary(int type) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobCreateTemporary", new Object[] {
+                conn, Integer.toString(type)
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.LOB_CREATE_TEMP(stream, type);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_LOB_CREATE_TEMP_REPLY:
+                return ((TbMsgLobCreateTempReply) replyMsg).slobLoc;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_CREATE_TEMP_FAIL,
+                                      replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+        return null;
+    }
+
+    private void lobFreeTemporary(TbLob lob) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobFreeTemporary", new Object[] {
+                conn, lob
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.LOB_DELETE_TEMP(stream, lob.getLocator(),
+                                      lob.getLocatorLength());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_DELETE_TEMP_FAIL,
+                                      replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    private long lobLength(TbLob lob) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobLength", new Object[] {
+                conn, lob
+            });
+        }
+
+        if (lob.isInline ())
+            return lob.getIlobLength ();
+
+        synchronized (stream) {
+            TbMsgSend.LOB_LENGTH(stream, lob.getLocator(),
+                                 lob.getLocatorLength());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_LOB_LENGTH_REPLY:
+                TbMsgLobLengthReply reply = (TbMsgLobLengthReply) replyMsg;
+                return (0xffffffff00000000L & ((long) reply.lenHigh << 32)) +
+                    (0xffffffffL & (long) reply.lenLow);
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_GET_LENGTH_FAIL, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+
+        return 0;
+    }
+
+    private boolean lobOpen(TbLob lob, int mode) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobOpen", new Object[] {
+                conn, lob, Integer.toString(mode)
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.LOB_OPEN(stream, mode, lob.getLocator(),
+                               lob.getLocatorLength());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_LOB_OPEN_REPLY:
+                lob.setLocator(((TbMsgLobOpenReply) replyMsg).slobLoc);
+                return true;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_OPEN_FAIL, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+
+        return false;
+    }
+
+    private long lobPosition(TbLob lob, String searchStr, long start)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobPosition", new Object[] {
+                conn, lob, searchStr, Long.toString(start)
+            });
+        }
+
+        int offsetHigh = (int) (start >> 32);
+        int offsetLow = (int) (start & 0x00000000ffffffffL);
+
+        synchronized (stream) {
+            TbMsgSend.LOB_INSTR(stream, offsetHigh, offsetLow,
+                                lob.getLocator(), lob.getLocatorLength(),
+                                searchStr);
+
+            TbMsg msg = stream.readMsg();
+
+            switch (msg.getMsgType()) {
+            case DBConst.TBMSG_LOB_INSTR_REPLY:
+                TbMsgLobInstrReply reply = (TbMsgLobInstrReply) msg;
+                long position = (0xffffffff00000000L & ((long) (reply.offsetHigh << 32)) +
+                    (0xffffffffL & (long) reply.offsetLow));
+                return position;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_INSTR_FAIL, msg);
+
+            default:
+                throwProtocolError(msg.getMsgType());
+            }
+        }
+
+        return 0;
+    }
+
+    private long lobPosition(TbLob lob, TbLob searchLob, long start)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobPosition", new Object[] {
+                conn, lob, searchLob, Long.toString(start)
+            });
+        }
+
+        int offsetHigh = (int) (start >> 32);
+        int offsetLow = (int) (start & 0x00000000ffffffffL);
+
+        synchronized (stream) {
+            TbMsgSend.LOB_INLOB(stream, offsetHigh, offsetLow,
+                                lob.getLocator(), lob.getLocatorLength(),
+                                searchLob.getLocator(),
+                                searchLob.getLocatorLength());
+
+            TbMsg msg = stream.readMsg();
+
+            switch (msg.getMsgType()) {
+            case DBConst.TBMSG_LOB_INLOB_REPLY:
+                TbMsgLobInlobReply reply = (TbMsgLobInlobReply) msg;
+                long position = (0xffffffff00000000L & ((long) (reply.offsetHigh << 32)) +
+                    (0xffffffffL & (long) reply.offsetLow));
+                return position;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_INLOB_FAIL, msg);
+
+            default:
+                throwProtocolError(msg.getMsgType());
+            }
+        }
+        return 0;
+    }
+
+    private int lobRead(TbLob lob, long pos, char[] cbuf, byte[] bbuf,
+                        long bufOffset, int len) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobRead",
+                            new Object[] {
+                                conn, lob, Long.toString(pos), cbuf, bbuf,
+                                Long.toString(bufOffset), Integer.toString(len)
+                            });
+        }
+
+        if (lob.isInline ()) {
+            boolean is_remote = false;
+            if (lob.isRemote ()) {
+                if (!lob.isXML ()) {
+                    throw TbError.newSQLException(TbError.LOB_CANT_READ_REMOTE);
+                }
+                is_remote = true;
+            }
+
+            return lob.readIlob ((int)pos, cbuf, bbuf, (int)bufOffset, len,
+                    typeConverter, is_remote);
+        }
+
+        int offsetHigh = (int) (pos >> 32);
+        int offsetLow = (int) (pos & 0x00000000ffffffffL);
+
+        synchronized (stream) {
+            TbMsgSend.LOB_READ(stream, offsetHigh, offsetLow, len,
+                               lob.getLocator(), lob.getLocatorLength());
+
+            TbMsg msg = stream.readMsg();
+
+            switch (msg.getMsgType()) {
+            case DBConst.TBMSG_LOB_READ_REPLY:
+                return lobReadReply((TbMsgLobReadReply) msg, lob, pos, cbuf,
+                                    bbuf, bufOffset, len);
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_READ_FAIL, msg);
+
+            default:
+                throwProtocolError(msg.getMsgType());
+            }
+        }
+        return 0;
+    }
+
+    private int lobReadReply(TbMsgLobReadReply reply, TbLob lob, long pos,
+                             char[] cbuf, byte[] bbuf, long bufOffset, int len)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobReadReply",
+                            new Object[] {
+                                conn, reply, lob, Long.toString(pos), cbuf,
+                                bbuf, Long.toString(bufOffset),
+                                Integer.toString(len)
+                            });
+        }
+
+        int byteLen = 0;
+
+        if (reply.data != null)
+            byteLen = reply.data.length;
+
+        if (byteLen == len)
+            lob.setEndOfStream(false);
+        else
+            lob.setEndOfStream(true);
+
+        if (byteLen <= 0)
+            return 0;
+
+        if (lob instanceof TbClob ||
+            lob instanceof TbNClob) {
+            return typeConverter
+                    .fixedBytesToChars(reply.data, 0, byteLen, cbuf,
+                                       (int) bufOffset,
+                                       (int) (cbuf.length - bufOffset));
+        }
+        else {
+            System.arraycopy(reply.data, 0, bbuf, (int) bufOffset, byteLen);
+            return byteLen;
+        }
+    }
+
+    private void lobTruncate(TbLob lob, long len) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobTruncate", new Object[] {
+                conn, lob, Long.toString(len)
+            });
+        }
+
+        int offsetHigh = (int) (len >> 32);
+        int offsetLow = (int) (len & 0x00000000ffffffffL);
+
+        synchronized (stream) {
+            TbMsgSend.LOB_TRUNC(stream, offsetHigh, offsetLow,
+                                lob.getLocator(), lob.getLocatorLength());
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_LOB_TRUNC_REPLY:
+                lob.setLocator(((TbMsgLobTruncReply) replyMsg).slobLoc);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_TRUNC_FAIL, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    private void lobWrite(TbLob lob, long pos, char[] cbuf, byte[] bbuf,
+                          long bufOffset, long len, int packetPos)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobWrite",
+                            new Object[] {
+                                conn, lob, Long.toString(pos), cbuf, bbuf,
+                                Long.toString(bufOffset), Long.toString(len),
+                                Integer.toString(packetPos)
+                            });
+        }
+
+        int offsetHigh = (int) (pos >> 32);
+        int offsetLow = (int) (pos & 0x00000000ffffffffL);
+        int dataLen = 0;
+        byte[] data = null;
+
+        if (lob instanceof TbClob ||
+            lob instanceof TbNClob) {
+            int maxLen = typeConverter.getUCS2MaxBytesPerChar() *
+                (int) len;
+
+            data = new byte[maxLen];
+            dataLen = maxLen;
+            typeConverter.charsToFixedBytes(cbuf, (int) bufOffset, (int) (len),
+                                            data, 0, dataLen);
+        }
+        else {
+            int paddingLen = TbCommon.getPadLength((int) len);
+
+            data = new byte[(int) len +
+                paddingLen];
+            dataLen = (int) len;
+
+            System.arraycopy(bbuf, (int) bufOffset, data, 0, (int) len);
+            TbCommon.writePadding(data, (int) len, paddingLen);
+        }
+
+        synchronized (stream) {
+            TbMsgSend.LOB_WRITE(stream, offsetHigh, offsetLow, packetPos,
+                                lob.getLocator(), lob.getLocatorLength(), data,
+                                dataLen);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_LOB_WRITE_REPLY:
+                lobWriteReply(lob, (TbMsgLobWriteReply) replyMsg, packetPos);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throw getErrorMessage(TbError.SVR_LOB_WRITE_FAIL, replyMsg);
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    private void lobWriteReply(TbLob lob, TbMsgLobWriteReply reply,
+                               int packetPos) {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.lobWriteReply", new Object[] {
+                conn, lob, reply, Integer.toString(packetPos)
+            });
+        }
+
+        if ((packetPos & DBConst.CS_LOB_WRITE_LAST) == 0)
+            return;
+
+        lob.setLocator(reply.slobLoc);
+    }
+
+    public synchronized void logon(boolean logonWithNewPassword)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.logon", new Object[] {
+                conn
+            });
+        }
+
+        while (true) {
+            synchronized (stream) {
+                TbMsg replyMsg = stream.readMsg();
+
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_CONNECT_REPLY:
+                    if (!logonConnectReply((TbMsgConnectReply) replyMsg,
+                            logonWithNewPassword))
+                        return;
+
+                    logonAuthRequest(logonWithNewPassword);
+                    break;
+
+                case DBConst.TBMSG_SESS_INFO_REPLY:
+                    logonSessInfoReply((TbMsgSessInfoReply) replyMsg);
+                    return;
+
+                case DBConst.TBMSG_READINESS_TO_ACCEPT_SSL_CONN:
+                    break;
+
+                case DBConst.TBMSG_EREPLY:
+                    logonEreply(replyMsg, logonWithNewPassword);
+                    return;
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+    }
+
+    private void logonAuthRequest(boolean logonWithNewPassword)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.logonAuthRequest", new Object[] {
+                conn
+            });
+        }
+
+        String username = conn.info.getUser();
+
+        String passwd = conn.info.getPassword();
+        if ((passwd.length() >= 2) &&
+            passwd.startsWith("\"") && passwd.endsWith("\""))
+            passwd = passwd.substring(1, passwd.length() - 1);
+
+        String dbname = conn.info.getDatabaseName();
+        if ((dbname.length() >= 2) &&
+            dbname.startsWith("\"") && dbname.endsWith("\""))
+            dbname = dbname.substring(1, dbname.length() - 1);
+
+        String progname = conn.info.getProgramName();
+        if (progname == null) {
+            if (Debug.TRACE)
+                progname = "JDBC Thin Client Debug";
+            else
+                progname = "JDBC Thin Client";
+        }
+
+        String osuser = System.getProperty("user.name");
+
+        String hostname = null;
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        }
+        catch (UnknownHostException e) {
+            // do nothing...
+        }
+
+        TbClntInfoParam[] clientParam = new TbClntInfoParam[DBConst.TB_CLNT_INFO_MAX];
+        for (int i = 0; i < DBConst.TB_CLNT_INFO_MAX; i++) {
+            clientParam[i] = new TbClntInfoParam();
+        }
+        clientParam[0].set(DBConst.TB_CLNT_INFO_PID, "-1");
+        clientParam[1].set(DBConst.TB_CLNT_INFO_PROGRAM_NAME, progname);
+        clientParam[2].set(DBConst.TB_CLNT_INFO_TERMINAL, null);
+        clientParam[3].set(DBConst.TB_CLNT_INFO_OSUSER_NAME, osuser);
+        clientParam[4].set(DBConst.TB_CLNT_INFO_HOST_NAME, hostname);
+
+        int flag = 0;
+        String newPassword = conn.info.getNewPassword();
+        String currentPassword = null;
+        if (newPassword != null && newPassword.length() != 0) {
+            flag |= DBConst.CS_AUTH_FLAGS_NEWPASSWORD;
+            currentPassword = passwd;
+            passwd = newPassword;
+        }
+
+        /* password encryption */
+        if (this.rsa != null && conn.getSessKey() != null) {
+            try {
+                DataTypeConverter dtCvt = conn.getTypeConverter();
+                String sessKey = conn.getSessKey();
+
+                byte[] pemRaw = DataTypeConverter.tbBase64Decode(
+                        sessKey.getBytes("ASCII"));
+
+                sessKey = new String(pemRaw, "ASCII");
+
+                final String prefix = "-----BEGIN PUBLIC KEY-----\n";
+                final String postfix = "-----END PUBLIC KEY-----";
+
+                String pem = sessKey.substring(prefix.length(),
+                                               sessKey.lastIndexOf(postfix));
+
+                X509EncodedKeySpec pubSpec = new X509EncodedKeySpec(
+                        DataTypeConverter.base64Decode(pem.getBytes("ASCII")));
+                // X509EncodedKeySpec pubSpec = new X509EncodedKeySpec(
+                //         DataTypeConverter.tbBase64Decode(pem.getBytes("ASCII")));
+
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                Key pubkey = keyFactory.generatePublic(pubSpec);
+
+                rsa.init(Cipher.ENCRYPT_MODE, pubkey);
+                byte[] pwdBytes = rsa.doFinal(dtCvt.getDBEncodedBytes(passwd));
+
+                passwd = DataTypeConverter.tbBase64Encode(pwdBytes);
+
+                if (currentPassword != null) {
+                    pwdBytes = rsa.doFinal(
+                            dtCvt.getDBEncodedBytes(currentPassword));
+                    currentPassword = DataTypeConverter.tbBase64Encode(pwdBytes);
+                }
+            }
+            catch (Exception e) {
+                System.err.println(e);
+                throw TbError.newSQLException(
+                        TbError.SVR_AUTHENTICATION_FAIL);
+            }
+        }
+
+        clientParam[5].set(DBConst.TB_CLNT_INFO_CURRENT_PASSWORD,
+                           currentPassword);
+
+        TbNlsParam[] nlsParam = new TbNlsParam[DBConst.TB_NLS_PARAM_MAX];
+        for (int i = 0; i < DBConst.TB_NLS_PARAM_MAX; i++) {
+            nlsParam[i] = new TbNlsParam();
+        }
+        nlsParam[0].set(DBConst.TB_NLS_PARAM_DATE_FORMAT, null);
+        nlsParam[1].set(DBConst.TB_NLS_PARAM_TIME_FORMAT, null);
+        nlsParam[2].set(DBConst.TB_NLS_PARAM_TIMESTAMP_FORMAT, null);
+        nlsParam[3].set(DBConst.TB_NLS_PARAM_TS_TZ_FORMAT, null);
+        nlsParam[4].set(DBConst.TB_NLS_PARAM_DATE_LANG,
+                        CharsetMetaData.getNLSLanguage(Locale.getDefault()));
+        nlsParam[5].set(DBConst.TB_NLS_PARAM_DATE_CAL, null);
+        nlsParam[6].set(DBConst.TB_NLS_PARAM_SORT, null);
+
+        TimeZone timezone = TimeZone.getDefault();
+        String timezoneID = ZoneInfo
+                .convertStandardTimeZoneID(timezone.getID());
+
+        if (ZoneInfo.getTimeZoneIdByName(timezoneID) == ZoneInfo.TZ_ID_OFFSET.getId().intValue()) {
+            //ZoneInfo���� timezone ������ ã�� ���� ���
+
+            int offset = timezone.getRawOffset();
+
+            String offsetText = "";
+            if (offset >= 0) {
+                offsetText += "+";
+            }
+            else {
+                offsetText += "-";
+            }
+            int hour = Math.abs(offset) / 3600000;
+            int min = (offset / 60000) % 60;
+
+            if (hour >= 10) {
+                offsetText += String.valueOf(hour);
+            }
+            else {
+                offsetText += "0" + String.valueOf(hour);
+            }
+
+            if (min == 0) {
+                offsetText += ":00";
+            }
+            else {
+                offsetText += ":" + String.valueOf(min);
+            }
+
+            //rawOffset�� +00:00  ���·� ��ȯ
+
+            timezone.setID("GMT" + offsetText);
+            //GMT+00:00���·� setID
+
+            timezoneID = ZoneInfo.convertStandardTimeZoneID(timezone.getID());
+
+        }
+
+        nlsParam[7].set(DBConst.TB_NLS_PARAM_SDTZ, timezoneID);
+
+        TbMsgSend.AUTH_REQ_WITH_VER(stream, DBConst.PROTOCOL_MAJOR,
+                                    DBConst.PROTOCOL_MINOR, flag, username,
+                                    dbname, passwd, clientParam.length,
+                                    clientParam, nlsParam.length, nlsParam, 1);
+    }
+
+    private boolean logonConnectReply(TbMsgConnectReply reply,
+            boolean logonWithNewPassword) throws SQLException {
+        if (conn.info.isLoadBalance() &&
+            !conn.isMiddleOfFailover() &&
+            reply.flags == DBConst.CS_CONN_FLAGS_HIGHLOAD) {
+            if (Debug.TRACE)
+                Debug.log("TbComm.logonConnectReply (HIGHLOAD)");
+
+            ConnectionInfo info = conn.info;
+
+            try {
+                conn.close();
+            }
+            catch (SQLException e) {}
+
+            conn.openConnection(info, logonWithNewPassword);
+
+            if (Debug.TRACE)
+                Debug.log("TbComm.logonConnectReply (CONNECTED IN HIGHLOAD)");
+
+            return false;
+        }
+
+        if (Debug.TRACE)
+            Debug.logMethod("TbComm.logonConnectReply", new Object[] {
+                conn, reply
+            });
+
+        int charset = Charset.getCharset(conn.info.getCharacterSet());
+        if (charset == -1)
+            charset = reply.charset;
+
+        if (Debug.TRACE)
+            Debug.logMethod("TbComm.logonConnectReply (charset)", new Object[] {
+                conn, String.valueOf(charset), conn.info.getCharacterSet()
+            });
+
+        if (reply.protocolMajor < 2)
+            throw TbError.newSQLException(TbError.UNSUPPORTED_SVR_VERSION);
+
+        ServerInfo info = new ServerInfo(charset, reply.ncharset,
+                reply.svrIsBigendian, reply.svrIsNanobase, reply.tbMajor,
+                reply.tbMinor, reply.tbProductName, reply.tbProductVersion,
+                reply.protocolMajor, reply.protocolMinor);
+
+        conn.setServerInfo(info);
+        conn.setMthrPid(reply.mthrPid);
+        typeConverter.setCharset(conn.getServerCharSet(),
+                                 conn.getServerNCharSet());
+        conn.setMaxDFRCharCount();
+
+        if (reply.protocolMinor >= 2 && reply.protocolMinor >= 9) {
+            try {
+                this.rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
+            }
+            catch (Exception e) {
+                conn.addWarning(TbError.newSQLWarning(TbError.RESOURCE_LOAD_FAIL, e));
+            }
+        }
+
+        if (this.rsa != null) {
+            TbMsgSend.REQUEST_SESSKEY(stream);
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_SESSKEY_REPLY:
+                TbMsgSesskeyReply sesskeyReply = (TbMsgSesskeyReply)replyMsg;
+                if (sesskeyReply.sesskey == null || sesskeyReply.sesskey.length() == 0)
+                    conn.setSessKey(null);
+                else
+                    conn.setSessKey(sesskeyReply.sesskey);
+
+                break;
+            case DBConst.TBMSG_EREPLY:
+                logonEreply(replyMsg, logonWithNewPassword);
+                return false;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+
+        return true;
+    }
+
+    private void logonEreply(TbMsg msg, boolean logonWithNewPassword)
+            throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.logonEreply", new Object[] {
+                conn
+            });
+        }
+
+        ConnectionInfo info = conn.info;
+        SQLException ex = getErrorMessage(TbError.SVR_AUTHENTICATION_FAIL, msg);
+
+        if (ex.getErrorCode() == DBConst.ERROR_CANT_CONNECT_BY_LOAD_BALANCE) {
+            if (Debug.TRACE)
+                Debug.log("TbComm.authRequestEreply (RETRY TO SECONDARY NODE)");
+
+            try {
+                conn.close();
+            }
+            catch (SQLException e) {}
+
+            conn.openConnection(info, logonWithNewPassword);
+        }
+        else if (ex.getErrorCode() == DBConst.ERROR_CANT_CONNECT_ON_RECOVERY) {
+            if (Debug.TRACE)
+                Debug.log("TbComm.logonEreply (RETRY TO SAME NODE)");
+
+            logon(logonWithNewPassword);
+        }
+        else {
+            throw ex;
+        }
+    }
+
+    private void logonSessInfoReply(TbMsgSessInfoReply msg) {
+        if (Debug.TRACE) {
+            StringBuffer sb = new StringBuffer(256);
+            sb.append(msg).append("[#\nsessionId=").append(msg.sessionId)
+                    .append("/serialNo=").append(msg.serialNo);
+            if (msg.nlsData != null) {
+                for (int i = 0; i < msg.nlsData.length; i++) {
+                    sb.append("\n/").append(msg.nlsData[i].nlsParamId)
+                            .append("=").append(msg.nlsData[i].nlsParamVal);
+                }
+            }
+            sb.append("#]");
+            Debug.logMethod("TbComm.logonSessInfoReply", new Object[] {
+                conn, sb.toString()
+            });
+        }
+
+        conn.setSessionId(msg.sessionId);
+        conn.setSerialNo(msg.serialNo);
+        conn.setNLSDate(msg.nlsData[DBConst.TB_NLS_PARAM_DATE_FORMAT].nlsParamVal);
+        conn.setNLSTimestamp(msg.nlsData[DBConst.TB_NLS_PARAM_TIMESTAMP_FORMAT].nlsParamVal);
+
+        if (msg.nlsData.length > DBConst.TB_NLS_PARAM_PASSWD_GRACE_EXPIRED &&
+            msg.nlsData[DBConst.TB_NLS_PARAM_PASSWD_GRACE_EXPIRED].nlsParamVal != null) {
+            conn.setNLSWarning(true);
+            String pwdGExVal = msg.nlsData[DBConst.TB_NLS_PARAM_PASSWD_GRACE_EXPIRED].nlsParamVal;
+
+            /* 
+             * ó�� �߰��Ǿ��� ������ "Y"�� graceful expired ���θ� ǥ�õǾ�����
+             * ���ڰ��� ���� ���� ��¥�� ǥ���ϴ� ������ ����Ǿ���.
+             */
+            if (pwdGExVal.equals("Y"))
+                conn.addWarning(TbError
+                        .newSQLWarning(TbError.SVR_PASSWORD_GRACE_EXPIRED));
+            else
+                conn.addWarning(TbError.newSQLWarning(
+                                                      TbError.SVR_PASSWORD_GRACE_EXPIRED2,
+                                                      new Object[] { pwdGExVal }));
+        }
+
+    }
+
+    public boolean open(TbLob lob, int mode) throws SQLException {
+        return lobOpen(lob, mode);
+    }
+
+    public void openSession() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.openSession", new Object[] {
+                conn
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.OPEN_SESS(stream);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_OPEN_SESSION_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public void ping() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.ping", new Object[] {
+                conn
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            TbMsgSend.TB_PING(stream, 0);
+            replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_BACKEND_ERROR, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public long position(TbBlob blob, byte[] searchByte, long start)
+            throws SQLException {
+        return lobPosition(blob, searchByte.toString(), start);
+    }
+
+    public long position(TbClobBase clob, char[] searchStr, long start)
+            throws SQLException {
+        long pos = lobPosition(clob, searchStr.toString(), start);
+
+        return pos *
+            typeConverter.getUCS2MaxBytesPerChar();
+    }
+
+    public long position(TbLob lob, TbLob searchLob, long start)
+            throws SQLException {
+        long pos = lobPosition(lob, searchLob, start);
+
+        return lob instanceof TbBlob ? pos : pos *
+            typeConverter.getUCS2MaxBytesPerChar();
+    }
+
+    public void prepare(TbPreparedStatementImpl pstmt, String originalSql, Vector
+    // #ifdef JDK1.5
+                        <Integer>
+                        // #endif
+                        paramTypes) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.prepare", new Object[] {
+                conn, pstmt, originalSql
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.PREPARE(stream, originalSql);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_PREPARE_REPLY:
+                prepareReply(pstmt, (TbMsgPrepareReply) replyMsg, paramTypes);
+                return;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_PREPARE_FAIL, replyMsg);
+                return;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    public int
+            prepareExecute(TbPreparedStatementImpl stmt, String sql, int rowIndex)
+                    throws SQLException {
+        if (stmt.getPPID() != null) {
+            return execute(stmt, sql, rowIndex);
+        }
+
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.prepareExecute", new Object[] {
+                conn, stmt
+            });
+        }
+
+        TbMsg replyMsg;
+        synchronized (stream) {
+            processExecute(stmt, sql, rowIndex, false);
+
+            replyMsg = stream.readMsg();
+
+            while (true) {
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_OK_REPLY:
+                    justOKReply((TbMsgOkReply) replyMsg);
+                    return TbSQLTypeScanner.isPSMStmt(stmt.getSqlType()) ? 1
+                            : 0;
+
+                case DBConst.TBMSG_SESS_INFO_REPLY:
+                    executeSessInfoReply((TbMsgSessInfoReply) replyMsg);
+                    return 0;
+
+                case DBConst.TBMSG_EXECUTE_COUNT_REPLY:
+                    TbMsgExecuteCountReply countMsg = (TbMsgExecuteCountReply) replyMsg;
+                    stmt.setPPID(countMsg.ppid);
+                    return executeCountReply(stmt, countMsg);
+
+                case DBConst.TBMSG_EXECUTE_PREFETCH_REPLY:
+                    TbMsgExecutePrefetchReply prefetchMsg = (TbMsgExecutePrefetchReply) replyMsg;
+                    stmt.setPPID(prefetchMsg.ppid);
+                    stmt.buildColMetaArray(prefetchMsg.colCnt,
+                                           prefetchMsg.hiddenColCnt,
+                                           prefetchMsg.colMeta);
+                    return executePrefetchReply(stmt, prefetchMsg);
+
+                case DBConst.TBMSG_EXECUTE_RSET_REPLY:
+                    TbMsgExecuteRsetReply rsetMsg = (TbMsgExecuteRsetReply) replyMsg;
+                    stmt.setPPID(rsetMsg.ppid);
+                    stmt.buildColMetaArray(rsetMsg.colCnt,
+                                           rsetMsg.hiddenColCnt,
+                                           rsetMsg.colMeta);
+                    return executeRsetReply(stmt, rsetMsg);
+
+                case DBConst.TBMSG_EXECUTE_NEED_DATA_REPLY:
+                    return executeNeedDataReply(replyMsg, stmt, rowIndex);
+
+                case DBConst.TBMSG_EXECUTE_PSM_REPLY:
+                    TbMsgExecutePsmReply psmMsg = (TbMsgExecutePsmReply) replyMsg;
+
+                    return executeCallReply(stmt, rowIndex, psmMsg.paramData);
+
+                case DBConst.TBMSG_EXECUTE_CALL_REPLY:
+                    TbMsgExecuteCallReply callMsg = (TbMsgExecuteCallReply) replyMsg;
+
+                    return executeCallReply(stmt, rowIndex, callMsg.paramData);
+
+                case DBConst.TBMSG_EXECUTE_PSM_PREFETCH_REPLY:
+                    TbMsgExecutePsmPrefetchReply psmPrefetchMsg = (TbMsgExecutePsmPrefetchReply) replyMsg;
+                    stmt.setPPID(psmPrefetchMsg.ppid);
+                    stmt.buildColMetaArray(psmPrefetchMsg.colCnt,
+                                           psmPrefetchMsg.hiddenColCnt,
+                                           psmPrefetchMsg.colMeta);
+
+                    if (!(stmt instanceof TbCallableStatementImpl))
+                        return 1;
+
+                    return executePsmPrefetchReply((TbCallableStatementImpl) stmt,
+                                                   rowIndex, psmPrefetchMsg);
+
+                case DBConst.TBMSG_EXECUTE_PIVOT_REPLY:
+                    replyMsg = executePivotReply(stmt,
+                                                 (TbMsgExecutePivotReply) replyMsg);
+                    break;
+
+                case DBConst.TBMSG_EREPLY:
+                    throwEreply(TbError.SVR_EXECUTE_FAIL, replyMsg);
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+    }
+
+    private void prepareReply(TbPreparedStatementImpl pstmt,
+                              TbMsgPrepareReply reply, Vector
+                              // #ifdef JDK1.5
+                              <Integer>
+                              // #endif
+                              paramTypes) {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.prepareReply", new Object[] {
+                conn, pstmt, reply
+            });
+        }
+
+        if (reply.isPreparedDdl == 1) {
+            pstmt.setPPID(null);
+            pstmt.setParameterCnt(0);
+        }
+        else {
+            int paramCnt = reply.bindParamCnt;
+
+            pstmt.setPPID(reply.ppid);
+            pstmt.setParameterCnt(paramCnt);
+
+            for (int j = 0; j < paramCnt; j++) {
+                paramTypes.add(j, new Integer(reply.bindParamMeta[j].type));
+            }
+
+            pstmt.buildColMetaArray(reply.outColCnt, reply.hiddenColCnt,
+                                    reply.colDesc);
+        }
+    }
+
+    private void processExecute(TbPreparedStatementImpl stmt, String sql,
+                                int rowIndex, boolean havePPID)
+            throws SQLException {
+    	synchronized (stream.getWriteStreamBuffer()) {
+        TbStreamDataWriter writer = stream.getMsgWriter();
+        int autoCommit = conn.getAutoCommit() ? DBConst.CS_AUTO_COMMIT : 0;
+        BindData bindData = stmt.getBindData();
+        Binder[][] binder = stmt.getBinder();
+        /* BigLiteral ������ bindData�� �Ķ���� ������ ���� �Ѵ�. */
+        int paramCount = bindData.getParameterCnt();
+        int flag;
+        BindItem item;
+
+        stream.startWritingPacketData();
+
+        if (havePPID)
+            writer.writeInt(DBConst.TBMSG_EXECUTE, 4);
+        else
+            writer.writeInt(DBConst.TBMSG_PREPARE_EXECUTE, 4);
+
+        /* body size */
+        writer.writeInt(0, 4);
+        /* tsn */
+        writer.writeLong(0, 8);
+
+        if (havePPID)
+            writer.writeBytes(stmt.getPPID());
+        else
+            writer.writeLenAndDBEncodedPadString(sql == null ? "" : sql);
+
+        writer.writeInt(autoCommit, 4);
+        writer.writeInt(stmt.getPreFetchSize(), 4);
+        writer.writeInt(paramCount, 4);
+
+        for (int i = 0; i < paramCount; i++) {
+            if (binder[rowIndex][i] == null)
+                throw TbError.newSQLException(TbError.MU_ALL_PARAM_NOT_BOUND);
+
+            item = bindData.getBindItem(i);
+
+            flag = (item.getParamMode() & 0x000000ff) |
+                ((stmt.getParamType(rowIndex, i) << 8) & 0xffffff00);
+            int flagOffset = writer.getBufferedDataSize();
+
+            writer.writeInt(flag, 4);
+
+            boolean isObjProtocolAvailable = conn.serverInfo.getObjBindAvailable();
+            boolean isObject = (stmt.getParamType(rowIndex, i) == DataType.OBJECT);
+            boolean isVarray = (stmt.getParamType(rowIndex, i) == DataType.VARRAY);
+            boolean isTable = (stmt.getParamType(rowIndex, i) == DataType.TABLE);
+            if (!isObjProtocolAvailable && (isObject || isVarray || isTable)) {
+                throw TbError.newSQLException(TbError.COMM_PROTOCOL_ERROR);
+            }
+
+            binder[rowIndex][i].bind(conn, stmt, writer, rowIndex, i,
+                                     (int) item.getLength());
+
+            if (binder[rowIndex][i] instanceof ArrayInBinder) {
+                if (((ArrayInBinder)binder[rowIndex][i]).isDFR()) {
+                    flag = (DBConst.CS_PARAM_KIND_DEFERRED & 0x000000ff) |
+                            ((stmt.getParamType(rowIndex, i) << 8) & 0xffffff00);
+                    writer.reWriteInt(flagOffset, flag, 4);
+                }
+            }
+        }
+
+        writer.reWriteInt(4, writer.getBufferedDataSize() -
+            DBConst.TBMSG_HDR_SIZE, 4);
+
+        stream.flush();
+    	}
+    }
+
+    private TbResultSet processPrefetchedRset(TbStatement stmt, int colCnt,
+                                              int hiddenColCnt, int csrId,
+                                              TbColumnDesc[] colMeta,
+                                              int rowChunkSize, int rowCnt,
+                                              int isFetchCompleted, long tsn)
+                                                      throws SQLException {
+        /*
+         * ResultSet ��ü �����߿� UDT�÷���Ÿ�� ���� �߰� DB ��ȸ�� �ϴ� �κ��� �����Ƿ�,
+         * prefetch�� rowchunk�� ���� ��Ʈ�����ۿ��� ����ش�.
+         */
+        byte[] rowChunk = new byte[rowChunkSize];
+        stream.readChunkData(rowChunk, rowChunkSize);
+
+        TbResultSet rs = typeConverter
+                .toResultSet(colCnt, hiddenColCnt, csrId,
+                             colMeta, stmt, rowChunk);
+
+        rs.setFetchCompleted(isFetchCompleted);
+        rs.setTsn(tsn);
+        rs.buildRowTable(rowCnt, rowChunk);
+        return rs;
+    }
+
+    public long read(TbBlob blob, long pos, byte buffer[], long bufOffset,
+                     long len) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.read",
+                            new Object[] {
+                                conn, blob, Long.toString(pos), buffer,
+                                Long.toString(bufOffset), Long.toString(len)
+                            });
+        }
+        int splitLen = 0;
+        int readLen = 0;
+        long totalLen = 0;
+
+        // receive character array data with splitting into MAX_CHUNK_SIZE
+        do {
+            if (len -
+                totalLen >= TbLob.getMaxChunkSize())
+                splitLen = TbLob.getMaxChunkSize();
+            else
+                splitLen = (int) (len - totalLen);
+
+            readLen = lobRead(blob, pos +
+                totalLen, null, buffer, bufOffset +
+                totalLen, splitLen);
+
+            totalLen += readLen;
+        }
+        while ((len > totalLen) &&
+            (splitLen == readLen));
+
+        return totalLen;
+    }
+
+    public long read(TbClobBase clob, long pos, char buffer[], long bufOffset,
+                     long len) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.read",
+                            new Object[] {
+                                conn, clob, Long.toString(pos),
+                                Long.toString(len), Long.toString(bufOffset),
+                                buffer
+                            });
+        }
+        int splitCharCnt = 0;
+        int readCharCnt = 0;
+        long totalCharCnt = 0;
+        int bytePerChar = 2;
+        long byteOffset = pos *
+            bytePerChar;
+        int maxChar = TbLob.getMaxChunkSize() /
+            bytePerChar;
+
+        // receive character array data with splitting into MAX_CHUNK_SIZE
+        do {
+            if (len -
+                totalCharCnt >= maxChar)
+                splitCharCnt = maxChar;
+            else
+                splitCharCnt = (int) (len - totalCharCnt);
+
+            readCharCnt = lobRead(clob, byteOffset, buffer, null, bufOffset +
+                totalCharCnt, splitCharCnt *
+                bytePerChar);
+
+            totalCharCnt += readCharCnt;
+            byteOffset += readCharCnt *
+                bytePerChar;
+        }
+        while ((len > totalCharCnt) &&
+            !clob.isEndOfStream());
+
+        return totalCharCnt;
+    }
+
+    public String readLong(byte locator[]) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.readLong", new Object[] {
+                conn, locator
+            });
+        }
+
+        StringBuffer sb = new StringBuffer();
+        TbMsgLongReadReply reply = null;
+        byte[] clb = new byte[3];
+        int clbLen = 0;
+        byte[] src;
+        char[] cbuf = new char[DriverConstants.MIN_DEFERRED_BYTE_SIZE];
+
+        do {
+            synchronized (stream) {
+                TbMsgSend.LONG_READ(stream,
+                                    DriverConstants.MIN_DEFERRED_BYTE_SIZE,
+                                    locator, locator.length);
+
+                TbMsg replyMsg = stream.readMsg();
+
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_LONG_READ_REPLY:
+                    reply = (TbMsgLongReadReply) replyMsg;
+                    locator = new byte[reply.longLoc.length];
+                    System.arraycopy(reply.longLoc, 0, locator, 0,
+                                     locator.length);
+
+                    if (reply.data != null &&
+                        reply.data.length != 0) {
+                        if (clbLen > 0) {
+                            src = new byte[reply.data.length +
+                                clbLen];
+                            System.arraycopy(clb, 0, src, 0, clbLen);
+                            System.arraycopy(reply.data, 0, src, clbLen,
+                                             reply.data.length);
+                            clbLen = 0;
+                        }
+                        else {
+                            src = reply.data;
+                        }
+
+                        int clbOff = typeConverter
+                                .getEndingBytePos(src, src.length - 1);
+
+                        if (clbOff > src.length - 1) {
+                            clbOff = typeConverter
+                                    .getLeadingBytePos(src, src.length - 1);
+
+                            clbLen = src.length -
+                                clbOff;
+                            System.arraycopy(src, clbOff, clb, 0, clbLen);
+                        }
+
+                        int charCnt = typeConverter.bytesToChars(src, 0,
+                                                                 clbOff + 1,
+                                                                 cbuf, 0,
+                                                                 clbOff + 1);
+
+                        sb.append(cbuf, 0, charCnt);
+                    }
+                    break;
+
+                case DBConst.TBMSG_EREPLY:
+                    throw getErrorMessage(TbError.SVR_LONG_READ_FAIL, replyMsg);
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+        while (reply.isLastData == 0);
+
+        return sb.toString();
+    }
+
+    public byte[] readLongRaw(byte locator[]) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.readLongRaw", new Object[] {
+                conn, locator
+            });
+        }
+
+        ByteArrayOutputStream byteBuf = new ByteArrayOutputStream();
+        TbMsgLongReadReply reply = null;
+
+        do {
+            synchronized (stream) {
+                TbMsgSend.LONG_READ(stream,
+                                    DriverConstants.MIN_DEFERRED_BYTE_SIZE,
+                                    locator, locator.length);
+
+                TbMsg replyMsg = stream.readMsg();
+
+                switch (replyMsg.getMsgType()) {
+                case DBConst.TBMSG_LONG_READ_REPLY:
+                    reply = (TbMsgLongReadReply) replyMsg;
+                    locator = new byte[reply.longLoc.length];
+                    System.arraycopy(reply.longLoc, 0, locator, 0,
+                                     locator.length);
+                    byteBuf.write(reply.data, 0, reply.data.length);
+                    break;
+
+                case DBConst.TBMSG_EREPLY:
+                    throw getErrorMessage(TbError.SVR_LONG_READ_FAIL, replyMsg);
+
+                default:
+                    throwProtocolError(replyMsg.getMsgType());
+                }
+            }
+        }
+        while (reply.isLastData == 0);
+
+        return byteBuf.toByteArray();
+    }
+
+    public void reset() {
+        try {
+            if (stream != null) {
+                synchronized (stream) {
+                    stream.close();
+                    stream = null;
+                }
+            }
+        }
+        catch (SQLException ignore) {}
+
+        if (conn != null) {
+            conn.reset();
+            conn = null;
+        }
+    }
+
+    public void resetSession() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.resetSession", new Object[] {
+                conn
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.RESET_SESS(stream);
+            /* reset_sess �޽����� reply�� ���� */
+        }
+    }
+
+    public void rollback() throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.rollback", new Object[] {
+                conn
+            });
+        }
+
+        synchronized (stream) {
+            TbMsgSend.ROLLBACK(stream, null);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_ROLLBACK_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    // #ifdef JDK1.4
+    public void rollback(TbSavepoint savepoint) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.rollback", new Object[] {
+                conn
+            });
+        }
+
+        String savepointName = null;
+
+        if (savepoint != null) {
+            try {
+                savepointName = savepoint.getSavepointName();
+            }
+            catch (SQLException e) {
+                savepointName = "SVPT" +
+                    savepoint.getSavepointId();
+            }
+        }
+
+        synchronized (stream) {
+            TbMsgSend.ROLLBACK(stream, savepointName);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_ROLLBACK_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    // #endif
+
+    // #ifdef JDK1.6
+    public void setClientInfo(String[] clientInfo)
+            throws SQLClientInfoException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.setClientInfo", new Object[] {
+                conn, clientInfo
+            });
+        }
+
+//        TbSessAttrDesc[] sessDesc = new TbSessAttrDesc[clientInfo.length];
+//
+//        for (int i = 0; i < clientInfo.length; i++) {
+//            sessDesc[i] = new TbSessAttrDesc();
+//            sessDesc[i].set(i, clientInfo[i]);
+//        }
+//
+//        synchronized (stream) {
+//            try {
+//                TbMsgSend.SESS_ATTR(stream, sessDesc.length, sessDesc);
+//
+//                TbMsg replyMsg = stream.readMsg();
+//
+//                switch (replyMsg.getMsgType()) {
+//                case DBConst.TBMSG_OK_REPLY:
+//                    justOKReply((TbMsgOkReply) replyMsg);
+//                    break;
+//
+//                case DBConst.TBMSG_EREPLY:
+//                    throwEreply(TbError.SVR_SET_CLIENT_INFO_FAIL, replyMsg);
+//                    break;
+//
+//                default:
+//                    throwProtocolError(replyMsg.getMsgType());
+//                }
+//            }
+//            catch (SQLException e) {
+//                /* FIXME : ���⿡ �� Map�� <String, ClientInfoStatus> �� ����������,
+//                 * ������ Client info key�� CLIENT_INFO_IDENTIFIER �ۿ� ���⶧���� �ϴ��� ������
+//                 * ���� �����ؼ� �Ѱ��ش�. */
+//                HashMap map = new HashMap();
+//                for (int i = 0; i < clientInfo.length; i++) {
+//                    map.put(TbConnection.CLIENT_INFO_KEYS[i], clientInfo[i]);
+//                }
+//
+//                throw new SQLClientInfoException(e.getMessage(),
+//                        e.getSQLState(), map);
+//            }
+//        }
+
+        /*
+         * TODO: client info ���� ���� ���� �ʿ�
+         * 
+         * ���� ������ ���� SESS_ATTR �޽����� �����ʿ��� ����Ҽ� ���� �����̱� ������
+         * �켱 ��� ��ü�� Exceptionó����
+         */
+        HashMap<String, ClientInfoStatus> map = new HashMap<String, ClientInfoStatus>();
+        for (int i = 0; i < clientInfo.length; i++) {
+            map.put(TbConnection.CLIENT_INFO_KEYS[i], ClientInfoStatus.REASON_UNKNOWN);
+        }
+
+        String msg = TbError.getMsg(TbError.SVR_SET_CLIENT_INFO_FAIL);
+        String state = TbError.getSQLState(TbError.SVR_SET_CLIENT_INFO_FAIL);
+        throw new SQLClientInfoException(msg, state, map);
+    }
+    // #endif
+
+    public void setIsolationLevel(int level) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.setIsolationLevel", new Object[] {
+                conn, Integer.toString(level)
+            });
+        }
+
+        int dbIsolation = 0;
+
+        if (level == java.sql.Connection.TRANSACTION_READ_COMMITTED)
+            dbIsolation = DBConst.CS_TX_READ_COMMITTED;
+        else if (level == java.sql.Connection.TRANSACTION_SERIALIZABLE)
+            dbIsolation = DBConst.CS_TX_SERIALIZABLE;
+        else
+            throw TbError
+                    .newSQLException(TbError.INTERNAL_UNSUPPORTED_OPERATION_TX_ISOLATION_LVL);
+
+        synchronized (stream) {
+            TbMsgSend.SET_ISL_LVL(stream, dbIsolation);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_SET_ISOLATIONLEVEL_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    // #ifdef JDK1.4
+    public void setSavePoint(TbSavepoint savepoint) throws SQLException {
+        if (Debug.TRACE) {
+            Debug.logMethod("TbComm.setSavePoint", new Object[] {
+                conn
+            });
+        }
+
+        String savepointName = null;
+
+        try {
+            savepointName = savepoint.getSavepointName();
+        }
+        catch (SQLException e) {
+            savepointName = "SVPT" +
+                savepoint.getSavepointId();
+        }
+
+        synchronized (stream) {
+            TbMsgSend.SAVEPT(stream, savepointName);
+
+            TbMsg replyMsg = stream.readMsg();
+
+            switch (replyMsg.getMsgType()) {
+            case DBConst.TBMSG_OK_REPLY:
+                justOKReply((TbMsgOkReply) replyMsg);
+                break;
+
+            case DBConst.TBMSG_EREPLY:
+                throwEreply(TbError.SVR_SAVEPOINT_FAIL, replyMsg);
+                break;
+
+            default:
+                throwProtocolError(replyMsg.getMsgType());
+            }
+        }
+    }
+
+    // #endif
+
+    private void throwEreply(int errorCode, TbMsg msg) throws SQLException {
+        SQLException ex = getErrorMessage(errorCode, msg);
+
+        throw ex;
+    }
+
+    private void throwProtocolError(int msgType) throws SQLException {
+        throw TbError
+                .newSQLException(TbError.INTERNAL_COMM_PROTOCOL_ERROR_INVALID_MSG_TYPE,
+                                 msgType);
+    }
+
+    public void truncate(TbLob lob, long len) throws SQLException {
+        if (lob instanceof TbNClob)
+            len *= typeConverter.getMaxBytesPerNChar();
+        else if (lob instanceof TbClob)
+            len *= typeConverter.getUCS2MaxBytesPerChar();
+
+        lobTruncate(lob, len);
+    }
+
+    public long write(TbBlob blob, long pos, byte[] buffer, long bufOffset,
+                      long len) throws SQLException {
+        boolean firstMsg = true;
+        boolean lastMsg = false;
+        int splitLen = 0;
+        long totalLen = 0;
+        int flag = 0;
+
+        if (len <= TbLob.getMaxChunkSize()) {
+            // send byte data with no splitting packet
+            lobWrite(blob, pos, null, buffer, bufOffset, len,
+                     DBConst.CS_LOB_WRITE_FIRST |
+                         DBConst.CS_LOB_WRITE_LAST);
+
+            return len;
+        }
+        else {
+            // send byte data with splitting
+            do {
+                if (len -
+                    totalLen > TbLob.getMaxChunkSize()) {
+                    splitLen = TbLob.getMaxChunkSize();
+                }
+                else {
+                    splitLen = (int) (len - totalLen);
+                    lastMsg = true;
+                }
+
+                flag = 0;
+
+                if (firstMsg)
+                    flag = DBConst.CS_LOB_WRITE_FIRST;
+                else if (lastMsg)
+                    flag = DBConst.CS_LOB_WRITE_LAST;
+
+                // when exception is occurred in writing lob data,
+                // cancel this transaction
+                try {
+                    lobWrite(blob, pos +
+                        totalLen, null, buffer, bufOffset +
+                        totalLen, splitLen, flag);
+                }
+                catch (SQLException e) {
+                    // ������ TBMSG_CANCEL ���� �ʿ� ���ٰ� ��
+                    // if (!firstMsg)
+                    // cancel();
+                    throw e;
+                }
+
+                totalLen += splitLen;
+                firstMsg = false;
+            }
+            while (len > totalLen);
+
+            return totalLen;
+        }
+    }
+
+    public long write(TbClobBase clob, long pos, char[] buffer, long bufOffset,
+                      long len) throws SQLException {
+        boolean firstMsg = true;
+        boolean lastMsg = false;
+        int splitCharCnt = 0;
+        long totalCharCnt = 0;
+        int flag = 0;
+        int bytePerChar = 2;
+        int maxChar = TbLob.getMaxChunkSize() /
+            bytePerChar;
+        long byteOffset = pos *
+            bytePerChar;
+
+        // receive character array data with splitting into MAX_CHUNK_SIZE
+        if (len <= maxChar) {
+            lobWrite(clob, byteOffset, buffer, null, bufOffset, len,
+                     DBConst.CS_LOB_WRITE_FIRST |
+                         DBConst.CS_LOB_WRITE_LAST);
+
+            return len;
+        }
+        else {
+            do {
+                if (len -
+                    totalCharCnt > maxChar) {
+                    splitCharCnt = maxChar;
+                }
+                else {
+                    splitCharCnt = (int) (len - totalCharCnt);
+                    lastMsg = true;
+                }
+
+                flag = 0;
+
+                if (firstMsg)
+                    flag = DBConst.CS_LOB_WRITE_FIRST;
+                else if (lastMsg)
+                    flag = DBConst.CS_LOB_WRITE_LAST;
+
+                // when exception is occurred in writing lob data,
+                // cancel this transaction
+                try {
+                    lobWrite(clob, byteOffset, buffer, null, bufOffset +
+                        totalCharCnt, splitCharCnt, flag);
+                }
+                catch (SQLException e) {
+                    // ������ TBMSG_CANCEL ���� �ʿ� ���ٰ� ��
+                    // if (!firstMsg)
+                    // cancel();
+                    throw e;
+                }
+
+                totalCharCnt += splitCharCnt;
+                byteOffset += splitCharCnt *
+                    bytePerChar;
+                firstMsg = false;
+            }
+            while (len > totalCharCnt);
+
+            return totalCharCnt;
+        }
+    }
+}

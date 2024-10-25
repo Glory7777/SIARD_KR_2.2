@@ -1,0 +1,45 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ini4j-0.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcmysql-2.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcaccess.jar!/" />
+      <root url="jar://$PROJECT_DIR$/activation-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/mslinks.jar!/" />
+      <root url="jar://$PROJECT_DIR$/sqlparser.jar!/" />
+      <root url="jar://$PROJECT_DIR$/tika-app-2.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/hamcrest-core-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/xdb6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jaxb-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/woodstox-core-lgpl-4.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/zip64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/commons-logging-1.1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jaxb-impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/postgresql-42.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/woodstox-msv-rng-datatype-20020414.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcdb2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/db2jcc4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcpostgres.jar!/" />
+      <root url="jar://$PROJECT_DIR$/json-simple-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/antlr-runtime-4.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jackcess-2.1.6a.jar!/" />
+      <root url="jar://$PROJECT_DIR$/sqljdbc41.jar!/" />
+      <root url="jar://$PROJECT_DIR$/stax2-api-3.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jaxb-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jts-1.14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ojdbc6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/commons-lang-2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcbase.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jfxrt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/junit-4.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/xsdlib-2010.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/sunjdbc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcoracle.jar!/" />
+      <root url="jar://$PROJECT_DIR$/enterutils.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jdbcmssql.jar!/" />
+      <root url="jar://$PROJECT_DIR$/msv-core-2010.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
