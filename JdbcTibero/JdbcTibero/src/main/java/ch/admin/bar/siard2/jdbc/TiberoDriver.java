@@ -50,11 +50,11 @@ public class TiberoDriver extends BaseDriver implements Driver
 
     /** register this driver, replacing original Tibero driver */
     public static void register() {
-        System.setProperty("jdbc.drivers", "jdbc.driver.TiberoDriver");
+        System.setProperty("jdbc.drivers", "com.tmax.tibero.tibero.jdbc.TbDriver");
 
         // tibero.jdbc.driver.TIBERODriver is excluded in acceptsURL
         try {
-            BaseDriver.register(new TiberoDriver(), "com.tmax.tibero.tibero.jdbc.driver.TBDriver", "jdbc:tibero://localhost:8629/tibero?user=siard&password=siard");
+            BaseDriver.register(new TiberoDriver(), "com.tmax.tibero.tibero.jdbc.TbDriver", "jdbc:tibero://localhost:8629/tibero?user=sys&password=");
         } catch (Exception e) {
             throw new Error(e);
         }

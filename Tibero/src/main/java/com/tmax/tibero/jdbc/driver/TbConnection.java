@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.driver;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import com.tmax.tibero.jdbc.TbArrayDescriptor;
 import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClob;

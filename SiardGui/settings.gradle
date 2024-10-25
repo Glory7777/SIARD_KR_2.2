@@ -10,8 +10,11 @@ project(':SiardApi').projectDir = file('../SiardApi')
 project(':EnterUtils').projectDir = file('../EnterUtils')
 project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
-include 'src:test:Tibero'
-findProject(':src:test:Tibero')?.name = 'Tibero'
+
+//project(':JdbcTibero').projectDir = file('../JdbcTibero')
+//project(':Tibero').projectDir = file('../Tibero')
+include 'src:main:Tibero'
+findProject(':src:main:Tibero')?.name = 'Tibero'
 includeFlat 'Tibero'
 include '../JdbcTibero/JdbcTibero'
 findProject(':../JdbcTibero/JdbcTibero')?.name = 'JdbcTibero'

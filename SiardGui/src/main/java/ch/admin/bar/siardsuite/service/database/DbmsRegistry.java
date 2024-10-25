@@ -338,7 +338,7 @@ public class DbmsRegistry {
                                 .dbName(dbName)
                                 .user(user)
                                 .password(password)
-                                .options(Optional.empty()) // 필요 시 추가 옵션 처리
+                                .options(Optional.empty())
                                 .build();
                     })
                     .examplePort("8629")
