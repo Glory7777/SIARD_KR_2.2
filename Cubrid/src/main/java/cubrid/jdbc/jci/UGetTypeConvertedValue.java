@@ -260,6 +260,10 @@ abstract public class UGetTypeConvertedValue {
 	} else if (data instanceof CUBRIDArray) {
 		String ret_str;
 		Object aobj;
+		CUBRIDArray cubridArray = (CUBRIDArray) data;
+		if (cubridArray.getLength() == 0 || cubridArray.getElement(0) == null) {
+			return "";
+		}
 		aobj = ((CUBRIDArray) data).getElement(0);
 		ret_str = "{'" + aobj.toString().replaceAll("'", "''") + "'";
 		for (int i = 1; i < ((CUBRIDArray) data).getLength(); i++) {

@@ -36,4 +36,8 @@ public class FormData {
         columnSet.add(column);
     }
 
+    public boolean hasData() {
+        return !downloadableTableMap.isEmpty();
+    }
+
 }
