@@ -1,12 +1,10 @@
 package ch.admin.bar.siard2.api.ext.form;
 
-import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.ext.FileDownloadPathHolder;
 import ch.admin.bar.siard2.api.ext.SchemaTableKey;
 import ch.admin.bar.siard2.api.ext.SftpConnection;
 import ch.admin.bar.siard2.api.ext.util.FileUtil;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,10 +24,12 @@ public class FormDataHelper {
     private final SchemaTableKey schemaTableKey;
 
     public void send() {
-        if (isSftp()) {
-            sendOverSftp();
-        } else {
-            copyFile();
+        if (formData.hasData()) {
+            if (isSftp()) {
+                sendOverSftp();
+            } else {
+                copyFile();
+            }
         }
     }
 
@@ -58,6 +58,10 @@ public class FormDataHelper {
 
     private boolean isSftp() {
         return formData.isSftp();
+    }
+
+    private boolean isCopy() {
+        return formData.isCopy();
     }
 
     private FileDownloadPathHolder getFileDownloadPathHolder() {
