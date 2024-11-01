@@ -1,22 +1,19 @@
 package ch.admin.bar.siardsuite.ui.component.rendering;
 
+import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
+import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
+import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.ui.component.rendering.model.*;
 import ch.admin.bar.siardsuite.util.I18n;
 import ch.admin.bar.siardsuite.util.OptionalHelper;
-import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
-import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
-import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +43,9 @@ public class FormRenderer<T> {
 
     private final BooleanProperty hasChanged;
 
+    @Setter
     @Getter
-    private final VBox rendered;
+    private VBox rendered;
 
     @Builder
     public FormRenderer(

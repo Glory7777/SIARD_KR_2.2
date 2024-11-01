@@ -3,6 +3,7 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 import ch.admin.bar.siard2.api.MetaParameter;
 import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.admin.bar.siardsuite.ui.common.Icon;
+import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableForm;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.*;
 import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
 import ch.admin.bar.siardsuite.model.database.DatabaseAttribute;
@@ -20,6 +21,8 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKeyArg;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static ch.admin.bar.siardsuite.model.TreeAttributeWrapper.DatabaseAttribute.*;
 
+@Builder
 @RequiredArgsConstructor
 public class TreeBuilder {
 
@@ -71,9 +75,10 @@ public class TreeBuilder {
     private static final I18nKeyArg<Number> ROWS_ELEMENT_NAME = I18nKeyArg.of("archive.tree.view.node.rows");
     private static final I18nKey ROWS_VIEW_TITLE = I18nKey.of("tableContainer.title.data");
 
-    private final SiardArchive siardArchive;
+    @Getter private final SiardArchive siardArchive;
     private final boolean readonly;
     private final boolean columnSelectable;
+    private final String searchTerm;
 
     public TreeItem<TreeAttributeWrapper> createRootItem() {
         val rootItem = new TreeItem<>(
@@ -172,6 +177,36 @@ public class TreeBuilder {
         schemasItem.getChildren().setAll(schemaItems);
 
         return schemasItem;
+    }
+
+    private TreeItem<TreeAttributeWrapper> createItemForSchemas(String searchTerm) {
+
+        Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
+        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
+
+        long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
+        String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
+        val schemasItem = new TreeItem<>(
+                TreeAttributeWrapper.builder()
+                        .name(DisplayableText.of(SCHEMAS_ELEMENT_NAME, schemas.size()))
+                        .viewTitle(DisplayableText.of(SCHEMAS_VIEW_TITLE))
+                        .renderableForm(MetadataDetailsForm.create(siardArchive).toBuilder()
+                                .readOnlyForm(readonly)
+                                .build())
+                        .databaseAttribute(SCHEMA_TITLE)
+                        .shouldPropagate(true)
+                        .shouldHaveCheckBox(true)
+                        .size(schemaSize)
+                        .formattedSize(formattedSchemaSize)
+                        .build());
+
+        val schemaItems = schemas.stream()
+                .map(this::createItemsForSchema)
+                .collect(Collectors.toList());
+        schemasItem.getChildren().setAll(schemaItems);
+
+        return schemasItem;
+
     }
 
     private TreeItem<TreeAttributeWrapper> createItemsForSchema(DatabaseSchema schema) {
@@ -430,13 +465,14 @@ public class TreeBuilder {
         return tablesItem;
     }
 
-    private TreeItem<TreeAttributeWrapper> createItemForTable(DatabaseTable table) {
+    public TreeItem<TreeAttributeWrapper> createItemForTable(DatabaseTable table) {
         val tableItem = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(table.getName()))
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
-                .renderableForm(TableOverviewForm.create(table).toBuilder()
-                                        .readOnlyForm(readonly)
-                                        .build())
+                .renderableForm(
+                        TableOverviewForm.create(table).toBuilder()
+                                .readOnlyForm(readonly)
+                                .build())
                 .databaseAttribute(TABLE)
                 .databaseTable(table)
                 .shouldPropagate(false)
@@ -448,14 +484,20 @@ public class TreeBuilder {
                 .build());
 
         if (!siardArchive.onlyMetaData()) {
-            val rowsItem = new TreeItem<>(TreeAttributeWrapper.builder()
-                    .name(DisplayableText.of(ROWS_ELEMENT_NAME, table.getTable().getMetaTable().getRows()))
-                    .viewTitle(DisplayableText.of(ROWS_VIEW_TITLE))
-                    .renderableForm(RowsOverviewForm.create(table)
-                            .toBuilder()
-                            .readOnlyForm(readonly)
-                            .build())
-                    .build());
+            RenderableForm<DatabaseTable> form = RowsOverviewForm.createAndUpdateWithSearchResult(table, searchTerm)
+                    .toBuilder()
+                    .readOnlyForm(readonly)
+                    .build();
+
+            val rowsItem = new TreeItem<>(
+                    TreeAttributeWrapper.builder()
+                            .renderableForm(form)
+                            .name(DisplayableText.of(ROWS_ELEMENT_NAME, table.getNumberOfRows()))
+                            .viewTitle(DisplayableText.of(ROWS_VIEW_TITLE))
+                            .databaseAttribute(RECORD)
+                            .databaseTable(table)
+                            .build()
+            );
 
             tableItem.getChildren().add(rowsItem);
         }
