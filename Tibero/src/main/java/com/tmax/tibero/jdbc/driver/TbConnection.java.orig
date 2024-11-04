@@ -7,21 +7,21 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.driver;
+package com.tmax.tibero.jdbc.driver;
 
-import tibero.Debug;
-import tibero.DriverConstants;
-import tibero.jdbc.*;
-import tibero.jdbc.comm.*;
-import tibero.jdbc.data.*;
-import tibero.jdbc.dpl.TbDirPathMetaData;
-import tibero.jdbc.dpl.TbDirPathStream;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.ext.TbStatementCache;
-import tibero.jdbc.util.TbDTFormat;
-import tibero.jdbc.util.TbDTFormatParser;
-import tibero.jdbc.util.TbSQLTypeScanner;
-import tibero.jdbc.data.DataTypeConverter;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.jdbc.*;
+import com.tmax.tibero.jdbc.comm.*;
+import com.tmax.tibero.jdbc.data.*;
+import com.tmax.tibero.jdbc.dpl.TbDirPathMetaData;
+import com.tmax.tibero.jdbc.dpl.TbDirPathStream;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.ext.TbStatementCache;
+import com.tmax.tibero.jdbc.util.TbDTFormat;
+import com.tmax.tibero.jdbc.util.TbDTFormatParser;
+import com.tmax.tibero.jdbc.util.TbSQLTypeScanner;
+import com.tmax.tibero.jdbc.data.DataTypeConverter;
 
 import java.sql.*;
 import java.util.*;
@@ -34,10 +34,10 @@ import java.util.*;
 /**
  * TbConnection class.
  * 
- * @author ï¿½Ì¿ï¿½ï¿½ï¿½, yjlee@tmax.co.kr ï¿½ï¿½Ô»ï¿½ gusami@tmax.co.kr
+ * @author ÀÌ¿ëÀç, yjlee@tmax.co.kr ±è±Ô»ï gusami@tmax.co.kr
  * @version $Id: TbConnection.java 186284 2020-10-20 09:17:47Z kyungtak_min $
  */
-public class TbConnection extends tibero.jdbc.TbConnection {
+public class TbConnection extends com.tmax.tibero.jdbc.TbConnection {
     final String _DESC_TOBJ_ID_PREFIX = DataTypeConverter._DESC_TOBJ_ID_PREFIX;
     final String _DESC_VERSION_NO_PREFIX = DataTypeConverter._DESC_VERSION_NO_PREFIX;
 
@@ -183,7 +183,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
             throws SQLException {
         TbArray arr = null;
 
-        // schemaName, typeName, sqlTypeName ï¿½ï¿½ï¿½Ï±ï¿½
+        // schemaName, typeName, sqlTypeName ±¸ÇÏ±â
         String schemaName = this.info.getUser();
         String delim = ".";
         String[] tokens = typeName.split("[delim]{1}");
@@ -199,10 +199,10 @@ public class TbConnection extends tibero.jdbc.TbConnection {
         }
         String sqlTypeName = schemaName + delim + typeName;
 
-        // typeNameï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ArrayDescriptorï¿½ï¿½ ï¿½ï¿½ subTypeï¿½ï¿½ arrayDescriptorï¿½ï¿½ TbConnection.descMapï¿½ï¿½ ï¿½ï¿½ï¿½
+        // typeName¿¡ ÇØ´çÇÏ´Â ArrayDescriptor¿Í ±× subTypeÀÇ arrayDescriptor¸¦ TbConnection.descMap¿¡ µî·Ï
         TbArrayDescriptor desc = TbArrayDescriptor.lookupUdtMeta(schemaName, typeName, this);
 
-        // ArrayDescriptor, elementsï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ Array ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // ArrayDescriptor, elements¸¦ ÀÌ¿ëÇØ Array »ý¼º ¹× ¸®ÅÏ
         arr = new TbArray(desc, this, elements);
 
         return arr;
@@ -293,7 +293,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(null,
                             TbStatementCache.ENTRY_TYPE_TBSTATEMENT, RsetType
                                     .getRsetType(resultSetType,
@@ -331,7 +331,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
         // #endif
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(null,
                             TbStatementCache.ENTRY_TYPE_TBSTATEMENT, RsetType
                                     .getRsetType(resultSetType,
@@ -710,8 +710,8 @@ public class TbConnection extends tibero.jdbc.TbConnection {
 
         dbComm.createStream();
         /* 
-         * login_timeout ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¹Ç·ï¿½, 
-         * self keepalive ï¿½ï¿½ï¿½ï¿½ï¿½ logon ï¿½Ï·ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ Ã³ï¿½ï¿½ï¿½Ñ´ï¿½.
+         * login_timeout ¼³Á¤ÀÌ º°µµ·Î Á¸ÀçÇÏ¹Ç·Î, 
+         * self keepalive ±â´ÉÀº logon ¿Ï·á½Ã±îÁö´Â ºñÈ°¼ºÈ­ Ã³¸®ÇÑ´Ù.
          */
         dbComm.getStream().setSelfKeepAliveEnabled(false);
 
@@ -724,8 +724,8 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                 dbComm.logon(logonWithNewPassword);
             } catch (SQLException e) {
                 /*
-                 * reconnectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ñ´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ï¿½Ï´Ù¸ï¿½
-                 * Exceptionï¿½ï¿½ throwï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+                 * reconnect¸¦ ÅëÇØ ¿¬°áÀÌ ¼º°øÇÏ¿´´ÂÁö È®ÀÎÇÑ´Ù. ¿¬°áÀÌ À¯È¿ÇÏ´Ù¸é
+                 * ExceptionÀ» throwÇÏÁö ¾Ê°í Á¤»ó Á¾·áÇÑ´Ù.
                  */
                 if (!sessionClosed && !connClosed) {
                     if (Debug.TRACE) {
@@ -779,7 +779,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(sql,
                             TbStatementCache.ENTRY_TYPE_TBCALLABLESTATEMENT,
                             RsetType.getRsetType(resultSetType,
@@ -808,7 +808,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(sql,
                             TbStatementCache.ENTRY_TYPE_TBCALLABLESTATEMENT,
                             RsetType.getRsetType(resultSetType,
@@ -873,7 +873,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(sql,
                             TbStatementCache.ENTRY_TYPE_TBPREPAREDSTATEMENT,
                             RsetType.getRsetType(rsetType, rsetConcurrency));
@@ -900,7 +900,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     .newSQLException(TbError.MU_ACTION_ON_CLOSED_CONNECTION);
 
         if (stmtCache != null) {
-            tibero.jdbc.TbStatement stmt =
+            com.tmax.tibero.jdbc.TbStatement stmt =
                     stmtCache.get(sql,
                             TbStatementCache.ENTRY_TYPE_TBPREPAREDSTATEMENT,
                             RsetType.getRsetType(rsetType, rsetConcurrency));
@@ -957,7 +957,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                 Debug.log("TbStream.reconnect (BEGIN)");
 
             boolean autoCommit = true;
-            /* close() ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸é¼­ info ï¿½Êµå¸¦ nullï¿½ï¿½ ï¿½Ù²Ù¹Ç·ï¿½, ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* close() ¼öÇàÇÏ¸é¼­ info ÇÊµå¸¦ null·Î ¹Ù²Ù¹Ç·Î, ·ÎÄÃº¯¼ö·Î ·¹ÆÛ·±½º À¯Áö */
             ConnectionInfo oldInfo = info;
 
             if (!middleOfFailover)
@@ -977,10 +977,10 @@ public class TbConnection extends tibero.jdbc.TbConnection {
                     Debug.log("TbStream.reconnect (RECONNECTED)");
             }
             catch (SQLException e) {
-                /* Failover ï¿½ï¿½È²ï¿½ï¿½ï¿½ï¿½ ï¿½ç¿¬ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½È²ï¿½ï¿½ 
-                 * ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ç¿¬ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½È²ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
-                 * ï¿½ß»ï¿½ï¿½Ï¹Ç·ï¿½ ï¿½ï¿½ ï¿½ï¿½ì¸¦ Ã³ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ç¿¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ï¿ï¿½
-                 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+                /* Failover »óÈ²¿¡¼­ Àç¿¬°áÀ» ½ÃµµÇÏ´Â °úÁ¤Áß¿¡ ¼­¹ö³ª ³×Æ®¿öÅ© »óÈ²¿¡ 
+                 * µû¶ó ´Ù½Ã Àç¿¬°áÇÏ´Â »óÈ²ÀÌ ¹ß»ýÇÏ¸é ¿¬°áÀÌ ¼º°øÇÏ´õ¶óµµ ¿¡·¯°¡ 
+                 * ¹ß»ýÇÏ¹Ç·Î ÀÌ °æ¿ì¸¦ Ã³¸®ÇÏ±â À§ÇØ Àç¿¬°áÀÌ ¼º°øÇß´ÂÁö¸¦ ÆÇ´ÜÇÏ¿©
+                 * ¿¬°áÀ» ²÷À»Áö °áÁ¤ÇÑ´Ù.
                  */
                 if (!isReconnected()) {
                     if (Debug.TRACE)
@@ -1006,13 +1006,13 @@ public class TbConnection extends tibero.jdbc.TbConnection {
             }
 
             /*
-             * failoverï¿½ï¿½ ï¿½ï¿½Ã¸ï¿½Ø¼ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, recursiveï¿½Ï°ï¿½ reconnectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È´ï¿½.
-             * ï¿½Ì¶ï¿½, failover flagï¿½ï¿½ ï¿½Ì¸ï¿½ offï¿½ï¿½ï¿½ï¿½ ï¿½Êµï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+             * failover°¡ ÁßÃ¸ÇØ¼­ ¹ß»ýÇßÀ» ¶§, recursiveÇÏ°Ô reconnect°¡ ¼öÇàµÈ´Ù.
+             * ÀÌ¶§, failover flag¸¦ ¹Ì¸® offÇÏÁö ¾Êµµ·Ï È£ÃâÀü »óÅÂ°ª ±âÁØÀ¸·Î º¹¿øÇÑ´Ù.
              */
             setMiddleOfFailover(middleOfFailover);
         }
         else {
-            /* End of Stream ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ physical connectionï¿½ï¿½ ï¿½Ý´Â´ï¿½. */
+            /* End of Stream ¿¡·¯ ¹ß»ý½Ã physical connectionÀ» ´Ý´Â´Ù. */
             try {
                 close();
             }
@@ -1036,7 +1036,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
         return foActiveRsets.remove(rs);
     }
 
-    /* physical connectionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ */
+    /* physical connectionÀ» ´ÝÀ» ¶§ */
     public void reset() {
         info = null;
         serverInfo = null;
@@ -1077,7 +1077,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
             int minor = serverInfo.getProtocolMinorVersion();
 
             if (major > 2 || (major == 2 && minor > 1)) {
-                /* protocol version 2.2 ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ reset_sess ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+                /* protocol version 2.2 ÀÌ»óÀÎ °æ¿ì¿¡¸¸ reset_sess ¸Þ½ÃÁö¸¦ º¸³½´Ù */
                 if (Debug.TRACE || Debug.CONNECTION) {
                     Debug.logMethod("TbConnection.resetSession", null,
                             new Object[0]);
@@ -1088,7 +1088,7 @@ public class TbConnection extends tibero.jdbc.TbConnection {
         }
     }
 
-    /* logical connectionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ */
+    /* logical connectionÀ» ´ÝÀ» ¶§ */
     public void reuse() {
         warnings = null;
         autoCommit = true;

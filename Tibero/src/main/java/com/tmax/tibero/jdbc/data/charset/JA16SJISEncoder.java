@@ -71,7 +71,7 @@ public class JA16SJISEncoder implements CharsetEncoder {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISEncoder.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISEncoder.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

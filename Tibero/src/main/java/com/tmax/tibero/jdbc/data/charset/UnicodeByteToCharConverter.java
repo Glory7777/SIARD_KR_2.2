@@ -45,7 +45,7 @@ public class UnicodeByteToCharConverter {
       } else if (c == '￾') {
         b = 2;
       } 
-      if (!b1) {
+      if (b1 != 1) {
         if (b == 0)
           throw TbError.newSQLException(-590745); 
         b1 = b;
@@ -94,7 +94,7 @@ public class UnicodeByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UnicodeByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UnicodeByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

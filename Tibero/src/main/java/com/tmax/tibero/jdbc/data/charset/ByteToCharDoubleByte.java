@@ -23,39 +23,39 @@ public class ByteToCharDoubleByte {
     int j = 0;
     byte b = 0;
     i = paramInt3;
+    byte b1;
     for (j = paramInt1; j < paramInt2; j += b1) {
-      byte b1;
       int k;
-      if (!b) {
+      if (b != 0) {
         k = paramArrayOfbyte[j];
         b1 = 1;
       } else {
         k = b;
         b = 0;
         b1 = 0;
-      } 
+      }
       char c = convSingleByte(k);
       if (c == '�') {
         if (j + b1 >= paramInt2) {
           b = (byte)k;
           j += b1;
           break;
-        } 
+        }
         k &= 0xFF;
         int m = paramArrayOfbyte[j + b1] & 0xFF;
         b1++;
         c = getUnicode(k, m);
-      } 
+      }
       if (c == '�')
         if (this.subMode) {
           c = this.subChars[0];
         } else {
           c = this.subChars[0];
-        }  
+        }
       if (i >= paramInt4)
-        c = this.subChars[0]; 
+        c = this.subChars[0];
       paramArrayOfchar[i++] = c;
-    } 
+    }
     return i - paramInt3;
   }
   
@@ -84,7 +84,7 @@ public class ByteToCharDoubleByte {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ByteToCharDoubleByte.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ByteToCharDoubleByte.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

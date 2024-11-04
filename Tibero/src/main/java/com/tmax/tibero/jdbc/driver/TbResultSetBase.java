@@ -109,7 +109,7 @@ public abstract class TbResultSetBase extends TbResultSet {
   private void buildColumnNameMap() {
     this.columnNameMap = new HashMap<String, Integer>();
     for (int i = getColumnCount() - 1; i >= 0; i--)
-      this.columnNameMap.put(this.cols[i + this.beginColumnIndex].getName().toUpperCase(), new Integer(i + 1)); 
+      this.columnNameMap.put(this.cols[i + this.beginColumnIndex].getName().toUpperCase(), i + 1);
   }
   
   public void cancelRowUpdates() throws SQLException {
@@ -168,13 +168,12 @@ public abstract class TbResultSetBase extends TbResultSet {
     TbConnection tbConnection = (TbConnection)this.stmt.getConnection();
     ServerInfo serverInfo = tbConnection.getServerInfo();
     if (serverInfo != null) {
-      int i;
       boolean bool = this.fetchComplete;
       int j = serverInfo.getProtocolMajorVersion();
       int k = serverInfo.getProtocolMinorVersion();
       if (j > 2 || (j == 2 && k < 3))
-        i = bool & (!this.haveLocator ? 1 : 0); 
-      if (this.stmt != null && i == 0 && (tbConnection.isPooledConnection || !tbConnection.isSessionClosed()))
+        bool &= !this.haveLocator;
+      if (this.stmt != null && !bool && (tbConnection.isPooledConnection || !tbConnection.isSessionClosed()))
         tbConnection.closeCursor(this, this.csrID); 
     } 
     tbConnection.removeFOActiveResultSet(this);
@@ -1369,7 +1368,7 @@ public abstract class TbResultSetBase extends TbResultSet {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbResultSetBase.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbResultSetBase.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

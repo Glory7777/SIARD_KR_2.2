@@ -35,7 +35,7 @@ public class TbSQLOutput implements SQLOutput {
     this.conn = paramTbConnection;
     this.index = 0;
   }
-  
+
   public TbStruct getStruct() throws SQLException {
     return new TbStruct(this.descriptor, this.conn, this.attributes);
   }
@@ -45,31 +45,31 @@ public class TbSQLOutput implements SQLOutput {
   }
   
   public void writeBoolean(boolean paramBoolean) throws SQLException {
-    this.attributes[this.index++] = Boolean.valueOf(paramBoolean);
+    this.attributes[this.index++] = paramBoolean;
   }
   
   public void writeByte(byte paramByte) throws SQLException {
-    this.attributes[this.index++] = Integer.valueOf(paramByte);
+    this.attributes[this.index++] = paramByte;
   }
   
   public void writeShort(short paramShort) throws SQLException {
-    this.attributes[this.index++] = Integer.valueOf(paramShort);
+    this.attributes[this.index++] = paramShort;
   }
   
   public void writeInt(int paramInt) throws SQLException {
-    this.attributes[this.index++] = Integer.valueOf(paramInt);
+    this.attributes[this.index++] = paramInt;
   }
   
   public void writeLong(long paramLong) throws SQLException {
-    this.attributes[this.index++] = Long.valueOf(paramLong);
+    this.attributes[this.index++] = paramLong;
   }
   
   public void writeFloat(float paramFloat) throws SQLException {
-    this.attributes[this.index++] = Float.valueOf(paramFloat);
+    this.attributes[this.index++] = paramFloat;
   }
   
   public void writeDouble(double paramDouble) throws SQLException {
-    this.attributes[this.index++] = Double.valueOf(paramDouble);
+    this.attributes[this.index++] = paramDouble;
   }
   
   public void writeBigDecimal(BigDecimal paramBigDecimal) throws SQLException {
@@ -157,7 +157,7 @@ public class TbSQLOutput implements SQLOutput {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbSQLOutput.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbSQLOutput.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

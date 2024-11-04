@@ -14,7 +14,7 @@ public class MS950ExtByteToCharConverter {
   
   public int convert(byte paramByte1, byte paramByte2, char[] paramArrayOfchar, int paramInt) {
     if (paramByte1 == -7 && ((paramByte2 >= 64 && paramByte2 < Byte.MAX_VALUE) || (paramByte2 >= -95 && paramByte2 < -1))) {
-      byte b = ((paramByte2 & 0xFF) >= 161) ? 98 : 64;
+      int b = ((paramByte2 & 0xFF) >= 161) ? 98 : 64;
       int i = 157 * ((paramByte1 & 0xFF) - 161) + (paramByte2 & 0xFF) - b;
       char c = '�';
       if (i >= 13932 && i < 13973)
@@ -29,7 +29,7 @@ public class MS950ExtByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS950ExtByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS950ExtByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

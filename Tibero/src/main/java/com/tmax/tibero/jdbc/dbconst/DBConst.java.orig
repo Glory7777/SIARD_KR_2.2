@@ -1,4 +1,4 @@
-package tibero.jdbc.dbconst;
+package com.tmax.tibero.jdbc.dbconst;
 
 /**
  * This is Auto-generated file.

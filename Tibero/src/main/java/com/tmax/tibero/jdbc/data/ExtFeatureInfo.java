@@ -58,7 +58,7 @@ public class ExtFeatureInfo {
           str = this.conn.serverInfo.getTbProductName();
           i = this.conn.serverInfo.getTbMajor();
           bool = ((i >= 6 && DB_T.equalsIgnoreCase(str)) || (i >= 11 && DB_I.equalsIgnoreCase(str)) || (i >= 6 && DB_U.equalsIgnoreCase(str))) ? true : false;
-          this.info[0] = bool ? 1 : 2;
+          this.info[0] = (short) (bool ? 1 : 2);
           return bool;
         case 1:
           bool1 = false;
@@ -67,7 +67,7 @@ public class ExtFeatureInfo {
             preparedStatement.setString(1, "ALL_TYPES");
             ResultSet resultSet = preparedStatement.executeQuery();
             bool1 = resultSet.next();
-            this.info[1] = bool1 ? 1 : 2;
+            this.info[1] = (short) (bool1 ? 1 : 2);
             return bool1;
           } catch (Exception exception) {
             break;
@@ -85,7 +85,7 @@ public class ExtFeatureInfo {
             preparedStatement.setString(2, "DATA_TYPE_OWNER");
             ResultSet resultSet = preparedStatement.executeQuery();
             bool2 = resultSet.next();
-            this.info[2] = bool2 ? 1 : 2;
+            this.info[2] = (short) (bool2 ? 1 : 2);
             return bool2;
           } catch (Exception exception) {
             break;
@@ -111,7 +111,7 @@ public class ExtFeatureInfo {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\ExtFeatureInfo.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\ExtFeatureInfo.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

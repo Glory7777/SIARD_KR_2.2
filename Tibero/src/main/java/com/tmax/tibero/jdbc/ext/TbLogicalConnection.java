@@ -396,7 +396,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbCallableStatement tbCallableStatement = (TbCallableStatement)this.physicalConn.prepareCall(paramString);
       return (CallableStatement)new TbLogicalCallableStatement(this, tbCallableStatement);
     } catch (SQLException sQLException) {
@@ -409,7 +409,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbCallableStatement tbCallableStatement = (TbCallableStatement)this.physicalConn.prepareCall(paramString, paramInt1, paramInt2);
       return (CallableStatement)new TbLogicalCallableStatement(this, tbCallableStatement);
     } catch (SQLException sQLException) {
@@ -426,7 +426,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -439,7 +439,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString, paramBoolean);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -452,7 +452,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString, paramInt);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -465,7 +465,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString, paramInt1, paramInt2);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -482,7 +482,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString, paramArrayOfint);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -495,7 +495,7 @@ public class TbLogicalConnection extends TbConnection {
     if (isClosed())
       throw TbError.newSQLException(-90603); 
     try {
-      null = null;
+//      null = null;
       TbPreparedStatement tbPreparedStatement = (TbPreparedStatement)this.physicalConn.prepareStatement(paramString, paramArrayOfString);
       return (PreparedStatement)new TbLogicalPreparedStatement(this, tbPreparedStatement);
     } catch (SQLException sQLException) {
@@ -771,7 +771,7 @@ public class TbLogicalConnection extends TbConnection {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbLogicalConnection.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbLogicalConnection.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

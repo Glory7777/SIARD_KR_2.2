@@ -30,13 +30,13 @@ public class ISO8859P15CharToByteConverter {
       } else {
         byte b;
         if (c >= ' ' && c < 'À') {
-          b = UNICODE_TO_ISO8859P15_IDX_PAGE00[c - 160];
+          b = (byte) UNICODE_TO_ISO8859P15_IDX_PAGE00[c - 160];
         } else if (c >= 'À' && c < 'Ā') {
-          b = (char)c;
+          b = (byte) c;
         } else if (c >= 'Ő' && c < 'ƀ') {
-          b = UNICODE_TO_ISO8859P15_IDX_PAGE01[c - 336];
+          b = (byte) UNICODE_TO_ISO8859P15_IDX_PAGE01[c - 336];
         } else if (c == '€') {
-          b = 164;
+          b = (byte) 164;
         } else {
           b = 63;
         } 
@@ -59,7 +59,7 @@ public class ISO8859P15CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P15CharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P15CharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

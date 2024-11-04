@@ -7,15 +7,15 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.data;
+package com.tmax.tibero.jdbc.data;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.util.TbCommon;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.util.TbCommon;
 
 /**
  * TbNumber class.

@@ -43,7 +43,7 @@ public class CharToByteDoubleByte {
     byte[] arrayOfByte = new byte[2];
     i = paramInt1;
     j = paramInt3;
-    if (c) {
+    if (c == 0) {
       c = Character.MIN_VALUE;
       if (this.subMode) {
         int k = this.subBytes.length;
@@ -173,7 +173,7 @@ public class CharToByteDoubleByte {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\CharToByteDoubleByte.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\CharToByteDoubleByte.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

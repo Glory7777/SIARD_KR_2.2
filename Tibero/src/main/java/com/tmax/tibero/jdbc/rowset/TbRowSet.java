@@ -346,8 +346,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(1);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 1;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -355,8 +355,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Integer(paramInt2);
-    arrayOfObject[2] = new Integer(1);
+    arrayOfObject[1] = paramInt2;
+    arrayOfObject[2] = 1;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
   
@@ -381,8 +381,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(2);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 2;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -390,8 +390,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Integer(paramInt2);
-    arrayOfObject[2] = new Integer(2);
+    arrayOfObject[1] = paramInt2;
+    arrayOfObject[2] = 2;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
   
@@ -412,8 +412,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(5);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 5;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -421,8 +421,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramInputStream;
-    arrayOfObject[1] = new Long(paramLong);
-    arrayOfObject[2] = new Integer(5);
+    arrayOfObject[1] = paramLong;
+    arrayOfObject[2] = 5;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -449,7 +449,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setByte(int paramInt, byte paramByte) throws SQLException {
     checkParameterIndex(paramInt);
-    this.params.add(paramInt - 1, new Byte(paramByte));
+    this.params.add(paramInt - 1, paramByte);
   }
   
   public void setByte(String paramString, byte paramByte) throws SQLException {
@@ -469,8 +469,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(3);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 3;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -478,8 +478,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Integer(paramInt2);
-    arrayOfObject[2] = new Integer(3);
+    arrayOfObject[1] = paramInt2;
+    arrayOfObject[2] = 3;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
   
@@ -500,8 +500,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(6);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 6;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -509,8 +509,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Long(paramLong);
-    arrayOfObject[2] = new Integer(6);
+    arrayOfObject[1] = paramLong;
+    arrayOfObject[2] = 6;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -568,7 +568,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setDouble(int paramInt, double paramDouble) throws SQLException {
     checkParameterIndex(paramInt);
-    this.params.add(paramInt - 1, new Double(paramDouble));
+    this.params.add(paramInt - 1, paramDouble);
   }
   
   public void setDouble(String paramString, double paramDouble) throws SQLException {
@@ -589,7 +589,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setFloat(int paramInt, float paramFloat) throws SQLException {
     checkParameterIndex(paramInt);
-    this.params.add(paramInt - 1, new Float(paramFloat));
+    this.params.add(paramInt - 1, paramFloat);
   }
   
   public void setFloat(String paramString, float paramFloat) throws SQLException {
@@ -598,7 +598,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setInt(int paramInt1, int paramInt2) throws SQLException {
     checkParameterIndex(paramInt1);
-    this.params.add(paramInt1 - 1, new Integer(paramInt2));
+    this.params.add(paramInt1 - 1, paramInt2);
   }
   
   public void setInt(String paramString, int paramInt) throws SQLException {
@@ -607,7 +607,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setLong(int paramInt, long paramLong) throws SQLException {
     checkParameterIndex(paramInt);
-    this.params.add(paramInt - 1, new Long(paramLong));
+    this.params.add(paramInt - 1, paramLong);
   }
   
   public void setLong(String paramString, long paramLong) throws SQLException {
@@ -620,7 +620,7 @@ public abstract class TbRowSet implements RowSet {
     try {
       this.matchColumnIndexes.clear();
       this.matchColumnNames.clear();
-      this.matchColumnIndexes.add(0, new Integer(paramInt));
+      this.matchColumnIndexes.add(0, paramInt);
     } catch (Exception exception) {
       throw TbError.newSQLException(-90832);
     } 
@@ -635,7 +635,7 @@ public abstract class TbRowSet implements RowSet {
       if (paramArrayOfint[b] <= 0)
         throw TbError.newSQLException(-90840); 
       try {
-        this.matchColumnIndexes.add(b, new Integer(paramArrayOfint[b]));
+        this.matchColumnIndexes.add(b, paramArrayOfint[b]);
       } catch (Exception exception) {
         throw TbError.newSQLException(-90832);
       } 
@@ -682,8 +682,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(4);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 4;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -691,8 +691,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Long(paramLong);
-    arrayOfObject[2] = new Integer(4);
+    arrayOfObject[1] = paramLong;
+    arrayOfObject[2] = 4;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -713,8 +713,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Integer(2147483647);
-    arrayOfObject[2] = new Integer(7);
+    arrayOfObject[1] = 2147483647;
+    arrayOfObject[2] = 7;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -722,8 +722,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramReader;
-    arrayOfObject[1] = new Long(paramLong);
-    arrayOfObject[2] = new Integer(7);
+    arrayOfObject[1] = paramLong;
+    arrayOfObject[2] = 7;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -743,7 +743,7 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt);
     Object[] arrayOfObject = new Object[2];
     arrayOfObject[0] = paramString;
-    arrayOfObject[1] = new Integer(0);
+    arrayOfObject[1] = 0;
     this.params.add(paramInt - 1, arrayOfObject);
   }
   
@@ -759,7 +759,7 @@ public abstract class TbRowSet implements RowSet {
   public void setNull(int paramInt1, int paramInt2, String paramString) throws SQLException {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[2];
-    arrayOfObject[0] = new Integer(paramInt2);
+    arrayOfObject[0] = paramInt2;
     arrayOfObject[1] = paramString;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
@@ -781,7 +781,7 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[2];
     arrayOfObject[0] = paramObject;
-    arrayOfObject[1] = new Integer(paramInt2);
+    arrayOfObject[1] = paramInt2;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
   
@@ -789,8 +789,8 @@ public abstract class TbRowSet implements RowSet {
     checkParameterIndex(paramInt1);
     Object[] arrayOfObject = new Object[3];
     arrayOfObject[0] = paramObject;
-    arrayOfObject[1] = new Integer(paramInt2);
-    arrayOfObject[2] = new Integer(paramInt3);
+    arrayOfObject[1] = paramInt2;
+    arrayOfObject[2] = paramInt3;
     this.params.add(paramInt1 - 1, arrayOfObject);
   }
   
@@ -838,7 +838,7 @@ public abstract class TbRowSet implements RowSet {
   
   public void setShort(int paramInt, short paramShort) throws SQLException {
     checkParameterIndex(paramInt);
-    this.params.add(paramInt - 1, new Short(paramShort));
+    this.params.add(paramInt - 1, paramShort);
   }
   
   public void setShort(String paramString, short paramShort) throws SQLException {
@@ -1024,7 +1024,7 @@ public abstract class TbRowSet implements RowSet {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbRowSet.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbRowSet.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

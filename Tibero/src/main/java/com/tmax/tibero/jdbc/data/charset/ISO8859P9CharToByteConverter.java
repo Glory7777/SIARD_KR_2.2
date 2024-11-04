@@ -32,7 +32,7 @@ public class ISO8859P9CharToByteConverter {
       if (c < 'Ð') {
         paramArrayOfbyte[j++] = (byte)c;
       } else {
-        byte b;
+        int b;
         if (c >= 'Ð' && c < 'Ā') {
           b = UNICODE_TO_ISO8859P9_IDX_PAGE00[c - 208];
         } else if (c >= 'Ę' && c < 'Š') {
@@ -59,7 +59,7 @@ public class ISO8859P9CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P9CharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P9CharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

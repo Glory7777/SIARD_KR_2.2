@@ -1,7 +1,10 @@
 package com.tmax.tibero.jdbc.driver;
 
-import com.tmax.tibero.jdbc.*;
+import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClob;
+import com.tmax.tibero.jdbc.TbClobBase;
+import com.tmax.tibero.jdbc.TbNClob;
+import com.tmax.tibero.jdbc.TbRef;
 import com.tmax.tibero.jdbc.data.Column;
 import com.tmax.tibero.jdbc.data.ParamContainer;
 import com.tmax.tibero.jdbc.data.Row;
@@ -91,7 +94,7 @@ public class TbRSUpdatable extends TbResultSet {
           paramTbPreparedStatement.setCharacterStream(j, (Reader)object, this.columnLength[k]);
         } else if (object instanceof InputStream) {
           paramTbPreparedStatement.setBinaryStream(j, (InputStream)object, this.columnLength[k]);
-        } else if (object instanceof tibero.jdbc.TbArray || object instanceof TbStruct) {
+        } else if (object instanceof com.tmax.tibero.jdbc.TbArray || object instanceof com.tmax.tibero.jdbc.TbStruct) {
           paramTbPreparedStatement.setObject(j, object);
         } else if (object instanceof byte[]) {
           int m = this.rset.getColumnDataType(k - this.beginColumnIndex + 1);
@@ -125,7 +128,7 @@ public class TbRSUpdatable extends TbResultSet {
           paramTbPreparedStatement.setCharacterStream(j, (Reader)object, this.columnLength[k]);
         } else if (object instanceof InputStream) {
           paramTbPreparedStatement.setBinaryStream(j, (InputStream)object, this.columnLength[k]);
-        } else if (object instanceof tibero.jdbc.TbArray || object instanceof TbStruct) {
+        } else if (object instanceof com.tmax.tibero.jdbc.TbArray || object instanceof com.tmax.tibero.jdbc.TbStruct) {
           paramTbPreparedStatement.setObject(j, object);
         } else if (object instanceof byte[]) {
           int m = this.rset.getColumnDataType(k - this.beginColumnIndex + 1);
@@ -976,7 +979,7 @@ public class TbRSUpdatable extends TbResultSet {
     if (paramArray == null) {
       updateNull(paramInt);
     } else {
-      if (!(paramArray instanceof tibero.jdbc.TbArray))
+      if (!(paramArray instanceof com.tmax.tibero.jdbc.TbArray))
         throw TbError.newSQLException(-590702, paramArray.toString()); 
       checkUpdateCursorPosition();
       setColumnBuffer(paramInt, 2147483647, paramArray);
@@ -1390,7 +1393,7 @@ public class TbRSUpdatable extends TbResultSet {
       return;
     } 
     checkUpdateCursorPosition();
-    if (paramObject instanceof Clob || paramObject instanceof Blob || paramObject instanceof Reader || paramObject instanceof InputStream || paramObject instanceof tibero.jdbc.TbArray || paramObject instanceof TbStruct) {
+    if (paramObject instanceof Clob || paramObject instanceof Blob || paramObject instanceof Reader || paramObject instanceof InputStream || paramObject instanceof com.tmax.tibero.jdbc.TbArray || paramObject instanceof com.tmax.tibero.jdbc.TbStruct) {
       setColumnBuffer(paramInt1, 2147483647, paramObject);
     } else {
       byte[] arrayOfByte = this.rset.typeConverter.castFromObject(paramObject, this.rset.getColumnDataType(paramInt1));
@@ -1449,7 +1452,7 @@ public class TbRSUpdatable extends TbResultSet {
   
   public synchronized void updateRowId(int paramInt, RowId paramRowId) throws SQLException {
     checkUpdateCursorPosition();
-    if (!(paramRowId instanceof TbRowId))
+    if (!(paramRowId instanceof com.tmax.tibero.jdbc.TbRowId))
       throw TbError.newSQLException(-590771, paramRowId.toString()); 
     byte[] arrayOfByte = paramRowId.getBytes();
     setColumnBuffer(paramInt, arrayOfByte.length, arrayOfByte);
@@ -1473,7 +1476,7 @@ public class TbRSUpdatable extends TbResultSet {
     if (paramSQLXML == null) {
       updateNull(paramInt);
     } else {
-      if (!(paramSQLXML instanceof TbSQLXML))
+      if (!(paramSQLXML instanceof com.tmax.tibero.jdbc.TbSQLXML))
         throw TbError.newSQLException(-590702, paramSQLXML.toString()); 
       checkUpdateCursorPosition();
       setColumnBuffer(paramInt, 2147483647, paramSQLXML);
@@ -1547,7 +1550,7 @@ public class TbRSUpdatable extends TbResultSet {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbRSUpdatable.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbRSUpdatable.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -7,7 +7,7 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.driver;
+package com.tmax.tibero.jdbc.driver;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -21,17 +21,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import tibero.Debug;
-import tibero.DriverConstants;
-import tibero.jdbc.data.BigLiteral;
-import tibero.jdbc.data.DataTypeConverter;
-import tibero.jdbc.data.RsetType;
-import tibero.jdbc.data.charset.Charset;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.ext.TbStatementCache;
-import tibero.jdbc.msg.TbPivotInfo;
-import tibero.jdbc.util.TbSQLParser;
-import tibero.jdbc.util.TbSQLTypeScanner;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.jdbc.data.BigLiteral;
+import com.tmax.tibero.jdbc.data.DataTypeConverter;
+import com.tmax.tibero.jdbc.data.RsetType;
+import com.tmax.tibero.jdbc.data.charset.Charset;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.ext.TbStatementCache;
+import com.tmax.tibero.jdbc.msg.TbPivotInfo;
+import com.tmax.tibero.jdbc.util.TbSQLParser;
+import com.tmax.tibero.jdbc.util.TbSQLTypeScanner;
 
 /**
  * TbStatement class.
@@ -39,7 +39,7 @@ import tibero.jdbc.util.TbSQLTypeScanner;
  * @author yjlee@tmax.co.kr, wyvern@tmax.co.kr, kskim@tmax.co.kr
  * @version $Id: TbStatement.java 179428 2020-06-30 06:25:30Z jihun_park $
  */
-public class TbStatement extends tibero.jdbc.TbStatement {
+public class TbStatement extends com.tmax.tibero.jdbc.TbStatement {
     protected int queryTimeout = 0;
     protected int fetchDirection = ResultSet.FETCH_FORWARD;
     protected int maxRow = 0;
@@ -313,10 +313,10 @@ public class TbStatement extends tibero.jdbc.TbStatement {
                     rs.close();
                 } catch (SQLException e) {
                     /* 
-                     * sub resultsetï¿½ï¿½ ï¿½ï¿½ï¿½ closeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½,
-                     * ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½Ô±ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. 
-                     * ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ sub resultsetï¿½ï¿½ ï¿½Ýµï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
-                     * ï¿½ï¿½ï¿½ï¿½ resultsetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½.
+                     * sub resultsetÀÇ °æ¿ì close°¡ ½ÇÆÐ ÇßÀ» ¶§,
+                     * »ç¿ëÀÚ¿¡°Ô±îÁö ¾Ë¸®Áö ¾Ê°í ¹«½ÃÇÑ´Ù. 
+                     * ±×¸®°í ´ÙÀ½ sub resultsetÀ» ´Ýµµ·ÏÇÑ´Ù.
+                     * ¿ø·¡ resultsetÀÌ ´ÝÀÌÁö ¾Ê´Â°ÍÀ» ¹æÁöÇÏ±â À§ÇÔ.
                      */
                 }
             }
@@ -660,7 +660,7 @@ public class TbStatement extends tibero.jdbc.TbStatement {
                     }
                 }
                 catch (SQLException e) {
-                    // Failover CURSOR ï¿½ï¿½å¿¡ï¿½ï¿½ execute ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ failoverï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+                    // Failover CURSOR ¸ðµå¿¡¼­ execute ¼öÇàÁß failover°¡ ¹ß»ýÇÑ °æ¿ì, Àç¼öÇàÇÑ´Ù.
                     if (conn.isClosed() ||
                             !conn.info.isFailoverCursorEnabled() ||
                             e.getErrorCode() != TbError.FO_RECONNECTED)

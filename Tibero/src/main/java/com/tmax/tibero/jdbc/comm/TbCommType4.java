@@ -1,8 +1,12 @@
 package com.tmax.tibero.jdbc.comm;
 
-import com.tmax.tibero.jdbc.*;
-import com.tmax.tibero.jdbc.TbResultSet;
 import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.jdbc.TbBlob;
+import com.tmax.tibero.jdbc.TbClobBase;
+import com.tmax.tibero.jdbc.TbLob;
+import com.tmax.tibero.jdbc.TbResultSet;
+import com.tmax.tibero.jdbc.TbSQLInfo;
+import com.tmax.tibero.jdbc.TbSQLInfo2;
 import com.tmax.tibero.jdbc.data.BatchInfo;
 import com.tmax.tibero.jdbc.data.BatchUpdateInfo;
 import com.tmax.tibero.jdbc.data.BindData;
@@ -301,7 +305,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   }
   
   public void closeSession() throws SQLException {
-    boolean bool = this.conn.getAutoCommit() ? true : false;
+    int bool = this.conn.getAutoCommit() ? 1 : 0;
     synchronized (this.stream) {
       TbMsgSend.CLOSE_SESS(this.stream, bool);
       TbMsg tbMsg = this.stream.readMsg();
@@ -542,7 +546,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
       arrayOfTbColNameList[b] = new TbColNameList();
       arrayOfTbColNameList[b].set(tbDirPathMetaData.getColumn(b + 1));
     } 
-    b = (tbDirPathMetaData.getLogFlag() == true) ? 1 : 0;
+    b = (byte) ((tbDirPathMetaData.getLogFlag() == true) ? 1 : 0);
     synchronized (this.stream) {
       TbColumnDesc[] arrayOfTbColumnDesc;
       TbMsgSend.DPL_PREPARE(this.stream, b, tbDirPathMetaData.getSchema(), tbDirPathMetaData.getTable(), i, arrayOfTbColNameList);
@@ -571,8 +575,8 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
       arrayOfTbColNameList[b] = new TbColNameList();
       arrayOfTbColNameList[b].set(tbDirPathMetaData.getColumn(b + 1));
     } 
-    b = (tbDirPathMetaData.getLogFlag() == true) ? 1 : 0;
-    boolean bool = (tbDirPathMetaData.getParallelFlag() == true) ? true : false;
+    b = (byte) ((tbDirPathMetaData.getLogFlag() == true) ? 1 : 0);
+    int bool = (tbDirPathMetaData.getParallelFlag() == true) ? 1 : 0;
     synchronized (this.stream) {
       TbColumnDesc[] arrayOfTbColumnDesc;
       TbMsgSend.DPL_PREPARE_PARALLEL(this.stream, b, bool, tbDirPathMetaData.getSchema(), tbDirPathMetaData.getTable(), tbDirPathMetaData.getPartition(), i, arrayOfTbColNameList);
@@ -638,7 +642,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   
   private int executeCallReply(TbPreparedStatementImpl paramTbPreparedStatementImpl, int paramInt, TbOutParam[] paramArrayOfTbOutParam) throws SQLException {
     byte b = -1;
-    byte b1 = (paramArrayOfTbOutParam == null) ? 0 : paramArrayOfTbOutParam.length;
+    byte b1 = (byte) ((paramArrayOfTbOutParam == null) ? 0 : paramArrayOfTbOutParam.length);
     BindData bindData = paramTbPreparedStatementImpl.getBindData();
     int i = paramTbPreparedStatementImpl.getParameterCnt();
     if (bindData.getOutParameterCnt() != b1)
@@ -662,7 +666,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   private int executePsmPrefetchReply(TbCallableStatementImpl paramTbCallableStatementImpl, int paramInt, TbMsgExecutePsmPrefetchReply paramTbMsgExecutePsmPrefetchReply) throws SQLException {
     TbOutParam[] arrayOfTbOutParam = paramTbMsgExecutePsmPrefetchReply.paramData;
     byte b = -1;
-    byte b1 = (arrayOfTbOutParam == null) ? 0 : arrayOfTbOutParam.length;
+    byte b1 = (byte) ((arrayOfTbOutParam == null) ? 0 : arrayOfTbOutParam.length);
     BindData bindData = paramTbCallableStatementImpl.getBindData();
     int i = paramTbCallableStatementImpl.getParameterCnt();
     if (bindData.getOutParameterCnt() != b1)
@@ -684,8 +688,8 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
         paramTbCallableStatementImpl.setPivotInfo(b, paramTbCallableStatementImpl.getPivotInfo());
         Vector vector = paramTbCallableStatementImpl.getPivotData();
         if (vector != null)
-          for (byte[] arrayOfByte : vector)
-            paramTbCallableStatementImpl.addPivotData(b, arrayOfByte);  
+          for (Object arrayOfByte : vector)
+            paramTbCallableStatementImpl.addPivotData((int) b, (byte[]) arrayOfByte);
       } else {
         paramTbCallableStatementImpl.setOutParam(b, (arrayOfTbOutParam[b2]).dataType, (arrayOfTbOutParam[b2]).value, null);
       } 
@@ -698,7 +702,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   }
   
   public int executeDirect(TbStatement paramTbStatement, String paramString) throws SQLException {
-    boolean bool = this.conn.getAutoCommit() ? true : false;
+    int bool = this.conn.getAutoCommit() ? 1 : 0;
     synchronized (this.stream) {
       TbMsgSend.EXECDIR(this.stream, bool, paramTbStatement.getPreFetchSize(), paramString);
       TbMsg tbMsg = this.stream.readMsg();
@@ -886,27 +890,27 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   
   private long executePrefetchNoDescReply(TbPreparedStatementImpl paramTbPreparedStatementImpl, TbMsgExecutePrefetchNoDescReply paramTbMsgExecutePrefetchNoDescReply) throws SQLException {
     TbResultSet tbResultSet = processPrefetchedRset((TbStatement)paramTbPreparedStatementImpl, paramTbPreparedStatementImpl.getOutColCnt(), paramTbPreparedStatementImpl.getHiddenColCnt(), paramTbMsgExecutePrefetchNoDescReply.csrId, paramTbPreparedStatementImpl.getColMetaArray(), paramTbMsgExecutePrefetchNoDescReply.rowChunkSize, paramTbMsgExecutePrefetchNoDescReply.rowCnt, paramTbMsgExecutePrefetchNoDescReply.isFetchCompleted, paramTbMsgExecutePrefetchNoDescReply.getTsn());
-    paramTbPreparedStatementImpl.setResultSet(tbResultSet);
+    paramTbPreparedStatementImpl.setResultSet((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet);
     return tbResultSet.getUpdateCount();
   }
   
   private long executePrefetchReply(TbStatement paramTbStatement, TbMsgExecutePrefetchReply paramTbMsgExecutePrefetchReply) throws SQLException {
     TbResultSet tbResultSet = processPrefetchedRset(paramTbStatement, paramTbMsgExecutePrefetchReply.colCnt, paramTbMsgExecutePrefetchReply.hiddenColCnt, paramTbMsgExecutePrefetchReply.csrId, paramTbMsgExecutePrefetchReply.colMeta, paramTbMsgExecutePrefetchReply.rowChunkSize, paramTbMsgExecutePrefetchReply.rowCnt, paramTbMsgExecutePrefetchReply.isFetchCompleted, paramTbMsgExecutePrefetchReply.getTsn());
-    paramTbStatement.setResultSet(tbResultSet);
+    paramTbStatement.setResultSet((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet);
     return tbResultSet.getUpdateCount();
   }
   
   private long executeRsetNoDescReply(TbPreparedStatementImpl paramTbPreparedStatementImpl, TbMsgExecuteRsetNoDescReply paramTbMsgExecuteRsetNoDescReply) throws SQLException {
     TbResultSet tbResultSet = this.typeConverter.toResultSet(paramTbPreparedStatementImpl.getOutColCnt(), paramTbPreparedStatementImpl.getHiddenColCnt(), paramTbMsgExecuteRsetNoDescReply.csrId, paramTbPreparedStatementImpl.getColMetaArray(), (TbStatement)paramTbPreparedStatementImpl, null);
-    tbResultSet.setTsn(paramTbMsgExecuteRsetNoDescReply.getTsn());
-    paramTbPreparedStatementImpl.setResultSet(tbResultSet);
+    ((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet).setTsn(paramTbMsgExecuteRsetNoDescReply.getTsn());
+    paramTbPreparedStatementImpl.setResultSet((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet);
     return tbResultSet.getUpdateCount();
   }
   
   private long executeRsetReply(TbStatement paramTbStatement, TbMsgExecuteRsetReply paramTbMsgExecuteRsetReply) throws SQLException {
     TbResultSet tbResultSet = this.typeConverter.toResultSet(paramTbMsgExecuteRsetReply.colCnt, paramTbMsgExecuteRsetReply.hiddenColCnt, paramTbMsgExecuteRsetReply.csrId, paramTbMsgExecuteRsetReply.colMeta, paramTbStatement, null);
-    tbResultSet.setTsn(paramTbMsgExecuteRsetReply.getTsn());
-    paramTbStatement.setResultSet(tbResultSet);
+    ((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet).setTsn(paramTbMsgExecuteRsetReply.getTsn());
+    paramTbStatement.setResultSet((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet);
     return paramTbMsgExecuteRsetReply.affectedCnt;
   }
   
@@ -961,13 +965,13 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
     lobFreeTemporary(paramTbLob);
   }
   
-  public TbResultSet describeCSRReply(TbStatement paramTbStatement, int paramInt) throws SQLException {
+  public com.tmax.tibero.jdbc.driver.TbResultSet describeCSRReply(TbStatement paramTbStatement, int paramInt) throws SQLException {
     synchronized (this.stream) {
       TbMsgSend.DESCRIBE_CSR(this.stream, paramInt);
       TbMsg tbMsg = this.stream.readMsg();
       switch (tbMsg.getMsgType()) {
         case 11:
-          return doDescribeCSRPrefetch(paramTbStatement, (TbMsgExecutePrefetchReply)tbMsg);
+          return (com.tmax.tibero.jdbc.driver.TbResultSet) doDescribeCSRPrefetch(paramTbStatement, (TbMsgExecutePrefetchReply)tbMsg);
         case 76:
           throwEreply(-90546, tbMsg);
           break;
@@ -983,7 +987,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
     if (paramTbMsgExecutePrefetchReply.colMeta == null)
       throw TbError.newSQLException(-90644); 
     TbResultSet tbResultSet = processPrefetchedRset(paramTbStatement, paramTbMsgExecutePrefetchReply.colCnt, paramTbMsgExecutePrefetchReply.hiddenColCnt, paramTbMsgExecutePrefetchReply.csrId, paramTbMsgExecutePrefetchReply.colMeta, paramTbMsgExecutePrefetchReply.rowChunkSize, paramTbMsgExecutePrefetchReply.rowCnt, paramTbMsgExecutePrefetchReply.isFetchCompleted, paramTbMsgExecutePrefetchReply.getTsn());
-    paramTbStatement.addSubResultSet(tbResultSet);
+    paramTbStatement.addSubResultSet((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet);
     return tbResultSet;
   }
   
@@ -1218,7 +1222,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
     } 
     if (i <= 0)
       return 0; 
-    if (paramTbLob instanceof TbClob || paramTbLob instanceof TbNClob)
+    if (paramTbLob instanceof com.tmax.tibero.jdbc.TbClob || paramTbLob instanceof com.tmax.tibero.jdbc.TbNClob)
       return this.typeConverter.fixedBytesToChars(paramTbMsgLobReadReply.data, 0, i, paramArrayOfchar, (int)paramLong2, (int)(paramArrayOfchar.length - paramLong2)); 
     System.arraycopy(paramTbMsgLobReadReply.data, 0, paramArrayOfbyte, (int)paramLong2, i);
     return i;
@@ -1248,7 +1252,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
     int j = (int)(paramLong1 & 0xFFFFFFFFL);
     int k = 0;
     byte[] arrayOfByte = null;
-    if (paramTbLob instanceof TbClob || paramTbLob instanceof TbNClob) {
+    if (paramTbLob instanceof com.tmax.tibero.jdbc.TbClob || paramTbLob instanceof com.tmax.tibero.jdbc.TbNClob) {
       int m = this.typeConverter.getUCS2MaxBytesPerChar() * (int)paramLong3;
       arrayOfByte = new byte[m];
       k = m;
@@ -1623,7 +1627,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
       paramTbPreparedStatementImpl.setPPID(paramTbMsgPrepareReply.ppid);
       paramTbPreparedStatementImpl.setParameterCnt(i);
       for (byte b = 0; b < i; b++)
-        paramVector.add(b, new Integer((paramTbMsgPrepareReply.bindParamMeta[b]).type)); 
+        paramVector.add(b, (paramTbMsgPrepareReply.bindParamMeta[b]).type);
       paramTbPreparedStatementImpl.buildColMetaArray(paramTbMsgPrepareReply.outColCnt, paramTbMsgPrepareReply.hiddenColCnt, paramTbMsgPrepareReply.colDesc);
       if (this.conn.getServerInfo().getProtocolMajorVersion() >= 2 && this.conn.getServerInfo().getProtocolMinorVersion() >= 13)
         paramTbPreparedStatementImpl.buildParamMetaArray(paramTbMsgPrepareReply.bindParamMeta); 
@@ -1633,7 +1637,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   private void processExecute(TbPreparedStatementImpl paramTbPreparedStatementImpl, String paramString, int paramInt, boolean paramBoolean) throws SQLException {
     synchronized (this.stream.getWriteStreamBuffer()) {
       TbStreamDataWriter tbStreamDataWriter = this.stream.getMsgWriter();
-      boolean bool = this.conn.getAutoCommit() ? true : false;
+      int bool = this.conn.getAutoCommit() ? 1 : 0;
       BindData bindData = paramTbPreparedStatementImpl.getBindData();
       Binder[][] arrayOfBinder = paramTbPreparedStatementImpl.getBinder();
       int i = bindData.getParameterCnt();
@@ -1682,7 +1686,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
     this.stream.readChunkData(arrayOfByte, paramInt4);
     TbResultSet tbResultSet = this.typeConverter.toResultSet(paramInt1, paramInt2, paramInt3, paramArrayOfTbColumnDesc, paramTbStatement, arrayOfByte);
     tbResultSet.setFetchCompleted(paramInt6);
-    tbResultSet.setTsn(paramLong);
+    ((com.tmax.tibero.jdbc.driver.TbResultSet) tbResultSet).setTsn(paramLong);
     tbResultSet.buildRowTable(paramInt5, arrayOfByte);
     return tbResultSet;
   }
@@ -1740,7 +1744,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             System.arraycopy(tbMsgLongReadReply.longLoc, 0, paramArrayOfbyte, 0, paramArrayOfbyte.length);
             if (tbMsgLongReadReply.data != null && tbMsgLongReadReply.data.length != 0) {
               byte[] arrayOfByte1;
-              if (i) {
+              if (i == 0) {
                 arrayOfByte1 = new byte[tbMsgLongReadReply.data.length + i];
                 System.arraycopy(arrayOfByte, 0, arrayOfByte1, 0, i);
                 System.arraycopy(tbMsgLongReadReply.data, 0, arrayOfByte1, i, tbMsgLongReadReply.data.length);
@@ -1860,7 +1864,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   }
   
   public void setClientInfo(String[] paramArrayOfString) throws SQLClientInfoException {
-    HashMap<Object, Object> hashMap = new HashMap<Object, Object>();
+    HashMap hashMap = new HashMap<Object, Object>();
     for (byte b = 0; b < paramArrayOfString.length; b++)
       hashMap.put(TbConnection.CLIENT_INFO_KEYS[b], ClientInfoStatus.REASON_UNKNOWN); 
     String str1 = TbError.getMsg(-90545);
@@ -1869,11 +1873,11 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   }
   
   public void setIsolationLevel(int paramInt) throws SQLException {
-    boolean bool = false;
+    int bool = 0;
     if (paramInt == 2) {
-      bool = false;
+      bool = 0;
     } else if (paramInt == 8) {
-      bool = true;
+      bool = 1;
     } else {
       throw TbError.newSQLException(-590722);
     } 
@@ -1928,9 +1932,9 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   }
   
   public void truncate(TbLob paramTbLob, long paramLong) throws SQLException {
-    if (paramTbLob instanceof TbNClob) {
+    if (paramTbLob instanceof com.tmax.tibero.jdbc.TbNClob) {
       paramLong *= this.typeConverter.getMaxBytesPerNChar();
-    } else if (paramTbLob instanceof TbClob) {
+    } else if (paramTbLob instanceof com.tmax.tibero.jdbc.TbClob) {
       paramLong *= this.typeConverter.getUCS2MaxBytesPerChar();
     } 
     lobTruncate(paramTbLob, paramLong);
@@ -2012,7 +2016,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\comm\TbCommType4.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\comm\TbCommType4.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

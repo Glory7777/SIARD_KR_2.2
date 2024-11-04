@@ -815,6 +815,7 @@ public class TbCallableStatementImpl extends TbPreparedStatementImpl implements 
   }
   
   private void registerOutParameterInternal(int paramInt1, int paramInt2, int paramInt3, String paramString) throws SQLException {
+    int i;
     switch (paramInt2) {
       case -2003:
       case 2003:
@@ -835,7 +836,7 @@ public class TbCallableStatementImpl extends TbPreparedStatementImpl implements 
     this.bindData.setOUTParam(paramInt1 - 1, paramInt2, paramString);
     if (this.binder[this.currentRowIndex][paramInt1 - 1] == null)
       this.binder[this.currentRowIndex][paramInt1 - 1] = this.staticNullBinder; 
-    int i = DataType.getDataType(paramInt2);
+    i = DataType.getDataType(paramInt2);
     setParamTypes(paramInt1 - 1, (byte)i);
   }
   
@@ -1434,7 +1435,7 @@ public class TbCallableStatementImpl extends TbPreparedStatementImpl implements 
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbCallableStatementImpl.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbCallableStatementImpl.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -8,6 +8,7 @@ import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.err.TbError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 public class DPLLongStreamBinder extends DPLBinder {
@@ -26,7 +27,7 @@ public class DPLLongStreamBinder extends DPLBinder {
     String str2 = ((TbDatabaseMetaData)paramTbConnection.getMetaData()).getServerCharSet();
     byte[] arrayOfByte = new byte[16384];
     int i = 0;
-    boolean bool = false;
+    int bool = 0;
     int j = 0;
     int k = 0;
     int m = 0;
@@ -36,10 +37,10 @@ public class DPLLongStreamBinder extends DPLBinder {
         paramTbDirPathStream.dirPathLoadStream(paramTbStreamDataWriter, 0); 
       paramTbStreamDataWriter.writeInt(0, 4);
       while (paramInt2 >= 0) {
-        bool = (paramInt2 > 16384) ? true : paramInt2;
+        bool = (paramInt2 > 16384) ? 1 : paramInt2;
         i = inputStream.read(arrayOfByte, 0, bool);
         if (i <= 0) {
-          if (j) {
+          if (j == 0) {
             paramTbStreamDataWriter.reWriteInt(streamBuffer.getCurDataSize() - j - 4, j, 4);
             paramTbStreamDataWriter.writePaddingDPL(j);
           } 
@@ -81,7 +82,7 @@ public class DPLLongStreamBinder extends DPLBinder {
     String str2 = ((TbDatabaseMetaData)paramTbConnection.getMetaData()).getServerCharSet();
     byte[] arrayOfByte = new byte[16384];
     int i = 0;
-    boolean bool = false;
+    Serializable bool = false;
     int j = 0;
     if (!paramBoolean) {
       this.length = paramInt2;
@@ -97,7 +98,7 @@ public class DPLLongStreamBinder extends DPLBinder {
       } 
       while (this.length >= 0) {
         bool = (this.length > 16384) ? true : this.length;
-        i = inputStream.read(arrayOfByte, 0, bool);
+        i = inputStream.read(arrayOfByte, 0, (Integer) bool);
         if (i <= 0) {
           if (j > 0) {
             paramTbStreamDataWriter.reWriteInt(streamBuffer.getCurDataSize() - j - 4, j, 4);
@@ -141,7 +142,7 @@ public class DPLLongStreamBinder extends DPLBinder {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\binder\DPLLongStreamBinder.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\binder\DPLLongStreamBinder.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

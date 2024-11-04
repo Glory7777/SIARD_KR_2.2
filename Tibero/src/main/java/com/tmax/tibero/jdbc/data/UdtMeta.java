@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.data;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import java.sql.SQLData;
 import java.sql.SQLException;
 import java.sql.SQLInput;
@@ -66,7 +66,7 @@ public class UdtMeta implements SQLData {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\UdtMeta.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\UdtMeta.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

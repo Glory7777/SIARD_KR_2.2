@@ -1213,9 +1213,17 @@ public class MetaDataFromDb extends MetaDataBase {
             case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
             case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                     "FROM sys.tables t ...";
-            case CUBRiD -> "";
-            case TIBERO -> "";
+//            임시처리
+//            case CUBRiD -> "";
+//            case TIBERO -> "";
+            default -> null;
         };
+
+//        임시처리
+        if (query == null) {
+            System.out.println("Database type not supported for table size query.");
+            return;
+        }
 
         String tableName = metaTable.getName();
         String schemaName = metaTable.getParentMetaSchema().getName();

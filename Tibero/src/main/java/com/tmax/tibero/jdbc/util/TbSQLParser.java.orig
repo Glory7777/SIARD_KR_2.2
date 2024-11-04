@@ -7,20 +7,20 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.util;
+package com.tmax.tibero.jdbc.util;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import tibero.DriverConstants;
-import tibero.jdbc.data.BigLiteral;
-import tibero.jdbc.err.TbError;
+import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.jdbc.data.BigLiteral;
+import com.tmax.tibero.jdbc.err.TbError;
 
 /**
  * TbSQLParser class.
  * 
- * @author ï¿½ï¿½Ô»ï¿½, gusami@tmax.co.kr
+ * @author ±è±Ô»ï, gusami@tmax.co.kr
  * @version $Id: TbSQLParser.java 179261 2020-06-30 01:50:39Z jihun_park $
  */
 public class TbSQLParser {
@@ -120,7 +120,7 @@ public class TbSQLParser {
                 continue;
             }
 
-            if (sqlChars[index] == '\'' && sqlChars[index+1] == '\'') { //''ï¿½ï¿½ ï¿½Ç³Ê¶ï¿½ï¿½
+            if (sqlChars[index] == '\'' && sqlChars[index+1] == '\'') { //''´Â °Ç³Ê¶ç±â
                 sb.append(sqlChars[index++]);
                 sb.append(sqlChars[index++]);
             }
@@ -136,7 +136,7 @@ public class TbSQLParser {
                             return sb.toString();
                         }
                         temp.append(sqlChars[index++]);
-                        while ((sqlChars[index] == '\'' && sqlChars[index+1] == '\'')){ //''ï¿½ï¿½ ï¿½Ç³Ê¶ï¿½ï¿½
+                        while ((sqlChars[index] == '\'' && sqlChars[index+1] == '\'')){ //''´Â °Ç³Ê¶ç±â
                             temp.append(sqlChars[index++]);
                             temp.append(sqlChars[index++]);
                         }
@@ -247,8 +247,8 @@ public class TbSQLParser {
                 continue;
             }
 
-            // returning ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¿ï¿½ bind parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½(PSMï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½).
-            // serverï¿½ï¿½ï¿½ï¿½ returning ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½  bind parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ resultSetï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿Â´ï¿½).
+            // returning ±¸¹®ÀÌ µé¾î¿Ã °æ¿ì ÀÌÈÄ¿¡ bind parameter´Â ¹«½ÃÇÑ´Ù(PSMÀÏ °æ¿ì´Â Á¦¿Ü).
+            // server¿¡¼­ returning ±¸¹® ÀÌÈÄ  bind parameter¸¦ ¹«½ÃÇÏ±â ¶§¹®(¾îÂ÷ÇÇ resultSetÀÌ µ¹¾Æ¿Â´Ù).
             if (!TbSQLTypeScanner.isPSMStmt(sqlType)
                     && (sql.regionMatches(true, index, "returning", 0, 9)
                             && index > 1 && index + 9 < sqlChars.length
@@ -474,9 +474,9 @@ public class TbSQLParser {
     }
 
     private void processScalarFunction() throws SQLException {
-        /* JDBC Escape syntaxï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ function
+        /* JDBC Escape syntax¿¡¼­ Áö¿øÇÏ´Â function
          * 
-         * ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ APIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½Î°ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½.
+         * ÀÌ°÷¿¡¼­ Áö¿øÇÏ´Â ÇÔ¼öµéÀ» ´ÙÀ½ API¿¡¼­µµ È®ÀÎ°¡´ÉÇØ¾ß ÇÑ´Ù.
          * TbDatabaseMetaData.getNumericFunctions()
          * TbDatabaseMetaData.getTimeDateFunctions()
          * TbDatabaseMetaData.getStringFunctions()
@@ -491,7 +491,7 @@ public class TbSQLParser {
         String functionName =
             token.substring(0, token.length()).toUpperCase().intern();
 
-        /* function nameï¿½ï¿½ argumentï¿½ï¿½ tibero functionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ */
+        /* function name°ú argument°¡ tibero function°ú µ¿ÀÏÇÑ ÄÉÀÌ½º */
         if (/* Numeric */
             "ABS".equalsIgnoreCase(functionName) ||
             "ACOS".equalsIgnoreCase(functionName) ||
@@ -724,7 +724,7 @@ public class TbSQLParser {
             else if ("SQL_TIMESTAMP".equalsIgnoreCase(argType)) {
                 fconvName = "TO_TIMESTAMP";
             }
-            // TODO: tiberoï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ Å¸ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ß°ï¿½
+            // TODO: tibero¿¡¼­ º¯È¯ Áö¿øÇÏ´Â Å¸ÀÔ¿¡ ´ëÇÑ Ã³¸® Ãß°¡
             else {
                 String errorDescription = new String("NOT implemented option: \"" +
                                                      argType + "\"");

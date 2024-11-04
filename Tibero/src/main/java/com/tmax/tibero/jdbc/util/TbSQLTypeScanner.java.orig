@@ -7,12 +7,12 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.util;
+package com.tmax.tibero.jdbc.util;
 
 /**
  * TbSQLTypeScanner class.
  * 
- * @author ï¿½ï¿½Ô»ï¿½, gusami@tmax.co.kr
+ * @author ±è±Ô»ï, gusami@tmax.co.kr
  * @version $Id: TbSQLTypeScanner.java 123272 2016-05-13 06:50:50Z jeys $
  */
 public class TbSQLTypeScanner {

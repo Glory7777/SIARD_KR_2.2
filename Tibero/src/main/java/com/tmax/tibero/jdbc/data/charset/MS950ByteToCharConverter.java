@@ -49,7 +49,7 @@ public class MS950ByteToCharConverter {
       'ｓ', 'ｔ', 'ｕ', 'ｖ' };
   
   private void decodeUCharToUCS2(char[] paramArrayOfchar, int paramInt1, int paramInt2) {
-    boolean bool = false;
+    int bool = 0;
     byte b = (byte)paramInt2;
     paramArrayOfchar[paramInt1] = (char)bool;
     paramArrayOfchar[paramInt1++] = (char)b;
@@ -104,7 +104,7 @@ public class MS950ByteToCharConverter {
         if (((byte)b >= 64 && (byte)b < Byte.MAX_VALUE) || ((byte)b >= -95 && (byte)b < -1)) {
           if (b1 >= -95) {
             if (b1 < -93) {
-              byte b3 = ((char)b >= '¡') ? 98 : 64;
+              int b3 = ((char)b >= '¡') ? 98 : 64;
               int i1 = 157 * ((byte)b1 - -95) + ((char)b & 0xFF) - (byte)b3;
               char c1 = CP950_TO_UNICODE_PAGEA1[i1];
               if (c1 != '�') {
@@ -127,7 +127,7 @@ public class MS950ByteToCharConverter {
               continue;
             } 
             if (b1 >= 250) {
-              byte b3 = ((char)b >= '¡') ? 98 : 64;
+              int b3 = ((char)b >= '¡') ? 98 : 64;
               int i1 = 57344 + 157 * ((byte)b1 - -6) + ((char)b & 0xFF) - (byte)b3;
               paramArrayOfchar[m++] = (char)i1;
               k += 2;
@@ -135,7 +135,7 @@ public class MS950ByteToCharConverter {
             continue;
           } 
           char c = ((char)b1 >= '') ? '?' : '';
-          byte b2 = ((char)b >= '¡') ? 98 : 64;
+          int b2 = ((char)b >= '¡') ? 98 : 64;
           int n = c + 157 * ((byte)b1 - -127) + ((char)b & 0xFF) - (byte)b2;
           paramArrayOfchar[m++] = (char)n;
           k += 2;
@@ -153,7 +153,7 @@ public class MS950ByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS950ByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS950ByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

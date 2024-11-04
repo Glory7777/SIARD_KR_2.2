@@ -2,6 +2,8 @@ package com.tmax.tibero.jdbc.util;
 
 import com.tmax.tibero.jdbc.data.BigLiteral;
 import com.tmax.tibero.jdbc.err.TbError;
+
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -122,8 +124,7 @@ public class TbSQLParser {
           } 
           stringBuffer.append(arrayOfChar[b1++]);
           stringBuffer.append(arrayOfChar[b1++]);
-        } 
-        break;
+        }
       } 
       if (arrayOfChar[b1] == '\000')
         return stringBuffer.toString(); 
@@ -179,8 +180,7 @@ public class TbSQLParser {
             b1++;
             continue;
           } 
-        } 
-        break;
+        }
       } 
       if ((!TbSQLTypeScanner.isPSMStmt(paramInt) && paramString.regionMatches(true, b1, "returning", 0, 9) && b1 > 1 && b1 + 9 < arrayOfChar.length && Character.isWhitespace(arrayOfChar[b1 - 1]) && Character.isWhitespace(arrayOfChar[b1 + 9])) || bool) {
         byte b = b1;
@@ -251,9 +251,8 @@ public class TbSQLParser {
             b++;
             continue;
           } 
-        } 
-        break;
-      } 
+        }
+      }
       if (arrayOfChar[b] == '\000')
         return (String[])arrayList.toArray((Object[])new String[0]); 
       if (arrayOfChar[b] == '?') {
@@ -274,9 +273,8 @@ public class TbSQLParser {
             continue label69;
           } 
           b++;
-        } 
-        break;
-      } 
+        }
+      }
       b++;
     } 
   }
@@ -388,18 +386,18 @@ public class TbSQLParser {
       appendFunctionName("CHR");
     } else if ("INSERT".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 4) {
         String str1 = new String("The number of arguments is wrong. expected=4, actual=" + bool);
         throw TbError.newSQLException(-90632, str1);
-      } 
+      }
       this.parsedSql.append("SUBSTR(").append(arrayList.get(0)).append(", 1, (").append(arrayList.get(1)).append(")-1) || ").append(arrayList.get(3)).append(" || SUBSTR(").append(arrayList.get(0)).append(", (").append(arrayList.get(1)).append(")+(").append(arrayList.get(2)).append("))");
       processSQL();
     } else if ("LCASE".equalsIgnoreCase(str)) {
       appendFunctionName("LOWER");
     } else if ("LEFT".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 2) {
         String str1 = new String("The number of arguments is wrong. expected=2, actual=" + bool);
         throw TbError.newSQLException(-90632, str1);
@@ -408,7 +406,7 @@ public class TbSQLParser {
       processSQL();
     } else if ("LOCATE".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 2) {
         String str1 = new String("The number of arguments is wrong. expected=2, actual=" + bool);
         throw TbError.newSQLException(-90632, str1);
@@ -417,7 +415,7 @@ public class TbSQLParser {
       processSQL();
     } else if ("REPEAT".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 2) {
         String str1 = new String("The number of arguments is wrong. expected=2, actual=" + bool);
         throw TbError.newSQLException(-90632, str1);
@@ -426,7 +424,7 @@ public class TbSQLParser {
       processSQL();
     } else if ("RIGHT".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 2) {
         String str1 = new String("The number of arguments is wrong. expected=2, actual=" + bool);
         throw TbError.newSQLException(-90632, str1);
@@ -465,7 +463,7 @@ public class TbSQLParser {
       appendFunctionPrefix("(USER");
     } else if ("CONVERT".equalsIgnoreCase(str)) {
       ArrayList<StringBuffer> arrayList = processArguments();
-      boolean bool = (arrayList == null) ? false : arrayList.size();
+      int bool = (arrayList == null) ? 0 : arrayList.size();
       if (bool != 2) {
         String str3 = new String("The number of arguments is wrong. expected=2, actual=" + bool);
         throw TbError.newSQLException(-90632, str3);
@@ -568,7 +566,7 @@ public class TbSQLParser {
     ArrayList<StringBuffer> arrayList = new ArrayList();
     StringBuffer stringBuffer = this.parsedSql;
     this.parsedSql = new StringBuffer();
-    byte b = 0;
+    int b = 0;
     while (this.index < this.length) {
       char c2;
       char c1 = this.originalSql.charAt(this.index++);
@@ -592,7 +590,7 @@ public class TbSQLParser {
           checkCurrentChar('}');
           continue;
         case ',':
-          if (b) {
+          if (b == 0) {
             this.parsedSql.append(c1);
             continue;
           } 
@@ -744,9 +742,8 @@ public class TbSQLParser {
           } 
           stringBuffer.append(arrayOfChar[b]);
           stringBuffer.append(arrayOfChar[b + 1]);
-        } 
-        break;
-      } 
+        }
+      }
       if (arrayOfChar[b] == '\000')
         return stringBuffer.toString(); 
       if (arrayOfChar[b] == '?' && Character.isDigit(arrayOfChar[b + 1])) {
@@ -828,9 +825,8 @@ public class TbSQLParser {
           } 
           stringBuffer.append(arrayOfChar[b]);
           stringBuffer.append(arrayOfChar[b + 1]);
-        } 
-        break;
-      } 
+        }
+      }
       if (arrayOfChar[b] == '\000')
         return stringBuffer.toString(); 
       if (arrayOfChar[b] == c) {
@@ -855,7 +851,7 @@ public class TbSQLParser {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbSQLParser.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbSQLParser.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

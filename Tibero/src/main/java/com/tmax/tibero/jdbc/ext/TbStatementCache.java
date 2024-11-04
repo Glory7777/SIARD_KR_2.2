@@ -1,6 +1,5 @@
 package com.tmax.tibero.jdbc.ext;
 
-import com.tmax.tibero.jdbc.TbCallableStatement;
 import com.tmax.tibero.jdbc.TbPreparedStatement;
 import com.tmax.tibero.jdbc.TbStatement;
 import com.tmax.tibero.jdbc.data.RsetType;
@@ -81,16 +80,16 @@ public class TbStatementCache {
   
   public boolean contains(TbStatement paramTbStatement) {
     String str;
-    boolean bool;
-    if (paramTbStatement instanceof TbCallableStatement) {
+    int bool;
+    if (paramTbStatement instanceof com.tmax.tibero.jdbc.TbCallableStatement) {
       str = paramTbStatement.getOriginalSql();
-      bool = true;
+      bool = 1;
     } else if (paramTbStatement instanceof TbPreparedStatement) {
       str = paramTbStatement.getOriginalSql();
-      bool = true;
+      bool = 1;
     } else {
       str = null;
-      bool = false;
+      bool = 0;
     } 
     try {
       RsetType rsetType = RsetType.getRsetType(paramTbStatement.getResultSetType(), paramTbStatement.getResultSetConcurrency());
@@ -121,7 +120,7 @@ public class TbStatementCache {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbStatementCache.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbStatementCache.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

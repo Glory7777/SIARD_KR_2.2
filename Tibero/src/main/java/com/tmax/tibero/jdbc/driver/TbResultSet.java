@@ -11,140 +11,137 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 
-public abstract class TbResultSet implements TbResultSet {
+public abstract class TbResultSet implements com.tmax.tibero.jdbc.TbResultSet {
   protected SQLWarning warnings = null;
-  
-  protected RsetType rsetType = RsetType.FWRD;
-  
-  protected int rowsFetchedCnt = 0;
-  
-  protected boolean haveLocator = false;
-  
-  protected long tsn = 0L;
-  
-  protected TbResultSet(RsetType paramRsetType) {
-    if (paramRsetType != null)
-      this.rsetType = paramRsetType.getCopy(); 
+  protected RsetType rsetType;
+  protected int rowsFetchedCnt;
+  protected boolean haveLocator;
+  protected long tsn;
+
+  protected TbResultSet(RsetType var1) {
+    this.rsetType = RsetType.FWRD;
+    this.rowsFetchedCnt = 0;
+    this.haveLocator = false;
+    this.tsn = 0L;
+    if (var1 != null) {
+      this.rsetType = var1.getCopy();
+    }
+
   }
-  
-  public synchronized void addWarning(SQLWarning paramSQLWarning) {
+
+  public synchronized void addWarning(SQLWarning var1) {
     if (this.warnings != null) {
-      this.warnings.setNextWarning(paramSQLWarning);
+      this.warnings.setNextWarning(var1);
     } else {
-      this.warnings = paramSQLWarning;
-    } 
+      this.warnings = var1;
+    }
+
   }
-  
-  public abstract void buildRowTable(int paramInt, byte[] paramArrayOfbyte) throws SQLException;
-  
+
+  public abstract void buildRowTable(int var1, byte[] var2) throws SQLException;
+
   public synchronized void clearWarnings() throws SQLException {
     this.warnings = null;
   }
-  
-  public int getBytes(int paramInt, byte[] paramArrayOfbyte) throws SQLException {
+
+  public int getBytes(int var1, byte[] var2) throws SQLException {
     throw TbError.newSQLException(-90201);
   }
-  
-  public abstract TbRAW getRAW(int paramInt) throws SQLException;
-  
-  public abstract TbRAW getRAW(String paramString) throws SQLException;
-  
+
+  public abstract TbRAW getRAW(int var1) throws SQLException;
+
+  public abstract TbRAW getRAW(String var1) throws SQLException;
+
   public abstract Column[] getCols() throws SQLException;
-  
-  protected abstract int getColumnDataType(int paramInt) throws SQLException;
-  
-  protected abstract int getColumnMaxLength(int paramInt) throws SQLException;
-  
-  protected abstract String getColumnName(int paramInt) throws SQLException;
-  
-  protected abstract boolean getColumnNullable(int paramInt) throws SQLException;
-  
-  protected abstract int getColumnPrecision(int paramInt) throws SQLException;
-  
-  protected abstract int getColumnScale(int paramInt) throws SQLException;
-  
-  protected abstract int getColumnSqlType(int paramInt) throws SQLException;
-  
+
+  protected abstract int getColumnDataType(int var1) throws SQLException;
+
+  protected abstract int getColumnMaxLength(int var1) throws SQLException;
+
+  protected abstract String getColumnName(int var1) throws SQLException;
+
+  protected abstract boolean getColumnNullable(int var1) throws SQLException;
+
+  protected abstract int getColumnPrecision(int var1) throws SQLException;
+
+  protected abstract int getColumnScale(int var1) throws SQLException;
+
+  protected abstract int getColumnSqlType(int var1) throws SQLException;
+
   public int getConcurrency() throws SQLException {
     return this.rsetType.getConcurrency();
   }
-  
+
   public int getHoldability() throws SQLException {
     return this.rsetType.getHoldability();
   }
-  
-  public InputStream getLongByteStream(int paramInt) throws SQLException {
+
+  public InputStream getLongByteStream(int var1) throws SQLException {
     throw TbError.newSQLException(-90201);
   }
-  
+
   public abstract ResultSetMetaData getMetaData() throws SQLException;
-  
-  public abstract byte[] getRowChunk(int paramInt) throws SQLException;
-  
+
+  public abstract byte[] getRowChunk(int var1) throws SQLException;
+
   public RsetType getRsetType() {
     return this.rsetType;
   }
-  
+
   protected long getTsn() {
     return this.tsn;
   }
-  
+
   public int getType() throws SQLException {
     return this.rsetType.getType();
   }
-  
+
   public long getUpdateCount() {
-    return this.rowsFetchedCnt;
+    return (long)this.rowsFetchedCnt;
   }
-  
-  public abstract TbDate getTbDate(int paramInt) throws SQLException;
-  
-  public abstract TbTimestamp getTbTimestamp(int paramInt) throws SQLException;
-  
-  public abstract void updateTbTimestamp(int paramInt, TbTimestamp paramTbTimestamp) throws SQLException;
-  
-  public abstract void updateTbTimestamp(String paramString, TbTimestamp paramTbTimestamp) throws SQLException;
-  
+
+  public abstract TbDate getTbDate(int var1) throws SQLException;
+
+  public abstract TbTimestamp getTbTimestamp(int var1) throws SQLException;
+
+  public abstract void updateTbTimestamp(int var1, TbTimestamp var2) throws SQLException;
+
+  public abstract void updateTbTimestamp(String var1, TbTimestamp var2) throws SQLException;
+
   public synchronized SQLWarning getWarnings() throws SQLException {
     return this.warnings;
   }
-  
-  public boolean isWrapperFor(Class<?> paramClass) throws SQLException {
-    return paramClass.isInstance(this);
+
+  public boolean isWrapperFor(Class<?> var1) throws SQLException {
+    return var1.isInstance(this);
   }
-  
+
   protected void reset() {
     this.warnings = null;
     this.rsetType = null;
     this.rowsFetchedCnt = 0;
     this.haveLocator = true;
   }
-  
-  public abstract void setFetchCompleted(int paramInt) throws SQLException;
-  
-  public void setHaveLocator(boolean paramBoolean) {
-    this.haveLocator = paramBoolean;
+
+  public abstract void setFetchCompleted(int var1) throws SQLException;
+
+  public void setHaveLocator(boolean var1) {
+    this.haveLocator = var1;
   }
-  
-  public void setRsetType(RsetType paramRsetType) {
-    this.rsetType = paramRsetType;
+
+  public void setRsetType(RsetType var1) {
+    this.rsetType = var1;
   }
-  
-  public void setTsn(long paramLong) {
-    this.tsn = paramLong;
+
+  public void setTsn(long var1) {
+    this.tsn = var1;
   }
-  
-  public <T> T unwrap(Class<T> paramClass) throws SQLException {
+
+  public <T> T unwrap(Class<T> var1) throws SQLException {
     try {
-      return paramClass.cast(this);
-    } catch (ClassCastException classCastException) {
+      return var1.cast(this);
+    } catch (ClassCastException var3) {
       throw TbError.newSQLException(-90657);
-    } 
+    }
   }
 }
-
-
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbResultSet.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       1.1.3
- */

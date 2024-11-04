@@ -181,9 +181,9 @@ public class TbPivotValReader {
   }
   
   private int getNewIdx(int paramInt) {
-    return ((Integer)this.newIdxMap.get(new Integer(paramInt))).intValue();
+    return ((Integer)this.newIdxMap.get(paramInt)).intValue();
   }
-  
+
   public TbPivotValReader(Blob paramBlob, int paramInt, TbPivotMeta paramTbPivotMeta) throws Exception {
     this.blobData = paramBlob;
     this.offsetIdx = 0;
@@ -197,7 +197,7 @@ public class TbPivotValReader {
         int i = getNewIdx(getNextIntForHdr(inputStream));
         int j = getNextIntForHdr(inputStream);
         this.hdr.add(new TbPivotValHdrItem(i, j));
-      } 
+      }
       inputStream.close();
       this.blobDataLen = (int)paramBlob.length();
       if (this.blobDataLen < 65536) {
@@ -205,20 +205,20 @@ public class TbPivotValReader {
         this.hasByteData = true;
       } else {
         this.hasByteData = false;
-      } 
+      }
     } else {
       byte b1 = 0;
       this.itemCnt = getNextIntFrom4ByteArr(b1);
-      b1 += true;
+      b1 += 1;
       for (byte b2 = 0; b2 < this.itemCnt; b2++) {
         int i = getNewIdx(getNextIntFrom4ByteArr(b1));
         int j = getNextIntFrom2ByteArr(b1 + 4);
         this.hdr.add(new TbPivotValHdrItem(i, j));
         b1 += 6;
-      } 
+      }
       this.blobDataLocalEndPos = (int)paramBlob.length();
       this.hasByteData = true;
-    } 
+    }
     Collections.sort(this.hdr);
   }
   
@@ -232,17 +232,17 @@ public class TbPivotValReader {
   
   public Long getNextLong() throws Exception {
     byte[] arrayOfByte = getNextRpcolForNumber();
-    return (arrayOfByte == null) ? null : new Long(TbNumber.toLong(arrayOfByte, 0, arrayOfByte.length));
+    return (arrayOfByte == null) ? null : TbNumber.toLong(arrayOfByte, 0, arrayOfByte.length);
   }
   
   public Integer getNextInt() throws Exception {
     byte[] arrayOfByte = getNextRpcolForNumber();
-    return (arrayOfByte == null) ? null : new Integer(TbNumber.toInteger(arrayOfByte, 0, arrayOfByte.length));
+    return (arrayOfByte == null) ? null : TbNumber.toInteger(arrayOfByte, 0, arrayOfByte.length);
   }
   
   public Double getNextDouble() throws Exception {
     byte[] arrayOfByte = getNextRpcolForNumber();
-    return (arrayOfByte == null) ? null : new Double(TbNumber.toDouble(arrayOfByte, 0, arrayOfByte.length));
+    return (arrayOfByte == null) ? null : TbNumber.toDouble(arrayOfByte, 0, arrayOfByte.length);
   }
   
   public BigDecimal getNextBigDecimal() throws Exception {
@@ -319,7 +319,7 @@ public class TbPivotValReader {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\pivot\TbPivotValReader.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\pivot\TbPivotValReader.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

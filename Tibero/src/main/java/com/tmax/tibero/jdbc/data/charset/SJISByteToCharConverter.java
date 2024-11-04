@@ -10,8 +10,8 @@ public class SJISByteToCharConverter extends JIS0208ByteToCharConverter {
   }
   
   protected char getUnicode(int paramInt1, int paramInt2) throws SQLException {
-    byte b1 = (paramInt2 >= 159) ? 0 : 1;
-    byte b2 = (paramInt1 >= 160) ? 176 : 112;
+    int b1 = (paramInt2 >= 159) ? 0 : 1;
+    int b2 = (paramInt1 >= 160) ? 176 : 112;
     byte b3 = (b1 != 1) ? 126 : (byte)((paramInt2 <= 127) ? 31 : 32);
     int i = (paramInt1 - b2 << 1) - b1;
     int j = paramInt2 - b3;
@@ -20,7 +20,7 @@ public class SJISByteToCharConverter extends JIS0208ByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\SJISByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\SJISByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -1,10 +1,8 @@
 package com.tmax.tibero.jdbc.util;
 
 import com.tmax.tibero.jdbc.err.TbError;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+
+import java.io.*;
 import java.sql.SQLWarning;
 import java.util.Vector;
 
@@ -166,8 +164,6 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
   }
   
   private final void field(TbDTFormat paramTbDTFormat) throws ParseException {
-    String str;
-    boolean bool;
     switch ((this.jj_ntk == -1) ? jj_ntk() : this.jj_ntk) {
       case 23:
         jj_consume_token(23);
@@ -278,7 +274,11 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
         this.jj_la1[3] = this.jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
-    } 
+    }
+    String str;
+    TbDTFormatElement tbDTFormatElement;
+    Serializable bool;
+
     switch (this.token.kind) {
       case 31:
         paramTbDTFormat.setTrimEnabled(true);
@@ -289,7 +289,7 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
       case 33:
         str = this.token.toString();
         bool = (str.length() == 2) ? false : Integer.parseInt(str.substring(2));
-        tbDTFormatElement = TbDTFormatElement.newInstance(this.token.kind, this.token.toString(), bool);
+        tbDTFormatElement = TbDTFormatElement.newInstance(this.token.kind, this.token.toString(), (Integer) bool);
         paramTbDTFormat.addElement(tbDTFormatElement);
         return;
       case 42:
@@ -299,9 +299,11 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
         tbDTFormatElement = TbDTFormatElement.newInstance(this.token.kind, str, str.length());
         paramTbDTFormat.addElement(tbDTFormatElement);
         return;
-    } 
-    TbDTFormatElement tbDTFormatElement = TbDTFormatElement.newInstance(this.token.kind, this.token.toString());
-    paramTbDTFormat.addElement(tbDTFormatElement);
+      default: // default 케이스를 추가하여 모든 경우를 처리
+        tbDTFormatElement = TbDTFormatElement.newInstance(this.token.kind, this.token.toString());
+        paramTbDTFormat.addElement(tbDTFormatElement);
+    }
+
   }
   
   private static void jj_la1_0() {
@@ -458,7 +460,7 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
     } 
     int[][] arrayOfInt = new int[this.jj_expentries.size()][];
     for (byte b2 = 0; b2 < this.jj_expentries.size(); b2++)
-      arrayOfInt[b2] = this.jj_expentries.elementAt(b2); 
+      arrayOfInt[b2] = (int[]) this.jj_expentries.elementAt(b2);
     return new ParseException(this.token, arrayOfInt, tokenImage);
   }
   
@@ -473,7 +475,7 @@ public class TbDTFormatParser implements TbDTFormatParserConstants {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbDTFormatParser.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbDTFormatParser.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

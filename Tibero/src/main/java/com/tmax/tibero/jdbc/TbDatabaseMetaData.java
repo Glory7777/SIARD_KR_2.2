@@ -3,7 +3,6 @@ package com.tmax.tibero.jdbc;
 import com.tmax.tibero.DriverConstants;
 import com.tmax.tibero.jdbc.data.DataTypeConverter;
 import com.tmax.tibero.jdbc.data.charset.Charset;
-import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.driver.TbResultSet;
 import com.tmax.tibero.jdbc.driver.TbResultSetBase;
 import com.tmax.tibero.jdbc.driver.TbResultSetFactory;
@@ -21,10 +20,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
-public abstract class TbDatabaseMetaData implements DatabaseMetaData {
-  protected TbConnection conn;
+public class TbDatabaseMetaData implements DatabaseMetaData {
+  protected com.tmax.tibero.jdbc.driver.TbConnection conn;
   
-  public TbDatabaseMetaData(TbConnection paramTbConnection) {
+  public TbDatabaseMetaData(com.tmax.tibero.jdbc.driver.TbConnection paramTbConnection) {
     this.conn = paramTbConnection;
   }
   
@@ -80,10 +79,10 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
   
   private ResultSet getAttributesEmpty() throws SQLException {
     byte b1 = 21;
-    boolean bool1 = false;
-    boolean bool2 = false;
-    boolean bool3 = false;
-    boolean bool4 = false;
+    int bool1 = 0;
+    int bool2 = 0;
+    int bool3 = 0;
+    int bool4 = 0;
     TbStatement tbStatement = new TbStatement(this.conn);
     TbResultSet tbResultSet = TbResultSetFactory.buildEmptyResultSet(tbStatement, -2, b1, 0);
     DataTypeConverter dataTypeConverter = this.conn.getTypeConverter();
@@ -310,7 +309,7 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
     tbResultSetBase.closeStatementOnClose();
     return (ResultSet)tbResultSetBase;
   }
-  
+
   public ResultSet getFunctions(String paramString1, String paramString2, String paramString3) throws SQLException {
     String str1 = "ORDER BY FUNCTION_SCHEM, FUNCTION_NAME\n";
     PreparedStatement preparedStatement = null;
@@ -404,7 +403,7 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
   }
   
   public int getJDBCMajorVersion() throws SQLException {
-    null = 3;
+//    null = 3;
     return 4;
   }
   
@@ -665,10 +664,10 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
   
   public ResultSet getSuperTables(String paramString1, String paramString2, String paramString3) throws SQLException {
     byte b1 = 4;
-    boolean bool1 = false;
-    boolean bool2 = false;
-    boolean bool3 = false;
-    boolean bool4 = false;
+    int bool1 = 0;
+    int bool2 = 0;
+    int bool3 = 0;
+    int bool4 = 0;
     TbStatement tbStatement = new TbStatement(this.conn);
     TbResultSet tbResultSet = TbResultSetFactory.buildEmptyResultSet(tbStatement, -2, b1, 0);
     DataTypeConverter dataTypeConverter = this.conn.getTypeConverter();
@@ -686,10 +685,10 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
   
   public ResultSet getSuperTypes(String paramString1, String paramString2, String paramString3) throws SQLException {
     byte b1 = 6;
-    boolean bool1 = false;
-    boolean bool2 = false;
-    boolean bool3 = false;
-    boolean bool4 = false;
+    int bool1 = 0;
+    int bool2 = 0;
+    int bool3 = 0;
+    int bool4 = 0;
     TbStatement tbStatement = new TbStatement(this.conn);
     TbResultSet tbResultSet = TbResultSetFactory.buildEmptyResultSet(tbStatement, -2, b1, 0);
     DataTypeConverter dataTypeConverter = this.conn.getTypeConverter();
@@ -777,10 +776,10 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
       return (ResultSet)tbResultSetBase;
     } 
     byte b1 = 7;
-    boolean bool1 = false;
-    boolean bool2 = false;
-    boolean bool3 = false;
-    boolean bool4 = false;
+    int bool1 = 0;
+    int bool2 = 0;
+    int bool3 = 0;
+    int bool4 = 0;
     TbStatement tbStatement = new TbStatement(this.conn);
     TbResultSet tbResultSet = TbResultSetFactory.buildEmptyResultSet(tbStatement, -2, b1, 0);
     DataTypeConverter dataTypeConverter = this.conn.getTypeConverter();
@@ -1273,7 +1272,7 @@ public abstract class TbDatabaseMetaData implements DatabaseMetaData {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbDatabaseMetaData.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbDatabaseMetaData.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -26,7 +26,7 @@ public class TbRSSensitive extends TbRSScrollable {
   protected TbRSSensitive(TbStatement paramTbStatement, int paramInt1, int paramInt2, int paramInt3, byte[] paramArrayOfbyte) throws SQLException {
     super(paramTbStatement, paramInt1, paramInt2, paramInt3, paramArrayOfbyte);
     this.rowIndices = new int[paramTbStatement.getFetchSize()];
-    this.refetchRowids = (List)new ArrayList<byte>(paramTbStatement.getFetchSize());
+    this.refetchRowids = (List)new ArrayList<Byte>(paramTbStatement.getFetchSize());
   }
   
   public synchronized boolean absolute(int paramInt) throws SQLException {
@@ -228,7 +228,7 @@ public class TbRSSensitive extends TbRSScrollable {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbRSSensitive.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbRSSensitive.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

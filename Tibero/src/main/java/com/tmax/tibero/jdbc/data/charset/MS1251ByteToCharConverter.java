@@ -28,7 +28,7 @@ public class MS1251ByteToCharConverter {
   }
   
   private void encodeUCharToUCS2(char[] paramArrayOfchar, int paramInt1, int paramInt2) {
-    boolean bool = false;
+    int bool = 0;
     byte b = (byte)paramInt2;
     paramArrayOfchar[paramInt1] = (char)bool;
     paramArrayOfchar[paramInt1++] = (char)b;
@@ -68,7 +68,7 @@ public class MS1251ByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS1251ByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS1251ByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -7,7 +7,7 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.comm;
+package com.tmax.tibero.jdbc.comm;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetAddress;
@@ -26,85 +26,85 @@ import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
 
-import tibero.Debug;
-import tibero.DriverConstants;
-import tibero.jdbc.TbBlob;
-import tibero.jdbc.TbClob;
-import tibero.jdbc.TbClobBase;
-import tibero.jdbc.TbLob;
-import tibero.jdbc.TbNClob;
-import tibero.jdbc.TbSQLInfo;
-import tibero.jdbc.TbSQLInfo2;
-import tibero.jdbc.data.BatchInfo;
-import tibero.jdbc.data.BatchUpdateInfo;
-import tibero.jdbc.data.BindData;
-import tibero.jdbc.data.BindItem;
-import tibero.jdbc.data.ConnectionInfo;
-import tibero.jdbc.data.DataType;
-import tibero.jdbc.data.DataTypeConverter;
-import tibero.jdbc.data.NodeInfo;
-import tibero.jdbc.data.ServerInfo;
-import tibero.jdbc.data.ZoneInfo;
-import tibero.jdbc.data.binder.ArrayInBinder;
-import tibero.jdbc.data.binder.Binder;
-import tibero.jdbc.data.charset.Charset;
-import tibero.jdbc.data.charset.CharsetMetaData;
-import tibero.jdbc.dbconst.DBConst;
-import tibero.jdbc.dpl.TbDirPathMetaData;
-import tibero.jdbc.dpl.TbDirPathStream;
-import tibero.jdbc.driver.TbCallableStatementImpl;
-import tibero.jdbc.driver.TbConnection;
-import tibero.jdbc.driver.TbPreparedStatementImpl;
-import tibero.jdbc.driver.TbResultSet;
-import tibero.jdbc.driver.TbResultSetBase;
-import tibero.jdbc.driver.TbSavepoint;
-import tibero.jdbc.driver.TbStatement;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.msg.TbClntInfoParam;
-import tibero.jdbc.msg.TbColNameList;
-import tibero.jdbc.msg.TbColumnDesc;
-import tibero.jdbc.msg.TbMsgBatchUpdateReply;
-import tibero.jdbc.msg.TbMsgConnectReply;
-import tibero.jdbc.msg.TbMsgDplLoadStreamReply;
-import tibero.jdbc.msg.TbMsgDplPrepareReply;
-import tibero.jdbc.msg.TbMsgEreply;
-import tibero.jdbc.msg.TbMsgExecuteCallReply;
-import tibero.jdbc.msg.TbMsgExecuteCountReply;
-import tibero.jdbc.msg.TbMsgExecuteNeedDataReply;
-import tibero.jdbc.msg.TbMsgExecutePivotReply;
-import tibero.jdbc.msg.TbMsgExecutePrefetchNoDescReply;
-import tibero.jdbc.msg.TbMsgExecutePrefetchReply;
-import tibero.jdbc.msg.TbMsgExecutePsmPrefetchReply;
-import tibero.jdbc.msg.TbMsgExecutePsmReply;
-import tibero.jdbc.msg.TbMsgExecuteRsetNoDescReply;
-import tibero.jdbc.msg.TbMsgExecuteRsetReply;
-import tibero.jdbc.msg.TbMsgFetchPivotReply;
-import tibero.jdbc.msg.TbMsgFetchReply;
-import tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfoReply;
-import tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfo2Reply;
-import tibero.jdbc.msg.TbMsgLobCloseReply;
-import tibero.jdbc.msg.TbMsgLobCreateTempReply;
-import tibero.jdbc.msg.TbMsgLobInlobReply;
-import tibero.jdbc.msg.TbMsgLobInstrReply;
-import tibero.jdbc.msg.TbMsgLobLengthReply;
-import tibero.jdbc.msg.TbMsgLobOpenReply;
-import tibero.jdbc.msg.TbMsgLobReadReply;
-import tibero.jdbc.msg.TbMsgLobTruncReply;
-import tibero.jdbc.msg.TbMsgLobWriteReply;
-import tibero.jdbc.msg.TbMsgLongReadReply;
-import tibero.jdbc.msg.TbMsgOkReply;
-import tibero.jdbc.msg.TbMsgPrepareReply;
-import tibero.jdbc.msg.TbMsgSend;
-import tibero.jdbc.msg.TbMsgSessInfoReply;
-import tibero.jdbc.msg.TbMsgSesskeyReply;
-import tibero.jdbc.msg.TbNlsParam;
-import tibero.jdbc.msg.TbOutParam;
-import tibero.jdbc.msg.TbPivotInfo;
-import tibero.jdbc.msg.TbPvValType;
-import tibero.jdbc.msg.TbSessAttrDesc;
-import tibero.jdbc.msg.common.TbMsg;
-import tibero.jdbc.util.TbCommon;
-import tibero.jdbc.util.TbSQLTypeScanner;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.jdbc.TbBlob;
+import com.tmax.tibero.jdbc.TbClob;
+import com.tmax.tibero.jdbc.TbClobBase;
+import com.tmax.tibero.jdbc.TbLob;
+import com.tmax.tibero.jdbc.TbNClob;
+import com.tmax.tibero.jdbc.TbSQLInfo;
+import com.tmax.tibero.jdbc.TbSQLInfo2;
+import com.tmax.tibero.jdbc.data.BatchInfo;
+import com.tmax.tibero.jdbc.data.BatchUpdateInfo;
+import com.tmax.tibero.jdbc.data.BindData;
+import com.tmax.tibero.jdbc.data.BindItem;
+import com.tmax.tibero.jdbc.data.ConnectionInfo;
+import com.tmax.tibero.jdbc.data.DataType;
+import com.tmax.tibero.jdbc.data.DataTypeConverter;
+import com.tmax.tibero.jdbc.data.NodeInfo;
+import com.tmax.tibero.jdbc.data.ServerInfo;
+import com.tmax.tibero.jdbc.data.ZoneInfo;
+import com.tmax.tibero.jdbc.data.binder.ArrayInBinder;
+import com.tmax.tibero.jdbc.data.binder.Binder;
+import com.tmax.tibero.jdbc.data.charset.Charset;
+import com.tmax.tibero.jdbc.data.charset.CharsetMetaData;
+import com.tmax.tibero.jdbc.dbconst.DBConst;
+import com.tmax.tibero.jdbc.dpl.TbDirPathMetaData;
+import com.tmax.tibero.jdbc.dpl.TbDirPathStream;
+import com.tmax.tibero.jdbc.driver.TbCallableStatementImpl;
+import com.tmax.tibero.jdbc.driver.TbConnection;
+import com.tmax.tibero.jdbc.driver.TbPreparedStatementImpl;
+import com.tmax.tibero.jdbc.driver.TbResultSet;
+import com.tmax.tibero.jdbc.driver.TbResultSetBase;
+import com.tmax.tibero.jdbc.driver.TbSavepoint;
+import com.tmax.tibero.jdbc.driver.TbStatement;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.msg.TbClntInfoParam;
+import com.tmax.tibero.jdbc.msg.TbColNameList;
+import com.tmax.tibero.jdbc.msg.TbColumnDesc;
+import com.tmax.tibero.jdbc.msg.TbMsgBatchUpdateReply;
+import com.tmax.tibero.jdbc.msg.TbMsgConnectReply;
+import com.tmax.tibero.jdbc.msg.TbMsgDplLoadStreamReply;
+import com.tmax.tibero.jdbc.msg.TbMsgDplPrepareReply;
+import com.tmax.tibero.jdbc.msg.TbMsgEreply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecuteCallReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecuteCountReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecuteNeedDataReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecutePivotReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecutePrefetchNoDescReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecutePrefetchReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecutePsmPrefetchReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecutePsmReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecuteRsetNoDescReply;
+import com.tmax.tibero.jdbc.msg.TbMsgExecuteRsetReply;
+import com.tmax.tibero.jdbc.msg.TbMsgFetchPivotReply;
+import com.tmax.tibero.jdbc.msg.TbMsgFetchReply;
+import com.tmax.tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfoReply;
+import com.tmax.tibero.jdbc.msg.TbMsgGetLastExecutedSqlinfo2Reply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobCloseReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobCreateTempReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobInlobReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobInstrReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobLengthReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobOpenReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobReadReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobTruncReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLobWriteReply;
+import com.tmax.tibero.jdbc.msg.TbMsgLongReadReply;
+import com.tmax.tibero.jdbc.msg.TbMsgOkReply;
+import com.tmax.tibero.jdbc.msg.TbMsgPrepareReply;
+import com.tmax.tibero.jdbc.msg.TbMsgSend;
+import com.tmax.tibero.jdbc.msg.TbMsgSessInfoReply;
+import com.tmax.tibero.jdbc.msg.TbMsgSesskeyReply;
+import com.tmax.tibero.jdbc.msg.TbNlsParam;
+import com.tmax.tibero.jdbc.msg.TbOutParam;
+import com.tmax.tibero.jdbc.msg.TbPivotInfo;
+import com.tmax.tibero.jdbc.msg.TbPvValType;
+import com.tmax.tibero.jdbc.msg.TbSessAttrDesc;
+import com.tmax.tibero.jdbc.msg.common.TbMsg;
+import com.tmax.tibero.jdbc.util.TbCommon;
+import com.tmax.tibero.jdbc.util.TbSQLTypeScanner;
 
 // #ifdef JDK1.4
 // #endif
@@ -118,9 +118,9 @@ import java.sql.SQLClientInfoException;
 
 /**
  * TbCommType4 class.
- * JDBC Type 4 Driver - javaï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ module
+ * JDBC Type 4 Driver - java¸¦ ÀÌ¿ëÇÑ Åë½Å module
  *
- * @author ï¿½Ì¿ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Ô»ï¿½
+ * @author ÀÌ¿ëÀç, Á¶Àº¾Æ, ±è±Ô»ï
  * @version $Id: TbCommType4.java 186284 2020-10-20 09:17:47Z kyungtak_min $
  */
 public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
@@ -454,9 +454,9 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             }
         }
 
-        /* bindParamCnt <= 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ DDLï¿½Ì³ï¿½ ï¿½Ï¹ï¿½ DMLï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ addBatch()ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-         * È½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½. ï¿½×·ï¿½ï¿½ï¿½, batchCntï¿½ï¿½ executedCntï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¸ï¿½
-         * ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½Å²ï¿½ï¿½. */
+        /* bindParamCnt <= 0ÀÎ °æ¿ì´Â DDLÀÌ³ª ÀÏ¹Ý DMLÀ» ¼öÇàÇÑ °ÍÀÌ¹Ç·Î »ç¿ëÀÚ°¡ addBatch()¸¦ ¼öÇàÇÑ
+         * È½¼ö¿Í ½ÇÁ¦·Î ¼öÇàµÈ È½¼ö°¡ ´Ù¸¦ ¼ö ÀÖ´Ù. ±×·¯³ª, batchCnt¿Í executedCnt°¡ ´Ù¸¥ °æ¿ì´Â ºÎºÐÀûÀ¸·Î¸¸
+         * ½ÇÇàµÈ °ÍÀÌ¹Ç·Î ¿¡·¯¸¦ ¹ß»ý½ÃÅ²´Ù. */
         if (bindParamCnt > 0 &&
             batchCnt != replyMsg.executedCnt) {
             SQLException e = replyMsg
@@ -1063,7 +1063,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 
     /**
      * execute protocol ResultSet: true, updateCount -1 update count: false,
-     * updateCount result setï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: false, updateCount -1
+     * updateCount result setÀÌ ¾øÀ¸¸é: false, updateCount -1
      */
     public int execute(TbPreparedStatementImpl stmt, String sql, int rowIndex)
             throws SQLException {
@@ -1207,7 +1207,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
         if (paramData == null)
             return 1;
 
-        /* ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ rowchunkï¿½ï¿½ ï¿½Ì¸ï¿½ Ã³ï¿½ï¿½ï¿½Ñ´ï¿½. */
+        /* ³×Æ®¿÷ ¹öÆÛ¿¡ ³²¾ÆÀÖ´Â rowchunk¸¦ ¹Ì¸® Ã³¸®ÇÑ´Ù. */
         TbResultSet prefetchedRs = processPrefetchedRset(cstmt, reply.colCnt,
                                                          reply.hiddenColCnt,
                                                          reply.csrId,
@@ -1231,14 +1231,14 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             outItem.set(bindItem.getSQLType(), paramData[i].value.length,
                         paramData[i].colMeta, null);
 
-            /* CURSORï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ indexï¿½ï¿½ REF CURSORï¿½ï¿½ Prefetch ï¿½ï¿½ï¿½ï¿½Ì´ï¿½. */
+            /* CURSOR°¡ ¿©·¯°³ÀÎ°æ¿ì °¡Àå ¾Õ indexÀÇ REF CURSOR¸¸ Prefetch ´ë»óÀÌ´Ù. */
             if (prefetchedRs != null &&
                     paramData[i].dataType == DataType.CURSOR) {
                 cstmt.setOutParam(index, paramData[i].dataType,
                                   paramData[i].value, prefetchedRs);
                 prefetchedRs = null;
 
-                // prefetch caseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pivot ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ paramIndexï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
+                // prefetch case·Î ÀÎÇØ ÀÌÀü¿¡ ¼­¹ö¿¡¼­ pivot Á¤º¸¸¦ paramIndex¿¡ ¸ÂÃçÁØ´Ù.
                 cstmt.setPivotInfo(index, cstmt.getPivotInfo());
                 Vector
                 // #ifdef JDK1.5
@@ -1275,7 +1275,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             });
         }
 
-        // ï¿½ï¿½ï¿½ï¿½!! countï¿½ï¿½ long(64)ï¿½ï¿½.
+        // ÁÖÀÇ!! count´Â long(64)ÀÓ.
         long updateCount = (0xffffffff00000000L & ((long) reply.cntHigh << 32)) +
             (0xffffffffL & (long) reply.cntLow);
 
@@ -1393,7 +1393,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
         TbStreamDataWriter writer = stream.getMsgWriter();
 
         while (true) {
-            /* parameter ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* parameter ÇÏ³ªÀÇ µ¥ÀÌÅÍ¸¦ ¼­¹ö¿¡ Àü¼Û */
             int paramIndex = ((TbMsgExecuteNeedDataReply) msg).paramIndex;
 
             item = bindData.getBindItem(paramIndex);
@@ -1415,7 +1415,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             binder[rowIndex][paramIndex].bindDFR(conn, stmt, writer, rowIndex,
                                                  paramIndex, item.getLength());
 
-            /* ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ PUT_DATA ï¿½ï¿½ï¿½ï¿½(SEND NULL)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+            /* ÇÑ ÄÃ·³¿¡ ´ëÇÑ PUT_DATA Á¾·á(SEND NULL)À» º¸³½´Ù */
             TbMsgSend.PUT_DATA(stream, paramIndex, csrId, new byte[0], 0);
 
             msg = stream.readMsg();
@@ -1733,8 +1733,8 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                 break;
 
             case DBConst.TBMSG_EREPLY:
-                /* INVALID_PPIDï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ serverï¿½ï¿½ internalï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-                 * ï¿½ï¿½ï¿½ï¿½ INVALID_CURSOR_STATEï¿½ï¿½ messageï¿½ï¿½ ï¿½Ù²ï¿½ï¿½Ø´ï¿½. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ð¸£°ï¿½ï¿½ï¿½. */
+                /* INVALID_PPIDÀÎ °æ¿ì »ç¿ëÀÚ¿¡°Ô serverÀÇ internalÇÑ ¿À·ù¶ó°í ÆÇ´ÜÇÒ ¿©Áö°¡ ÀÖ¾î ´ÙÀ½°ú
+                 * °°ÀÌ INVALID_CURSOR_STATE·Î message¸¦ ¹Ù²ãÁØ´Ù. »ç½Ç ¿ÅÀº ¹æ¹ýÀÎÁö´Â ¸ð¸£°ÚÀ½. */
                 SQLException ex = getErrorMessage(TbError.SVR_FETCH_FAIL, msg);
                 String sqlState = ex.getSQLState();
 
@@ -1789,7 +1789,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 
             switch (msg.getMsgType()) {
             case DBConst.TBMSG_EXECUTE_PREFETCH_REPLY:
-                /* msg ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ execute_prefetch_replyï¿½ï¿½ ï¿½ï¿½ï¿½â¶§ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ msgï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½. */
+                /* msg ±¸Á¶Ã¼°¡ execute_prefetch_reply¿Í °°±â¶§¹®¿¡ µû·Î msg¸¦ »ý¼ºÇÏÁö ¾Ê°í »ç¿ëÇÑ´Ù. */
                 return doDescribeCSRPrefetch(stmt,
                                              (TbMsgExecutePrefetchReply) msg);
 
@@ -2509,7 +2509,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                 .convertStandardTimeZoneID(timezone.getID());
 
         if (ZoneInfo.getTimeZoneIdByName(timezoneID) == ZoneInfo.TZ_ID_OFFSET.getId().intValue()) {
-            //ZoneInfoï¿½ï¿½ï¿½ï¿½ timezone ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+            //ZoneInfo¿¡¼­ timezone Á¤º¸¸¦ Ã£Áö ¸øÇÑ °æ¿ì
 
             int offset = timezone.getRawOffset();
 
@@ -2537,10 +2537,10 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                 offsetText += ":" + String.valueOf(min);
             }
 
-            //rawOffsetï¿½ï¿½ +00:00  ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½È¯
+            //rawOffsetÀ» +00:00  ÇüÅÂ·Î º¯È¯
 
             timezone.setID("GMT" + offsetText);
-            //GMT+00:00ï¿½ï¿½ï¿½Â·ï¿½ setID
+            //GMT+00:00ÇüÅÂ·Î setID
 
             timezoneID = ZoneInfo.convertStandardTimeZoneID(timezone.getID());
 
@@ -2700,8 +2700,8 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
             String pwdGExVal = msg.nlsData[DBConst.TB_NLS_PARAM_PASSWD_GRACE_EXPIRED].nlsParamVal;
 
             /* 
-             * Ã³ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "Y"ï¿½ï¿½ graceful expired ï¿½ï¿½ï¿½Î¸ï¿½ Ç¥ï¿½ÃµÇ¾ï¿½ï¿½ï¿½ï¿½ï¿½
-             * ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â¥ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½.
+             * Ã³À½ Ãß°¡µÇ¾úÀ» ¶§¿¡´Â "Y"·Î graceful expired ¿©ºÎ¸¸ Ç¥½ÃµÇ¾úÀ¸³ª
+             * ¼ýÀÚ°ªÀ» ÅëÇØ ³²Àº ³¯Â¥¸¦ Ç¥±âÇÏ´Â °ÍÀ¸·Î º¯°æµÇ¾ú´Ù.
              */
             if (pwdGExVal.equals("Y"))
                 conn.addWarning(TbError
@@ -2955,7 +2955,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
         int autoCommit = conn.getAutoCommit() ? DBConst.CS_AUTO_COMMIT : 0;
         BindData bindData = stmt.getBindData();
         Binder[][] binder = stmt.getBinder();
-        /* BigLiteral ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ bindDataï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½. */
+        /* BigLiteral ¶§¹®¿¡ bindDataÀÇ ÆÄ¶ó¸ÞÅÍ °³¼ö¸¦ ºÁ¾ß ÇÑ´Ù. */
         int paramCount = bindData.getParameterCnt();
         int flag;
         BindItem item;
@@ -3027,8 +3027,8 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                                               int isFetchCompleted, long tsn)
                                                       throws SQLException {
         /*
-         * ResultSet ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ UDTï¿½Ã·ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ DB ï¿½ï¿½È¸ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½,
-         * prefetchï¿½ï¿½ rowchunkï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ï¿½Û¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
+         * ResultSet °´Ã¼ »ý¼ºÁß¿¡ UDTÄÃ·³¸ÞÅ¸¸¦ À§ÇØ Ãß°¡ DB Á¶È¸¸¦ ÇÏ´Â ºÎºÐÀÌ ÀÖÀ¸¹Ç·Î,
+         * prefetchµÈ rowchunk¸¦ ¸ÕÀú ³×Æ®¿÷¹öÆÛ¿¡¼­ ºñ¿öÁØ´Ù.
          */
         byte[] rowChunk = new byte[rowChunkSize];
         stream.readChunkData(rowChunk, rowChunkSize);
@@ -3260,7 +3260,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 
         synchronized (stream) {
             TbMsgSend.RESET_SESS(stream);
-            /* reset_sess ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ replyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* reset_sess ¸Þ½ÃÁö´Â reply°¡ ¾ø´Ù */
         }
     }
 
@@ -3369,9 +3369,9 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 //                }
 //            }
 //            catch (SQLException e) {
-//                /* FIXME : ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½î°¥ Mapï¿½ï¿½ <String, ClientInfoStatus> ï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,
-//                 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Client info keyï¿½ï¿½ CLIENT_INFO_IDENTIFIER ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½â¶§ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-//                 * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ñ°ï¿½ï¿½Ø´ï¿½. */
+//                /* FIXME : ¿©±â¿¡ µé¾î°¥ MapÀº <String, ClientInfoStatus> ·Î µé¾î°¡¾ßÇÏÁö¸¸,
+//                 * ¾ÆÁ÷Àº Client info key·Î CLIENT_INFO_IDENTIFIER ¹Û¿¡ ¾ø±â¶§¹®¿¡ ÀÏ´ÜÀº ´ÙÀ½°ú
+//                 * °°ÀÌ ¼¼ÆÃÇØ¼­ ³Ñ°ÜÁØ´Ù. */
 //                HashMap map = new HashMap();
 //                for (int i = 0; i < clientInfo.length; i++) {
 //                    map.put(TbConnection.CLIENT_INFO_KEYS[i], clientInfo[i]);
@@ -3383,10 +3383,10 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
 //        }
 
         /*
-         * TODO: client info ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
+         * TODO: client info °ü·Ã »õ·Î ±¸Çö ÇÊ¿ä
          * 
-         * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ SESS_ATTR ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-         * ï¿½ì¼± ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ExceptionÃ³ï¿½ï¿½ï¿½ï¿½
+         * ±âÁ¸ ±¸Çö¿¡ »ç¿ëµÈ SESS_ATTR ¸Þ½ÃÁö°¡ ¼­¹öÂÊ¿¡¼­ »ç¿ëÇÒ¼ö ¾ø´Â »óÅÂÀÌ±â ¶§¹®¿¡
+         * ¿ì¼± ±â´É ÀÚÃ¼¸¦ ExceptionÃ³¸®ÇÔ
          */
         HashMap<String, ClientInfoStatus> map = new HashMap<String, ClientInfoStatus>();
         for (int i = 0; i < clientInfo.length; i++) {
@@ -3540,7 +3540,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                         totalLen, splitLen, flag);
                 }
                 catch (SQLException e) {
-                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TBMSG_CANCEL ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½
+                    // ¼­¹ö¿¡ TBMSG_CANCEL º¸³¾ ÇÊ¿ä ¾ø´Ù°í ÇÔ
                     // if (!firstMsg)
                     // cancel();
                     throw e;
@@ -3601,7 +3601,7 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
                         totalCharCnt, splitCharCnt, flag);
                 }
                 catch (SQLException e) {
-                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TBMSG_CANCEL ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½
+                    // ¼­¹ö¿¡ TBMSG_CANCEL º¸³¾ ÇÊ¿ä ¾ø´Ù°í ÇÔ
                     // if (!firstMsg)
                     // cancel();
                     throw e;

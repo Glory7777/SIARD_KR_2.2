@@ -10,7 +10,7 @@ public class BatchUpdateInfo {
   public void add(BatchInfo paramBatchInfo) {
     this.batchInfos.add(paramBatchInfo);
     if (paramBatchInfo.getBindData().getDFRParameterCnt() > 0)
-      this.deferredRowIndices.add(new Integer(paramBatchInfo.getCurrentRowIndex())); 
+      this.deferredRowIndices.add(paramBatchInfo.getCurrentRowIndex());
   }
   
   public void clear() {
@@ -36,7 +36,7 @@ public class BatchUpdateInfo {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\BatchUpdateInfo.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\BatchUpdateInfo.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

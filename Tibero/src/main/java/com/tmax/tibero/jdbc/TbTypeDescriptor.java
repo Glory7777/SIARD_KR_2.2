@@ -77,7 +77,7 @@ public abstract class TbTypeDescriptor {
   }
   
   public static List<TbTypeDescriptor> genPredefUDTDescs(TbConnection paramTbConnection) {
-    ArrayList<TbStructDescriptor> arrayList = new ArrayList(7);
+    ArrayList<TbTypeDescriptor> arrayList = new ArrayList(7);
     try {
       arrayList.add(new TbStructDescriptor(32, "00000000000000000000000000000003", "SYS.UDT_INFO_T", new int[] { 3, 3, 3, 3, 1, 1, 1, 4 }, new String[8], new String[8], paramTbConnection));
       arrayList.add(new TbStructDescriptor(32, "00000000000000000000000000000004", "SYS.ATTR_META_T", new int[] { 3, 1, 1, 1, 1, 3 }, new String[6], new String[6], paramTbConnection));
@@ -167,7 +167,7 @@ public abstract class TbTypeDescriptor {
   }
   
   public static String[] splitSQLTypeName(String paramString) {
-    null = null;
+//    null = null;
     String str = "[.]{1}";
     return paramString.split(str);
   }
@@ -197,7 +197,7 @@ public abstract class TbTypeDescriptor {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbTypeDescriptor.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbTypeDescriptor.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

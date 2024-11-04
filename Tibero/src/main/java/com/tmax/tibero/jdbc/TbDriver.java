@@ -1,6 +1,5 @@
 package com.tmax.tibero.jdbc;
 
-import ch.enterag.utils.jdbc.BaseDriver;
 import com.tmax.tibero.DriverConstants;
 import com.tmax.tibero.jdbc.data.ConnectionInfo;
 import com.tmax.tibero.jdbc.driver.TbConnection;
@@ -14,8 +13,7 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class TbDriver extends BaseDriver implements Driver {
-
+public class TbDriver implements Driver {
   protected static Connection defaultConn = null;
   
   public boolean acceptsURL(String paramString) throws SQLException {
@@ -98,7 +96,7 @@ public class TbDriver extends BaseDriver implements Driver {
   public boolean jdbcCompliant() {
     return true;
   }
-
+  
   static {
     try {
       DriverManager.registerDriver(new TbDriver());
@@ -109,7 +107,7 @@ public class TbDriver extends BaseDriver implements Driver {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbDriver.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbDriver.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

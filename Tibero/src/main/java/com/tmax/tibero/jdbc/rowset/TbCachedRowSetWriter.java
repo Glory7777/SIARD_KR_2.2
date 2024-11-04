@@ -46,39 +46,36 @@ public class TbCachedRowSetWriter implements RowSetWriter, Serializable {
     } 
     return (this.deleteStmt.executeUpdate() == 1);
   }
-  
+
   private boolean deleteRowWithNull(RowSet paramRowSet, TbRow paramTbRow) throws SQLException {
-    StringBuffer stringBuffer = new StringBuffer("DELETE FROM " + getTableName(paramRowSet) + " WHERE ");
-    byte b;
-    for (b = 1; b <= this.columnCount; b++) {
-      if (b != 1)
-        stringBuffer.append(" AND "); 
-      if (paramTbRow.isNull(b)) {
-        stringBuffer.append(this.rsmd.getColumnName(b) + " IS NULL ");
+    StringBuilder queryBuilder = new StringBuilder("DELETE FROM " + getTableName(paramRowSet) + " WHERE ");
+    byte columnIndex;
+
+    for (columnIndex = 1; columnIndex <= this.columnCount; columnIndex++) {
+      if (columnIndex != 1) {
+        queryBuilder.append(" AND ");
+      }
+      if (paramTbRow.isNull(columnIndex)) {
+        queryBuilder.append(this.rsmd.getColumnName(columnIndex)).append(" IS NULL ");
       } else {
-        stringBuffer.append(this.rsmd.getColumnName(b) + " = :" + b);
-      } 
-    } 
-    PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement = this.conn.prepareStatement(stringBuffer.substring(0, stringBuffer.length()));
-      byte b1 = 1;
-      byte b2 = 1;
-      while (b1 <= this.columnCount) {
-        if (!paramTbRow.isNull(b1))
-          preparedStatement.setObject(b2++, paramTbRow.getColumn(b1)); 
-        b1++;
-      } 
-      b = (preparedStatement.executeUpdate() == 1) ? 1 : 0;
-      if (preparedStatement != null)
-        preparedStatement.close(); 
-    } catch (SQLException sQLException) {
-      if (preparedStatement != null)
-        preparedStatement.close(); 
-      throw sQLException;
-    } 
-    return b;
+        queryBuilder.append(this.rsmd.getColumnName(columnIndex)).append(" = :").append(columnIndex);
+      }
+    }
+
+      try (PreparedStatement preparedStatement = this.conn.prepareStatement(queryBuilder.toString())) {
+          byte paramIndex = 1;
+
+          for (byte rowIndex = 1; rowIndex <= this.columnCount; rowIndex++) {
+              if (!paramTbRow.isNull(rowIndex)) {
+                  preparedStatement.setObject(paramIndex++, paramTbRow.getColumn(rowIndex));
+              }
+          }
+
+          return (preparedStatement.executeUpdate() == 1);
+
+      }
   }
+
   
   private String getTableName(RowSet paramRowSet) throws SQLException {
     String str1 = paramRowSet.getCommand().toUpperCase();
@@ -159,57 +156,55 @@ public class TbCachedRowSetWriter implements RowSetWriter, Serializable {
     } 
     return (this.updateStmt.executeUpdate() == 1);
   }
-  
+
   private boolean updateRowWithNull(RowSet paramRowSet, TbRow paramTbRow) throws SQLException {
-    StringBuffer stringBuffer = new StringBuffer("UPDATE " + getTableName(paramRowSet) + " SET ");
-    byte b;
-    for (b = 1; b <= this.columnCount; b++) {
-      if (b != 1)
-        stringBuffer.append(", "); 
-      stringBuffer.append(this.rsmd.getColumnName(b) + " = :" + b);
-    } 
-    stringBuffer.append(" WHERE ");
-    for (b = 1; b <= this.columnCount; b++) {
-      if (b != 1)
-        stringBuffer.append(" AND "); 
-      if (paramTbRow.isNull(b)) {
-        stringBuffer.append(this.rsmd.getColumnName(b) + " IS NULL ");
+    StringBuilder queryBuilder = new StringBuilder("UPDATE " + getTableName(paramRowSet) + " SET ");
+    byte columnIndex;
+
+    for (columnIndex = 1; columnIndex <= this.columnCount; columnIndex++) {
+      if (columnIndex != 1) {
+        queryBuilder.append(", ");
+      }
+      queryBuilder.append(this.rsmd.getColumnName(columnIndex) + " = :" + columnIndex);
+    }
+
+    queryBuilder.append(" WHERE ");
+
+    for (columnIndex = 1; columnIndex <= this.columnCount; columnIndex++) {
+      if (columnIndex != 1) {
+        queryBuilder.append(" AND ");
+      }
+      if (paramTbRow.isNull(columnIndex)) {
+        queryBuilder.append(this.rsmd.getColumnName(columnIndex) + " IS NULL ");
       } else {
-        stringBuffer.append(this.rsmd.getColumnName(b) + " = :" + b);
-      } 
-    } 
-    PreparedStatement preparedStatement = null;
-    try {
-      preparedStatement = this.conn.prepareStatement(stringBuffer.substring(0, stringBuffer.length()));
-      byte b1;
-      for (b1 = 1; b1 <= this.columnCount; b1++) {
-        Object object = null;
-        object = paramTbRow.isColumnChanged(b1) ? paramTbRow.getChangedColumn(b1) : paramTbRow.getColumn(b1);
-        if (object == null) {
-          preparedStatement.setNull(b1, this.rsmd.getColumnType(b1));
-        } else {
-          preparedStatement.setObject(b1, object);
-        } 
-      } 
-      b1 = 1;
-      byte b2 = 1;
-      while (b1 <= this.columnCount) {
-        if (!paramTbRow.isNull(b1)) {
-          preparedStatement.setObject(b2 + this.columnCount, paramTbRow.getColumn(b1));
-          b2++;
-        } 
-        b1++;
-      } 
-      b = (preparedStatement.executeUpdate() == 1) ? 1 : 0;
-      if (preparedStatement != null)
-        preparedStatement.close(); 
-    } catch (SQLException sQLException) {
-      if (preparedStatement != null)
-        preparedStatement.close(); 
-      throw sQLException;
-    } 
-    return b;
+        queryBuilder.append(this.rsmd.getColumnName(columnIndex) + " = :" + columnIndex);
+      }
+    }
+
+      try (PreparedStatement preparedStatement = this.conn.prepareStatement(queryBuilder.toString())) {
+
+          for (byte paramIndex = 1; paramIndex <= this.columnCount; paramIndex++) {
+              Object value = paramTbRow.isColumnChanged(paramIndex) ?
+                      paramTbRow.getChangedColumn(paramIndex) :
+                      paramTbRow.getColumn(paramIndex);
+              if (value == null) {
+                  preparedStatement.setNull(paramIndex, this.rsmd.getColumnType(paramIndex));
+              } else {
+                  preparedStatement.setObject(paramIndex, value);
+              }
+          }
+
+          for (byte whereIndex = 1; whereIndex <= this.columnCount; whereIndex++) {
+              if (!paramTbRow.isNull(whereIndex)) {
+                  preparedStatement.setObject(whereIndex + this.columnCount, paramTbRow.getColumn(whereIndex));
+              }
+          }
+
+          return (preparedStatement.executeUpdate() == 1);
+
+      }
   }
+
   
   public synchronized boolean writeData(RowSetInternal paramRowSetInternal) throws SQLException {
     TbCachedRowSet tbCachedRowSet = (TbCachedRowSet)paramRowSetInternal;
@@ -263,7 +258,7 @@ public class TbCachedRowSetWriter implements RowSetWriter, Serializable {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbCachedRowSetWriter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbCachedRowSetWriter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

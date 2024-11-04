@@ -8,6 +8,7 @@ import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.err.TbError;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.sql.SQLException;
 
 public class DPLReaderBinder extends DPLBinder {
@@ -30,7 +31,7 @@ public class DPLReaderBinder extends DPLBinder {
     int i = paramTbDirPathStream.getDPLMetaData().getDataType(paramInt1 + 1);
     char[] arrayOfChar = new char[4096];
     byte[] arrayOfByte = new byte[16384];
-    boolean bool = false;
+    Serializable bool = false;
     int j = 0;
     int k = 0;
     int m = 0;
@@ -40,9 +41,9 @@ public class DPLReaderBinder extends DPLBinder {
       paramTbStreamDataWriter.writeInt(0, 4);
       while (paramInt2 >= 0) {
         bool = (paramInt2 > 4096) ? true : paramInt2;
-        j = reader.read(arrayOfChar, 0, bool);
+        j = reader.read(arrayOfChar, 0, (Integer) bool);
         if (j <= 0) {
-          if (m) {
+          if (m == 0) {
             paramTbStreamDataWriter.reWriteInt(streamBuffer.getCurDataSize() - m - 4, m, 4);
             paramTbStreamDataWriter.writePaddingDPL(m);
           } 
@@ -101,7 +102,7 @@ public class DPLReaderBinder extends DPLBinder {
     StreamBuffer streamBuffer = paramTbStreamDataWriter.getStreamBuf();
     int i = paramTbDirPathStream.getDPLMetaData().getDataType(paramInt1 + 1);
     char[] arrayOfChar = new char[4096];
-    boolean bool = false;
+    Serializable bool = false;
     int j = 0;
     int k = 0;
     int m = 0;
@@ -119,7 +120,7 @@ public class DPLReaderBinder extends DPLBinder {
       } 
       while (this.length >= 0) {
         bool = (this.length > 4096) ? true : this.length;
-        j = reader.read(arrayOfChar, 0, bool);
+        j = reader.read(arrayOfChar, 0, (Integer) bool);
         if (j <= 0) {
           paramTbStreamDataWriter.reWriteInt(streamBuffer.getCurDataSize() - m - 4, m, 4);
           paramTbStreamDataWriter.writePaddingDPL(m);
@@ -164,7 +165,7 @@ public class DPLReaderBinder extends DPLBinder {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\binder\DPLReaderBinder.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\binder\DPLReaderBinder.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

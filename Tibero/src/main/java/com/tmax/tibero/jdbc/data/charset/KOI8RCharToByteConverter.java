@@ -68,7 +68,7 @@ public class KOI8RCharToByteConverter {
       if (c < '') {
         paramArrayOfbyte[j++] = (byte)c;
       } else {
-        byte b;
+        int b;
         if (c >= ' ' && c < 'ø') {
           b = UNICODE_TO_KOI8R_IDX_PAGE00[c - 160];
         } else if (c >= 'Ѐ' && c < 'ј') {
@@ -101,7 +101,7 @@ public class KOI8RCharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\KOI8RCharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\KOI8RCharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

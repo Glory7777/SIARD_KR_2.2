@@ -56,7 +56,7 @@ public class Debug {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\Debug.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\Debug.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

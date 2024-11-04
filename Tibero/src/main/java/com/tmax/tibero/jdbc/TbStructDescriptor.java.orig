@@ -7,7 +7,7 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc;
+package com.tmax.tibero.jdbc;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -20,12 +20,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Map;
 
-import tibero.Debug;
-import tibero.jdbc.data.*;
-import tibero.jdbc.driver.TbConnection;
-import tibero.jdbc.driver.TbResultSetBase;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.util.TbDatabaseMetaQuery;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.jdbc.data.*;
+import com.tmax.tibero.jdbc.driver.TbConnection;
+import com.tmax.tibero.jdbc.driver.TbResultSetBase;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.util.TbDatabaseMetaQuery;
 
 /**
  * TbStructDescriptor describes an struct class.
@@ -172,7 +172,7 @@ public class TbStructDescriptor extends TbTypeDescriptor {
             throw TbError.newSQLException(TbError.MU_INVALID_PARAMETER,
                                           "OID(hex)[" + hexEncodedOID + "]");
 
-        // XXX: BIND-PARAMï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SELECTï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ñ´ï¿½.
+        // XXX: BIND-PARAM°ü·Ã ±¸ÇöÀÌ ¿Ï·áµÇÁö ¾ÊÀº »óÅÂÀÌ±â ¶§¹®¿¡ SELECT·Î Ã³¸®ÇÑ´Ù.
         PreparedStatement pstmt = conn
                 .prepareStatement(TbDatabaseMetaQuery.QUERY_UDTMETA__BY_OID);
         pstmt.setString(1, hexEncodedOID);
@@ -233,9 +233,9 @@ public class TbStructDescriptor extends TbTypeDescriptor {
                 int attrTypes[] = new int[idxArr.length];
 
                 /*
-                 * GETUDTMETAï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ Attributeï¿½ï¿½ UDT Nameï¿½ï¿½ ï¿½ï¿½ï¿½Þµï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
-                 * ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ descriptor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ attrTypeNames[]ï¿½ï¿½ï¿½ï¿½ ï¿½ì¼± nullï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ñ´ï¿½.
-                 * ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ subtype Ã³ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ OIDï¿½ï¿½ ï¿½ì¼± Ã¼Å©ï¿½Ïµï¿½ï¿½ï¿½ ï¿½Ñ´ï¿½.
+                 * GETUDTMETA¸¦ ÀÌ¿ëÇÏ´Â °æ¿ì, ÇöÀç´Â AttributeÀÇ UDT NameÀº Àü´ÞµÇÁö ¾Ê´Â´Ù.
+                 * ÀÌ ¶§¹®¿¡ descriptor »ý¼º½Ã attrTypeNames[]¿¡´Â ¿ì¼± null°ª¸¸ ´ã¾Æ Ã³¸®ÇÑ´Ù.
+                 * ´ë½Å ½ÇÁ¦ subtype Ã³¸®½Ã¿¡´Â OID¸¦ ¿ì¼± Ã¼Å©ÇÏµµ·Ï ÇÑ´Ù.
                  */
                 String attrTypeNames[] = new String[idxArr.length];
                 String attrOIDs[] = new String[idxArr.length];

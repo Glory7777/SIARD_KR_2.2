@@ -6,7 +6,7 @@ import com.tmax.tibero.jdbc.data.DataType;
 import com.tmax.tibero.jdbc.err.TbError;
 import java.sql.SQLException;
 
-public class TbResultSetMetaData implements TbResultSetMetaData {
+public class TbResultSetMetaData implements com.tmax.tibero.jdbc.TbResultSetMetaData {
   private Column[] columnInfoArr = null;
   
   public TbResultSetMetaData(Column[] paramArrayOfColumn, int paramInt) {
@@ -244,7 +244,7 @@ public class TbResultSetMetaData implements TbResultSetMetaData {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbResultSetMetaData.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbResultSetMetaData.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -851,7 +851,7 @@ public class TbUrlParserTokenManager implements TbUrlParserConstants {
     return token;
   }
   
-  public Token getNextToken() {
+//  public Token getNextToken() {
     // Byte code:
     //   0: aconst_null
     //   1: astore_2
@@ -1026,11 +1026,11 @@ public class TbUrlParserTokenManager implements TbUrlParserConstants {
     //   5	16	19	java/io/IOException
     //   33	79	82	java/io/IOException
     //   197	213	216	java/io/IOException
-  }
+//  }
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbUrlParserTokenManager.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbUrlParserTokenManager.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

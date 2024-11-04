@@ -13,7 +13,6 @@ import com.tmax.tibero.jdbc.err.TbError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -394,24 +393,20 @@ public class TbStruct implements Struct {
   public Object[] getAttributes() throws SQLException {
     return this.attributes;
   }
-
+  
   public Object toClass(Class<?> paramClass, Map<String, Class<?>> paramMap) throws SQLException {
-    if (paramClass == null) {
-      return this;
-    }
+    if (paramClass == null)
+      return this; 
     Object object = null;
     try {
-      // Java에서는 newInstance() 대신 getDeclaredConstructor().newInstance()를 권장
-      object = paramClass.getDeclaredConstructor().newInstance();
-
-      // 객체가 SQLData 타입인 경우 readSQL 메서드를 호출하여 데이터 읽기
-      if (object instanceof SQLData) {
-        ((SQLData) object).readSQL(this.descriptor.toSQLInput(this, paramMap), this.descriptor.getSQLTypeName());
-      }
-    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-             InvocationTargetException e) {
-      throw TbError.newSQLException(-90651, e);
-    }
+      object = paramClass.newInstance();
+      if (object instanceof SQLData)
+        ((SQLData)object).readSQL(this.descriptor.toSQLInput(this, paramMap), this.descriptor.getSQLTypeName()); 
+    } catch (InstantiationException instantiationException) {
+      throw TbError.newSQLException(-90651, instantiationException);
+    } catch (IllegalAccessException illegalAccessException) {
+      throw TbError.newSQLException(-90651, illegalAccessException);
+    } 
     return object;
   }
 
@@ -422,21 +417,18 @@ public class TbStruct implements Struct {
     if (map != null) {
       Class<?> clazz = this.descriptor.getClass(map);
       if (clazz != null) {
-        // 결과를 object에 할당하여 반환하도록 수정
         object = toClass(clazz, map);
       }
     } else if (this.conn != null) {
       map = this.conn.getTypeMap();
       Class<?> clazz = this.descriptor.getClass(map);
-
       if (clazz != null) {
-        // 동일하게 object에 할당
         object = toClass(clazz, map);
       }
     }
+
     return object;
   }
-
 
   public Object[] getAttributes(Map<String, Class<?>> paramMap) throws SQLException {
     Object[] arrayOfObject = new Object[this.attributes.length];
@@ -649,7 +641,7 @@ public class TbStruct implements Struct {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbStruct.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\TbStruct.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

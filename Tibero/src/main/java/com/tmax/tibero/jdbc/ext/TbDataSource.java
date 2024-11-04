@@ -12,21 +12,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.naming.Reference;
+import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
+import javax.sql.DataSource;
 
-public class TbDataSource extends TbDataSourceFactory implements
-        javax.sql.DataSource, javax.naming.Referenceable,
-        java.io.Serializable {
+public class TbDataSource implements DataSource, Serializable, Referenceable {
   private static final long serialVersionUID = 6545162651851145814L;
-
+  
   private TbDriver driver = null;
   
   protected ConnectionInfo info = null;
@@ -113,12 +112,7 @@ public class TbDataSource extends TbDataSourceFactory implements
   public synchronized int getLoginTimeout() throws SQLException {
     return this.loginTimeout;
   }
-
-  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-    throw new SQLFeatureNotSupportedException("Logging is not supported by this driver.");
-  }
-
-
+  
   public synchronized PrintWriter getLogWriter() throws SQLException {
     return Debug.getLogWriter();
   }
@@ -444,24 +438,23 @@ public class TbDataSource extends TbDataSourceFactory implements
   }
   
   public synchronized void setURL(String paramString) throws SQLException {
-      try {
-        ConnectionInfo connectionInfo = TbUrlParser.parseUrl(paramString, null);
-      } catch (ParseException parseException) {
-          throw TbError.newSQLException(-90605, parseException);
-      }
-      ConnectionInfo connectionInfo = null;
-      if (connectionInfo == null)
-          throw TbError.newSQLException(-90605);
-      this.info.setURL(paramString);
-      connectionInfo = null;
-      this.info.setDriverType(connectionInfo.getDriverType());
-      this.info.setNodeList(connectionInfo.getNodeList());
-      this.info.setDatabaseName(connectionInfo.getDatabaseName());
-      this.info.setFailover(connectionInfo.getFailover());
-      this.info.setLoadBalance(connectionInfo.isLoadBalance());
-      this.info.setNetworkProtocol(connectionInfo.getNetworkProtocol());
-      connectionInfo = null;
-      this.isExplicitURL = true;
+    ConnectionInfo connectionInfo;
+    try {
+      connectionInfo = TbUrlParser.parseUrl(paramString, null);
+    } catch (ParseException parseException) {
+      throw TbError.newSQLException(-90605, parseException);
+    } 
+    if (connectionInfo == null)
+      throw TbError.newSQLException(-90605); 
+    this.info.setURL(paramString);
+    this.info.setDriverType(connectionInfo.getDriverType());
+    this.info.setNodeList(connectionInfo.getNodeList());
+    this.info.setDatabaseName(connectionInfo.getDatabaseName());
+    this.info.setFailover(connectionInfo.getFailover());
+    this.info.setLoadBalance(connectionInfo.isLoadBalance());
+    this.info.setNetworkProtocol(connectionInfo.getNetworkProtocol());
+    connectionInfo = null;
+    this.isExplicitURL = true;
   }
   
   public synchronized void setUser(String paramString) {
@@ -650,7 +643,7 @@ public class TbDataSource extends TbDataSourceFactory implements
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbDataSource.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\ext\TbDataSource.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

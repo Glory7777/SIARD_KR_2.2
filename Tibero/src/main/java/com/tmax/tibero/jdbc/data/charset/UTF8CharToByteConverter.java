@@ -19,7 +19,7 @@ public class UTF8CharToByteConverter {
     byte[] arrayOfByte = new byte[6];
     i = paramInt1;
     j = paramInt3;
-    if (c) {
+    if (c == 0) {
       c = Character.MIN_VALUE;
       if (paramArrayOfchar[paramInt1] >= '?' && paramArrayOfchar[paramInt1] <= '?') {
         int k = (c - 55296) * 1024 + paramArrayOfchar[paramInt1] - 56320 + 65536;
@@ -84,7 +84,7 @@ public class UTF8CharToByteConverter {
     byte[] arrayOfByte = new byte[6];
     i = paramInt1;
     j = paramInt3;
-    if (c) {
+    if (c == 0) {
       c = Character.MIN_VALUE;
       if (paramString.charAt(paramInt1) >= '?' && paramString.charAt(paramInt1) <= '?') {
         int k = (c - 55296) * 1024 + paramString.charAt(paramInt1) - 56320 + 65536;
@@ -148,7 +148,7 @@ public class UTF8CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UTF8CharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UTF8CharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

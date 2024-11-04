@@ -387,7 +387,7 @@ public class ConnectionInfo implements Cloneable {
       this.curNodeIdx = TbRandom.nextInt(this.nodeList.size());
     } else if (isFailoverSessionEnabled()) {
       for (byte b = 0; b < this.nodeList.size(); b++) {
-        nodeInfo = this.nodeList.get(b);
+        nodeInfo = (NodeInfo) this.nodeList.get(b);
         if (nodeInfo.getNodeType() == 1) {
           this.curNodeIdx = b;
           break;
@@ -397,7 +397,7 @@ public class ConnectionInfo implements Cloneable {
     this.visitedNodeCount = 1;
     this.visitedNodes[this.curNodeIdx] = true;
     this.connectedToPrimary = true;
-    return this.nodeList.get(this.curNodeIdx);
+    return (NodeInfo) this.nodeList.get(this.curNodeIdx);
   }
   
   public String getProgramName() {
@@ -421,7 +421,7 @@ public class ConnectionInfo implements Cloneable {
       this.visitedNodeCount = 0;
     } 
     for (b = 0; b < this.nodeList.size(); b++) {
-      nodeInfo = this.nodeList.get(b);
+      nodeInfo = (NodeInfo) this.nodeList.get(b);
       if (nodeInfo.getNodeType() == 2) {
         this.curNodeIdx = b;
         this.visitedNodeCount++;
@@ -434,7 +434,7 @@ public class ConnectionInfo implements Cloneable {
       if (!this.visitedNodes[this.curNodeIdx]) {
         this.visitedNodeCount++;
         this.visitedNodes[this.curNodeIdx] = true;
-        return this.nodeList.get(this.curNodeIdx);
+        return (NodeInfo) this.nodeList.get(this.curNodeIdx);
       } 
     } 
   }
@@ -491,7 +491,7 @@ public class ConnectionInfo implements Cloneable {
     String str1 = paramProperties.getProperty("serverName", "localhost");
     String str2 = paramProperties.getProperty("portNumber", "");
     try {
-      c = Integer.parseInt(str2);
+      c = (char) Integer.parseInt(str2);
     } catch (Exception exception) {
       c = '↵';
     } 
@@ -869,7 +869,7 @@ public class ConnectionInfo implements Cloneable {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\ConnectionInfo.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\ConnectionInfo.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

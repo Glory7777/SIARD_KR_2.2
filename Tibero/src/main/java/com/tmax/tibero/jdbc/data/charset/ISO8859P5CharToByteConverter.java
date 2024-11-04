@@ -31,7 +31,7 @@ public class ISO8859P5CharToByteConverter {
       if (c < ' ') {
         paramArrayOfbyte[j++] = (byte)c;
       } else {
-        byte b;
+        int b;
         if (c >= ' ' && c < '°') {
           b = UNICODE_TO_KOI8R_IDX_PAGE00[c - 160];
         } else if (c >= 'Ѐ' && c < 'Ѡ') {
@@ -60,7 +60,7 @@ public class ISO8859P5CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P5CharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\ISO8859P5CharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

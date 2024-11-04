@@ -35,13 +35,13 @@ public abstract class TbMsgError extends TbMsg {
       paramTbStreamDataReader.moveReadOffset(1);
       String str1 = paramTbStreamDataReader.readDBDecodedString(6).trim();
       if (null != str1) {
-        int i1 = str1.indexOf(false);
+        int i1 = str1.indexOf(String.valueOf(false));
         if (i1 > 0)
           str1 = str1.substring(0, i1); 
       } 
       String str2 = paramTbStreamDataReader.readDBDecodedString(712).trim();
       if (null != str2) {
-        int i1 = str2.indexOf(false);
+        int i1 = str2.indexOf(String.valueOf(false));
         if (i1 > 0)
           str2 = str2.substring(0, i1); 
       } 
@@ -75,7 +75,7 @@ public abstract class TbMsgError extends TbMsg {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\msg\common\TbMsgError.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\msg\common\TbMsgError.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

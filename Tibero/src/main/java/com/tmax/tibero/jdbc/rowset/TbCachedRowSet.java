@@ -1,6 +1,5 @@
 package com.tmax.tibero.jdbc.rowset;
 
-import com.tmax.tibero.jdbc.TbNClob;
 import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClobBase;
 import com.tmax.tibero.jdbc.TbDriver;
@@ -630,7 +629,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
     Object object = getObject(paramInt);
     if (object == null)
       return null; 
-    if (object instanceof TbNClob)
+    if (object instanceof com.tmax.tibero.jdbc.TbNClob)
       return (NClob)object; 
     throw TbError.newSQLException(-90836, object.toString());
   }
@@ -654,7 +653,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
     if (object instanceof BigDecimal || object instanceof Number)
       return (Number)object; 
     if (object instanceof Boolean)
-      return new Integer(((Boolean)object).booleanValue() ? 1 : 0); 
+      return ((Boolean)object).booleanValue() ? 1 : 0;
     if (!(object instanceof String))
       throw TbError.newSQLException(-90836, object.toString()); 
     try {
@@ -1093,7 +1092,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
     byte b;
     for (b = 0; b < this.columnCount; b++)
       this.columnNames[b] = this.rowsetMetaData.getColumnName(b + 1); 
-    b = (this.fetchDirection == 1000 || this.fetchDirection == 1002) ? 1 : 0;
+    b = (byte) ((this.fetchDirection == 1000 || this.fetchDirection == 1002) ? 1 : 0);
     this.rowCount = 0;
     if (this.maxRows == 0 && this.pageSize == 0) {
       i = Integer.MAX_VALUE;
@@ -1372,10 +1371,10 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public Collection<Collection<Object>> toCollection() throws SQLException {
-    Map<?, ?> map = Collections.synchronizedMap(new TreeMap<Object, Object>());
+    Map map = Collections.synchronizedMap(new TreeMap<Object, Object>());
     try {
       for (byte b = 0; b < this.rowCount; b++)
-        map.put(new Integer(b), ((TbRow)this.rows.elementAt(b)).toCollection()); 
+        map.put(b, ((TbRow)this.rows.elementAt(b)).toCollection());
     } catch (Exception exception) {
       map = null;
       throw TbError.newSQLException(-90831);
@@ -1539,7 +1538,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateBoolean(int paramInt, boolean paramBoolean) throws SQLException {
-    updateObject(paramInt, new Boolean(paramBoolean));
+    updateObject(paramInt, paramBoolean);
   }
   
   public void updateBoolean(String paramString, boolean paramBoolean) throws SQLException {
@@ -1547,7 +1546,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateByte(int paramInt, byte paramByte) throws SQLException {
-    updateObject(paramInt, new Byte(paramByte));
+    updateObject(paramInt, paramByte);
   }
   
   public void updateByte(String paramString, byte paramByte) throws SQLException {
@@ -1634,7 +1633,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateDouble(int paramInt, double paramDouble) throws SQLException {
-    updateObject(paramInt, new Double(paramDouble));
+    updateObject(paramInt, paramDouble);
   }
   
   public void updateDouble(String paramString, double paramDouble) throws SQLException {
@@ -1642,7 +1641,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateFloat(int paramInt, float paramFloat) throws SQLException {
-    updateObject(paramInt, new Float(paramFloat));
+    updateObject(paramInt, paramFloat);
   }
   
   public void updateFloat(String paramString, float paramFloat) throws SQLException {
@@ -1650,7 +1649,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateInt(int paramInt1, int paramInt2) throws SQLException {
-    updateObject(paramInt1, new Integer(paramInt2));
+    updateObject(paramInt1, paramInt2);
   }
   
   public void updateInt(String paramString, int paramInt) throws SQLException {
@@ -1658,7 +1657,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateLong(int paramInt, long paramLong) throws SQLException {
-    updateObject(paramInt, new Long(paramLong));
+    updateObject(paramInt, paramLong);
   }
   
   public void updateLong(String paramString, long paramLong) throws SQLException {
@@ -1777,7 +1776,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   }
   
   public void updateShort(int paramInt, short paramShort) throws SQLException {
-    updateObject(paramInt, new Short(paramShort));
+    updateObject(paramInt, paramShort);
   }
   
   public void updateShort(String paramString, short paramShort) throws SQLException {
@@ -1822,7 +1821,7 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbCachedRowSet.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbCachedRowSet.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

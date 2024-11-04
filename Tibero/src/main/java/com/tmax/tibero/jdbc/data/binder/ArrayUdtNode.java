@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.data.binder;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import com.tmax.tibero.jdbc.TbArrayDescriptor;
 import com.tmax.tibero.jdbc.TbTypeDescriptor;
 import com.tmax.tibero.jdbc.comm.TbStreamDataWriter;
@@ -17,10 +17,10 @@ class ArrayUdtNode extends UdtNode {
     this.subParams = (ParamContainer)paramTbArray.getSubParams();
     this.isFinal = true;
   }
-  
+
   public static int[] writeArrayMeta(TbStreamDataWriter paramTbStreamDataWriter, TbArrayDescriptor paramTbArrayDescriptor, int paramInt) throws SQLException {
     byte b;
-    boolean bool1 = false;
+    int bool1 = 0;
     int i = paramTbStreamDataWriter.getBufferedDataSize();
     paramTbStreamDataWriter.writeByte((byte)bool1);
     boolean bool2 = true;
@@ -30,7 +30,7 @@ class ArrayUdtNode extends UdtNode {
     paramTbStreamDataWriter.writeByte((byte)0);
     int k;
     for (k = 0; k < 3; k++)
-      paramTbStreamDataWriter.writeByte((byte)0); 
+      paramTbStreamDataWriter.writeByte((byte)0);
     k = paramTbStreamDataWriter.getBufferedDataSize();
     paramTbStreamDataWriter.makeBufferAvailable(5);
     byte[] arrayOfByte = paramTbStreamDataWriter.getStreamBuf().getRawBytes();
@@ -45,7 +45,7 @@ class ArrayUdtNode extends UdtNode {
       arrayOfByte[k] = -3;
       TbCommon.int2Bytes(paramInt, arrayOfByte, k + 1, 4);
       b = 5;
-    } 
+    }
     paramTbStreamDataWriter.moveOffset(b);
     return new int[] { i, j };
   }
@@ -104,7 +104,7 @@ class ArrayUdtNode extends UdtNode {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\ArrayUdtNode.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\ArrayUdtNode.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -57,10 +57,11 @@ public class JA16SJISDBByteToCharConverter extends ByteToCharDoubleByte {
     int j = 0;
     byte b = 0;
     i = paramInt3;
+    byte b1;
     for (j = paramInt1; j < paramInt2; j += b1) {
-      byte b1;
+
       byte b2;
-      if (!b) {
+      if (b == 0) {
         b2 = paramArrayOfbyte[j];
         b1 = 1;
       } else {
@@ -125,7 +126,7 @@ public class JA16SJISDBByteToCharConverter extends ByteToCharDoubleByte {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISDBByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISDBByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

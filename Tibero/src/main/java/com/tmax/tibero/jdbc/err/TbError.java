@@ -19,9 +19,9 @@ import java.sql.SQLWarning;
 import java.util.MissingResourceException;
 
 public class TbError {
-  private static final String JDBC_ERROR_FILE = "tibero.jdbc.err.Message_gen";
+  private static final String JDBC_ERROR_FILE = "com.tmax.tibero.jdbc.err.Message_gen";
   
-  private static final String SQL_STATE_FILE = "tibero.jdbc.err.SqlState_gen";
+  private static final String SQL_STATE_FILE = "com.tmax.tibero.jdbc.err.SqlState_gen";
   
   private static TbResourceBundle _errorMsgBundle = new TbResourceBundle(getBundleFileName());
   
@@ -762,11 +762,11 @@ public class TbError {
   public static final int XML_CANT_SET_NULL = -90930;
   
   public static String getBundleFileName() {
-    return "tibero.jdbc.err.Message_gen";
+    return "com.tmax.tibero.jdbc.err.Message_gen";
   }
   
   public static String getSqlStateFileName() {
-    return "tibero.jdbc.err.SqlState_gen";
+    return "com.tmax.tibero.jdbc.err.SqlState_gen";
   }
   
   public static final String getMsg(int paramInt) {
@@ -980,7 +980,7 @@ public class TbError {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\err\TbError.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\err\TbError.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

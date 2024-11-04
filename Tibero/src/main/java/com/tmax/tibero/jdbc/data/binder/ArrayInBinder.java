@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.data.binder;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import com.tmax.tibero.jdbc.TbArrayDescriptor;
 import com.tmax.tibero.jdbc.TbStruct;
 import com.tmax.tibero.jdbc.TbStructDescriptor;
@@ -13,6 +13,7 @@ import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.err.TbError;
 import com.tmax.tibero.jdbc.util.TbCommon;
 import java.sql.Connection;
+import java.sql.SQLData;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
@@ -72,7 +73,7 @@ public class ArrayInBinder extends Binder {
     } 
     paramTbStreamDataWriter.moveOffset(b3);
     byte b4 = 0;
-    LinkedList<ArrayUdtNode> linkedList = new LinkedList();
+    LinkedList linkedList = new LinkedList();
     ArrayUdtNode arrayUdtNode1 = new ArrayUdtNode(tbArray);
     linkedList.addFirst(arrayUdtNode1);
     ArrayUdtNode arrayUdtNode2 = arrayUdtNode1;
@@ -84,13 +85,13 @@ public class ArrayInBinder extends Binder {
       DataTypeConverter.RPCOL_5BYTE = -5;
     } 
     while (!linkedList.isEmpty()) {
-      UdtNode udtNode;
+      UdtNode udtNode = null;
       int i10;
       ParamContainer paramContainer;
       Binder binder;
       Object[] arrayOfObject = arrayUdtNode2.getAttributes();
       if (arrayOfObject == null) {
-        if (!b4) {
+        if (b4 != 0) {
           paramTbStreamDataWriter.writeByte(DataTypeConverter.RPCOL_NULLOBJ);
         } else {
           paramTbStreamDataWriter.writeByte((byte)-4);
@@ -100,7 +101,7 @@ public class ArrayInBinder extends Binder {
         linkedList.remove(0);
         if (linkedList.isEmpty())
           continue; 
-        udtNode = linkedList.getFirst();
+        udtNode = (UdtNode) linkedList.getFirst();
         continue;
       } 
       int i8 = udtNode.attrProcessed;
@@ -117,9 +118,9 @@ public class ArrayInBinder extends Binder {
       switch (i9) {
         case 28:
         case 32:
-          if (object instanceof TbStruct || object instanceof java.sql.SQLData) {
+          if (object instanceof TbStruct || object instanceof SQLData) {
             ObjUdtNode objUdtNode;
-            if (object instanceof java.sql.SQLData) {
+            if (object instanceof SQLData) {
               TbStruct tbStruct = (TbStruct)TbStruct.toStruct(object, (Connection)paramTbConnection);
               objUdtNode = new ObjUdtNode(tbStruct);
             } else {
@@ -191,7 +192,7 @@ public class ArrayInBinder extends Binder {
         linkedList.remove(0);
         if (linkedList.isEmpty())
           break; 
-        udtNode = linkedList.getFirst();
+        udtNode = (UdtNode) linkedList.getFirst();
       } 
     } 
     i5 = paramTbStreamDataWriter.getBufferedDataSize() - k - 40 - i1 - b1;
@@ -272,7 +273,7 @@ public class ArrayInBinder extends Binder {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\ArrayInBinder.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\ArrayInBinder.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -119,7 +119,7 @@ public class TbSQLTypeScanner {
     if (str.equals(arrayOfString1[0])) {
       int i = 1;
       int j = 1;
-      while (j) {
+      while (j == 1) {
         String str1 = getToken();
         int k;
         for (k = i; k < arrayOfString1.length; k++) {
@@ -142,7 +142,7 @@ public class TbSQLTypeScanner {
       int j = 1;
       String str1 = str;
       int k = arrayOfString2[0].length();
-      while (j) {
+      while (j == 1) {
         str1 = (str1.length() == k) ? getToken() : str1.substring(k);
         int m;
         for (m = i; m < arrayOfString2.length; m++) {
@@ -341,7 +341,7 @@ public class TbSQLTypeScanner {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbSQLTypeScanner.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbSQLTypeScanner.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

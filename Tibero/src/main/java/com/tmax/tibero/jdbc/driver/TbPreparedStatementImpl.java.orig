@@ -7,7 +7,7 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.driver;
+package com.tmax.tibero.jdbc.driver;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,34 +25,34 @@ import java.util.Vector;
 import java.util.*;
 import java.sql.Date;
 
-import tibero.Debug;
-import tibero.DriverConstants;
-import tibero.TbTypes;
-import tibero.jdbc.*;
-import tibero.jdbc.data.BatchInfo;
-import tibero.jdbc.data.BatchUpdateInfo;
-import tibero.jdbc.data.BigLiteral;
-import tibero.jdbc.data.BindData;
-import tibero.jdbc.data.BindItem;
-import tibero.jdbc.data.BytesStreamWrapper;
-import tibero.jdbc.data.Column;
-import tibero.jdbc.data.DataType;
-import tibero.jdbc.data.ExtFeatureInfo;
-import tibero.jdbc.data.ParamContainer;
-import tibero.jdbc.data.ReaderWrapper;
-import tibero.jdbc.data.RsetType;
-import tibero.jdbc.data.ServerInfo;
-import tibero.jdbc.data.TbDate;
-import tibero.jdbc.data.TbTimestamp;
-import tibero.jdbc.data.TbTimestampTZ;
-import tibero.jdbc.data.*;
-import tibero.jdbc.data.binder.Binder;
-import tibero.jdbc.data.binder.StaticBinder;
-import tibero.jdbc.dbconst.DBConst;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.msg.TbColumnDesc;
-import tibero.jdbc.util.TbSQLParser;
-import tibero.jdbc.util.TbSQLTypeScanner;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.DriverConstants;
+import com.tmax.tibero.TbTypes;
+import com.tmax.tibero.jdbc.*;
+import com.tmax.tibero.jdbc.data.BatchInfo;
+import com.tmax.tibero.jdbc.data.BatchUpdateInfo;
+import com.tmax.tibero.jdbc.data.BigLiteral;
+import com.tmax.tibero.jdbc.data.BindData;
+import com.tmax.tibero.jdbc.data.BindItem;
+import com.tmax.tibero.jdbc.data.BytesStreamWrapper;
+import com.tmax.tibero.jdbc.data.Column;
+import com.tmax.tibero.jdbc.data.DataType;
+import com.tmax.tibero.jdbc.data.ExtFeatureInfo;
+import com.tmax.tibero.jdbc.data.ParamContainer;
+import com.tmax.tibero.jdbc.data.ReaderWrapper;
+import com.tmax.tibero.jdbc.data.RsetType;
+import com.tmax.tibero.jdbc.data.ServerInfo;
+import com.tmax.tibero.jdbc.data.TbDate;
+import com.tmax.tibero.jdbc.data.TbTimestamp;
+import com.tmax.tibero.jdbc.data.TbTimestampTZ;
+import com.tmax.tibero.jdbc.data.*;
+import com.tmax.tibero.jdbc.data.binder.Binder;
+import com.tmax.tibero.jdbc.data.binder.StaticBinder;
+import com.tmax.tibero.jdbc.dbconst.DBConst;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.msg.TbColumnDesc;
+import com.tmax.tibero.jdbc.util.TbSQLParser;
+import com.tmax.tibero.jdbc.util.TbSQLTypeScanner;
 
 // #ifdef JDK1.4
 // #endif
@@ -64,7 +64,7 @@ import tibero.jdbc.util.TbSQLTypeScanner;
 /**
  * TbPreparedStatement class.
  * 
- * @author ï¿½Ì¿ï¿½ï¿½ï¿½(yjlee@tmax.co.kr), ï¿½Ö¿ï¿½ï¿½ï¿½(wyvern@tmax.co.kr), ï¿½ï¿½Ô»ï¿½(gusami@tmax.co.kr)
+ * @author ÀÌ¿ëÀç(yjlee@tmax.co.kr), ÃÖ¿µÀç(wyvern@tmax.co.kr), ±è±Ô»ï(gusami@tmax.co.kr)
  * @version $Id: TbPreparedStatementImpl.java 186284 2020-10-20 09:17:47Z kyungtak_min $
  */
 public class TbPreparedStatementImpl extends TbStatement
@@ -141,7 +141,7 @@ public class TbPreparedStatementImpl extends TbStatement
     protected Binder staticArrayInBinder;
     protected Binder staticArrayOutBinder;
 
-    /* TODO: VARCHAR_MAX 65532ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ */
+    /* TODO: VARCHAR_MAX 65532¸¦ Áö¿øÇÏ´Â ¼­¹ö¸¦ ±¸ºÐÇÒ ¼ö ÀÖ´Â ¹æ¹ýÀÌ ÇÊ¿ä */
     private int varcharMax;
     private int deferrableStrLen;
     private int deferrableNStrLen;
@@ -1179,7 +1179,7 @@ public class TbPreparedStatementImpl extends TbStatement
                     }
                 }
                 catch (SQLException e) {
-                    // Failover CURSOR ï¿½ï¿½å¿¡ï¿½ï¿½ execute ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ failoverï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+                    // Failover CURSOR ¸ðµå¿¡¼­ execute ¼öÇàÁß failover°¡ ¹ß»ýÇÑ °æ¿ì, Àç¼öÇàÇÑ´Ù.
                     ppid = null;
                     if (conn.isClosed() ||
                             !conn.info.isFailoverCursorEnabled() ||
@@ -2738,8 +2738,8 @@ public class TbPreparedStatementImpl extends TbStatement
         }
 
         /*
-         * lengthï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¹Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¿Í´ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-         * DeferredParam Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ Readerï¿½ï¿½ ï¿½Ð¾ï¿½ È®ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½.
+         * length´Â ±æÀÌÁ¦ÇÑÀÇ ÀÇ¹Ì¸¸ °¡Áö°í, ½ÇÁ¦ ±æÀÌ¿Í´Â ´Ù¸¦ ¼ö ÀÖ±â ¶§¹®¿¡
+         * DeferredParam Ã³¸®¸¦ ÇÒÁö ÆÇ´ÜÇÏ±â À§ÇØ¼­´Â Reader¸¦ ÀÐ¾î È®ÀÎÇØ¾ß ÇÑ´Ù.
          */
         int cBufLen = length < varcharMax + 1 ? length : varcharMax + 1;
         char[] cb = new char[cBufLen];
@@ -2753,7 +2753,7 @@ public class TbPreparedStatementImpl extends TbStatement
                                           e.getMessage());
         }
 
-        /* read lengthï¿½ï¿½ deferrableStrLen ï¿½Ì¸ï¿½ï¿½Ì¸ï¿½ VARCHARï¿½ï¿½ Ã³ï¿½ï¿½ */
+        /* read length°¡ deferrableStrLen ¹Ì¸¸ÀÌ¸é VARCHAR·Î Ã³¸® */
         if (readCh < 0) {
             setNullInternal(i, DataType.VARCHAR);
         }
@@ -2766,7 +2766,7 @@ public class TbPreparedStatementImpl extends TbStatement
             binder[currentRowIndex][i - 1] = staticStringBinder;
             paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
         }
-        /* character ï¿½ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½Îµï¿½ DEFERRED Ã³ï¿½ï¿½ï¿½ï¿½ È®ï¿½Ç½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ */
+        /* character ±æÀÌ¸¸À¸·Îµµ DEFERRED Ã³¸®°¡ È®½Ç½Ã µÇ´Â °æ¿ì */
         else if (readCh > varcharMax) {
             if (paramReader == null)
                 paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
@@ -2777,11 +2777,11 @@ public class TbPreparedStatementImpl extends TbStatement
             binder[currentRowIndex][i - 1] = staticReaderBinder;
             paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
         }
-        /* VARCHARï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ serialize ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ */
+        /* VARCHAR·Î °¡´ÉÇÒÁö serialize ±æÀÌ¸¦ ±¸ÇØ¾ß ÆÇ´Ü °¡´ÉÇÑ °æ¿ì */
         else {
             byte[] buf = new byte[readCh * typeConverter.getMaxBytesPerChar()];
             int byteLen = typeConverter.charsToBytes(cb, 0, readCh, buf, 0, buf.length);
-            /* serialize ï¿½ï¿½ï¿½Ì°ï¿½ VARCHAR ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ */
+            /* serialize ±æÀÌ°¡ VARCHAR ·Î Ã³¸® °¡´ÉÇÑ °æ¿ì */
             if (byteLen < varcharMax) {
                 if (paramBytes == null)
                     paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
@@ -2791,7 +2791,7 @@ public class TbPreparedStatementImpl extends TbStatement
                 binder[currentRowIndex][i - 1] = staticBytesBinder;
                 paramTypes[currentRowIndex][i - 1] = DataType.VARCHAR;
             }
-            /* ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ê°ï¿½ï¿½Ï¿ï¿½ Deferredï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ */
+            /* ±æÀÌ¸¦ ÃÊ°úÇÏ¿© Deferred·Î Ã³¸®ÇÏ´Â °æ¿ì */
             else {
                 if (paramStream == null)
                     paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
@@ -2821,8 +2821,8 @@ public class TbPreparedStatementImpl extends TbStatement
             });
         }
 
-        // ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ð¾ï¿½ ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Ë¼ï¿½ ï¿½ï¿½ï¿½â¶§ï¿½ï¿½ï¿½ï¿½ Integer.MAX_VALUEï¿½ï¿½ ï¿½Ø´ï¿½.
-        // Binderï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ Integer.MAX_VALUEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ readerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½é¿© serverï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+        // ±æÀÌ¸¦ ÀÐ¾î µéÀÌ±â Àü¿¡ ¹Ì¸® ¾Ë¼ö ¾ø±â¶§¹®¿¡ Integer.MAX_VALUE¸¦ ÁØ´Ù.
+        // Binder¿¡¼­ ±æÀÌ°¡ Integer.MAX_VALUE°¡ µé¾î¿À¸é reader¸¦ ³¡±îÁö ÀÐ¾îµé¿© server·Î º¸³½´Ù.
         setClobInternal(i, x, Integer.MAX_VALUE);
     }
 
@@ -2838,7 +2838,7 @@ public class TbPreparedStatementImpl extends TbStatement
 
     public void setClobInternal(int i, int dataType, Clob x)
             throws SQLException {
-        // TbAdminï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ package-privateï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+        // TbAdmin¿¡¼­ ÀÌ ÇÔ¼ö¸¦ Á÷Á¢ ºÒ·¯¼­ »ç¿ëÇÏ°í ÀÖÀ¸¹Ç·Î package-privateÀ¸·Î ¸¸µé ¼ö ¾ø´Ù.
         if (x == null) {
             setNullInternal(i, dataType);
             return;
@@ -3188,8 +3188,8 @@ public class TbPreparedStatementImpl extends TbStatement
         }
 
         /*
-         * lengthï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¹Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¿Í´ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-         * DeferredParam Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½ Readerï¿½ï¿½ ï¿½Ð¾ï¿½ È®ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½.
+         * length´Â ±æÀÌÁ¦ÇÑÀÇ ÀÇ¹Ì¸¸ °¡Áö°í, ½ÇÁ¦ ±æÀÌ¿Í´Â ´Ù¸¦ ¼ö ÀÖ±â ¶§¹®¿¡
+         * DeferredParam Ã³¸®¸¦ ÇÒÁö ÆÇ´ÜÇÏ±â À§ÇØ¼­´Â Reader¸¦ ÀÐ¾î È®ÀÎÇØ¾ß ÇÑ´Ù.
          */
         int cBufLen = length < varcharMax + 1 ? length : varcharMax + 1;
         char[] cb = new char[cBufLen];
@@ -3203,7 +3203,7 @@ public class TbPreparedStatementImpl extends TbStatement
                                           e.getMessage());
         }
 
-        /* read lengthï¿½ï¿½ deferrableStrLen ï¿½Ì¸ï¿½ï¿½Ì¸ï¿½ NVARCHARï¿½ï¿½ Ã³ï¿½ï¿½ */
+        /* read length°¡ deferrableStrLen ¹Ì¸¸ÀÌ¸é NVARCHAR·Î Ã³¸® */
         if (readCh < 0) {
             setNullInternal(i, DataType.NVARCHAR);
         }
@@ -3216,7 +3216,7 @@ public class TbPreparedStatementImpl extends TbStatement
             binder[currentRowIndex][i - 1] = staticNStringBinder;
             paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
         }
-        /* character ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Øµï¿½ Deferred Ã³ï¿½ï¿½ï¿½ï¿½ È®ï¿½Ç½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ */
+        /* character ¼ö ¸¸À¸·Î °è»êÇØµµ Deferred Ã³¸®°¡ È®½Ç½Ã µÇ´Â °æ¿ì */
         else if (readCh > varcharMax) {
             if (paramReader == null)
                 paramReader = new Reader[allocatedBatchRowCount][bindParamCnt];
@@ -3227,12 +3227,12 @@ public class TbPreparedStatementImpl extends TbStatement
             binder[currentRowIndex][i - 1] = staticNReaderBinder;
             paramTypes[currentRowIndex][i - 1] = DataType.NCLOB;
         }
-        /* NVARCHARï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ serialize ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ */
+        /* NVARCHAR·Î Ã³¸®µÉÁö serialize ±æÀÌ¸¦ ±¸ÇØ¾ß ÆÇ´Ü °¡´ÉÇÑ °æ¿ì */
         else {
-            /* readerï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾î³½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½ */ 
+            /* reader¸¦ ¸ðµÎ Ã³¸®ÇÑ ÄÉÀÌ½ºÀÌ±â ¶§¹®¿¡ ÀÐ¾î³½ µ¥ÀÌÅÍ·Î¸¸ ÀúÀåÇÑ´Ù */ 
             byte[] buf = new byte[readCh * typeConverter.getMaxBytesPerNChar()];
             int byteLen = typeConverter.nCharsToBytes(cb, 0, readCh, buf, 0, buf.length);
-            /* serialize ï¿½ï¿½ï¿½Ì°ï¿½ NVARCHAR ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ */
+            /* serialize ±æÀÌ°¡ NVARCHAR ·Î Ã³¸® °¡´ÉÇÑ °æ¿ì */
             if (byteLen < varcharMax) {
                 if (paramBytes == null)
                     paramBytes = new byte[allocatedBatchRowCount][bindParamCnt][];
@@ -3242,7 +3242,7 @@ public class TbPreparedStatementImpl extends TbStatement
                 binder[currentRowIndex][i - 1] = staticBytesBinder;
                 paramTypes[currentRowIndex][i - 1] = DataType.NVARCHAR;
             }
-            /* ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ê°ï¿½ï¿½Ï¿ï¿½ Deferredï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ */
+            /* ±æÀÌ¸¦ ÃÊ°úÇÏ¿© Deferred·Î Ã³¸®ÇÏ´Â °æ¿ì */
             else {
                 if (paramStream == null)
                     paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
@@ -3284,8 +3284,8 @@ public class TbPreparedStatementImpl extends TbStatement
             });
         }
 
-        // ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ð¾ï¿½ ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½Ë¼ï¿½ ï¿½ï¿½ï¿½â¶§ï¿½ï¿½ï¿½ï¿½ Integer.MAX_VALUEï¿½ï¿½ ï¿½Ø´ï¿½.
-        // ï¿½ï¿½ï¿½ï¿½ï¿½ Integer.MAX_VALUEï¿½ï¿½ï¿½ï¿½ Å« ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
+        // ±æÀÌ¸¦ ÀÐ¾î µéÀÌ±â Àü¿¡ ¹Ì¸® ¾Ë¼ö ¾ø±â¶§¹®¿¡ Integer.MAX_VALUE¸¦ ÁØ´Ù.
+        // ÇöÀç´Â Integer.MAX_VALUEº¸´Ù Å« ±æÀÌ¸¦ Áö¿øÇÏÁö ¾Ê´Â´Ù.
         setNClobInternal(i, x, Integer.MAX_VALUE);
     }
 
@@ -3563,7 +3563,7 @@ public class TbPreparedStatementImpl extends TbStatement
 
         case Types.FLOAT:
         case Types.DOUBLE:
-            /* FLOATï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, DOUBLEï¿½Î¸ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* FLOAT¶ó°í ¸í½ÃÇÏ°í, DOUBLE·Î¸¸ Ç¥Çö°¡´ÉÇÑ ¼ýÀÚ°¡ µé¾î¿È */
             if (x instanceof Number)
                 setDoubleInternal(i, ((Number) x).doubleValue());
             else if (x instanceof String)
@@ -3932,7 +3932,7 @@ public class TbPreparedStatementImpl extends TbStatement
         if (paramStream == null)
             paramStream = new InputStream[allocatedBatchRowCount][bindParamCnt];
 
-        // XXX: ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
+        // XXX: ±æÀÌ Ã¼Å©
         bindData.setDFRParam(i - 1, Types.SQLXML, Integer.MAX_VALUE);
         paramStream[currentRowIndex][i - 1] = stream;
         paramTypes[currentRowIndex][i - 1] = DataType.CLOB;
@@ -4212,14 +4212,14 @@ public class TbPreparedStatementImpl extends TbStatement
 
             item = bindData.getBindItem(i);
 
-            /* BatchUpdateï¿½Ã¿ï¿½ï¿½ï¿½ OUT parameter ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* BatchUpdate½Ã¿¡´Â OUT parameter Çã¿ëÇÏÁö ¾ÊÀ½ */
             if (item.isOUTParameter())
                 throw TbError.newSQLException(TbError.MU_OUTPARAM_BATCHUPDATE);
 
             if (deferredParamCount > 0)
                 continue;
 
-            /* ï¿½ï¿½ï¿½ï¿½ batchï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ UNIFORM flagï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+            /* ÀÌÀü batchÁ¤º¸¿Í Å¸ÀÔÀÌ ´Ù¸¥ ÆÄ¶ó¹ÌÅÍ°¡ ÀÖ´Â °æ¿ì UNIFORM flag¸¦ Á¦°Å */
             if (paramTypes[0][i] != paramTypes[currentRowIndex][i])
                 batchFlag = 0;
         }

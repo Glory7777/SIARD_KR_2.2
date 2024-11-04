@@ -10,7 +10,7 @@ public class SJISCharToByteConverter extends JIS0208CharToByteConverter {
       return 0; 
     int j = c >> 8 & 0xFF;
     int k = c & 0xFF;
-    byte b1 = (j >= 95) ? 176 : 112;
+    int b1 = (j >= 95) ? 176 : 112;
     byte b2 = (j % 2 != 1) ? 126 : (byte)((k <= 95) ? 31 : 32);
     return (j + 1 >> 1) + b1 << 8 | k + b2;
   }
@@ -29,7 +29,7 @@ public class SJISCharToByteConverter extends JIS0208CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\SJISCharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\SJISCharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -137,7 +137,7 @@ public class TbUrlParser implements TbUrlParserConstants {
       stringBuffer.append(":").append(str1);
     } 
     if (paramConnectionInfo.getNodeList() != null) {
-      NodeInfo nodeInfo = paramConnectionInfo.getNodeList().get(0);
+      NodeInfo nodeInfo = (NodeInfo) paramConnectionInfo.getNodeList().get(0);
       String str = nodeInfo.getAddress();
       if (str == null || str.equals(""))
         throw TbError.newSQLException(-90605); 
@@ -6929,44 +6929,54 @@ public class TbUrlParser implements TbUrlParserConstants {
   public TbUrlParser(InputStream paramInputStream) {
     this(paramInputStream, null);
   }
-  
+
   public TbUrlParser(InputStream paramInputStream, String paramString) {
     try {
       this.jj_input_stream = new SimpleCharStream(paramInputStream, paramString, 1, 1);
     } catch (UnsupportedEncodingException unsupportedEncodingException) {
       throw new RuntimeException(unsupportedEncodingException);
-    } 
+    }
+
     this.token_source = new TbUrlParserTokenManager(this.jj_input_stream);
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
-    for (b = 0; b; b++)
-      this.jj_la1[b] = -1; 
-    for (b = 0; b < this.jj_2_rtns.length; b++)
-      this.jj_2_rtns[b] = new JJCalls(); 
+
+    for (byte b = 0; b < 0; b++) {
+      this.jj_la1[b] = -1;
+    }
+
+    for (int b = 0; b < this.jj_2_rtns.length; b++) {
+      this.jj_2_rtns[b] = new TbUrlParser.JJCalls();
+    }
   }
-  
+
+
   public void ReInit(InputStream paramInputStream) {
     ReInit(paramInputStream, null);
   }
-  
+
   public void ReInit(InputStream paramInputStream, String paramString) {
     try {
       this.jj_input_stream.ReInit(paramInputStream, paramString, 1, 1);
     } catch (UnsupportedEncodingException unsupportedEncodingException) {
       throw new RuntimeException(unsupportedEncodingException);
-    } 
+    }
+
     this.token_source.ReInit(this.jj_input_stream);
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
-    for (b = 0; b; b++)
-      this.jj_la1[b] = -1; 
-    for (b = 0; b < this.jj_2_rtns.length; b++)
-      this.jj_2_rtns[b] = new JJCalls(); 
+
+    for (byte b = 0; b < 0; b++) {
+      this.jj_la1[b] = -1;
+    }
+
+    for (int b = 0; b < this.jj_2_rtns.length; b++) {
+      this.jj_2_rtns[b] = new JJCalls();
+    }
   }
+
   
   public TbUrlParser(Reader paramReader) {
     this.jj_input_stream = new SimpleCharStream(paramReader, 1, 1);
@@ -6975,7 +6985,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.jj_ntk = -1;
     this.jj_gen = 0;
     byte b;
-    for (b = 0; b; b++)
+    for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
       this.jj_2_rtns[b] = new JJCalls(); 
@@ -6988,7 +6998,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.jj_ntk = -1;
     this.jj_gen = 0;
     byte b;
-    for (b = 0; b; b++)
+    for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
       this.jj_2_rtns[b] = new JJCalls(); 
@@ -7000,7 +7010,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.jj_ntk = -1;
     this.jj_gen = 0;
     byte b;
-    for (b = 0; b; b++)
+    for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
       this.jj_2_rtns[b] = new JJCalls(); 
@@ -7012,7 +7022,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.jj_ntk = -1;
     this.jj_gen = 0;
     byte b;
-    for (b = 0; b; b++)
+    for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
       this.jj_2_rtns[b] = new JJCalls(); 
@@ -7129,41 +7139,53 @@ public class TbUrlParser implements TbUrlParserConstants {
         this.jj_lasttokens[(this.jj_endpos = paramInt2) - 1] = paramInt1; 
     } 
   }
-  
+
   public ParseException generateParseException() {
     this.jj_expentries.removeAllElements();
     boolean[] arrayOfBoolean = new boolean[49];
-    byte b1;
-    for (b1 = 0; b1 < 49; b1++)
-      arrayOfBoolean[b1] = false; 
+
+    for (byte b1 = 0; b1 < 49; b1++) {
+      arrayOfBoolean[b1] = false;
+    }
+
     if (this.jj_kind >= 0) {
       arrayOfBoolean[this.jj_kind] = true;
       this.jj_kind = -1;
-    } 
-    for (b1 = 0; b1 < 0; b1++) {
-      if (this.jj_la1[b1] == this.jj_gen)
+    }
+
+    for (byte b1 = 0; b1 < 0; b1++) {
+      if (this.jj_la1[b1] == this.jj_gen) {
         for (byte b = 0; b < 32; b++) {
-          if ((jj_la1_0[b1] & 1 << b) != 0)
-            arrayOfBoolean[b] = true; 
-          if ((jj_la1_1[b1] & 1 << b) != 0)
-            arrayOfBoolean[32 + b] = true; 
-        }  
-    } 
-    for (b1 = 0; b1 < 49; b1++) {
+          if ((jj_la1_0[b1] & (1 << b)) != 0) {
+            arrayOfBoolean[b] = true;
+          }
+          if ((jj_la1_1[b1] & (1 << b)) != 0) {
+            arrayOfBoolean[32 + b] = true;
+          }
+        }
+      }
+    }
+
+    for (byte b1 = 0; b1 < 49; b1++) {
       if (arrayOfBoolean[b1]) {
         this.jj_expentry = new int[1];
         this.jj_expentry[0] = b1;
         this.jj_expentries.addElement(this.jj_expentry);
-      } 
-    } 
+      }
+    }
+
     this.jj_endpos = 0;
     jj_rescan_token();
     jj_add_error_token(0, 0);
+
     int[][] arrayOfInt = new int[this.jj_expentries.size()][];
-    for (byte b2 = 0; b2 < this.jj_expentries.size(); b2++)
-      arrayOfInt[b2] = this.jj_expentries.elementAt(b2); 
+    for (byte b2 = 0; b2 < this.jj_expentries.size(); b2++) {
+      arrayOfInt[b2] = (int[]) this.jj_expentries.elementAt(b2);
+    }
+
     return new ParseException(this.token, arrayOfInt, tokenImage);
   }
+
   
   public final void enable_tracing() {}
   
@@ -7171,9 +7193,9 @@ public class TbUrlParser implements TbUrlParserConstants {
   
   private final void jj_rescan_token() {
     this.jj_rescan = true;
-    for (byte b = 0; b < 'ļ'; b++) {
+    for (int b = 0; b < 316; ++b) {
       try {
-        JJCalls jJCalls = this.jj_2_rtns[b];
+        TbUrlParser.JJCalls jJCalls = this.jj_2_rtns[b];
         do {
           if (jJCalls.gen > this.jj_gen) {
             this.jj_la = jJCalls.arg;
@@ -8170,7 +8192,7 @@ public class TbUrlParser implements TbUrlParserConstants {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbUrlParser.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\TbUrlParser.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -5,6 +5,8 @@ import com.tmax.tibero.jdbc.comm.TbStreamDataWriter;
 import com.tmax.tibero.jdbc.data.DataTypeConverter;
 import com.tmax.tibero.jdbc.data.ParamContainer;
 import com.tmax.tibero.jdbc.driver.TbConnection;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
@@ -56,12 +58,17 @@ public class StreamBinder extends Binder {
       } 
       paramTbStreamDataWriter.makeBufferAvailable(j + 4);
       byte[] arrayOfByte1 = paramTbStreamDataWriter.getStreamBuf().getRawBytes();
-      if (m) {
+      if (m == 0) {
         j -= m;
         System.arraycopy(arrayOfByte, 0, arrayOfByte1, k + 4, m);
-      } 
-      int n = inputStream.read(arrayOfByte1, k + 4 + m, j);
-      if (n == -1) {
+      }
+        int n = 0;
+        try {
+            n = inputStream.read(arrayOfByte1, k + 4 + m, j);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (n == -1) {
         if (m > 0) {
           n = m;
           m = 0;
@@ -97,7 +104,7 @@ public class StreamBinder extends Binder {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\StreamBinder.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\StreamBinder.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

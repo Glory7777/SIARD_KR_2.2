@@ -723,7 +723,7 @@ public class TbDirPathStream {
     } 
     switch (paramInt2) {
       case -7:
-        setBoolean(paramInt1, (new Boolean(paramObject.toString())).booleanValue());
+        setBoolean(paramInt1, Boolean.parseBoolean(paramObject.toString()));
         return;
       case -1:
       case 1:
@@ -737,41 +737,41 @@ public class TbDirPathStream {
         return;
       case -6:
       case 5:
-        setShort(paramInt1, (new Short(paramObject.toString())).shortValue());
+        setShort(paramInt1, Short.parseShort(paramObject.toString()));
         return;
       case 4:
-        setInt(paramInt1, (new Integer(paramObject.toString())).intValue());
+        setInt(paramInt1, Integer.parseInt(paramObject.toString()));
         return;
       case -5:
-        setLong(paramInt1, (new Long(paramObject.toString())).longValue());
+        setLong(paramInt1, Long.parseLong(paramObject.toString()));
         return;
       case 3:
         setBigDecimal(paramInt1, new BigDecimal(paramObject.toString()));
         return;
       case 6:
-        setFloat(paramInt1, (new Float(paramObject.toString())).floatValue());
+        setFloat(paramInt1, Float.parseFloat(paramObject.toString()));
         return;
       case 7:
-        setFloat(paramInt1, (new Float(paramObject.toString())).floatValue());
+        setFloat(paramInt1, Float.parseFloat(paramObject.toString()));
         return;
       case 8:
-        setDouble(paramInt1, (new Double(paramObject.toString())).doubleValue());
+        setDouble(paramInt1, Double.parseDouble(paramObject.toString()));
         return;
       case 2:
         if (paramObject instanceof Short) {
-          setShort(paramInt1, ((Short)paramObject).shortValue());
+          setShort(paramInt1, (Short) paramObject);
         } else if (paramObject instanceof Integer) {
-          setInt(paramInt1, ((Integer)paramObject).intValue());
+          setInt(paramInt1, (Integer) paramObject);
         } else if (paramObject instanceof Long) {
-          setLong(paramInt1, ((Long)paramObject).longValue());
+          setLong(paramInt1, (Long) paramObject);
         } else if (paramObject instanceof Float) {
-          setFloat(paramInt1, ((Float)paramObject).floatValue());
+          setFloat(paramInt1, (Float) paramObject);
         } else if (paramObject instanceof Double) {
-          setDouble(paramInt1, ((Double)paramObject).doubleValue());
+          setDouble(paramInt1, (Double) paramObject);
         } else if (paramObject instanceof BigDecimal) {
           setBigDecimal(paramInt1, (BigDecimal)paramObject);
         } else if (paramObject instanceof Boolean) {
-          setBoolean(paramInt1, ((Boolean)paramObject).booleanValue());
+          setBoolean(paramInt1, (Boolean) paramObject);
         } else {
           throw TbError.newSQLException(-590704, paramObject.toString() + "," + paramInt2);
         } 
@@ -945,7 +945,7 @@ public class TbDirPathStream {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\TbDirPathStream.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\dpl\TbDirPathStream.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

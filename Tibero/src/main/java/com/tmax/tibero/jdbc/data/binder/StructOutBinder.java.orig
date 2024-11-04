@@ -1,18 +1,18 @@
 /**
  * TmaxData, Co. Copyright(C) 2014-, All rights reserved.
  */
-package tibero.jdbc.data.binder;
+package com.tmax.tibero.jdbc.data.binder;
 
-import tibero.jdbc.TbStruct;
-import tibero.jdbc.TbStructDescriptor;
-import tibero.jdbc.comm.TbStreamDataWriter;
-import tibero.jdbc.data.BindItem;
-import tibero.jdbc.data.DataType;
-import tibero.jdbc.data.DataTypeConverter;
-import tibero.jdbc.data.ParamContainer;
-import tibero.jdbc.dbconst.DBConst;
-import tibero.jdbc.driver.TbConnection;
-import tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.TbStruct;
+import com.tmax.tibero.jdbc.TbStructDescriptor;
+import com.tmax.tibero.jdbc.comm.TbStreamDataWriter;
+import com.tmax.tibero.jdbc.data.BindItem;
+import com.tmax.tibero.jdbc.data.DataType;
+import com.tmax.tibero.jdbc.data.DataTypeConverter;
+import com.tmax.tibero.jdbc.data.ParamContainer;
+import com.tmax.tibero.jdbc.dbconst.DBConst;
+import com.tmax.tibero.jdbc.driver.TbConnection;
+import com.tmax.tibero.jdbc.err.TbError;
 
 import java.sql.SQLData;
 import java.sql.SQLException;

@@ -26,13 +26,13 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     int n = paramArrayOfTbXid.length;
     for (byte b = 0; b < n; b++) {
       j = TbCommon.bytes2Int(paramArrayOfbyte, i, 8);
-      i += true;
+      i += 8;
       k = TbCommon.bytes2Int(paramArrayOfbyte, i, 8);
       arrayOfByte1 = new byte[k];
-      i += true;
+      i += 8;
       m = TbCommon.bytes2Int(paramArrayOfbyte, i, 8);
       arrayOfByte2 = new byte[m];
-      i += true;
+      i += 8;
       System.arraycopy(paramArrayOfbyte, i, arrayOfByte1, 0, k);
       i += k;
       System.arraycopy(paramArrayOfbyte, i, arrayOfByte2, 0, m);
@@ -135,11 +135,11 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     byte[] arrayOfByte2 = paramXid.getBranchQualifier();
     int k = arrayOfByte1.length + arrayOfByte2.length;
     TbCommon.long2Bytes(j, paramArrayOfbyte, i, 8);
-    i += true;
+    i += 8;
     TbCommon.long2Bytes(arrayOfByte1.length, paramArrayOfbyte, i, 8);
-    i += true;
+    i += 8;
     TbCommon.long2Bytes(arrayOfByte2.length, paramArrayOfbyte, i, 8);
-    i += true;
+    i += 8;
     System.arraycopy(arrayOfByte1, 0, paramArrayOfbyte, i, arrayOfByte1.length);
     i += arrayOfByte1.length;
     System.arraycopy(arrayOfByte2, 0, paramArrayOfbyte, i, arrayOfByte2.length);
@@ -149,10 +149,10 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
         paramArrayOfbyte[i] = 0;  
   }
   
-  public void xaCommit(Xid paramXid, boolean paramBoolean) throws TbXAException {
+  public void xaCommit(Xid paramXid, boolean paramBoolean) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
-    boolean bool = paramBoolean ? true : false;
+    int bool = paramBoolean ? 1073741824 : 0;
     synchronized (this.stream) {
       TbMsgSend.XA(this.stream, 4, bool, arrayOfByte, arrayOfByte.length, 0);
       TbMsg tbMsg = this.stream.readMsg();
@@ -167,7 +167,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public void xaEnd(Xid paramXid, int paramInt) throws TbXAException {
+  public void xaEnd(Xid paramXid, int paramInt) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
     synchronized (this.stream) {
@@ -184,7 +184,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public int xaForget(Xid paramXid) throws TbXAException {
+  public int xaForget(Xid paramXid) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
     synchronized (this.stream) {
@@ -215,7 +215,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public int xaPrepare(Xid paramXid) throws TbXAException {
+  public int xaPrepare(Xid paramXid) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
     synchronized (this.stream) {
@@ -231,7 +231,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public Xid[] xaRecover(int paramInt) throws TbXAException {
+  public Xid[] xaRecover(int paramInt) throws TbXAException, SQLException {
     synchronized (this.stream) {
       TbMsgSend.XA_RECOVER(this.stream);
       TbMsg tbMsg = this.stream.readMsg();
@@ -246,7 +246,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public void xaRollback(Xid paramXid) throws TbXAException {
+  public void xaRollback(Xid paramXid) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
     synchronized (this.stream) {
@@ -263,7 +263,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
     } 
   }
   
-  public void xaStart(Xid paramXid, int paramInt) throws TbXAException {
+  public void xaStart(Xid paramXid, int paramInt) throws TbXAException, SQLException {
     byte[] arrayOfByte = new byte[TbXid.SERIALIZED_SIZE];
     serializeXid(paramXid, arrayOfByte);
     synchronized (this.stream) {
@@ -282,7 +282,7 @@ public class TbXACommType4 extends TbCommType4 implements TbXAComm {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\comm\TbXACommType4.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\comm\TbXACommType4.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

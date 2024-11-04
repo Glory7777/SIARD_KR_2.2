@@ -29,7 +29,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Vector;
 
-public class TbPreparedStatement extends TbPreparedStatement {
+public class TbPreparedStatement extends com.tmax.tibero.jdbc.TbPreparedStatement {
   private final TbPreparedStatementImpl impl;
   
   public TbPreparedStatement(TbConnection paramTbConnection, String paramString) throws SQLException {
@@ -522,7 +522,7 @@ public class TbPreparedStatement extends TbPreparedStatement {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbPreparedStatement.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbPreparedStatement.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

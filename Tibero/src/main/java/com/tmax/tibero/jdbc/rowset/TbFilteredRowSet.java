@@ -230,7 +230,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateBoolean(int paramInt, boolean paramBoolean) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Boolean(paramBoolean)); 
+      checkAndFilterObject(paramInt, paramBoolean);
     super.updateBoolean(paramInt, paramBoolean);
   }
   
@@ -240,7 +240,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateByte(int paramInt, byte paramByte) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Byte(paramByte)); 
+      checkAndFilterObject(paramInt, paramByte);
     super.updateByte(paramInt, paramByte);
   }
   
@@ -330,7 +330,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateDouble(int paramInt, double paramDouble) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Double(paramDouble)); 
+      checkAndFilterObject(paramInt, paramDouble);
     super.updateDouble(paramInt, paramDouble);
   }
   
@@ -340,7 +340,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateFloat(int paramInt, float paramFloat) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Float(paramFloat)); 
+      checkAndFilterObject(paramInt, paramFloat);
     super.updateFloat(paramInt, paramFloat);
   }
   
@@ -350,7 +350,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateInt(int paramInt1, int paramInt2) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt1, new Integer(paramInt2)); 
+      checkAndFilterObject(paramInt1, paramInt2);
     super.updateInt(paramInt1, paramInt2);
   }
   
@@ -360,7 +360,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateLong(int paramInt, long paramLong) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Long(paramLong)); 
+      checkAndFilterObject(paramInt, paramLong);
     super.updateLong(paramInt, paramLong);
   }
   
@@ -470,7 +470,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   
   public void updateShort(int paramInt, short paramShort) throws SQLException {
     if (this.isOnInsert)
-      checkAndFilterObject(paramInt, new Short(paramShort)); 
+      checkAndFilterObject(paramInt, paramShort);
     super.updateShort(paramInt, paramShort);
   }
   
@@ -520,7 +520,7 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbFilteredRowSet.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\rowset\TbFilteredRowSet.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

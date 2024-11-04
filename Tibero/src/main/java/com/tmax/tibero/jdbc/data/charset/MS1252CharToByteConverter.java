@@ -50,7 +50,7 @@ public class MS1252CharToByteConverter {
       if (c < '') {
         paramArrayOfbyte[j++] = (byte)c;
       } else {
-        byte b;
+        int b;
         if (c >= ' ' && c < 'Ā') {
           b = (char)c;
         } else if ((short)c >= 336 && c < 'Ƙ') {
@@ -85,7 +85,7 @@ public class MS1252CharToByteConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS1252CharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\MS1252CharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

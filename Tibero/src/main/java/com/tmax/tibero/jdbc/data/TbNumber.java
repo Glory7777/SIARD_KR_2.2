@@ -371,7 +371,7 @@ public class TbNumber {
       } 
       if (b >= 5)
         roundingAt41Prec(paramArrayOfbyte, paramInt, bool1, j, k, paramString); 
-      byte b7 = bool1 ? 0 : 1;
+      byte b7 = (byte) (bool1 ? 0 : 1);
       int i1;
       for (i1 = j - b7; i1 >= 2 && paramArrayOfbyte[paramInt + i1] == Byte.MIN_VALUE; i1--);
       if (i1 < j - b7) {
@@ -503,7 +503,7 @@ public class TbNumber {
       } 
       if (b >= 5)
         roundingAt41Prec(arrayOfByte1, 0, bool1, j, k, paramString); 
-      byte b7 = bool1 ? 0 : 1;
+      byte b7 = (byte) (bool1 ? 0 : 1);
       int i1;
       for (i1 = j - b7; i1 >= 2 && arrayOfByte1[i1] == Byte.MIN_VALUE; i1--);
       if (i1 < j - b7)
@@ -520,7 +520,7 @@ public class TbNumber {
   }
   
   private static void roundingAt41Prec(byte[] paramArrayOfbyte, int paramInt1, boolean paramBoolean, int paramInt2, int paramInt3, String paramString) throws SQLException {
-    byte b2;
+    int b2;
     byte b1 = 21;
     if (paramBoolean) {
       int i = getDecoPos(paramArrayOfbyte[paramInt1 + b1]) + 1;
@@ -575,12 +575,12 @@ public class TbNumber {
   }
   
   private static int getExpNeg(byte paramByte) {
-    boolean bool = (paramByte < 0) ? (paramByte + 256) : paramByte;
+    int bool = (paramByte < 0) ? (paramByte + 256) : paramByte;
     return 62 - (bool & 0x7F);
   }
   
   private static int getExpPos(byte paramByte) {
-    boolean bool = (paramByte < 0) ? (paramByte + 256) : paramByte;
+    int bool = (paramByte < 0) ? (paramByte + 256) : paramByte;
     return (bool & 0x7F) - 65;
   }
   
@@ -635,7 +635,7 @@ public class TbNumber {
       k = (getExpNeg(paramArrayOfbyte[paramInt1 + 1]) << 1) + ((getDecoNeg(paramArrayOfbyte[paramInt1 + 2]) >= 10) ? 1 : 0);
       m = (getSiglen(paramArrayOfbyte, paramInt1) << 1) - ((getDecoNeg(paramArrayOfbyte[paramInt1 + 2]) < 10) ? 1 : 0) - lastHalfFilledNeg(paramArrayOfbyte, paramInt1);
     } 
-    byte b = (k >= 100 || k <= -100) ? 3 : 2;
+    int b = (k >= 100 || k <= -100) ? 3 : 2;
     int j = (bool ? 0 : 1) + m + ((m > 1) ? 1 : 0) + 1 + 1 + b + 1;
     char[] arrayOfChar = new char[j];
     int i = 0;
@@ -706,7 +706,8 @@ public class TbNumber {
           return false; 
       } 
       return true;
-    } 
+    }
+      return false;
   }
   
   private static int lastHalfFilledNeg(byte[] paramArrayOfbyte, int paramInt) {
@@ -874,7 +875,7 @@ public class TbNumber {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\TbNumber.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\TbNumber.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

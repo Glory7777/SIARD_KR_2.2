@@ -104,7 +104,7 @@ public class JA16SJISDBCharToByteConverter extends CharToByteDoubleByte {
     byte[] arrayOfByte = new byte[2];
     i = paramInt1;
     j = paramInt3;
-    if (c) {
+    if (c == 0) {
       c = Character.MIN_VALUE;
       if (paramArrayOfchar[paramInt1] >= '?' && paramArrayOfchar[paramInt1] <= '?') {
         if (this.subMode) {
@@ -276,16 +276,16 @@ public class JA16SJISDBCharToByteConverter extends CharToByteDoubleByte {
         arrayOfByte1[1] = 88;
       } 
       for (byte b = 0; b < i2; b++)
-        paramArrayOfbyte[j++] = arrayOfByte1[b]; 
+        paramArrayOfbyte[j++] = arrayOfByte1[b];
       continue;
       i += k;
-    } 
+    }
     return j - paramInt3;
   }
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISDBCharToByteConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\JA16SJISDBCharToByteConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

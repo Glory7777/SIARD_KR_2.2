@@ -36,9 +36,9 @@ public class TbNrowId {
   
   public String toString() {
     long l;
-    boolean bool1 = false;
-    boolean bool2 = (this.conn == null) ? false : this.conn.getServerInfo().getServerEndian();
-    if (bool2 == true) {
+    byte bool1 = 0;
+    int bool2 = (this.conn == null) ? 0 : this.conn.getServerInfo().getServerEndian();
+    if (bool2 == 1) {
       l = TbCommon.bytes2Long(this.nrowid, bool1, 8);
     } else {
       l = TbCommon.bytes2LongR(this.nrowid, bool1, 8);
@@ -106,7 +106,7 @@ public class TbNrowId {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\TbNrowId.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\TbNrowId.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -10,10 +10,10 @@ public class UTF8ByteToCharConverter {
   public int convert(byte[] paramArrayOfbyte, int paramInt1, int paramInt2, char[] paramArrayOfchar, int paramInt3, int paramInt4) {
     int i = 0;
     int j = 0;
-    byte b1 = 0;
+    int b1 = 0;
     char[] arrayOfChar = new char[2];
     byte b2 = 0;
-    if (b1) {
+    if (b1 == 0) {
       byte[] arrayOfByte = new byte[paramInt2 - paramInt1 + b1];
       for (byte b = 0; b < b1; b++)
         arrayOfByte[b] = this.savedBytes[b]; 
@@ -21,7 +21,7 @@ public class UTF8ByteToCharConverter {
       paramArrayOfbyte = arrayOfByte;
       paramInt1 = 0;
       paramInt2 = arrayOfByte.length;
-      b2 = -b1;
+      b2 = (byte) -b1;
       b1 = 0;
     } 
     i = paramInt3;
@@ -120,7 +120,7 @@ public class UTF8ByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UTF8ByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\UTF8ByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

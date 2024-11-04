@@ -1,8 +1,14 @@
 package com.tmax.tibero.jdbc.driver;
 
-import com.tmax.tibero.jdbc.*;
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArrayDescriptor;
+import com.tmax.tibero.jdbc.TbDatabaseMetaData;
 import com.tmax.tibero.jdbc.TbLob;
+import com.tmax.tibero.jdbc.TbRef;
+import com.tmax.tibero.jdbc.TbSQLXML;
+import com.tmax.tibero.jdbc.TbStruct;
+import com.tmax.tibero.jdbc.TbStructDescriptor;
+import com.tmax.tibero.jdbc.TbTypeDescriptor;
 import com.tmax.tibero.jdbc.data.BatchInfo;
 import com.tmax.tibero.jdbc.data.BatchUpdateInfo;
 import com.tmax.tibero.jdbc.data.BigLiteral;
@@ -1629,7 +1635,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
       setNullInternal(paramInt1, 3);
       return;
     } 
-    boolean bool = (65532 < paramInt2) ? true : paramInt2;
+    int bool = (65532 < paramInt2) ? 1 : paramInt2;
     byte[] arrayOfByte = new byte[bool];
     int i = 0;
     try {
@@ -1692,7 +1698,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
       setNullInternal(paramInt1, 4);
       return;
     } 
-    boolean bool = (65532 < paramInt2) ? true : paramInt2;
+    int bool = (65532 < paramInt2) ? 1 : paramInt2;
     byte[] arrayOfByte = new byte[bool];
     int i = 0;
     try {
@@ -1902,7 +1908,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
       setNullInternal(paramInt1, paramInt2);
       return;
     } 
-    if (!(paramClob instanceof TbClob) && !(paramClob instanceof TbNClob))
+    if (!(paramClob instanceof com.tmax.tibero.jdbc.TbClob) && !(paramClob instanceof com.tmax.tibero.jdbc.TbNClob))
       throw TbError.newSQLException(-590770, paramClob.toString()); 
     if (this.paramBytes == null)
       this.paramBytes = new byte[this.allocatedBatchRowCount][this.bindParamCnt][]; 
@@ -2280,7 +2286,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
     } 
     switch (paramInt2) {
       case -7:
-        setBooleanInternal(paramInt1, (new Boolean(paramObject.toString())).booleanValue());
+        setBooleanInternal(paramInt1, Boolean.parseBoolean((paramObject.toString())));
         return;
       case -15:
       case -9:
@@ -2603,7 +2609,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
   }
   
   public void setRowId(int paramInt, RowId paramRowId) throws SQLException {
-    if (!(paramRowId instanceof TbRowId))
+    if (!(paramRowId instanceof com.tmax.tibero.jdbc.TbRowId))
       throw TbError.newSQLException(-590771, String.valueOf(paramRowId)); 
     setRowIdInternal(paramInt, paramRowId);
   }
@@ -2845,7 +2851,7 @@ public class TbPreparedStatementImpl extends TbStatement implements PreparedStat
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbPreparedStatementImpl.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\driver\TbPreparedStatementImpl.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

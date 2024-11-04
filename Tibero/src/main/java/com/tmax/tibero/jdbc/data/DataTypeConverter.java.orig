@@ -7,7 +7,7 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package tibero.jdbc.data;
+package com.tmax.tibero.jdbc.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,32 +32,32 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TimeZone;
 
-import tibero.Debug;
-import tibero.jdbc.TbArray;
-import tibero.jdbc.TbArrayDescriptor;
-import tibero.jdbc.TbBlob;
-import tibero.jdbc.TbClob;
-import tibero.jdbc.TbIntervalDts;
-import tibero.jdbc.TbIntervalYtm;
-import tibero.jdbc.TbLob;
-import tibero.jdbc.TbNClob;
-import tibero.jdbc.TbRowId;
-import tibero.jdbc.TbSQLXML;
-import tibero.jdbc.TbStruct;
-import tibero.jdbc.TbStructDescriptor;
-import tibero.jdbc.TbTypeDescriptor;
-import tibero.jdbc.TbXMLInputStream;
-import tibero.jdbc.data.charset.Charset;
-import tibero.jdbc.data.charset.CharsetMapper;
-import tibero.jdbc.dbconst.DBConst;
-import tibero.jdbc.driver.TbConnection;
-import tibero.jdbc.driver.TbResultSet;
-import tibero.jdbc.driver.TbResultSetFactory;
-import tibero.jdbc.driver.TbStatement;
-import tibero.jdbc.err.TbError;
-import tibero.jdbc.msg.TbColumnDesc;
-import tibero.jdbc.util.TbCommon;
-import tibero.jdbc.util.TbDTFormatter;
+import com.tmax.tibero.Debug;
+import com.tmax.tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArrayDescriptor;
+import com.tmax.tibero.jdbc.TbBlob;
+import com.tmax.tibero.jdbc.TbClob;
+import com.tmax.tibero.jdbc.TbIntervalDts;
+import com.tmax.tibero.jdbc.TbIntervalYtm;
+import com.tmax.tibero.jdbc.TbLob;
+import com.tmax.tibero.jdbc.TbNClob;
+import com.tmax.tibero.jdbc.TbRowId;
+import com.tmax.tibero.jdbc.TbSQLXML;
+import com.tmax.tibero.jdbc.TbStruct;
+import com.tmax.tibero.jdbc.TbStructDescriptor;
+import com.tmax.tibero.jdbc.TbTypeDescriptor;
+import com.tmax.tibero.jdbc.TbXMLInputStream;
+import com.tmax.tibero.jdbc.data.charset.Charset;
+import com.tmax.tibero.jdbc.data.charset.CharsetMapper;
+import com.tmax.tibero.jdbc.dbconst.DBConst;
+import com.tmax.tibero.jdbc.driver.TbConnection;
+import com.tmax.tibero.jdbc.driver.TbResultSet;
+import com.tmax.tibero.jdbc.driver.TbResultSetFactory;
+import com.tmax.tibero.jdbc.driver.TbStatement;
+import com.tmax.tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.msg.TbColumnDesc;
+import com.tmax.tibero.jdbc.util.TbCommon;
+import com.tmax.tibero.jdbc.util.TbDTFormatter;
 
 // #ifdef JDK1.6
 import java.sql.NClob;
@@ -67,7 +67,7 @@ import java.sql.SQLXML;
 /**
  * DataTypeConverter class.
  * 
- * @author ï¿½Ì¿ï¿½ï¿½ï¿½, yjlee@tmax.co.kr ï¿½ï¿½Ô»ï¿½, gusami@tmax.co.kr
+ * @author ÀÌ¿ëÀç, yjlee@tmax.co.kr ±è±Ô»ï, gusami@tmax.co.kr
  * @version $Id: DataTypeConverter.java 186284 2020-10-20 09:17:47Z kyungtak_min $
  */
 public class DataTypeConverter implements Cloneable {
@@ -79,8 +79,8 @@ public class DataTypeConverter implements Cloneable {
     public final static byte[] RPCOL_UDT_NOT_FINAL = { (byte) 0xFE, 0, 0, 0 };
     public final static int RPCOL_UDT_MIN_SIZE = 3; // Magic number 2bytes + rpcol len 1byte
     public final static byte RPCOL_NULLOBJ_W_DEPTH = (byte) 0xFC;
-    public static byte RPCOL_NULLOBJ; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2.16ï¿½ï¿½ï¿½ï¿½ 253->251 ï¿½ï¿½ï¿½ï¿½
-    public static byte RPCOL_5BYTE; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2.16ï¿½ï¿½ï¿½ï¿½ 251->253 ï¿½ï¿½ï¿½ï¿½
+    public static byte RPCOL_NULLOBJ; // ÇÁ·ÎÅäÄÝ 2.16¿¡¼­ 253->251 º¯°æ
+    public static byte RPCOL_5BYTE; // ÇÁ·ÎÅäÄÝ 2.16¿¡¼­ 251->253 º¯°æ
 
     public final static int COLLECTION_META_LENGTH = 40;
     public final static int STRUCT_META_LENGTH = 40;
@@ -128,8 +128,8 @@ public class DataTypeConverter implements Cloneable {
         }
 
         /*
-         * colDesc[] ï¿½ï¿½ï¿½ï¿½ 0 ~ (colCnt - 1)ï¿½ï¿½ ï¿½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½,
-         * colCnt ï¿½ï¿½ï¿½Í´ï¿½ Object, Collection Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½. 
+         * colDesc[] ¿¡¼­ 0 ~ (colCnt - 1)´Â ÄÃ·³ Á¤º¸µéÀÌ¸ç,
+         * colCnt ºÎÅÍ´Â Object, Collection Å¸ÀÔ µîÀ» À§ÇÑ Ãß°¡ÀûÀÎ ¸ÞÅ¸Á¤º¸ÀÌ´Ù. 
          */
         if (colDesc.length > colCnt) {
             // #ifdef JDK1.5
@@ -139,11 +139,11 @@ public class DataTypeConverter implements Cloneable {
 //            HashMap newDescMap = new HashMap();
             // #endif
             /*
-             * == Object/Collection headerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ColumnDesc ï¿½Êµï¿½ ==
+             * == Object/Collection headerÀÎ °æ¿ìÀÇ ColumnDesc ÇÊµå ==
              * type    -> DataType.OBJECT | DataType.VARRAY
              * length  -> 0
              * prec    -> tb object id
-             * scale   -> objectï¿½ï¿½ ï¿½ï¿½ï¿½, colDesc[] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ header index // XXX: 0ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+             * scale   -> objectÀÎ °æ¿ì, colDesc[] ¿¡¼­ÀÇ header index // XXX: 0À¸·Î¸¸ ¿À°íÀÖÀ½.
              * name    -> HEX encoded OID string
              * etcMeta -> 0
              */
@@ -155,18 +155,18 @@ public class DataTypeConverter implements Cloneable {
                         case DataType.OBJECT:
                         case DataType.RECORD:
                             /*
-                             * FIXME: CLIENT_INTERNAL ï¿½ï¿½Å°ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½Ó°ï¿½ï¿½è¿¡ ï¿½Ö´ï¿½
-                             *  Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½
-                             *  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DD ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                             * FIXME: CLIENT_INTERNAL ÆÐÅ°Áö¸¦ ÀÌ¿ëÇØ »ó¼Ó°ü°è¿¡ ÀÖ´Â
+                             *  Å¸ÀÔÁ¤º¸¸¦ ÇÑ¹ø¿¡ °¡Á®¿Ã ¼ö ÀÖ´Ù. ÇöÀç´Â ¾ÆÁ÷ ¿À·ù°¡ ÀÖ¾î
+                             *  °³º°·Î DD Á¶È¸¸¦ ÅëÇØ °¡Á®¿À°í ÀÖÀ½
                              */
                             TbStructDescriptor newStDesc = TbStructDescriptor
                                     .createDescriptor(colDesc[i].dataType,
                                                       colDesc[i].name, conn);
                             descPut(newDescMap, i, newStDesc);
-//                            // ï¿½ï¿½ï¿½ subtypeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ descriptorï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ desc mapï¿½ï¿½ ï¿½Îµï¿½
+//                            // »ó¼Ó subtypeÀ» Æ÷ÇÔÇÑ descriptorµéÀ» ¸ðµÎ desc map¿¡ ·Îµù
 //                            TbStructDescriptor.lookupUdtMeta(colDesc[i].name, // oid
 //                                                              conn);
-//                            // ï¿½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ root typeï¿½ï¿½ descriptorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+//                            // ÄÃ·³ Á¤º¸¿¡´Â root typeÀÇ descriptor¸¸ ¼³Á¤
 //                            descPut(newDescMap, i,
 //                                    (TbTypeDescriptor) conn
 //                                            .getDescriptor(_DESC_OID_PREFIX +
@@ -201,11 +201,11 @@ public class DataTypeConverter implements Cloneable {
             for (int i = 0; i < colCnt; i++) {
                 if (DataType.isUDTCategory(colDesc[i].dataType)) {
                     /*
-                     * == Object/Collection ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ColumnDesc ï¿½Êµï¿½ ==
+                     * == Object/Collection ÄÃ·³ÀÎ °æ¿ìÀÇ ColumnDesc ÇÊµå ==
                      * type
                      * length
                      * prec    -> type object id
-                     * scale   -> colDesc[] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ header index
+                     * scale   -> colDesc[] ¿¡¼­ÀÇ header index
                      * name
                      * etcMeta
                      */
@@ -1565,7 +1565,7 @@ public class DataTypeConverter implements Cloneable {
 
     public int fixedBytesToChars(byte[] src, int srcOff, int srcLen,
                                  char[] dest, int destOff, int destLen) throws SQLException {
-        /* destLenï¿½ï¿½ destStartï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ */
+        /* destLenÀº destStart¸¦ »« ³ª¸ÓÁö °ø°£ ±æÀÌ¸¦ °¡Áü */
         int j = destOff;
 
         if ((srcLen % 2) != 0) {
@@ -2183,7 +2183,7 @@ public class DataTypeConverter implements Cloneable {
 
     public void setCharset(int charset, int nCharset) throws SQLException {
 
-        // IMS 117777. SJISTILDE charsetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½
+        // IMS 117777. SJISTILDE charset¿¡ ´ëÇÑ ¿ìÈ¸ Áö¿ø
         if (charset == Charset.SJISTILDE) {
             charset = Charset.JA16SJIS_TILDE;
         }
@@ -2268,22 +2268,22 @@ public class DataTypeConverter implements Cloneable {
         else if (b.length > offset + 5 && length > 5) {
             /*
              * deserialize from lob.
-             * Empty lobï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½Ì»ï¿½ ï¿½Ö¼ï¿½ 6byteï¿½Ì»ï¿½ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ TbLob ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
-             * ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×»ï¿½ 96byteï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, jdbcï¿½ï¿½ï¿½ï¿½ locatorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì³Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í´ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½â¼­ï¿½ï¿½ ï¿½Ö¼Ò±ï¿½ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ï¿½Ñ´ï¿½.
+             * Empty lobÀÌ ¾Æ´Ñ ÀÌ»ó ÃÖ¼Ò 6byteÀÌ»óÀÌ ¾Æ´Ï¸é TbLob »ý¼º½Ã ¿À·ù ¹ß»ýÇÒ ¼ö ÀÖ´Ù.
+             * ½ÇÁ¦·Î´Â °ÅÀÇ Ç×»ó 96byte°¡ »ç¿ëµÇÁö¸¸, jdbc¿¡¼­ locatorÀÇ ÇÏÀ§ ¹ÙÀÌ³Ê¸® µ¥ÀÌÅÍ´Â
+             * ÀüÇô ÂüÁ¶ÇÏÁö ¾ÊÀ¸¹Ç·Î ¿©±â¼­µµ ÃÖ¼Ò±æÀÌ¸¸À¸·Î °Ë»çÇÑ´Ù.
              */
             byte[] locator = new byte[length];
             System.arraycopy(b, offset, locator, 0, length);
             TbBlob blob = new TbBlob(conn, locator, true);
             /*
-             * subrpï¿½ï¿½ Lobï¿½ï¿½ ï¿½ï¿½ï¿½, lengthï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ü¼ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Ì·ï¿½ int maxï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½. ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ TbBlob.getBytes(long, int) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ lengthï¿½ï¿½Å­ new byte[]ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½Ï´ï¿½ ï¿½ÎºÐ¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ç¾ï¿½
-             * OutOfMemoryErrorï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½.
-             * ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ lengthï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½.
+             * subrp°¡ LobÀÎ °æ¿ì, length¿äÃ»À» »ý·«ÇÏ°í ´Ü¼øÇÏ°Ô ±æÀÌ·Î int max¸¦ »ç¿ëÇÏ¿©
+             * µ¥ÀÌÅÍ¸¦ ¿äÃ»ÇÒ ¼öµµ ÀÖ´Ù. ±×·¯³ª ÀÌ °æ¿ì¿¡´Â TbBlob.getBytes(long, int) ±¸ÇöÀÌ
+             * ÁöÁ¤µÈ length¸¸Å­ new byte[]¸¦ ÇÒ´çÇÏ´Â ºÎºÐ¶§¹®¿¡ ¸Þ¸ð¸®¸¦ °úµµÇÏ°Ô »ç¿ëÇÏ°Ô µÇ¾î
+             * OutOfMemoryError°¡ ¹ß»ýÇÒ ¿©Áö°¡ ÀÖ´Ù.
+             * ÀÌ ¹®Á¦¶§¹®¿¡ length¸¦ È£ÃâÇØ ¼­¹ö·ÎºÎÅÍ ±æÀÌ¸¦ ¹Þ¾Æ¿À´Â ¹æ½ÄÀ¸·Î ÇÏ¿´´Ù.
              */
             long lobLen = blob.length();
-            if (lobLen > Integer.MAX_VALUE) { // 1-3-5 systemï¿½ï¿½ï¿½ï¿½ maxsizeï¿½ï¿½ int max.
+            if (lobLen > Integer.MAX_VALUE) { // 1-3-5 system¿¡¼­ maxsize´Â int max.
                 throw TbError.newSQLException(TbError.MU_COVERSION_RULE_VIOLATION,
                                               "rp(lob) len=" + lobLen);
             }
@@ -2390,12 +2390,12 @@ public class DataTypeConverter implements Cloneable {
         ObjInstBldCtx cur = new ObjInstBldCtx(realDesc);
 
         while (true) {
-            /* sub row pieceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ Null ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å¸ï¿½ï¿½ È®ï¿½ï¿½. */
+            /* sub row piece¸¦ ¸ÕÀú ÀÐ¾î Null ¿©ºÎ ¹× Å¸ÀÔ È®º¸. */
             int objGrpDepth = 0;
             int nullObjGrpDepth = 0;
             int subRpLen = 0;
             switch (b[off]) {
-            case (byte) 252: /* 0xFC means RPCOL_NULLOBJ_W_DEPTH: object groupï¿½ï¿½ ï¿½ß°ï¿½ node */
+            case (byte) 252: /* 0xFC means RPCOL_NULLOBJ_W_DEPTH: object groupÀÇ Áß°£ node */
                 nullObjGrpDepth = (int) (0xff & b[off + 1]);
                 off += 2;
                 break;
@@ -2407,7 +2407,7 @@ public class DataTypeConverter implements Cloneable {
 
             default: /* row piece with value. leaf node */
 
-                if (b[off]==RPCOL_NULLOBJ){ /* RPCOL_NULLOBJ: object groupï¿½ï¿½ top node */
+                if (b[off]==RPCOL_NULLOBJ){ /* RPCOL_NULLOBJ: object groupÀÇ top node */
                     off++;
                     break;
                 }
@@ -2430,7 +2430,7 @@ public class DataTypeConverter implements Cloneable {
                                                   "subRpLen=" + subRpLen);
 
                 /*
-                // NUMBER Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, offsetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
+                // NUMBER Å¸ÀÔÀÎ °æ¿ì, offsetÀ» º¸Á¤ÇØÁØ´Ù.
                 if (cur.desc.getAttributeTypes()[cur.attrProcessed] == DataType.NUMBER) {
                     off--;
                     subRpLen++;
@@ -2439,25 +2439,25 @@ public class DataTypeConverter implements Cloneable {
             }
 
             /*
-             * Value Treeï¿½ï¿½ Leafï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½ Meta Treeï¿½ï¿½ childï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ñ´ï¿½.
+             * Value TreeÀÇ Leaf°¡ ¾Æ´Ï¶ó¸é Meta TreeÀÇ child·Î ÀÌµ¿ÇÑ´Ù.
              * 
-             * Leaf Valueï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-             * - Attributeï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ primitive Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
-             * - Attributeï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Collection ï¿½ï¿½ ï¿½ï¿½ï¿½
-             * - Attributeï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Objectï¿½Ì¸é¼­ ï¿½ï¿½ï¿½ï¿½ row pieceï¿½ï¿½ nullï¿½ï¿½ ï¿½ï¿½ï¿½
-             * - Attributeï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Objectï¿½Ì¸é¼­ NOT FINALï¿½ï¿½ ï¿½ï¿½ï¿½
+             * Leaf Value°¡ µÇ´Â °æ¿ì´Â ´ÙÀ½°ú °°´Ù
+             * - AttributeÀÇ Å¸ÀÔÀÌ primitive Å¸ÀÔÀÎ °æ¿ì
+             * - AttributeÀÇ Å¸ÀÔÀÌ Collection ÀÎ °æ¿ì
+             * - AttributeÀÇ Å¸ÀÔÀÌ ObjectÀÌ¸é¼­ ´ÙÀ½ row piece°¡ nullÀÎ °æ¿ì
+             * - AttributeÀÇ Å¸ÀÔÀÌ ObjectÀÌ¸é¼­ NOT FINALÀÎ °æ¿ì
              * 
              */
             while (cur.desc.getAttributeTypes()[cur.attrProcessed] == DataType.OBJECT
                     && (subRpLen != 0 || objGrpDepth < nullObjGrpDepth)) {
                 /*
-                 * JDBCï¿½ó¿¡¼ï¿½ ï¿½ï¿½ï¿½ï¿½loop ï¿½ï¿½ï¿½É¼ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½.
-                 *   1st-childï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ path ï¿½ï¿½Î»ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½Ç°ï¿½ ï¿½ßºï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½,
-                 *   ï¿½ï¿½ï¿½ï¿½ rpï¿½ï¿½ ï¿½ï¿½Äªï¿½ï¿½ Object Tree leafï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+                 * JDBC»ó¿¡¼­ ¹«ÇÑloop °¡´É¼ºÀÖ´Â ¼øÈ¯ÂüÁ¶ ¿À·ù °Ë»ç.
+                 *   1st-child·Î¸¸ ¿¬°áµÈ path °æ·Î»ó¿¡ Å¸ÀÔ Á¤ÀÇ°¡ Áßº¹µÇ¾î ³ªÅ¸³ª´Â °æ¿ì,
+                 *   ´ÙÀ½ rp¿¡ ¸ÅÄªÇÒ Object Tree leaf¸¦ È®Á¤ÇÒ ¼ö ¾ø´Ù.
                  * 
-                 * cf. ï¿½ï¿½È¯ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ 1st-childï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ pathï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½, 
-                 *   ï¿½ï¿½ï¿½ï¿½ attributeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ï°ï¿½ ï¿½Ç¹Ç·ï¿½,  
-                 *   next row pieceï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ leaf nodeï¿½ï¿½ Æ¯ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+                 * cf. ¼øÈ¯ÂüÁ¶ÀÌ´õ¶óµµ 1st-child·Î¸¸ ¿¬°áµÈ path°¡ ¾Æ´Ï¶ó¸é, 
+                 *   ÀÌÀü attribute¿¡ ´ëÇÑ µ¥ÀÌÅÍ°¡ Á¸ÀçÇØ¾ß ÇÏ°Ô µÇ¹Ç·Î,  
+                 *   next row piece¿¡ ÇØ´çÇÏ´Â leaf node¸¦ Æ¯Á¤ÇÏ´Â °ÍÀÌ °¡´É.
                  */ 
                 String attrTypeName = cur.desc.getAttributeTypeNames()[cur.attrProcessed];
                 String attrOID = cur.desc.getAttributeOIDs()[cur.attrProcessed];
@@ -2505,8 +2505,8 @@ public class DataTypeConverter implements Cloneable {
                                                      ", attrOID=" + attrOID);
 
                 /*
-                 * Meta treeï¿½ï¿½ childï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ctxï¿½ï¿½ stackï¿½ï¿½ ï¿½Ö°ï¿½
-                 * cur ï¿½ï¿½ï¿½ï¿½ child objectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                 * Meta treeÀÇ child·Î ÀÌµ¿ÇÏ±â À§ÇØ ÇöÀç ctx´Â stack¿¡ ³Ö°í
+                 * cur °ªÀ» child objectÀÇ Á¤º¸·Î º¯°æ
                  */
                 if (attrDescObj instanceof TbStructDescriptor &&
                         ((TbStructDescriptor) attrDescObj).isFinal()) {
@@ -2521,7 +2521,7 @@ public class DataTypeConverter implements Cloneable {
                 }
             }
 
-            // rpï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ï¿½Ä¡ - Leaf node or Null Object
+            // rp¿¡ ´ëÀÀµÇ´Â À§Ä¡ - Leaf node or Null Object
             int attrDataType = cur.desc.getAttributeTypes()[cur.attrProcessed];
             int attrSqlType = DataType.getSqlType(attrDataType);
             String attrTypeName = cur.desc.getAttributeTypeNames()[cur.attrProcessed];
@@ -2588,8 +2588,8 @@ public class DataTypeConverter implements Cloneable {
             }
             else if (descObj instanceof TbStructDescriptor) {
                 /*
-                 * XXX: Struct deserialize ï¿½ï¿½ Leafï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ Structï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Ð¼ï¿½ ï¿½Ê¿ï¿½.
-                 *  Lob wrapping object ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ object Æ®ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ê¿ï¿½
+                 * XXX: Struct deserialize ½Ã Leaf¿¡¼­ ´Ù½Ã Struct·Î °¥¼ö ÀÖ´ÂÁö ÄÉÀÌ½º ºÐ¼® ÇÊ¿ä.
+                 *  Lob wrapping object ÄÉÀÌ½º°¡ object Æ®¸® Áß°£¿¡¼­ ³ª¿Ã ¼ö ÀÖ´ÂÁö ¿ª½Ã È®ÀÎ ÇÊ¿ä
                  */
                 TbStructDescriptor attrStDesc = (TbStructDescriptor) descObj;
                 cur.values[cur.attrProcessed] =
@@ -2597,7 +2597,7 @@ public class DataTypeConverter implements Cloneable {
                                  freeTmpLobOnEOF, attrStDesc, null, typeMap);
             }
             else {
-                // NUMBER Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, offsetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
+                // NUMBER Å¸ÀÔÀÎ °æ¿ì, offsetÀ» º¸Á¤ÇØÁØ´Ù.
                 if (cur.desc.getAttributeTypes()[cur.attrProcessed] == DataType.NUMBER) {
                     if(subRpLen > 0) {
                         off--;
@@ -2613,11 +2613,11 @@ public class DataTypeConverter implements Cloneable {
             objGrpDepth = 0;
 
             /*
-             * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(ctx)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ attributeï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½ Struct (or SQLData)ï¿½ï¿½
-             * instanceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, parent nodeï¿½ï¿½ attributeï¿½ï¿½ assignï¿½ï¿½ï¿½Ø´ï¿½.
-             * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ row pieceï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½Ì±ï¿½ ï¿½ï¿½ï¿½ï¿½, attributeï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ nodeï¿½ï¿½ï¿½ï¿½
-             * Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Å½ï¿½ï¿½ï¿½ ï¿½Ã¶ï¿½, ï¿½ï¿½ï¿½ï¿½ row pieceï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ñ´ï¿½.
-             * rootï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ attributeï¿½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½ rootï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ instanceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ returnï¿½Ñ´ï¿½.
+             * ÇöÀç ³ëµå(ctx)¿¡¼­ÀÇ ¸ðµç attributeÀÇ Ã³¸®°¡ ³¡³µ´Ù¸é Struct (or SQLData)ÀÇ
+             * instance¸¦ »ý¼ºÇÏ°í, parent nodeÀÇ attribute¿¡ assignÇØÁØ´Ù.
+             * ¶ÇÇÑ ´ÙÀ½ row piece¸¦ ÀÐ¾îµéÀÌ±â Àü¿¡, attributeµéÀ» ¸ðµÎ Ã³¸®ÇÏÁö ¸øÇÑ Á¶»ó node±îÁö
+             * Æ®¸®¸¦ °Å½½·¯ ¿Ã¶ó°¡, ´ÙÀ½ row piece¿¡ ÇØ´çÇÏ´Â À§Ä¡·Î ÀÌµ¿ÇÑ´Ù.
+             * root±îÁöÀÇ ¸ðµç attributeµéÀÌ Ã¤¿öÁ³´Ù¸é root¿¡ ÇØ´çÇÏ´Â instance¸¦ »ý¼ºÇÏ¿© returnÇÑ´Ù.
              */
             while (cur.values.length <= cur.attrProcessed) {
                 // gen object
@@ -2677,7 +2677,7 @@ public class DataTypeConverter implements Cloneable {
                                           "arr_desc=null");
 
         b = (byte[]) x;
-        // ï¿½Î¹ï¿½Â° byteï¿½ï¿½ RPCOL_UDT_ROOT ï¿½ï¿½ï¿½ï¿½. COLLECTION Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Â´ï¿½.
+        // µÎ¹øÂ° byte´Â RPCOL_UDT_ROOT °íÁ¤. COLLECTION Å¸ÀÔÀÇ »ó¼ÓÀº °í·ÁÇÏÁö ¾Ê´Â´Ù.
         if (b.length > offset + RPCOL_UDT_MIN_SIZE &&
                 b[offset] == RPCOL_UDT_COLL &&
                 b[offset + 1] == RPCOL_UDT_ROOT) {
@@ -2686,22 +2686,22 @@ public class DataTypeConverter implements Cloneable {
         else if (b.length > offset + 5) {
             /*
              * deserialize from lob.
-             * Empty lobï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½Ì»ï¿½ ï¿½Ö¼ï¿½ 6byteï¿½Ì»ï¿½ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ TbLob ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
-             * ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×»ï¿½ 96byteï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ jdbcï¿½ï¿½ï¿½ï¿½ locatorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì³Ê¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í´ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½, ï¿½Ö¼Ò±ï¿½ï¿½Ì¸ï¿½Ã¼Å©ï¿½Ï°ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+             * Empty lobÀÌ ¾Æ´Ñ ÀÌ»ó ÃÖ¼Ò 6byteÀÌ»óÀÌ ¾Æ´Ï¸é TbLob »ý¼º½Ã ¿À·ù ¹ß»ýÇÒ ¼ö ÀÖ´Ù.
+             * ½ÇÁ¦·Î´Â °ÅÀÇ Ç×»ó 96byte°¡ »ç¿ëµÇÁö¸¸ jdbc¿¡¼­ locatorÀÇ ÇÏÀ§ ¹ÙÀÌ³Ê¸® µ¥ÀÌÅÍ´Â
+             * ÀüÇô ÂüÁ¶ÇÏÁö ¾ÊÀ¸¹Ç·Î, ÃÖ¼Ò±æÀÌ¸¸Ã¼Å©ÇÏ°í, ¼­¹ö¿¡ È£ÃâÇØº¸´Â °ÍÀ¸·Î °ËÁõÇÑ´Ù.
              */
             byte[] locator = new byte[length];
             System.arraycopy(b, offset, locator, 0, length);
             TbBlob blob = new TbBlob(conn, locator, true);
             /*
-             * subrpï¿½ï¿½ Lobï¿½ï¿½ ï¿½ï¿½ï¿½, lengthï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ü¼ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Ì·ï¿½ int maxï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½. ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ TbBlob.getBytes(long, int) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-             * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ lengthï¿½ï¿½Å­ new byte[]ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½Ï´ï¿½ ï¿½ÎºÐ¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ç¾ï¿½
-             * OutOfMemoryErrorï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½.
-             * ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ lengthï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½.
+             * subrp°¡ LobÀÎ °æ¿ì, length¿äÃ»À» »ý·«ÇÏ°í ´Ü¼øÇÏ°Ô ±æÀÌ·Î int max¸¦ »ç¿ëÇÏ¿©
+             * µ¥ÀÌÅÍ¸¦ ¿äÃ»ÇÒ ¼öµµ ÀÖ´Ù. ±×·¯³ª ÀÌ °æ¿ì¿¡´Â TbBlob.getBytes(long, int) ±¸ÇöÀÌ
+             * ÁöÁ¤µÈ length¸¸Å­ new byte[]¸¦ ÇÒ´çÇÏ´Â ºÎºÐ¶§¹®¿¡ ¸Þ¸ð¸®¸¦ °úµµÇÏ°Ô »ç¿ëÇÏ°Ô µÇ¾î
+             * OutOfMemoryError°¡ ¹ß»ýÇÒ ¿©Áö°¡ ÀÖ´Ù.
+             * ÀÌ ¹®Á¦¶§¹®¿¡ length¸¦ È£ÃâÇØ ¼­¹ö·ÎºÎÅÍ ±æÀÌ¸¦ ¹Þ¾Æ¿À´Â ¹æ½ÄÀ¸·Î ÇÏ¿´´Ù.
              */
             long lobLen = blob.length();
-            if (lobLen > Integer.MAX_VALUE) { // 1-3-5 systemï¿½ï¿½ï¿½ï¿½ maxsizeï¿½ï¿½ int max.
+            if (lobLen > Integer.MAX_VALUE) { // 1-3-5 system¿¡¼­ maxsize´Â int max.
                 throw TbError.newSQLException(TbError.MU_COVERSION_RULE_VIOLATION,
                                               "rp(lob) len=" + lobLen);
             }
@@ -2840,7 +2840,7 @@ public class DataTypeConverter implements Cloneable {
                 break;
 
             case DataType.NUMBER:
-                // NUMBER Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, offsetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
+                // NUMBER Å¸ÀÔÀÎ °æ¿ì, offsetÀ» º¸Á¤ÇØÁØ´Ù.
                 if (subRpLen == 0)
                     elem[i] = null;
                 else
@@ -4167,8 +4167,8 @@ public class DataTypeConverter implements Cloneable {
             case DataType.OBJECT:
             case DataType.RECORD:
                 /*
-                 * XMLTYPE as Object ï¿½ï¿½ ï¿½ï¿½ï¿½, 1ï¿½ï¿½Â° attributesï¿½ï¿½ doc (cxmltype)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-                 * TbClobï¿½ï¿½ï¿½ï¿½ deserializeï¿½ï¿½ docï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ TbSQLXMLï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+                 * XMLTYPE as Object ÀÎ °æ¿ì, 1¹øÂ° attributesÀÎ doc (cxmltype)À» ÃßÃâ
+                 * TbClobÀ¸·Î deserializeµÈ docÀ» ÀÌ¿ëÇØ TbSQLXMLÀ» »ý¼ºÇÑ´Ù.
                  */
                 Object xmldescObj = conn.getDescriptor(_DESC_OID_PREFIX +
                         TbTypeDescriptor.OID_XMLTYPE);
@@ -4332,7 +4332,7 @@ public class DataTypeConverter implements Cloneable {
                 return tsLTZ.toString();
             }
             default:
-                // XXX: toStringï¿½ï¿½ typemapï¿½ï¿½ connection defaultï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ï´Â°ï¿½ nullï¿½ï¿½ ï¿½Ï´Â°ï¿½??
+                // XXX: toString½Ã typemapÀ» connection default·Î ÇØ¾ßÇÏ´Â°¡ null·Î ÇÏ´Â°¡??
                 Object obj = toObject(x, offset, length, dataType,
                                       DataType.getSqlType(dataType, 0, conn
                                               .getMapDateToTimestamp()),

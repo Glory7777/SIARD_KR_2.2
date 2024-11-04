@@ -23,43 +23,60 @@ public class ParseException extends Exception {
   public ParseException(String paramString) {
     super(paramString);
   }
-  
+
   public String getMessage() {
-    if (!this.specialConstructor)
-      return super.getMessage(); 
-    StringBuffer stringBuffer = new StringBuffer();
-    int i = 0;
-    for (byte b1 = 0; b1 < this.expectedTokenSequences.length; b1++) {
-      if (i < (this.expectedTokenSequences[b1]).length)
-        i = (this.expectedTokenSequences[b1]).length; 
-      for (byte b = 0; b < (this.expectedTokenSequences[b1]).length; b++)
-        stringBuffer.append(this.tokenImage[this.expectedTokenSequences[b1][b]]).append(" "); 
-      if (this.expectedTokenSequences[b1][(this.expectedTokenSequences[b1]).length - 1] != 0)
-        stringBuffer.append("..."); 
-      stringBuffer.append(this.eol).append("    ");
-    } 
-    null = "Encountered \"";
+    if (!this.specialConstructor) {
+      return super.getMessage();
+    }
+
+    StringBuilder stringBuffer = new StringBuilder();
+    int maxLength = 0;
+
+      for (int[] expectedTokenSequence : this.expectedTokenSequences) {
+          if (maxLength < expectedTokenSequence.length) {
+              maxLength = expectedTokenSequence.length;
+          }
+
+          for (int i : expectedTokenSequence) {
+              stringBuffer.append(this.tokenImage[i]).append(" ");
+          }
+
+          if (expectedTokenSequence[expectedTokenSequence.length - 1] != 0) {
+              stringBuffer.append("...");
+          }
+          stringBuffer.append(this.eol).append("    ");
+      }
+
+    String message = "Encountered \"";
     Token token = this.currentToken.next;
-    for (byte b2 = 0; b2 < i; b2++) {
-      if (b2 != 0)
-        null = null + " "; 
+
+    for (int index = 0; index < maxLength; index++) {
+      if (index != 0) {
+        message += " ";
+      }
+
       if (token.kind == 0) {
-        null = null + this.tokenImage[0];
+        message += this.tokenImage[0];
         break;
-      } 
-      null = null + add_escapes(token.image);
+      }
+
+      message += add_escapes(token.image);
       token = token.next;
-    } 
-    null = null + "\" at line " + this.currentToken.next.beginLine + ", column " + this.currentToken.next.beginColumn;
-    null = null + "." + this.eol;
+    }
+
+    message += "\" at line " + this.currentToken.next.beginLine + ", column " + this.currentToken.next.beginColumn + "." + this.eol;
+
     if (this.expectedTokenSequences.length == 1) {
-      null = null + "Was expecting:" + this.eol + "    ";
+      message += "Was expecting:" + this.eol + "    ";
     } else {
-      null = null + "Was expecting one of:" + this.eol + "    ";
-    } 
-    return null + stringBuffer.toString();
+      message += "Was expecting one of:" + this.eol + "    ";
+    }
+
+    message += stringBuffer.toString();
+    return message;
   }
-  
+
+
   protected String add_escapes(String paramString) {
     StringBuffer stringBuffer = new StringBuffer();
     for (byte b = 0; b < paramString.length(); b++) {
@@ -106,7 +123,7 @@ public class ParseException extends Exception {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\ParseException.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdb\\util\ParseException.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

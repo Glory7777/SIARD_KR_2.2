@@ -7,18 +7,18 @@
  * programming language, or distributed to any person, company, or
  * corporation without the prior written consent of Tibero, Inc.
  */
-package .tibero.jdbc;
+package com.tmax.tibero.jdbc;
 
 import java.sql.Ref;
 import java.sql.SQLException;
 import java.util.Map;
 
-import .tibero.jdbc.err.TbError;
+import com.tmax.tibero.jdbc.err.TbError;
 
 /**
  * TbRef class.
  * 
- * @author ï¿½Ì¿ï¿½ï¿½ï¿½, yjlee@tmax.co.kr
+ * @author ÀÌ¿ëÀç, yjlee@tmax.co.kr
  * @version $Id: TbRef.java 85872 2014-06-17 07:37:57Z sjcho $
  */
 public class TbRef implements Ref {

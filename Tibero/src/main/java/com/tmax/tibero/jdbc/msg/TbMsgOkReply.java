@@ -17,7 +17,7 @@ public class TbMsgOkReply extends TbMsg {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\msg\TbMsgOkReply.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\msg\TbMsgOkReply.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

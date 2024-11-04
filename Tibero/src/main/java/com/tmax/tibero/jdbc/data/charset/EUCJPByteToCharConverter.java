@@ -36,8 +36,8 @@ public class EUCJPByteToCharConverter extends JIS0208ByteToCharConverter {
     int j = 0;
     i = paramInt3;
     char c = '�';
+    byte b;
     for (j = paramInt1;; j += b) {
-      byte b;
       if (j < paramInt2) {
         boolean bool = false;
         int k = paramArrayOfbyte[j] & 0xFF;
@@ -51,7 +51,7 @@ public class EUCJPByteToCharConverter extends JIS0208ByteToCharConverter {
               if (j + 3 > paramInt2)
                 return i; 
               int n = paramArrayOfbyte[j + 2] & 0xFF;
-              b += true;
+              b += 1;
               c = decode0212(m - 128, n - 128);
             } 
           } else {
@@ -99,7 +99,7 @@ public class EUCJPByteToCharConverter extends JIS0208ByteToCharConverter {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\EUCJPByteToCharConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\charset\EUCJPByteToCharConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

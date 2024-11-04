@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.data;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import com.tmax.tibero.jdbc.TbArrayDescriptor;
 import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClob;
@@ -1433,7 +1433,7 @@ public class DataTypeConverter implements Cloneable {
       if (l > 2147483647L)
         throw TbError.newSQLException(-90612, "rp(lob) len=" + l); 
       arrayOfByte = tbBlob.getBytes(1L, (int)l);
-      byte b = (arrayOfByte == null) ? 0 : arrayOfByte.length;
+      byte b = (byte) ((arrayOfByte == null) ? 0 : arrayOfByte.length);
       if (b < 3)
         throw TbError.newSQLException(-90612, "udt_lob_len=" + b); 
       if (arrayOfByte[0] != -124)
@@ -1638,7 +1638,7 @@ public class DataTypeConverter implements Cloneable {
       if (l > 2147483647L)
         throw TbError.newSQLException(-90612, "rp(lob) len=" + l); 
       arrayOfByte = tbBlob.getBytes(1L, (int)l);
-      byte b1 = (arrayOfByte == null) ? 0 : arrayOfByte.length;
+      byte b1 = (byte) ((arrayOfByte == null) ? 0 : arrayOfByte.length);
       if (b1 < 3)
         throw TbError.newSQLException(-90612, "udt_lob_len=" + b1); 
       if (arrayOfByte[0] != -120 || arrayOfByte[1] != 1)
@@ -1798,10 +1798,10 @@ public class DataTypeConverter implements Cloneable {
         case 1:
           return TbNumber.toBigDecimal(arrayOfByte, paramInt1, paramInt2);
         case 24:
-          double_ = new Double(TbNumber.toBinaryDouble(arrayOfByte, paramInt1, paramInt2));
+          double_ = TbNumber.toBinaryDouble(arrayOfByte, paramInt1, paramInt2);
           return new BigDecimal(double_.toString());
         case 23:
-          float_ = new Float(TbNumber.toBinaryFloat(arrayOfByte, paramInt1, paramInt2));
+          float_ = TbNumber.toBinaryFloat(arrayOfByte, paramInt1, paramInt2);
           return new BigDecimal(float_.toString());
       } 
       throw TbError.newSQLException(-90612, DataType.getDBTypeName(paramInt3));
@@ -2391,20 +2391,20 @@ public class DataTypeConverter implements Cloneable {
           case -6:
           case 4:
           case 5:
-            return new Integer(bigDecimal.intValue());
+            return bigDecimal.intValue();
           case -5:
-            return new Long(bigDecimal.longValue());
+            return bigDecimal.longValue();
           case 7:
-            return new Float(bigDecimal.floatValue());
+            return bigDecimal.floatValue();
           case 6:
           case 8:
-            return new Double(bigDecimal.doubleValue());
-        } 
+            return bigDecimal.doubleValue();
+        }
         return bigDecimal;
       case 24:
-        return new Double(toDouble(paramObject, paramInt1, paramInt2, paramInt3));
+        return toDouble(paramObject, paramInt1, paramInt2, paramInt3);
       case 23:
-        return new Float(toFloat(paramObject, paramInt1, paramInt2, paramInt3));
+        return toFloat(paramObject, paramInt1, paramInt2, paramInt3);
       case 5:
         switch (paramInt4) {
           case 91:
@@ -2838,7 +2838,7 @@ public class DataTypeConverter implements Cloneable {
     int i2 = 0xFF & paramArrayOfbyte[paramInt1 + 6];
     int i3 = (i - 100) * 100 + j - 100;
     int i4 = k - 1;
-    boolean bool = false;
+    int bool = 0;
     Calendar calendar = Calendar.getInstance();
     calendar.set(i3, i4, m, n, i1, i2);
     Timestamp timestamp = new Timestamp(calendar.getTime().getTime());
@@ -3165,7 +3165,7 @@ public class DataTypeConverter implements Cloneable {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\DataTypeConverter.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\DataTypeConverter.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

@@ -46,7 +46,7 @@ public class TbPivotMeta {
     int i = 0;
     byte b;
     for (b = 0; b < paramArrayOfTbPivotInfo.length; b++) {
-      this.colIdxMap.put(new Integer((paramArrayOfTbPivotInfo[b]).colIdx), new Integer(b));
+      this.colIdxMap.put((paramArrayOfTbPivotInfo[b]).colIdx, b);
       this.startChunkIdx[b] = i;
       this.curChunkPos[b] = i;
       this.offset[b] = 0;
@@ -59,17 +59,17 @@ public class TbPivotMeta {
       this.metas[b] = new Vector();
       this.newIdxMap[b] = new HashMap<Object, Object>();
       for (byte b1 = 0;; b1++) {
-        TbPivotColMeta tbPivotColMeta;
+        TbPivotColMeta tbPivotColMeta = null;
         String str = getNextOldColName(b);
         if (str == null) {
           Collections.sort(this.metas[b]);
           for (b1 = 0; b1 < this.metas[b].size(); b1++) {
-            tbPivotColMeta = this.metas[b].elementAt(b1);
-            this.newIdxMap[b].put(new Integer(tbPivotColMeta.getOldIdx()), new Integer(b1));
+            tbPivotColMeta = (TbPivotColMeta) this.metas[b].elementAt(b1);
+            this.newIdxMap[b].put(tbPivotColMeta.getOldIdx(), b1);
           } 
           break;
         } 
-        this.metas[b].add(new TbPivotColMeta(b1, (String)tbPivotColMeta, getOldValType(b, b1)));
+        this.metas[b].add(new TbPivotColMeta(b1, tbPivotColMeta, getOldValType(b, b1)));
       } 
       this.curIdx[b] = 0;
     } 
@@ -81,7 +81,7 @@ public class TbPivotMeta {
   }
   
   private int getPivotIdx(int paramInt) throws Exception {
-    Integer integer = (Integer)this.colIdxMap.get(new Integer(paramInt));
+    Integer integer = (Integer)this.colIdxMap.get(paramInt);
     if (integer != null)
       return integer.intValue(); 
     throw new Exception("invalid index for pivot column: " + paramInt);
@@ -90,7 +90,7 @@ public class TbPivotMeta {
   private String getNextOldColName(int paramInt) throws Exception {
     if (this.curChunkPos[paramInt] == this.startChunkIdx[paramInt] + (this.pivotInfo[paramInt]).chunkCnt)
       return null; 
-    byte[] arrayOfByte = this.pivotData.elementAt(this.curChunkPos[paramInt]);
+    byte[] arrayOfByte = (byte[]) this.pivotData.elementAt(this.curChunkPos[paramInt]);
     int i = this.offset[paramInt];
     int j = 0;
     if (arrayOfByte[i] <= 250) {
@@ -126,14 +126,14 @@ public class TbPivotMeta {
     int i = getPivotIdx(paramInt);
     if (this.curIdx[i] == this.metas[i].size())
       return null; 
-    TbPivotColMeta tbPivotColMeta = this.metas[i].elementAt(this.curIdx[i]);
+    TbPivotColMeta tbPivotColMeta = (TbPivotColMeta) this.metas[i].elementAt(this.curIdx[i]);
     this.curIdx[i] = this.curIdx[i] + 1;
     return tbPivotColMeta.getName();
   }
   
   public int getValType(int paramInt1, int paramInt2) throws Exception {
     int i = getPivotIdx(paramInt1);
-    TbPivotColMeta tbPivotColMeta = this.metas[i].elementAt(paramInt2);
+    TbPivotColMeta tbPivotColMeta = (TbPivotColMeta) this.metas[i].elementAt(paramInt2);
     return tbPivotColMeta.getType();
   }
   
@@ -143,7 +143,7 @@ public class TbPivotMeta {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\pivot\TbPivotMeta.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\pivot\TbPivotMeta.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */

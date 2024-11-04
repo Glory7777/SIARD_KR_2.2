@@ -1,6 +1,6 @@
 package com.tmax.tibero.jdbc.data.binder;
 
-import tibero.jdbc.TbArray;
+import com.tmax.tibero.jdbc.TbArray;
 import com.tmax.tibero.jdbc.TbTypeDescriptor;
 import com.tmax.tibero.jdbc.comm.TbStreamDataWriter;
 import com.tmax.tibero.jdbc.data.ParamContainer;
@@ -95,7 +95,7 @@ abstract class UdtNode {
 }
 
 
-/* Location:              C:\Users\Lenovo\Desktop\tibero\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\UdtNode.class
+/* Location:              C:\TmaxData\tibero6\client\lib\jar\tibero6-jdbc.jar!\com\tmax\tibero\jdbc\data\binder\UdtNode.class
  * Java compiler version: 6 (50.0)
  * JD-Core Version:       1.1.3
  */
