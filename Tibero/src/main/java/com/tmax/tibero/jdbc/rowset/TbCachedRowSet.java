@@ -1699,7 +1699,17 @@ public class TbCachedRowSet extends TbRowSet implements RowSetInternal, Serializ
   public void updateNClob(String paramString, Reader paramReader) throws SQLException {
     updateCharacterStream(findColumn(paramString), paramReader);
   }
-  
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public void updateNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {
     updateCharacterStream(findColumn(paramString), paramReader, paramLong);
   }

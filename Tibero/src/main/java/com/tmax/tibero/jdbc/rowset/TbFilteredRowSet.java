@@ -24,7 +24,10 @@ public class TbFilteredRowSet extends TbWebRowSet implements FilteredRowSet {
   private Predicate predicate;
   
   private boolean isOnInsert;
-  
+
+  public TbFilteredRowSet() throws SQLException {
+  }
+
   public boolean absolute(int paramInt) throws SQLException {
     if (this.rowsetType == 1003)
       throw TbError.newSQLException(-590761); 

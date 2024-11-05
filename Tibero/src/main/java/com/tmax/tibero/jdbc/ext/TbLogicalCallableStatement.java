@@ -1222,7 +1222,17 @@ public class TbLogicalCallableStatement extends TbCallableStatement implements T
       throw sQLException;
     } 
   }
-  
+
+  @Override
+  public void closeOnCompletion() throws SQLException {
+
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
   public boolean isWrapperFor(Class<?> paramClass) throws SQLException {
     return paramClass.isInstance(this);
   }
@@ -2110,7 +2120,17 @@ public class TbLogicalCallableStatement extends TbCallableStatement implements T
       throw sQLException;
     } 
   }
-  
+
+  @Override
+  public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public void setNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {
     if (isClosed())
       throw TbError.newSQLException(-90659); 

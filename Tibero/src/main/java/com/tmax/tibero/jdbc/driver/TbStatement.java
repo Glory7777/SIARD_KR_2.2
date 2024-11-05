@@ -910,6 +910,16 @@ public class TbStatement extends com.tmax.tibero.jdbc.TbStatement {
     }
   }
 
+  @Override
+  public void closeOnCompletion() throws SQLException {
+
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
   public boolean isWrapperFor(Class<?> var1) throws SQLException {
     return var1.isInstance(this);
   }

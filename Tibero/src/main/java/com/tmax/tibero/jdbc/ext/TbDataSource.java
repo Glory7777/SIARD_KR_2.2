@@ -15,8 +15,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -112,7 +114,12 @@ public class TbDataSource implements DataSource, Serializable, Referenceable {
   public synchronized int getLoginTimeout() throws SQLException {
     return this.loginTimeout;
   }
-  
+
+  @Override
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    return null;
+  }
+
   public synchronized PrintWriter getLogWriter() throws SQLException {
     return Debug.getLogWriter();
   }

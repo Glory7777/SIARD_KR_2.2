@@ -12,7 +12,10 @@ import javax.sql.rowset.WebRowSet;
 
 public class TbWebRowSet extends TbCachedRowSet implements WebRowSet {
   private static final long serialVersionUID = -173088871660903546L;
-  
+
+  public TbWebRowSet() throws SQLException {
+  }
+
   public void readXml(Reader paramReader) throws SQLException {
     throw TbError.newSQLException(-90201);
   }

@@ -1225,7 +1225,17 @@ public class TbCallableStatementImpl extends TbPreparedStatementImpl implements 
     int i = addNamedParam(paramString);
     setNClobInternal(i, paramReader, 2147483647);
   }
-  
+
+  @Override
+  public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public void setNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {
     if (paramLong > 2147483647L)
       throw TbError.newSQLException(-90656, Long.toString(paramLong)); 

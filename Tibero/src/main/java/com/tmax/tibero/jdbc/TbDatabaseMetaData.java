@@ -310,6 +310,16 @@ public class TbDatabaseMetaData implements DatabaseMetaData {
     return (ResultSet)tbResultSetBase;
   }
 
+  @Override
+  public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public boolean generatedKeyAlwaysReturned() throws SQLException {
+    return false;
+  }
+
   public ResultSet getFunctions(String paramString1, String paramString2, String paramString3) throws SQLException {
     String str1 = "ORDER BY FUNCTION_SCHEM, FUNCTION_NAME\n";
     PreparedStatement preparedStatement = null;

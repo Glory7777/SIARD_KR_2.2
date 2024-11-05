@@ -12,8 +12,8 @@ project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
 
 //project(':JdbcTibero').projectDir = file('../JdbcTibero')
-//project(':Tibero').projectDir = file('../Tibero')
-include 'src:main:Tibero'
+project(':Tibero').projectDir = file('../Tibero')
+//include 'src:main:Tibero'
 //findProject(':src:main:Tibero')?.name = 'Tibero'
 //includeFlat 'Tibero'
 //include '../JdbcTibero/JdbcTibero'

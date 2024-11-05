@@ -6,12 +6,10 @@ import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.err.TbError;
 import com.tmax.tibero.jdbc.util.ParseException;
 import com.tmax.tibero.jdbc.util.TbUrlParser;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.DriverPropertyInfo;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class TbDriver implements Driver {
   protected static Connection defaultConn = null;
@@ -96,7 +94,12 @@ public class TbDriver implements Driver {
   public boolean jdbcCompliant() {
     return true;
   }
-  
+
+  @Override
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    return null;
+  }
+
   static {
     try {
       DriverManager.registerDriver(new TbDriver());

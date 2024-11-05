@@ -19,8 +19,12 @@ public class TbXAConnection extends TbPooledConnection implements XAConnection, 
     if (paramXid == null)
       throw new TbXAException(-5, "Xid is null"); 
     if (getPhysicalConnection().isClosed())
-      throw new TbXAException(-7, "Connection is already closed"); 
-    getPhysicalConnection().getTbXAComm().xaCommit(paramXid, paramBoolean);
+      throw new TbXAException(-7, "Connection is already closed");
+      try {
+          getPhysicalConnection().getTbXAComm().xaCommit(paramXid, paramBoolean);
+      } catch (SQLException e) {
+          throw new RuntimeException(e);
+      }
   }
   
   public void end(Xid paramXid, int paramInt) throws XAException {
@@ -30,7 +34,11 @@ public class TbXAConnection extends TbPooledConnection implements XAConnection, 
       throw new TbXAException(-7, "Connection is already closed"); 
     try {
       getPhysicalConnection().setTxnMode(0);
-      getPhysicalConnection().getTbXAComm().xaEnd(paramXid, paramInt);
+        try {
+            getPhysicalConnection().getTbXAComm().xaEnd(paramXid, paramInt);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     } finally {
       try {
         restoreAutoCommit();
@@ -73,16 +81,24 @@ public class TbXAConnection extends TbPooledConnection implements XAConnection, 
     if (paramXid == null)
       throw new TbXAException(-5, "Xid is null"); 
     if (getPhysicalConnection().isClosed())
-      throw new TbXAException(-7, "Connection is already closed"); 
-    return getPhysicalConnection().getTbXAComm().xaPrepare(paramXid);
+      throw new TbXAException(-7, "Connection is already closed");
+      try {
+          return getPhysicalConnection().getTbXAComm().xaPrepare(paramXid);
+      } catch (SQLException e) {
+          throw new RuntimeException(e);
+      }
   }
   
   public Xid[] recover(int paramInt) throws XAException {
     if ((paramInt & 0x1800000) != paramInt)
       throw new TbXAException(-5, "Invalid flag: " + paramInt); 
     if (getPhysicalConnection().isClosed())
-      throw new TbXAException(-7, "Connection is already closed"); 
-    return getPhysicalConnection().getTbXAComm().xaRecover(paramInt);
+      throw new TbXAException(-7, "Connection is already closed");
+      try {
+          return getPhysicalConnection().getTbXAComm().xaRecover(paramInt);
+      } catch (SQLException e) {
+          throw new RuntimeException(e);
+      }
   }
   
   public final void restoreAutoCommit() throws SQLException {
@@ -93,8 +109,12 @@ public class TbXAConnection extends TbPooledConnection implements XAConnection, 
     if (paramXid == null)
       throw new TbXAException(-5, "Xid is null"); 
     if (getPhysicalConnection().isClosed())
-      throw new TbXAException(-7, "Connection is already closed"); 
-    getPhysicalConnection().getTbXAComm().xaRollback(paramXid);
+      throw new TbXAException(-7, "Connection is already closed");
+      try {
+          getPhysicalConnection().getTbXAComm().xaRollback(paramXid);
+      } catch (SQLException e) {
+          throw new RuntimeException(e);
+      }
   }
   
   private final void saveAutoCommit() throws SQLException {

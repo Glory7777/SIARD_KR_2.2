@@ -850,7 +850,11 @@ public class TbUrlParserTokenManager implements TbUrlParserConstants {
     token.endColumn = this.input_stream.getEndColumn();
     return token;
   }
-  
+
+    public Token getNextToken() {
+      return null;
+    }
+
 //  public Token getNextToken() {
     // Byte code:
     //   0: aconst_null

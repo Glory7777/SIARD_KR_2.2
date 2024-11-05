@@ -193,7 +193,7 @@ public class TbSQLXML implements SQLData, SQLXML {
     } 
   }
   
-  public Source getSource(Class<?> paramClass) throws SQLException {
+  public Source getSource1(Class<?> paramClass) throws SQLException {
     checkXMLClosed();
     checkReadStatus();
     return (paramClass == null) ? getSourceInternal(StreamSource.class) : getSourceInternal(paramClass);
@@ -293,8 +293,8 @@ public class TbSQLXML implements SQLData, SQLXML {
     this.isUsed = true;
     return new OutputStreamWriter(this.outputStream);
   }
-  
-  public Result setResult(Class<?> paramClass) throws SQLException {
+
+  public Result setResult1(Class<?> paramClass) throws SQLException {
     checkXMLClosed();
     checkWriteStatus();
     return (paramClass == null) ? setResultInternal(StreamResult.class) : setResultInternal(paramClass);
@@ -342,7 +342,17 @@ public class TbSQLXML implements SQLData, SQLXML {
     this.docValue = document;
     this.isUsed = true;
   }
-  
+
+  @Override
+  public <T extends Source> T getSource(Class<T> sourceClass) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T extends Result> T setResult(Class<T> resultClass) throws SQLException {
+    return null;
+  }
+
   protected TbSQLXML() {}
   
   public String getSQLTypeName() throws SQLException {

@@ -81,7 +81,7 @@ public class TbArrayDataResultSet implements TbResultSet {
       throw TbError.newSQLException(-90646); 
     this.currentIndex++;
     if (this.currentIndex <= this.lastIndex) {
-      this.index = this.typeConverter.castFromObject(new Integer(this.currentIndex + 1), 1);
+      this.index = this.typeConverter.castFromObject(this.currentIndex + 1, 1);
       if (this.data[this.currentIndex] == null) {
         this.isNullData = true;
       } else if (this.fromBytes) {
@@ -1085,7 +1085,17 @@ public class TbArrayDataResultSet implements TbResultSet {
   public void updateNClob(String paramString, Reader paramReader) throws SQLException {
     throw TbError.newSQLException(-90621);
   }
-  
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public void addWarning(SQLWarning paramSQLWarning) {}
   
   public void buildRowTable(int paramInt, byte[] paramArrayOfbyte) throws SQLException {

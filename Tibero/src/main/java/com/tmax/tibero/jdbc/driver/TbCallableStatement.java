@@ -509,6 +509,16 @@ public class TbCallableStatement extends com.tmax.tibero.jdbc.TbCallableStatemen
     return this.impl.isPoolable();
   }
 
+  @Override
+  public void closeOnCompletion() throws SQLException {
+
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
   public boolean isWrapperFor(Class<?> paramClass) throws SQLException {
     return paramClass.isInstance(this);
   }
@@ -835,6 +845,16 @@ public class TbCallableStatement extends com.tmax.tibero.jdbc.TbCallableStatemen
 
   public void setNClob(String paramString, Reader paramReader) throws SQLException {
     this.impl.setNClob(paramString, paramReader);
+  }
+
+  @Override
+  public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+    return null;
   }
 
   public void setNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {

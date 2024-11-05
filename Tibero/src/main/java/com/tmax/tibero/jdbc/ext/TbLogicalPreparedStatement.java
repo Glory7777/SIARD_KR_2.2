@@ -493,7 +493,17 @@ public class TbLogicalPreparedStatement extends TbPreparedStatement implements T
       throw sQLException;
     } 
   }
-  
+
+  @Override
+  public void closeOnCompletion() throws SQLException {
+
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
   public boolean isWrapperFor(Class<?> paramClass) throws SQLException {
     return paramClass.isInstance(this);
   }

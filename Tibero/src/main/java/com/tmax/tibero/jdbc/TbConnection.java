@@ -51,6 +51,14 @@ public abstract class TbConnection implements Connection {
   public abstract PreparedStatement prepareStatement(String paramString, boolean paramBoolean) throws SQLException;
   
   public abstract void resetSession() throws SQLException;
+
+  public abstract TbSQLInfo2 getLastExecutedSqlinfo2() throws SQLException;
+
+  public abstract int getTxnMode() throws SQLException;
+
+  public abstract void setTxnMode(int paramInt);
+
+  public abstract void reuse();
 }
 
 

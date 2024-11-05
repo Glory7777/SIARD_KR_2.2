@@ -281,7 +281,12 @@ public class TbCommType4 implements TbComm, TbClobAccessor, TbBlobAccessor {
   public void close() throws SQLException {
     reset();
   }
-  
+
+  @Override
+  public void closeCursor(com.tmax.tibero.jdbc.driver.TbResultSet paramTbResultSet, int paramInt) throws SQLException {
+
+  }
+
   public boolean close(TbLob paramTbLob) throws SQLException {
     return lobClose(paramTbLob);
   }

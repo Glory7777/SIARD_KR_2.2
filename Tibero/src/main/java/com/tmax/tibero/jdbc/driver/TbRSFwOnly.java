@@ -145,7 +145,17 @@ public class TbRSFwOnly extends TbResultSetBase {
   public boolean previous() throws SQLException {
     throw TbError.newSQLException(-90620);
   }
-  
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public boolean relative(int paramInt) throws SQLException {
     throw TbError.newSQLException(-90620);
   }

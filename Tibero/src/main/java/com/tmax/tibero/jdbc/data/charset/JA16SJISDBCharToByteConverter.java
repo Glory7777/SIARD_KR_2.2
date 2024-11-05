@@ -278,7 +278,6 @@ public class JA16SJISDBCharToByteConverter extends CharToByteDoubleByte {
       for (byte b = 0; b < i2; b++)
         paramArrayOfbyte[j++] = arrayOfByte1[b];
       continue;
-      i += k;
     }
     return j - paramInt3;
   }

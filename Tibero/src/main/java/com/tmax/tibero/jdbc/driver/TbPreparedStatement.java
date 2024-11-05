@@ -227,7 +227,17 @@ public class TbPreparedStatement extends com.tmax.tibero.jdbc.TbPreparedStatemen
   public boolean isPoolable() throws SQLException {
     return this.impl.isPoolable();
   }
-  
+
+  @Override
+  public void closeOnCompletion() throws SQLException {
+
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+    return false;
+  }
+
   public boolean isWrapperFor(Class<?> paramClass) throws SQLException {
     return paramClass.isInstance(this);
   }

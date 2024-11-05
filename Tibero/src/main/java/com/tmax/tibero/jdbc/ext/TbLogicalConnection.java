@@ -30,6 +30,7 @@ import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 import javax.sql.StatementEvent;
 import javax.sql.StatementEventListener;
 import javax.transaction.xa.XAException;
@@ -193,7 +194,32 @@ public class TbLogicalConnection extends TbConnection {
   public Struct createStruct(String paramString, Object[] paramArrayOfObject) throws SQLException {
     return this.physicalConn.createStruct(paramString, paramArrayOfObject);
   }
-  
+
+  @Override
+  public void setSchema(String schema) throws SQLException {
+
+  }
+
+  @Override
+  public String getSchema() throws SQLException {
+    return "";
+  }
+
+  @Override
+  public void abort(Executor executor) throws SQLException {
+
+  }
+
+  @Override
+  public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+
+  }
+
+  @Override
+  public int getNetworkTimeout() throws SQLException {
+    return 0;
+  }
+
   public void end(Xid paramXid, int paramInt) throws XAException {
     try {
       if (!isPhysConnClosed() && isUseXA() && this.physicalConn instanceof XAResource)
@@ -270,13 +296,8 @@ public class TbLogicalConnection extends TbConnection {
   
   public TbSQLInfo2 getLastExecutedSqlinfo2() throws SQLException {
     if (isClosed())
-      throw TbError.newSQLException(-90603); 
-    try {
-      return this.physicalConn.getLastExecutedSqlinfo2();
-    } catch (SQLException sQLException) {
-      this.eventHandler.notifyExceptionEvent(sQLException);
-      throw sQLException;
-    } 
+      throw TbError.newSQLException(-90603);
+    return this.physicalConn.getLastExecutedSqlinfo2();
   }
   
   public DatabaseMetaData getMetaData() throws SQLException {
@@ -652,7 +673,12 @@ public class TbLogicalConnection extends TbConnection {
   public void setTxnMode(int paramInt) {
     this.physicalConn.setTxnMode(paramInt);
   }
-  
+
+  @Override
+  public void reuse() {
+
+  }
+
   public void setTypeMap(Map paramMap) throws SQLException {
     if (isClosed())
       throw TbError.newSQLException(-90603); 

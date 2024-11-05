@@ -173,7 +173,17 @@ public class TbRSScrollable extends TbResultSetBase {
     } 
     return isValidRowIndex(this.currentRowIndex);
   }
-  
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    return null;
+  }
+
   protected void recover() throws SQLException {
     setFOECode(0);
     if (this.stmt == null)

@@ -973,7 +973,17 @@ public class TbJdbcRowSet extends TbRowSet implements JdbcRowSet, Joinable {
   public void updateNClob(String paramString, Reader paramReader) throws SQLException {
     this.rs.updateNClob(paramString, paramReader);
   }
-  
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    return null;
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    return null;
+  }
+
   public void updateNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {
     this.rs.updateNClob(paramString, paramReader, paramLong);
   }

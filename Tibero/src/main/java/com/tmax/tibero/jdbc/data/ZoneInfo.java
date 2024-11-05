@@ -12,1173 +12,1173 @@ public class ZoneInfo {
   
   public static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ABIDJAN = new ZoneInfo(new Integer(0), "Africa/Abidjan");
+  public static final ZoneInfo TZ_ID_AFRICA_ABIDJAN = new ZoneInfo(0, "Africa/Abidjan");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ACCRA = new ZoneInfo(new Integer(1), "Africa/Accra");
+  public static final ZoneInfo TZ_ID_AFRICA_ACCRA = new ZoneInfo(1, "Africa/Accra");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ADDIS_ABABA = new ZoneInfo(new Integer(2), "Africa/Addis_Ababa");
+  public static final ZoneInfo TZ_ID_AFRICA_ADDIS_ABABA = new ZoneInfo(2, "Africa/Addis_Ababa");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ALGIERS = new ZoneInfo(new Integer(3), "Africa/Algiers");
+  public static final ZoneInfo TZ_ID_AFRICA_ALGIERS = new ZoneInfo(3, "Africa/Algiers");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ASMARA = new ZoneInfo(new Integer(4), "Africa/Asmara");
+  public static final ZoneInfo TZ_ID_AFRICA_ASMARA = new ZoneInfo(4, "Africa/Asmara");
   
-  public static final ZoneInfo TZ_ID_AFRICA_ASMERA = new ZoneInfo(new Integer(5), "Africa/Asmera");
+  public static final ZoneInfo TZ_ID_AFRICA_ASMERA = new ZoneInfo(5, "Africa/Asmera");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BAMAKO = new ZoneInfo(new Integer(6), "Africa/Bamako");
+  public static final ZoneInfo TZ_ID_AFRICA_BAMAKO = new ZoneInfo(6, "Africa/Bamako");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BANGUI = new ZoneInfo(new Integer(7), "Africa/Bangui");
+  public static final ZoneInfo TZ_ID_AFRICA_BANGUI = new ZoneInfo(7, "Africa/Bangui");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BANJUL = new ZoneInfo(new Integer(8), "Africa/Banjul");
+  public static final ZoneInfo TZ_ID_AFRICA_BANJUL = new ZoneInfo(8, "Africa/Banjul");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BISSAU = new ZoneInfo(new Integer(9), "Africa/Bissau");
+  public static final ZoneInfo TZ_ID_AFRICA_BISSAU = new ZoneInfo(9, "Africa/Bissau");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BLANTYRE = new ZoneInfo(new Integer(10), "Africa/Blantyre");
+  public static final ZoneInfo TZ_ID_AFRICA_BLANTYRE = new ZoneInfo(10, "Africa/Blantyre");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BRAZZAVILLE = new ZoneInfo(new Integer(11), "Africa/Brazzaville");
+  public static final ZoneInfo TZ_ID_AFRICA_BRAZZAVILLE = new ZoneInfo(11, "Africa/Brazzaville");
   
-  public static final ZoneInfo TZ_ID_AFRICA_BUJUMBURA = new ZoneInfo(new Integer(12), "Africa/Bujumbura");
+  public static final ZoneInfo TZ_ID_AFRICA_BUJUMBURA = new ZoneInfo(12, "Africa/Bujumbura");
   
-  public static final ZoneInfo TZ_ID_AFRICA_CAIRO = new ZoneInfo(new Integer(13), "Africa/Cairo");
+  public static final ZoneInfo TZ_ID_AFRICA_CAIRO = new ZoneInfo(13, "Africa/Cairo");
   
-  public static final ZoneInfo TZ_ID_AFRICA_CASABLANCA = new ZoneInfo(new Integer(14), "Africa/Casablanca");
+  public static final ZoneInfo TZ_ID_AFRICA_CASABLANCA = new ZoneInfo(14, "Africa/Casablanca");
   
-  public static final ZoneInfo TZ_ID_AFRICA_CEUTA = new ZoneInfo(new Integer(15), "Africa/Ceuta");
+  public static final ZoneInfo TZ_ID_AFRICA_CEUTA = new ZoneInfo(15, "Africa/Ceuta");
   
-  public static final ZoneInfo TZ_ID_AFRICA_CONAKRY = new ZoneInfo(new Integer(16), "Africa/Conakry");
+  public static final ZoneInfo TZ_ID_AFRICA_CONAKRY = new ZoneInfo(16, "Africa/Conakry");
   
-  public static final ZoneInfo TZ_ID_AFRICA_DAKAR = new ZoneInfo(new Integer(17), "Africa/Dakar");
+  public static final ZoneInfo TZ_ID_AFRICA_DAKAR = new ZoneInfo(17, "Africa/Dakar");
   
-  public static final ZoneInfo TZ_ID_AFRICA_DAR_ES_SALAAM = new ZoneInfo(new Integer(18), "Africa/Dar_es_Salaam");
+  public static final ZoneInfo TZ_ID_AFRICA_DAR_ES_SALAAM = new ZoneInfo(18, "Africa/Dar_es_Salaam");
   
-  public static final ZoneInfo TZ_ID_AFRICA_DJIBOUTI = new ZoneInfo(new Integer(19), "Africa/Djibouti");
+  public static final ZoneInfo TZ_ID_AFRICA_DJIBOUTI = new ZoneInfo(19, "Africa/Djibouti");
   
-  public static final ZoneInfo TZ_ID_AFRICA_DOUALA = new ZoneInfo(new Integer(20), "Africa/Douala");
+  public static final ZoneInfo TZ_ID_AFRICA_DOUALA = new ZoneInfo(20, "Africa/Douala");
   
-  public static final ZoneInfo TZ_ID_AFRICA_EL_AAIUN = new ZoneInfo(new Integer(21), "Africa/El_Aaiun");
+  public static final ZoneInfo TZ_ID_AFRICA_EL_AAIUN = new ZoneInfo(21, "Africa/El_Aaiun");
   
-  public static final ZoneInfo TZ_ID_AFRICA_FREETOWN = new ZoneInfo(new Integer(22), "Africa/Freetown");
+  public static final ZoneInfo TZ_ID_AFRICA_FREETOWN = new ZoneInfo(22, "Africa/Freetown");
   
-  public static final ZoneInfo TZ_ID_AFRICA_GABORONE = new ZoneInfo(new Integer(23), "Africa/Gaborone");
+  public static final ZoneInfo TZ_ID_AFRICA_GABORONE = new ZoneInfo(23, "Africa/Gaborone");
   
-  public static final ZoneInfo TZ_ID_AFRICA_HARARE = new ZoneInfo(new Integer(24), "Africa/Harare");
+  public static final ZoneInfo TZ_ID_AFRICA_HARARE = new ZoneInfo(24, "Africa/Harare");
   
-  public static final ZoneInfo TZ_ID_AFRICA_JOHANNESBURG = new ZoneInfo(new Integer(25), "Africa/Johannesburg");
+  public static final ZoneInfo TZ_ID_AFRICA_JOHANNESBURG = new ZoneInfo(25, "Africa/Johannesburg");
   
-  public static final ZoneInfo TZ_ID_AFRICA_JUBA = new ZoneInfo(new Integer(26), "Africa/Juba");
+  public static final ZoneInfo TZ_ID_AFRICA_JUBA = new ZoneInfo(26, "Africa/Juba");
   
-  public static final ZoneInfo TZ_ID_AFRICA_KAMPALA = new ZoneInfo(new Integer(27), "Africa/Kampala");
+  public static final ZoneInfo TZ_ID_AFRICA_KAMPALA = new ZoneInfo(27, "Africa/Kampala");
   
-  public static final ZoneInfo TZ_ID_AFRICA_KHARTOUM = new ZoneInfo(new Integer(28), "Africa/Khartoum");
+  public static final ZoneInfo TZ_ID_AFRICA_KHARTOUM = new ZoneInfo(28, "Africa/Khartoum");
   
-  public static final ZoneInfo TZ_ID_AFRICA_KIGALI = new ZoneInfo(new Integer(29), "Africa/Kigali");
+  public static final ZoneInfo TZ_ID_AFRICA_KIGALI = new ZoneInfo(29, "Africa/Kigali");
   
-  public static final ZoneInfo TZ_ID_AFRICA_KINSHASA = new ZoneInfo(new Integer(30), "Africa/Kinshasa");
+  public static final ZoneInfo TZ_ID_AFRICA_KINSHASA = new ZoneInfo(30, "Africa/Kinshasa");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LAGOS = new ZoneInfo(new Integer(31), "Africa/Lagos");
+  public static final ZoneInfo TZ_ID_AFRICA_LAGOS = new ZoneInfo(31, "Africa/Lagos");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LIBREVILLE = new ZoneInfo(new Integer(32), "Africa/Libreville");
+  public static final ZoneInfo TZ_ID_AFRICA_LIBREVILLE = new ZoneInfo(32, "Africa/Libreville");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LOME = new ZoneInfo(new Integer(33), "Africa/Lome");
+  public static final ZoneInfo TZ_ID_AFRICA_LOME = new ZoneInfo(33, "Africa/Lome");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LUANDA = new ZoneInfo(new Integer(34), "Africa/Luanda");
+  public static final ZoneInfo TZ_ID_AFRICA_LUANDA = new ZoneInfo(34, "Africa/Luanda");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LUBUMBASHI = new ZoneInfo(new Integer(35), "Africa/Lubumbashi");
+  public static final ZoneInfo TZ_ID_AFRICA_LUBUMBASHI = new ZoneInfo(35, "Africa/Lubumbashi");
   
-  public static final ZoneInfo TZ_ID_AFRICA_LUSAKA = new ZoneInfo(new Integer(36), "Africa/Lusaka");
+  public static final ZoneInfo TZ_ID_AFRICA_LUSAKA = new ZoneInfo(36, "Africa/Lusaka");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MALABO = new ZoneInfo(new Integer(37), "Africa/Malabo");
+  public static final ZoneInfo TZ_ID_AFRICA_MALABO = new ZoneInfo(37, "Africa/Malabo");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MAPUTO = new ZoneInfo(new Integer(38), "Africa/Maputo");
+  public static final ZoneInfo TZ_ID_AFRICA_MAPUTO = new ZoneInfo(38, "Africa/Maputo");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MASERU = new ZoneInfo(new Integer(39), "Africa/Maseru");
+  public static final ZoneInfo TZ_ID_AFRICA_MASERU = new ZoneInfo(39, "Africa/Maseru");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MBABANE = new ZoneInfo(new Integer(40), "Africa/Mbabane");
+  public static final ZoneInfo TZ_ID_AFRICA_MBABANE = new ZoneInfo(40, "Africa/Mbabane");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MOGADISHU = new ZoneInfo(new Integer(41), "Africa/Mogadishu");
+  public static final ZoneInfo TZ_ID_AFRICA_MOGADISHU = new ZoneInfo(41, "Africa/Mogadishu");
   
-  public static final ZoneInfo TZ_ID_AFRICA_MONROVIA = new ZoneInfo(new Integer(42), "Africa/Monrovia");
+  public static final ZoneInfo TZ_ID_AFRICA_MONROVIA = new ZoneInfo(42, "Africa/Monrovia");
   
-  public static final ZoneInfo TZ_ID_AFRICA_NAIROBI = new ZoneInfo(new Integer(43), "Africa/Nairobi");
+  public static final ZoneInfo TZ_ID_AFRICA_NAIROBI = new ZoneInfo(43, "Africa/Nairobi");
   
-  public static final ZoneInfo TZ_ID_AFRICA_NDJAMENA = new ZoneInfo(new Integer(44), "Africa/Ndjamena");
+  public static final ZoneInfo TZ_ID_AFRICA_NDJAMENA = new ZoneInfo(44, "Africa/Ndjamena");
   
-  public static final ZoneInfo TZ_ID_AFRICA_NIAMEY = new ZoneInfo(new Integer(45), "Africa/Niamey");
+  public static final ZoneInfo TZ_ID_AFRICA_NIAMEY = new ZoneInfo(45, "Africa/Niamey");
   
-  public static final ZoneInfo TZ_ID_AFRICA_NOUAKCHOTT = new ZoneInfo(new Integer(46), "Africa/Nouakchott");
+  public static final ZoneInfo TZ_ID_AFRICA_NOUAKCHOTT = new ZoneInfo(46, "Africa/Nouakchott");
   
-  public static final ZoneInfo TZ_ID_AFRICA_OUAGADOUGOU = new ZoneInfo(new Integer(47), "Africa/Ouagadougou");
+  public static final ZoneInfo TZ_ID_AFRICA_OUAGADOUGOU = new ZoneInfo(47, "Africa/Ouagadougou");
   
-  public static final ZoneInfo TZ_ID_AFRICA_PORTO_NOVO = new ZoneInfo(new Integer(48), "Africa/Porto-Novo");
+  public static final ZoneInfo TZ_ID_AFRICA_PORTO_NOVO = new ZoneInfo(48, "Africa/Porto-Novo");
   
-  public static final ZoneInfo TZ_ID_AFRICA_SAO_TOME = new ZoneInfo(new Integer(49), "Africa/Sao_Tome");
+  public static final ZoneInfo TZ_ID_AFRICA_SAO_TOME = new ZoneInfo(49, "Africa/Sao_Tome");
   
-  public static final ZoneInfo TZ_ID_AFRICA_TIMBUKTU = new ZoneInfo(new Integer(50), "Africa/Timbuktu");
+  public static final ZoneInfo TZ_ID_AFRICA_TIMBUKTU = new ZoneInfo(50, "Africa/Timbuktu");
   
-  public static final ZoneInfo TZ_ID_AFRICA_TRIPOLI = new ZoneInfo(new Integer(51), "Africa/Tripoli");
+  public static final ZoneInfo TZ_ID_AFRICA_TRIPOLI = new ZoneInfo(51, "Africa/Tripoli");
   
-  public static final ZoneInfo TZ_ID_AFRICA_TUNIS = new ZoneInfo(new Integer(52), "Africa/Tunis");
+  public static final ZoneInfo TZ_ID_AFRICA_TUNIS = new ZoneInfo(52, "Africa/Tunis");
   
-  public static final ZoneInfo TZ_ID_AFRICA_WINDHOEK = new ZoneInfo(new Integer(53), "Africa/Windhoek");
+  public static final ZoneInfo TZ_ID_AFRICA_WINDHOEK = new ZoneInfo(53, "Africa/Windhoek");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ADAK = new ZoneInfo(new Integer(54), "America/Adak");
+  public static final ZoneInfo TZ_ID_AMERICA_ADAK = new ZoneInfo(54, "America/Adak");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ANCHORAGE = new ZoneInfo(new Integer(55), "America/Anchorage");
+  public static final ZoneInfo TZ_ID_AMERICA_ANCHORAGE = new ZoneInfo(55, "America/Anchorage");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ANGUILLA = new ZoneInfo(new Integer(56), "America/Anguilla");
+  public static final ZoneInfo TZ_ID_AMERICA_ANGUILLA = new ZoneInfo(56, "America/Anguilla");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ANTIGUA = new ZoneInfo(new Integer(57), "America/Antigua");
+  public static final ZoneInfo TZ_ID_AMERICA_ANTIGUA = new ZoneInfo(57, "America/Antigua");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARAGUAINA = new ZoneInfo(new Integer(58), "America/Araguaina");
+  public static final ZoneInfo TZ_ID_AMERICA_ARAGUAINA = new ZoneInfo(58, "America/Araguaina");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_BUENOS_AIRES = new ZoneInfo(new Integer(59), "America/Argentina/Buenos_Aires");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_BUENOS_AIRES = new ZoneInfo(59, "America/Argentina/Buenos_Aires");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_CATAMARCA = new ZoneInfo(new Integer(60), "America/Argentina/Catamarca");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_CATAMARCA = new ZoneInfo(60, "America/Argentina/Catamarca");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_COMODRIVADAVIA = new ZoneInfo(new Integer(61), "America/Argentina/ComodRivadavia");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_COMODRIVADAVIA = new ZoneInfo(61, "America/Argentina/ComodRivadavia");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_CORDOBA = new ZoneInfo(new Integer(62), "America/Argentina/Cordoba");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_CORDOBA = new ZoneInfo(62, "America/Argentina/Cordoba");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_JUJUY = new ZoneInfo(new Integer(63), "America/Argentina/Jujuy");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_JUJUY = new ZoneInfo(63, "America/Argentina/Jujuy");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_LA_RIOJA = new ZoneInfo(new Integer(64), "America/Argentina/La_Rioja");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_LA_RIOJA = new ZoneInfo(64, "America/Argentina/La_Rioja");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_MENDOZA = new ZoneInfo(new Integer(65), "America/Argentina/Mendoza");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_MENDOZA = new ZoneInfo(65, "America/Argentina/Mendoza");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_RIO_GALLEGOS = new ZoneInfo(new Integer(66), "America/Argentina/Rio_Gallegos");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_RIO_GALLEGOS = new ZoneInfo(66, "America/Argentina/Rio_Gallegos");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SALTA = new ZoneInfo(new Integer(67), "America/Argentina/Salta");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SALTA = new ZoneInfo(67, "America/Argentina/Salta");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SAN_JUAN = new ZoneInfo(new Integer(68), "America/Argentina/San_Juan");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SAN_JUAN = new ZoneInfo(68, "America/Argentina/San_Juan");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SAN_LUIS = new ZoneInfo(new Integer(69), "America/Argentina/San_Luis");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_SAN_LUIS = new ZoneInfo(69, "America/Argentina/San_Luis");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_TUCUMAN = new ZoneInfo(new Integer(70), "America/Argentina/Tucuman");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_TUCUMAN = new ZoneInfo(70, "America/Argentina/Tucuman");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_USHUAIA = new ZoneInfo(new Integer(71), "America/Argentina/Ushuaia");
+  public static final ZoneInfo TZ_ID_AMERICA_ARGENTINA_USHUAIA = new ZoneInfo(71, "America/Argentina/Ushuaia");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ARUBA = new ZoneInfo(new Integer(72), "America/Aruba");
+  public static final ZoneInfo TZ_ID_AMERICA_ARUBA = new ZoneInfo(72, "America/Aruba");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ASUNCION = new ZoneInfo(new Integer(73), "America/Asuncion");
+  public static final ZoneInfo TZ_ID_AMERICA_ASUNCION = new ZoneInfo(73, "America/Asuncion");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ATIKOKAN = new ZoneInfo(new Integer(74), "America/Atikokan");
+  public static final ZoneInfo TZ_ID_AMERICA_ATIKOKAN = new ZoneInfo(74, "America/Atikokan");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ATKA = new ZoneInfo(new Integer(75), "America/Atka");
+  public static final ZoneInfo TZ_ID_AMERICA_ATKA = new ZoneInfo(75, "America/Atka");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BAHIA = new ZoneInfo(new Integer(76), "America/Bahia");
+  public static final ZoneInfo TZ_ID_AMERICA_BAHIA = new ZoneInfo(76, "America/Bahia");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BAHIA_BANDERAS = new ZoneInfo(new Integer(77), "America/Bahia_Banderas");
+  public static final ZoneInfo TZ_ID_AMERICA_BAHIA_BANDERAS = new ZoneInfo(77, "America/Bahia_Banderas");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BARBADOS = new ZoneInfo(new Integer(78), "America/Barbados");
+  public static final ZoneInfo TZ_ID_AMERICA_BARBADOS = new ZoneInfo(78, "America/Barbados");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BELEM = new ZoneInfo(new Integer(79), "America/Belem");
+  public static final ZoneInfo TZ_ID_AMERICA_BELEM = new ZoneInfo(79, "America/Belem");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BELIZE = new ZoneInfo(new Integer(80), "America/Belize");
+  public static final ZoneInfo TZ_ID_AMERICA_BELIZE = new ZoneInfo(80, "America/Belize");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BLANC_SABLON = new ZoneInfo(new Integer(81), "America/Blanc-Sablon");
+  public static final ZoneInfo TZ_ID_AMERICA_BLANC_SABLON = new ZoneInfo(81, "America/Blanc-Sablon");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BOA_VISTA = new ZoneInfo(new Integer(82), "America/Boa_Vista");
+  public static final ZoneInfo TZ_ID_AMERICA_BOA_VISTA = new ZoneInfo(82, "America/Boa_Vista");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BOGOTA = new ZoneInfo(new Integer(83), "America/Bogota");
+  public static final ZoneInfo TZ_ID_AMERICA_BOGOTA = new ZoneInfo(83, "America/Bogota");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BOISE = new ZoneInfo(new Integer(84), "America/Boise");
+  public static final ZoneInfo TZ_ID_AMERICA_BOISE = new ZoneInfo(84, "America/Boise");
   
-  public static final ZoneInfo TZ_ID_AMERICA_BUENOS_AIRES = new ZoneInfo(new Integer(85), "America/Buenos_Aires");
+  public static final ZoneInfo TZ_ID_AMERICA_BUENOS_AIRES = new ZoneInfo(85, "America/Buenos_Aires");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CAMBRIDGE_BAY = new ZoneInfo(new Integer(86), "America/Cambridge_Bay");
+  public static final ZoneInfo TZ_ID_AMERICA_CAMBRIDGE_BAY = new ZoneInfo(86, "America/Cambridge_Bay");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CAMPO_GRANDE = new ZoneInfo(new Integer(87), "America/Campo_Grande");
+  public static final ZoneInfo TZ_ID_AMERICA_CAMPO_GRANDE = new ZoneInfo(87, "America/Campo_Grande");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CANCUN = new ZoneInfo(new Integer(88), "America/Cancun");
+  public static final ZoneInfo TZ_ID_AMERICA_CANCUN = new ZoneInfo(88, "America/Cancun");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CARACAS = new ZoneInfo(new Integer(89), "America/Caracas");
+  public static final ZoneInfo TZ_ID_AMERICA_CARACAS = new ZoneInfo(89, "America/Caracas");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CATAMARCA = new ZoneInfo(new Integer(90), "America/Catamarca");
+  public static final ZoneInfo TZ_ID_AMERICA_CATAMARCA = new ZoneInfo(90, "America/Catamarca");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CAYENNE = new ZoneInfo(new Integer(91), "America/Cayenne");
+  public static final ZoneInfo TZ_ID_AMERICA_CAYENNE = new ZoneInfo(91, "America/Cayenne");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CAYMAN = new ZoneInfo(new Integer(92), "America/Cayman");
+  public static final ZoneInfo TZ_ID_AMERICA_CAYMAN = new ZoneInfo(92, "America/Cayman");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CHICAGO = new ZoneInfo(new Integer(93), "America/Chicago");
+  public static final ZoneInfo TZ_ID_AMERICA_CHICAGO = new ZoneInfo(93, "America/Chicago");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CHIHUAHUA = new ZoneInfo(new Integer(94), "America/Chihuahua");
+  public static final ZoneInfo TZ_ID_AMERICA_CHIHUAHUA = new ZoneInfo(94, "America/Chihuahua");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CORAL_HARBOUR = new ZoneInfo(new Integer(95), "America/Coral_Harbour");
+  public static final ZoneInfo TZ_ID_AMERICA_CORAL_HARBOUR = new ZoneInfo(95, "America/Coral_Harbour");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CORDOBA = new ZoneInfo(new Integer(96), "America/Cordoba");
+  public static final ZoneInfo TZ_ID_AMERICA_CORDOBA = new ZoneInfo(96, "America/Cordoba");
   
-  public static final ZoneInfo TZ_ID_AMERICA_COSTA_RICA = new ZoneInfo(new Integer(97), "America/Costa_Rica");
+  public static final ZoneInfo TZ_ID_AMERICA_COSTA_RICA = new ZoneInfo(97, "America/Costa_Rica");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CUIABA = new ZoneInfo(new Integer(98), "America/Cuiaba");
+  public static final ZoneInfo TZ_ID_AMERICA_CUIABA = new ZoneInfo(98, "America/Cuiaba");
   
-  public static final ZoneInfo TZ_ID_AMERICA_CURACAO = new ZoneInfo(new Integer(99), "America/Curacao");
+  public static final ZoneInfo TZ_ID_AMERICA_CURACAO = new ZoneInfo(99, "America/Curacao");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DANMARKSHAVN = new ZoneInfo(new Integer(100), "America/Danmarkshavn");
+  public static final ZoneInfo TZ_ID_AMERICA_DANMARKSHAVN = new ZoneInfo(100, "America/Danmarkshavn");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DAWSON = new ZoneInfo(new Integer(101), "America/Dawson");
+  public static final ZoneInfo TZ_ID_AMERICA_DAWSON = new ZoneInfo(101, "America/Dawson");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DAWSON_CREEK = new ZoneInfo(new Integer(102), "America/Dawson_Creek");
+  public static final ZoneInfo TZ_ID_AMERICA_DAWSON_CREEK = new ZoneInfo(102, "America/Dawson_Creek");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DENVER = new ZoneInfo(new Integer(103), "America/Denver");
+  public static final ZoneInfo TZ_ID_AMERICA_DENVER = new ZoneInfo(103, "America/Denver");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DETROIT = new ZoneInfo(new Integer(104), "America/Detroit");
+  public static final ZoneInfo TZ_ID_AMERICA_DETROIT = new ZoneInfo(104, "America/Detroit");
   
-  public static final ZoneInfo TZ_ID_AMERICA_DOMINICA = new ZoneInfo(new Integer(105), "America/Dominica");
+  public static final ZoneInfo TZ_ID_AMERICA_DOMINICA = new ZoneInfo(105, "America/Dominica");
   
-  public static final ZoneInfo TZ_ID_AMERICA_EDMONTON = new ZoneInfo(new Integer(106), "America/Edmonton");
+  public static final ZoneInfo TZ_ID_AMERICA_EDMONTON = new ZoneInfo(106, "America/Edmonton");
   
-  public static final ZoneInfo TZ_ID_AMERICA_EIRUNEPE = new ZoneInfo(new Integer(107), "America/Eirunepe");
+  public static final ZoneInfo TZ_ID_AMERICA_EIRUNEPE = new ZoneInfo(107, "America/Eirunepe");
   
-  public static final ZoneInfo TZ_ID_AMERICA_EL_SALVADOR = new ZoneInfo(new Integer(108), "America/El_Salvador");
+  public static final ZoneInfo TZ_ID_AMERICA_EL_SALVADOR = new ZoneInfo(108, "America/El_Salvador");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ENSENADA = new ZoneInfo(new Integer(109), "America/Ensenada");
+  public static final ZoneInfo TZ_ID_AMERICA_ENSENADA = new ZoneInfo(109, "America/Ensenada");
   
-  public static final ZoneInfo TZ_ID_AMERICA_FORT_WAYNE = new ZoneInfo(new Integer(110), "America/Fort_Wayne");
+  public static final ZoneInfo TZ_ID_AMERICA_FORT_WAYNE = new ZoneInfo(110, "America/Fort_Wayne");
   
-  public static final ZoneInfo TZ_ID_AMERICA_FORTALEZA = new ZoneInfo(new Integer(111), "America/Fortaleza");
+  public static final ZoneInfo TZ_ID_AMERICA_FORTALEZA = new ZoneInfo(111, "America/Fortaleza");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GLACE_BAY = new ZoneInfo(new Integer(112), "America/Glace_Bay");
+  public static final ZoneInfo TZ_ID_AMERICA_GLACE_BAY = new ZoneInfo(112, "America/Glace_Bay");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GODTHAB = new ZoneInfo(new Integer(113), "America/Godthab");
+  public static final ZoneInfo TZ_ID_AMERICA_GODTHAB = new ZoneInfo(113, "America/Godthab");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GOOSE_BAY = new ZoneInfo(new Integer(114), "America/Goose_Bay");
+  public static final ZoneInfo TZ_ID_AMERICA_GOOSE_BAY = new ZoneInfo(114, "America/Goose_Bay");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GRAND_TURK = new ZoneInfo(new Integer(115), "America/Grand_Turk");
+  public static final ZoneInfo TZ_ID_AMERICA_GRAND_TURK = new ZoneInfo(115, "America/Grand_Turk");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GRENADA = new ZoneInfo(new Integer(116), "America/Grenada");
+  public static final ZoneInfo TZ_ID_AMERICA_GRENADA = new ZoneInfo(116, "America/Grenada");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GUADELOUPE = new ZoneInfo(new Integer(117), "America/Guadeloupe");
+  public static final ZoneInfo TZ_ID_AMERICA_GUADELOUPE = new ZoneInfo(117, "America/Guadeloupe");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GUATEMALA = new ZoneInfo(new Integer(118), "America/Guatemala");
+  public static final ZoneInfo TZ_ID_AMERICA_GUATEMALA = new ZoneInfo(118, "America/Guatemala");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GUAYAQUIL = new ZoneInfo(new Integer(119), "America/Guayaquil");
+  public static final ZoneInfo TZ_ID_AMERICA_GUAYAQUIL = new ZoneInfo(119, "America/Guayaquil");
   
-  public static final ZoneInfo TZ_ID_AMERICA_GUYANA = new ZoneInfo(new Integer(120), "America/Guyana");
+  public static final ZoneInfo TZ_ID_AMERICA_GUYANA = new ZoneInfo(120, "America/Guyana");
   
-  public static final ZoneInfo TZ_ID_AMERICA_HALIFAX = new ZoneInfo(new Integer(121), "America/Halifax");
+  public static final ZoneInfo TZ_ID_AMERICA_HALIFAX = new ZoneInfo(121, "America/Halifax");
   
-  public static final ZoneInfo TZ_ID_AMERICA_HAVANA = new ZoneInfo(new Integer(122), "America/Havana");
+  public static final ZoneInfo TZ_ID_AMERICA_HAVANA = new ZoneInfo(122, "America/Havana");
   
-  public static final ZoneInfo TZ_ID_AMERICA_HERMOSILLO = new ZoneInfo(new Integer(123), "America/Hermosillo");
+  public static final ZoneInfo TZ_ID_AMERICA_HERMOSILLO = new ZoneInfo(123, "America/Hermosillo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_INDIANAPOLIS = new ZoneInfo(new Integer(124), "America/Indiana/Indianapolis");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_INDIANAPOLIS = new ZoneInfo(124, "America/Indiana/Indianapolis");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_KNOX = new ZoneInfo(new Integer(125), "America/Indiana/Knox");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_KNOX = new ZoneInfo(125, "America/Indiana/Knox");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_MARENGO = new ZoneInfo(new Integer(126), "America/Indiana/Marengo");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_MARENGO = new ZoneInfo(126, "America/Indiana/Marengo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_PETERSBURG = new ZoneInfo(new Integer(127), "America/Indiana/Petersburg");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_PETERSBURG = new ZoneInfo(127, "America/Indiana/Petersburg");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_TELL_CITY = new ZoneInfo(new Integer(128), "America/Indiana/Tell_City");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_TELL_CITY = new ZoneInfo(128, "America/Indiana/Tell_City");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_VEVAY = new ZoneInfo(new Integer(129), "America/Indiana/Vevay");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_VEVAY = new ZoneInfo(129, "America/Indiana/Vevay");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_VINCENNES = new ZoneInfo(new Integer(130), "America/Indiana/Vincennes");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_VINCENNES = new ZoneInfo(130, "America/Indiana/Vincennes");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_WINAMAC = new ZoneInfo(new Integer(131), "America/Indiana/Winamac");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANA_WINAMAC = new ZoneInfo(131, "America/Indiana/Winamac");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INDIANAPOLIS = new ZoneInfo(new Integer(132), "America/Indianapolis");
+  public static final ZoneInfo TZ_ID_AMERICA_INDIANAPOLIS = new ZoneInfo(132, "America/Indianapolis");
   
-  public static final ZoneInfo TZ_ID_AMERICA_INUVIK = new ZoneInfo(new Integer(133), "America/Inuvik");
+  public static final ZoneInfo TZ_ID_AMERICA_INUVIK = new ZoneInfo(133, "America/Inuvik");
   
-  public static final ZoneInfo TZ_ID_AMERICA_IQALUIT = new ZoneInfo(new Integer(134), "America/Iqaluit");
+  public static final ZoneInfo TZ_ID_AMERICA_IQALUIT = new ZoneInfo(134, "America/Iqaluit");
   
-  public static final ZoneInfo TZ_ID_AMERICA_JAMAICA = new ZoneInfo(new Integer(135), "America/Jamaica");
+  public static final ZoneInfo TZ_ID_AMERICA_JAMAICA = new ZoneInfo(135, "America/Jamaica");
   
-  public static final ZoneInfo TZ_ID_AMERICA_JUJUY = new ZoneInfo(new Integer(136), "America/Jujuy");
+  public static final ZoneInfo TZ_ID_AMERICA_JUJUY = new ZoneInfo(136, "America/Jujuy");
   
-  public static final ZoneInfo TZ_ID_AMERICA_JUNEAU = new ZoneInfo(new Integer(137), "America/Juneau");
+  public static final ZoneInfo TZ_ID_AMERICA_JUNEAU = new ZoneInfo(137, "America/Juneau");
   
-  public static final ZoneInfo TZ_ID_AMERICA_KENTUCKY_LOUISVILLE = new ZoneInfo(new Integer(138), "America/Kentucky/Louisville");
+  public static final ZoneInfo TZ_ID_AMERICA_KENTUCKY_LOUISVILLE = new ZoneInfo(138, "America/Kentucky/Louisville");
   
-  public static final ZoneInfo TZ_ID_AMERICA_KENTUCKY_MONTICELLO = new ZoneInfo(new Integer(139), "America/Kentucky/Monticello");
+  public static final ZoneInfo TZ_ID_AMERICA_KENTUCKY_MONTICELLO = new ZoneInfo(139, "America/Kentucky/Monticello");
   
-  public static final ZoneInfo TZ_ID_AMERICA_KNOX_IN = new ZoneInfo(new Integer(140), "America/Knox_IN");
+  public static final ZoneInfo TZ_ID_AMERICA_KNOX_IN = new ZoneInfo(140, "America/Knox_IN");
   
-  public static final ZoneInfo TZ_ID_AMERICA_KRALENDIJK = new ZoneInfo(new Integer(141), "America/Kralendijk");
+  public static final ZoneInfo TZ_ID_AMERICA_KRALENDIJK = new ZoneInfo(141, "America/Kralendijk");
   
-  public static final ZoneInfo TZ_ID_AMERICA_LA_PAZ = new ZoneInfo(new Integer(142), "America/La_Paz");
+  public static final ZoneInfo TZ_ID_AMERICA_LA_PAZ = new ZoneInfo(142, "America/La_Paz");
   
-  public static final ZoneInfo TZ_ID_AMERICA_LIMA = new ZoneInfo(new Integer(143), "America/Lima");
+  public static final ZoneInfo TZ_ID_AMERICA_LIMA = new ZoneInfo(143, "America/Lima");
   
-  public static final ZoneInfo TZ_ID_AMERICA_LOS_ANGELES = new ZoneInfo(new Integer(144), "America/Los_Angeles");
+  public static final ZoneInfo TZ_ID_AMERICA_LOS_ANGELES = new ZoneInfo(144, "America/Los_Angeles");
   
-  public static final ZoneInfo TZ_ID_AMERICA_LOUISVILLE = new ZoneInfo(new Integer(145), "America/Louisville");
+  public static final ZoneInfo TZ_ID_AMERICA_LOUISVILLE = new ZoneInfo(145, "America/Louisville");
   
-  public static final ZoneInfo TZ_ID_AMERICA_LOWER_PRINCES = new ZoneInfo(new Integer(146), "America/Lower_Princes");
+  public static final ZoneInfo TZ_ID_AMERICA_LOWER_PRINCES = new ZoneInfo(146, "America/Lower_Princes");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MACEIO = new ZoneInfo(new Integer(147), "America/Maceio");
+  public static final ZoneInfo TZ_ID_AMERICA_MACEIO = new ZoneInfo(147, "America/Maceio");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MANAGUA = new ZoneInfo(new Integer(148), "America/Managua");
+  public static final ZoneInfo TZ_ID_AMERICA_MANAGUA = new ZoneInfo(148, "America/Managua");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MANAUS = new ZoneInfo(new Integer(149), "America/Manaus");
+  public static final ZoneInfo TZ_ID_AMERICA_MANAUS = new ZoneInfo(149, "America/Manaus");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MARIGOT = new ZoneInfo(new Integer(150), "America/Marigot");
+  public static final ZoneInfo TZ_ID_AMERICA_MARIGOT = new ZoneInfo(150, "America/Marigot");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MARTINIQUE = new ZoneInfo(new Integer(151), "America/Martinique");
+  public static final ZoneInfo TZ_ID_AMERICA_MARTINIQUE = new ZoneInfo(151, "America/Martinique");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MATAMOROS = new ZoneInfo(new Integer(152), "America/Matamoros");
+  public static final ZoneInfo TZ_ID_AMERICA_MATAMOROS = new ZoneInfo(152, "America/Matamoros");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MAZATLAN = new ZoneInfo(new Integer(153), "America/Mazatlan");
+  public static final ZoneInfo TZ_ID_AMERICA_MAZATLAN = new ZoneInfo(153, "America/Mazatlan");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MENDOZA = new ZoneInfo(new Integer(154), "America/Mendoza");
+  public static final ZoneInfo TZ_ID_AMERICA_MENDOZA = new ZoneInfo(154, "America/Mendoza");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MENOMINEE = new ZoneInfo(new Integer(155), "America/Menominee");
+  public static final ZoneInfo TZ_ID_AMERICA_MENOMINEE = new ZoneInfo(155, "America/Menominee");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MERIDA = new ZoneInfo(new Integer(156), "America/Merida");
+  public static final ZoneInfo TZ_ID_AMERICA_MERIDA = new ZoneInfo(156, "America/Merida");
   
-  public static final ZoneInfo TZ_ID_AMERICA_METLAKATLA = new ZoneInfo(new Integer(157), "America/Metlakatla");
+  public static final ZoneInfo TZ_ID_AMERICA_METLAKATLA = new ZoneInfo(157, "America/Metlakatla");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MEXICO_CITY = new ZoneInfo(new Integer(158), "America/Mexico_City");
+  public static final ZoneInfo TZ_ID_AMERICA_MEXICO_CITY = new ZoneInfo(158, "America/Mexico_City");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MIQUELON = new ZoneInfo(new Integer(159), "America/Miquelon");
+  public static final ZoneInfo TZ_ID_AMERICA_MIQUELON = new ZoneInfo(159, "America/Miquelon");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MONCTON = new ZoneInfo(new Integer(160), "America/Moncton");
+  public static final ZoneInfo TZ_ID_AMERICA_MONCTON = new ZoneInfo(160, "America/Moncton");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MONTERREY = new ZoneInfo(new Integer(161), "America/Monterrey");
+  public static final ZoneInfo TZ_ID_AMERICA_MONTERREY = new ZoneInfo(161, "America/Monterrey");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MONTEVIDEO = new ZoneInfo(new Integer(162), "America/Montevideo");
+  public static final ZoneInfo TZ_ID_AMERICA_MONTEVIDEO = new ZoneInfo(162, "America/Montevideo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MONTREAL = new ZoneInfo(new Integer(163), "America/Montreal");
+  public static final ZoneInfo TZ_ID_AMERICA_MONTREAL = new ZoneInfo(163, "America/Montreal");
   
-  public static final ZoneInfo TZ_ID_AMERICA_MONTSERRAT = new ZoneInfo(new Integer(164), "America/Montserrat");
+  public static final ZoneInfo TZ_ID_AMERICA_MONTSERRAT = new ZoneInfo(164, "America/Montserrat");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NASSAU = new ZoneInfo(new Integer(165), "America/Nassau");
+  public static final ZoneInfo TZ_ID_AMERICA_NASSAU = new ZoneInfo(165, "America/Nassau");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NEW_YORK = new ZoneInfo(new Integer(166), "America/New_York");
+  public static final ZoneInfo TZ_ID_AMERICA_NEW_YORK = new ZoneInfo(166, "America/New_York");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NIPIGON = new ZoneInfo(new Integer(167), "America/Nipigon");
+  public static final ZoneInfo TZ_ID_AMERICA_NIPIGON = new ZoneInfo(167, "America/Nipigon");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NOME = new ZoneInfo(new Integer(168), "America/Nome");
+  public static final ZoneInfo TZ_ID_AMERICA_NOME = new ZoneInfo(168, "America/Nome");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NORONHA = new ZoneInfo(new Integer(169), "America/Noronha");
+  public static final ZoneInfo TZ_ID_AMERICA_NORONHA = new ZoneInfo(169, "America/Noronha");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_BEULAH = new ZoneInfo(new Integer(170), "America/North_Dakota/Beulah");
+  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_BEULAH = new ZoneInfo(170, "America/North_Dakota/Beulah");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_CENTER = new ZoneInfo(new Integer(171), "America/North_Dakota/Center");
+  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_CENTER = new ZoneInfo(171, "America/North_Dakota/Center");
   
-  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_NEW_SALEM = new ZoneInfo(new Integer(172), "America/North_Dakota/New_Salem");
+  public static final ZoneInfo TZ_ID_AMERICA_NORTH_DAKOTA_NEW_SALEM = new ZoneInfo(172, "America/North_Dakota/New_Salem");
   
-  public static final ZoneInfo TZ_ID_AMERICA_OJINAGA = new ZoneInfo(new Integer(173), "America/Ojinaga");
+  public static final ZoneInfo TZ_ID_AMERICA_OJINAGA = new ZoneInfo(173, "America/Ojinaga");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PANAMA = new ZoneInfo(new Integer(174), "America/Panama");
+  public static final ZoneInfo TZ_ID_AMERICA_PANAMA = new ZoneInfo(174, "America/Panama");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PANGNIRTUNG = new ZoneInfo(new Integer(175), "America/Pangnirtung");
+  public static final ZoneInfo TZ_ID_AMERICA_PANGNIRTUNG = new ZoneInfo(175, "America/Pangnirtung");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PARAMARIBO = new ZoneInfo(new Integer(176), "America/Paramaribo");
+  public static final ZoneInfo TZ_ID_AMERICA_PARAMARIBO = new ZoneInfo(176, "America/Paramaribo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PHOENIX = new ZoneInfo(new Integer(177), "America/Phoenix");
+  public static final ZoneInfo TZ_ID_AMERICA_PHOENIX = new ZoneInfo(177, "America/Phoenix");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PORT_AU_PRINCE = new ZoneInfo(new Integer(178), "America/Port-au-Prince");
+  public static final ZoneInfo TZ_ID_AMERICA_PORT_AU_PRINCE = new ZoneInfo(178, "America/Port-au-Prince");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PORT_OF_SPAIN = new ZoneInfo(new Integer(179), "America/Port_of_Spain");
+  public static final ZoneInfo TZ_ID_AMERICA_PORT_OF_SPAIN = new ZoneInfo(179, "America/Port_of_Spain");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PORTO_ACRE = new ZoneInfo(new Integer(180), "America/Porto_Acre");
+  public static final ZoneInfo TZ_ID_AMERICA_PORTO_ACRE = new ZoneInfo(180, "America/Porto_Acre");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PORTO_VELHO = new ZoneInfo(new Integer(181), "America/Porto_Velho");
+  public static final ZoneInfo TZ_ID_AMERICA_PORTO_VELHO = new ZoneInfo(181, "America/Porto_Velho");
   
-  public static final ZoneInfo TZ_ID_AMERICA_PUERTO_RICO = new ZoneInfo(new Integer(182), "America/Puerto_Rico");
+  public static final ZoneInfo TZ_ID_AMERICA_PUERTO_RICO = new ZoneInfo(182, "America/Puerto_Rico");
   
-  public static final ZoneInfo TZ_ID_AMERICA_RAINY_RIVER = new ZoneInfo(new Integer(183), "America/Rainy_River");
+  public static final ZoneInfo TZ_ID_AMERICA_RAINY_RIVER = new ZoneInfo(183, "America/Rainy_River");
   
-  public static final ZoneInfo TZ_ID_AMERICA_RANKIN_INLET = new ZoneInfo(new Integer(184), "America/Rankin_Inlet");
+  public static final ZoneInfo TZ_ID_AMERICA_RANKIN_INLET = new ZoneInfo(184, "America/Rankin_Inlet");
   
-  public static final ZoneInfo TZ_ID_AMERICA_RECIFE = new ZoneInfo(new Integer(185), "America/Recife");
+  public static final ZoneInfo TZ_ID_AMERICA_RECIFE = new ZoneInfo(185, "America/Recife");
   
-  public static final ZoneInfo TZ_ID_AMERICA_REGINA = new ZoneInfo(new Integer(186), "America/Regina");
+  public static final ZoneInfo TZ_ID_AMERICA_REGINA = new ZoneInfo(186, "America/Regina");
   
-  public static final ZoneInfo TZ_ID_AMERICA_RESOLUTE = new ZoneInfo(new Integer(187), "America/Resolute");
+  public static final ZoneInfo TZ_ID_AMERICA_RESOLUTE = new ZoneInfo(187, "America/Resolute");
   
-  public static final ZoneInfo TZ_ID_AMERICA_RIO_BRANCO = new ZoneInfo(new Integer(188), "America/Rio_Branco");
+  public static final ZoneInfo TZ_ID_AMERICA_RIO_BRANCO = new ZoneInfo(188, "America/Rio_Branco");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ROSARIO = new ZoneInfo(new Integer(189), "America/Rosario");
+  public static final ZoneInfo TZ_ID_AMERICA_ROSARIO = new ZoneInfo(189, "America/Rosario");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SANTA_ISABEL = new ZoneInfo(new Integer(190), "America/Santa_Isabel");
+  public static final ZoneInfo TZ_ID_AMERICA_SANTA_ISABEL = new ZoneInfo(190, "America/Santa_Isabel");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SANTAREM = new ZoneInfo(new Integer(191), "America/Santarem");
+  public static final ZoneInfo TZ_ID_AMERICA_SANTAREM = new ZoneInfo(191, "America/Santarem");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SANTIAGO = new ZoneInfo(new Integer(192), "America/Santiago");
+  public static final ZoneInfo TZ_ID_AMERICA_SANTIAGO = new ZoneInfo(192, "America/Santiago");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SANTO_DOMINGO = new ZoneInfo(new Integer(193), "America/Santo_Domingo");
+  public static final ZoneInfo TZ_ID_AMERICA_SANTO_DOMINGO = new ZoneInfo(193, "America/Santo_Domingo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SAO_PAULO = new ZoneInfo(new Integer(194), "America/Sao_Paulo");
+  public static final ZoneInfo TZ_ID_AMERICA_SAO_PAULO = new ZoneInfo(194, "America/Sao_Paulo");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SCORESBYSUND = new ZoneInfo(new Integer(195), "America/Scoresbysund");
+  public static final ZoneInfo TZ_ID_AMERICA_SCORESBYSUND = new ZoneInfo(195, "America/Scoresbysund");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SHIPROCK = new ZoneInfo(new Integer(196), "America/Shiprock");
+  public static final ZoneInfo TZ_ID_AMERICA_SHIPROCK = new ZoneInfo(196, "America/Shiprock");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SITKA = new ZoneInfo(new Integer(197), "America/Sitka");
+  public static final ZoneInfo TZ_ID_AMERICA_SITKA = new ZoneInfo(197, "America/Sitka");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_BARTHELEMY = new ZoneInfo(new Integer(198), "America/St_Barthelemy");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_BARTHELEMY = new ZoneInfo(198, "America/St_Barthelemy");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_JOHNS = new ZoneInfo(new Integer(199), "America/St_Johns");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_JOHNS = new ZoneInfo(199, "America/St_Johns");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_KITTS = new ZoneInfo(new Integer(200), "America/St_Kitts");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_KITTS = new ZoneInfo(200, "America/St_Kitts");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_LUCIA = new ZoneInfo(new Integer(201), "America/St_Lucia");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_LUCIA = new ZoneInfo(201, "America/St_Lucia");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_THOMAS = new ZoneInfo(new Integer(202), "America/St_Thomas");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_THOMAS = new ZoneInfo(202, "America/St_Thomas");
   
-  public static final ZoneInfo TZ_ID_AMERICA_ST_VINCENT = new ZoneInfo(new Integer(203), "America/St_Vincent");
+  public static final ZoneInfo TZ_ID_AMERICA_ST_VINCENT = new ZoneInfo(203, "America/St_Vincent");
   
-  public static final ZoneInfo TZ_ID_AMERICA_SWIFT_CURRENT = new ZoneInfo(new Integer(204), "America/Swift_Current");
+  public static final ZoneInfo TZ_ID_AMERICA_SWIFT_CURRENT = new ZoneInfo(204, "America/Swift_Current");
   
-  public static final ZoneInfo TZ_ID_AMERICA_TEGUCIGALPA = new ZoneInfo(new Integer(205), "America/Tegucigalpa");
+  public static final ZoneInfo TZ_ID_AMERICA_TEGUCIGALPA = new ZoneInfo(205, "America/Tegucigalpa");
   
-  public static final ZoneInfo TZ_ID_AMERICA_THULE = new ZoneInfo(new Integer(206), "America/Thule");
+  public static final ZoneInfo TZ_ID_AMERICA_THULE = new ZoneInfo(206, "America/Thule");
   
-  public static final ZoneInfo TZ_ID_AMERICA_THUNDER_BAY = new ZoneInfo(new Integer(207), "America/Thunder_Bay");
+  public static final ZoneInfo TZ_ID_AMERICA_THUNDER_BAY = new ZoneInfo(207, "America/Thunder_Bay");
   
-  public static final ZoneInfo TZ_ID_AMERICA_TIJUANA = new ZoneInfo(new Integer(208), "America/Tijuana");
+  public static final ZoneInfo TZ_ID_AMERICA_TIJUANA = new ZoneInfo(208, "America/Tijuana");
   
-  public static final ZoneInfo TZ_ID_AMERICA_TORONTO = new ZoneInfo(new Integer(209), "America/Toronto");
+  public static final ZoneInfo TZ_ID_AMERICA_TORONTO = new ZoneInfo(209, "America/Toronto");
   
-  public static final ZoneInfo TZ_ID_AMERICA_TORTOLA = new ZoneInfo(new Integer(210), "America/Tortola");
+  public static final ZoneInfo TZ_ID_AMERICA_TORTOLA = new ZoneInfo(210, "America/Tortola");
   
-  public static final ZoneInfo TZ_ID_AMERICA_VANCOUVER = new ZoneInfo(new Integer(211), "America/Vancouver");
+  public static final ZoneInfo TZ_ID_AMERICA_VANCOUVER = new ZoneInfo(211, "America/Vancouver");
   
-  public static final ZoneInfo TZ_ID_AMERICA_VIRGIN = new ZoneInfo(new Integer(212), "America/Virgin");
+  public static final ZoneInfo TZ_ID_AMERICA_VIRGIN = new ZoneInfo(212, "America/Virgin");
   
-  public static final ZoneInfo TZ_ID_AMERICA_WHITEHORSE = new ZoneInfo(new Integer(213), "America/Whitehorse");
+  public static final ZoneInfo TZ_ID_AMERICA_WHITEHORSE = new ZoneInfo(213, "America/Whitehorse");
   
-  public static final ZoneInfo TZ_ID_AMERICA_WINNIPEG = new ZoneInfo(new Integer(214), "America/Winnipeg");
+  public static final ZoneInfo TZ_ID_AMERICA_WINNIPEG = new ZoneInfo(214, "America/Winnipeg");
   
-  public static final ZoneInfo TZ_ID_AMERICA_YAKUTAT = new ZoneInfo(new Integer(215), "America/Yakutat");
+  public static final ZoneInfo TZ_ID_AMERICA_YAKUTAT = new ZoneInfo(215, "America/Yakutat");
   
-  public static final ZoneInfo TZ_ID_AMERICA_YELLOWKNIFE = new ZoneInfo(new Integer(216), "America/Yellowknife");
+  public static final ZoneInfo TZ_ID_AMERICA_YELLOWKNIFE = new ZoneInfo(216, "America/Yellowknife");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_CASEY = new ZoneInfo(new Integer(217), "Antarctica/Casey");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_CASEY = new ZoneInfo(217, "Antarctica/Casey");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_DAVIS = new ZoneInfo(new Integer(218), "Antarctica/Davis");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_DAVIS = new ZoneInfo(218, "Antarctica/Davis");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_DUMONTDURVILLE = new ZoneInfo(new Integer(219), "Antarctica/DumontDUrville");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_DUMONTDURVILLE = new ZoneInfo(219, "Antarctica/DumontDUrville");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_MACQUARIE = new ZoneInfo(new Integer(220), "Antarctica/Macquarie");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_MACQUARIE = new ZoneInfo(220, "Antarctica/Macquarie");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_MAWSON = new ZoneInfo(new Integer(221), "Antarctica/Mawson");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_MAWSON = new ZoneInfo(221, "Antarctica/Mawson");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_MCMURDO = new ZoneInfo(new Integer(222), "Antarctica/McMurdo");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_MCMURDO = new ZoneInfo(222, "Antarctica/McMurdo");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_PALMER = new ZoneInfo(new Integer(223), "Antarctica/Palmer");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_PALMER = new ZoneInfo(223, "Antarctica/Palmer");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_ROTHERA = new ZoneInfo(new Integer(224), "Antarctica/Rothera");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_ROTHERA = new ZoneInfo(224, "Antarctica/Rothera");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_SOUTH_POLE = new ZoneInfo(new Integer(225), "Antarctica/South_Pole");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_SOUTH_POLE = new ZoneInfo(225, "Antarctica/South_Pole");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_SYOWA = new ZoneInfo(new Integer(226), "Antarctica/Syowa");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_SYOWA = new ZoneInfo(226, "Antarctica/Syowa");
   
-  public static final ZoneInfo TZ_ID_ANTARCTICA_VOSTOK = new ZoneInfo(new Integer(227), "Antarctica/Vostok");
+  public static final ZoneInfo TZ_ID_ANTARCTICA_VOSTOK = new ZoneInfo(227, "Antarctica/Vostok");
   
-  public static final ZoneInfo TZ_ID_ARCTIC_LONGYEARBYEN = new ZoneInfo(new Integer(228), "Arctic/Longyearbyen");
+  public static final ZoneInfo TZ_ID_ARCTIC_LONGYEARBYEN = new ZoneInfo(228, "Arctic/Longyearbyen");
   
-  public static final ZoneInfo TZ_ID_ASIA_ADEN = new ZoneInfo(new Integer(229), "Asia/Aden");
+  public static final ZoneInfo TZ_ID_ASIA_ADEN = new ZoneInfo(229, "Asia/Aden");
   
-  public static final ZoneInfo TZ_ID_ASIA_ALMATY = new ZoneInfo(new Integer(230), "Asia/Almaty");
+  public static final ZoneInfo TZ_ID_ASIA_ALMATY = new ZoneInfo(230, "Asia/Almaty");
   
-  public static final ZoneInfo TZ_ID_ASIA_AMMAN = new ZoneInfo(new Integer(231), "Asia/Amman");
+  public static final ZoneInfo TZ_ID_ASIA_AMMAN = new ZoneInfo(231, "Asia/Amman");
   
-  public static final ZoneInfo TZ_ID_ASIA_ANADYR = new ZoneInfo(new Integer(232), "Asia/Anadyr");
+  public static final ZoneInfo TZ_ID_ASIA_ANADYR = new ZoneInfo(232, "Asia/Anadyr");
   
-  public static final ZoneInfo TZ_ID_ASIA_AQTAU = new ZoneInfo(new Integer(233), "Asia/Aqtau");
+  public static final ZoneInfo TZ_ID_ASIA_AQTAU = new ZoneInfo(233, "Asia/Aqtau");
   
-  public static final ZoneInfo TZ_ID_ASIA_AQTOBE = new ZoneInfo(new Integer(234), "Asia/Aqtobe");
+  public static final ZoneInfo TZ_ID_ASIA_AQTOBE = new ZoneInfo(234, "Asia/Aqtobe");
   
-  public static final ZoneInfo TZ_ID_ASIA_ASHGABAT = new ZoneInfo(new Integer(235), "Asia/Ashgabat");
+  public static final ZoneInfo TZ_ID_ASIA_ASHGABAT = new ZoneInfo(235, "Asia/Ashgabat");
   
-  public static final ZoneInfo TZ_ID_ASIA_ASHKHABAD = new ZoneInfo(new Integer(236), "Asia/Ashkhabad");
+  public static final ZoneInfo TZ_ID_ASIA_ASHKHABAD = new ZoneInfo(236, "Asia/Ashkhabad");
   
-  public static final ZoneInfo TZ_ID_ASIA_BAGHDAD = new ZoneInfo(new Integer(237), "Asia/Baghdad");
+  public static final ZoneInfo TZ_ID_ASIA_BAGHDAD = new ZoneInfo(237, "Asia/Baghdad");
   
-  public static final ZoneInfo TZ_ID_ASIA_BAHRAIN = new ZoneInfo(new Integer(238), "Asia/Bahrain");
+  public static final ZoneInfo TZ_ID_ASIA_BAHRAIN = new ZoneInfo(238, "Asia/Bahrain");
   
-  public static final ZoneInfo TZ_ID_ASIA_BAKU = new ZoneInfo(new Integer(239), "Asia/Baku");
+  public static final ZoneInfo TZ_ID_ASIA_BAKU = new ZoneInfo(239, "Asia/Baku");
   
-  public static final ZoneInfo TZ_ID_ASIA_BANGKOK = new ZoneInfo(new Integer(240), "Asia/Bangkok");
+  public static final ZoneInfo TZ_ID_ASIA_BANGKOK = new ZoneInfo(240, "Asia/Bangkok");
   
-  public static final ZoneInfo TZ_ID_ASIA_BEIRUT = new ZoneInfo(new Integer(241), "Asia/Beirut");
+  public static final ZoneInfo TZ_ID_ASIA_BEIRUT = new ZoneInfo(241, "Asia/Beirut");
   
-  public static final ZoneInfo TZ_ID_ASIA_BISHKEK = new ZoneInfo(new Integer(242), "Asia/Bishkek");
+  public static final ZoneInfo TZ_ID_ASIA_BISHKEK = new ZoneInfo(242, "Asia/Bishkek");
   
-  public static final ZoneInfo TZ_ID_ASIA_BRUNEI = new ZoneInfo(new Integer(243), "Asia/Brunei");
+  public static final ZoneInfo TZ_ID_ASIA_BRUNEI = new ZoneInfo(243, "Asia/Brunei");
   
-  public static final ZoneInfo TZ_ID_ASIA_CALCUTTA = new ZoneInfo(new Integer(244), "Asia/Calcutta");
+  public static final ZoneInfo TZ_ID_ASIA_CALCUTTA = new ZoneInfo(244, "Asia/Calcutta");
   
-  public static final ZoneInfo TZ_ID_ASIA_CHOIBALSAN = new ZoneInfo(new Integer(245), "Asia/Choibalsan");
+  public static final ZoneInfo TZ_ID_ASIA_CHOIBALSAN = new ZoneInfo(245, "Asia/Choibalsan");
   
-  public static final ZoneInfo TZ_ID_ASIA_CHONGQING = new ZoneInfo(new Integer(246), "Asia/Chongqing");
+  public static final ZoneInfo TZ_ID_ASIA_CHONGQING = new ZoneInfo(246, "Asia/Chongqing");
   
-  public static final ZoneInfo TZ_ID_ASIA_CHUNGKING = new ZoneInfo(new Integer(247), "Asia/Chungking");
+  public static final ZoneInfo TZ_ID_ASIA_CHUNGKING = new ZoneInfo(247, "Asia/Chungking");
   
-  public static final ZoneInfo TZ_ID_ASIA_COLOMBO = new ZoneInfo(new Integer(248), "Asia/Colombo");
+  public static final ZoneInfo TZ_ID_ASIA_COLOMBO = new ZoneInfo(248, "Asia/Colombo");
   
-  public static final ZoneInfo TZ_ID_ASIA_DACCA = new ZoneInfo(new Integer(249), "Asia/Dacca");
+  public static final ZoneInfo TZ_ID_ASIA_DACCA = new ZoneInfo(249, "Asia/Dacca");
   
-  public static final ZoneInfo TZ_ID_ASIA_DAMASCUS = new ZoneInfo(new Integer(250), "Asia/Damascus");
+  public static final ZoneInfo TZ_ID_ASIA_DAMASCUS = new ZoneInfo(250, "Asia/Damascus");
   
-  public static final ZoneInfo TZ_ID_ASIA_DHAKA = new ZoneInfo(new Integer(251), "Asia/Dhaka");
+  public static final ZoneInfo TZ_ID_ASIA_DHAKA = new ZoneInfo(251, "Asia/Dhaka");
   
-  public static final ZoneInfo TZ_ID_ASIA_DILI = new ZoneInfo(new Integer(252), "Asia/Dili");
+  public static final ZoneInfo TZ_ID_ASIA_DILI = new ZoneInfo(252, "Asia/Dili");
   
-  public static final ZoneInfo TZ_ID_ASIA_DUBAI = new ZoneInfo(new Integer(253), "Asia/Dubai");
+  public static final ZoneInfo TZ_ID_ASIA_DUBAI = new ZoneInfo(253, "Asia/Dubai");
   
-  public static final ZoneInfo TZ_ID_ASIA_DUSHANBE = new ZoneInfo(new Integer(254), "Asia/Dushanbe");
+  public static final ZoneInfo TZ_ID_ASIA_DUSHANBE = new ZoneInfo(254, "Asia/Dushanbe");
   
-  public static final ZoneInfo TZ_ID_ASIA_GAZA = new ZoneInfo(new Integer(255), "Asia/Gaza");
+  public static final ZoneInfo TZ_ID_ASIA_GAZA = new ZoneInfo(255, "Asia/Gaza");
   
-  public static final ZoneInfo TZ_ID_ASIA_HARBIN = new ZoneInfo(new Integer(256), "Asia/Harbin");
+  public static final ZoneInfo TZ_ID_ASIA_HARBIN = new ZoneInfo(256, "Asia/Harbin");
   
-  public static final ZoneInfo TZ_ID_ASIA_HEBRON = new ZoneInfo(new Integer(257), "Asia/Hebron");
+  public static final ZoneInfo TZ_ID_ASIA_HEBRON = new ZoneInfo(257, "Asia/Hebron");
   
-  public static final ZoneInfo TZ_ID_ASIA_HO_CHI_MINH = new ZoneInfo(new Integer(258), "Asia/Ho_Chi_Minh");
+  public static final ZoneInfo TZ_ID_ASIA_HO_CHI_MINH = new ZoneInfo(258, "Asia/Ho_Chi_Minh");
   
-  public static final ZoneInfo TZ_ID_ASIA_HONG_KONG = new ZoneInfo(new Integer(259), "Asia/Hong_Kong");
+  public static final ZoneInfo TZ_ID_ASIA_HONG_KONG = new ZoneInfo(259, "Asia/Hong_Kong");
   
-  public static final ZoneInfo TZ_ID_ASIA_HOVD = new ZoneInfo(new Integer(260), "Asia/Hovd");
+  public static final ZoneInfo TZ_ID_ASIA_HOVD = new ZoneInfo(260, "Asia/Hovd");
   
-  public static final ZoneInfo TZ_ID_ASIA_IRKUTSK = new ZoneInfo(new Integer(261), "Asia/Irkutsk");
+  public static final ZoneInfo TZ_ID_ASIA_IRKUTSK = new ZoneInfo(261, "Asia/Irkutsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_ISTANBUL = new ZoneInfo(new Integer(262), "Asia/Istanbul");
+  public static final ZoneInfo TZ_ID_ASIA_ISTANBUL = new ZoneInfo(262, "Asia/Istanbul");
   
-  public static final ZoneInfo TZ_ID_ASIA_JAKARTA = new ZoneInfo(new Integer(263), "Asia/Jakarta");
+  public static final ZoneInfo TZ_ID_ASIA_JAKARTA = new ZoneInfo(263, "Asia/Jakarta");
   
-  public static final ZoneInfo TZ_ID_ASIA_JAYAPURA = new ZoneInfo(new Integer(264), "Asia/Jayapura");
+  public static final ZoneInfo TZ_ID_ASIA_JAYAPURA = new ZoneInfo(264, "Asia/Jayapura");
   
-  public static final ZoneInfo TZ_ID_ASIA_JERUSALEM = new ZoneInfo(new Integer(265), "Asia/Jerusalem");
+  public static final ZoneInfo TZ_ID_ASIA_JERUSALEM = new ZoneInfo(265, "Asia/Jerusalem");
   
-  public static final ZoneInfo TZ_ID_ASIA_KABUL = new ZoneInfo(new Integer(266), "Asia/Kabul");
+  public static final ZoneInfo TZ_ID_ASIA_KABUL = new ZoneInfo(266, "Asia/Kabul");
   
-  public static final ZoneInfo TZ_ID_ASIA_KAMCHATKA = new ZoneInfo(new Integer(267), "Asia/Kamchatka");
+  public static final ZoneInfo TZ_ID_ASIA_KAMCHATKA = new ZoneInfo(267, "Asia/Kamchatka");
   
-  public static final ZoneInfo TZ_ID_ASIA_KARACHI = new ZoneInfo(new Integer(268), "Asia/Karachi");
+  public static final ZoneInfo TZ_ID_ASIA_KARACHI = new ZoneInfo(268, "Asia/Karachi");
   
-  public static final ZoneInfo TZ_ID_ASIA_KASHGAR = new ZoneInfo(new Integer(269), "Asia/Kashgar");
+  public static final ZoneInfo TZ_ID_ASIA_KASHGAR = new ZoneInfo(269, "Asia/Kashgar");
   
-  public static final ZoneInfo TZ_ID_ASIA_KATHMANDU = new ZoneInfo(new Integer(270), "Asia/Kathmandu");
+  public static final ZoneInfo TZ_ID_ASIA_KATHMANDU = new ZoneInfo(270, "Asia/Kathmandu");
   
-  public static final ZoneInfo TZ_ID_ASIA_KATMANDU = new ZoneInfo(new Integer(271), "Asia/Katmandu");
+  public static final ZoneInfo TZ_ID_ASIA_KATMANDU = new ZoneInfo(271, "Asia/Katmandu");
   
-  public static final ZoneInfo TZ_ID_ASIA_KOLKATA = new ZoneInfo(new Integer(272), "Asia/Kolkata");
+  public static final ZoneInfo TZ_ID_ASIA_KOLKATA = new ZoneInfo(272, "Asia/Kolkata");
   
-  public static final ZoneInfo TZ_ID_ASIA_KRASNOYARSK = new ZoneInfo(new Integer(273), "Asia/Krasnoyarsk");
+  public static final ZoneInfo TZ_ID_ASIA_KRASNOYARSK = new ZoneInfo(273, "Asia/Krasnoyarsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_KUALA_LUMPUR = new ZoneInfo(new Integer(274), "Asia/Kuala_Lumpur");
+  public static final ZoneInfo TZ_ID_ASIA_KUALA_LUMPUR = new ZoneInfo(274, "Asia/Kuala_Lumpur");
   
-  public static final ZoneInfo TZ_ID_ASIA_KUCHING = new ZoneInfo(new Integer(275), "Asia/Kuching");
+  public static final ZoneInfo TZ_ID_ASIA_KUCHING = new ZoneInfo(275, "Asia/Kuching");
   
-  public static final ZoneInfo TZ_ID_ASIA_KUWAIT = new ZoneInfo(new Integer(276), "Asia/Kuwait");
+  public static final ZoneInfo TZ_ID_ASIA_KUWAIT = new ZoneInfo(276, "Asia/Kuwait");
   
-  public static final ZoneInfo TZ_ID_ASIA_MACAO = new ZoneInfo(new Integer(277), "Asia/Macao");
+  public static final ZoneInfo TZ_ID_ASIA_MACAO = new ZoneInfo(277, "Asia/Macao");
   
-  public static final ZoneInfo TZ_ID_ASIA_MACAU = new ZoneInfo(new Integer(278), "Asia/Macau");
+  public static final ZoneInfo TZ_ID_ASIA_MACAU = new ZoneInfo(278, "Asia/Macau");
   
-  public static final ZoneInfo TZ_ID_ASIA_MAGADAN = new ZoneInfo(new Integer(279), "Asia/Magadan");
+  public static final ZoneInfo TZ_ID_ASIA_MAGADAN = new ZoneInfo(279, "Asia/Magadan");
   
-  public static final ZoneInfo TZ_ID_ASIA_MAKASSAR = new ZoneInfo(new Integer(280), "Asia/Makassar");
+  public static final ZoneInfo TZ_ID_ASIA_MAKASSAR = new ZoneInfo(280, "Asia/Makassar");
   
-  public static final ZoneInfo TZ_ID_ASIA_MANILA = new ZoneInfo(new Integer(281), "Asia/Manila");
+  public static final ZoneInfo TZ_ID_ASIA_MANILA = new ZoneInfo(281, "Asia/Manila");
   
-  public static final ZoneInfo TZ_ID_ASIA_MUSCAT = new ZoneInfo(new Integer(282), "Asia/Muscat");
+  public static final ZoneInfo TZ_ID_ASIA_MUSCAT = new ZoneInfo(282, "Asia/Muscat");
   
-  public static final ZoneInfo TZ_ID_ASIA_NICOSIA = new ZoneInfo(new Integer(283), "Asia/Nicosia");
+  public static final ZoneInfo TZ_ID_ASIA_NICOSIA = new ZoneInfo(283, "Asia/Nicosia");
   
-  public static final ZoneInfo TZ_ID_ASIA_NOVOKUZNETSK = new ZoneInfo(new Integer(284), "Asia/Novokuznetsk");
+  public static final ZoneInfo TZ_ID_ASIA_NOVOKUZNETSK = new ZoneInfo(284, "Asia/Novokuznetsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_NOVOSIBIRSK = new ZoneInfo(new Integer(285), "Asia/Novosibirsk");
+  public static final ZoneInfo TZ_ID_ASIA_NOVOSIBIRSK = new ZoneInfo(285, "Asia/Novosibirsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_OMSK = new ZoneInfo(new Integer(286), "Asia/Omsk");
+  public static final ZoneInfo TZ_ID_ASIA_OMSK = new ZoneInfo(286, "Asia/Omsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_ORAL = new ZoneInfo(new Integer(287), "Asia/Oral");
+  public static final ZoneInfo TZ_ID_ASIA_ORAL = new ZoneInfo(287, "Asia/Oral");
   
-  public static final ZoneInfo TZ_ID_ASIA_PHNOM_PENH = new ZoneInfo(new Integer(288), "Asia/Phnom_Penh");
+  public static final ZoneInfo TZ_ID_ASIA_PHNOM_PENH = new ZoneInfo(288, "Asia/Phnom_Penh");
   
-  public static final ZoneInfo TZ_ID_ASIA_PONTIANAK = new ZoneInfo(new Integer(289), "Asia/Pontianak");
+  public static final ZoneInfo TZ_ID_ASIA_PONTIANAK = new ZoneInfo(289, "Asia/Pontianak");
   
-  public static final ZoneInfo TZ_ID_ASIA_PYONGYANG = new ZoneInfo(new Integer(290), "Asia/Pyongyang");
+  public static final ZoneInfo TZ_ID_ASIA_PYONGYANG = new ZoneInfo(290, "Asia/Pyongyang");
   
-  public static final ZoneInfo TZ_ID_ASIA_QATAR = new ZoneInfo(new Integer(291), "Asia/Qatar");
+  public static final ZoneInfo TZ_ID_ASIA_QATAR = new ZoneInfo(291, "Asia/Qatar");
   
-  public static final ZoneInfo TZ_ID_ASIA_QYZYLORDA = new ZoneInfo(new Integer(292), "Asia/Qyzylorda");
+  public static final ZoneInfo TZ_ID_ASIA_QYZYLORDA = new ZoneInfo(292, "Asia/Qyzylorda");
   
-  public static final ZoneInfo TZ_ID_ASIA_RANGOON = new ZoneInfo(new Integer(293), "Asia/Rangoon");
+  public static final ZoneInfo TZ_ID_ASIA_RANGOON = new ZoneInfo(293, "Asia/Rangoon");
   
-  public static final ZoneInfo TZ_ID_ASIA_RIYADH = new ZoneInfo(new Integer(294), "Asia/Riyadh");
+  public static final ZoneInfo TZ_ID_ASIA_RIYADH = new ZoneInfo(294, "Asia/Riyadh");
   
-  public static final ZoneInfo TZ_ID_ASIA_RIYADH87 = new ZoneInfo(new Integer(295), "Asia/Riyadh87");
+  public static final ZoneInfo TZ_ID_ASIA_RIYADH87 = new ZoneInfo(295, "Asia/Riyadh87");
   
-  public static final ZoneInfo TZ_ID_ASIA_RIYADH88 = new ZoneInfo(new Integer(296), "Asia/Riyadh88");
+  public static final ZoneInfo TZ_ID_ASIA_RIYADH88 = new ZoneInfo(296, "Asia/Riyadh88");
   
-  public static final ZoneInfo TZ_ID_ASIA_RIYADH89 = new ZoneInfo(new Integer(297), "Asia/Riyadh89");
+  public static final ZoneInfo TZ_ID_ASIA_RIYADH89 = new ZoneInfo(297, "Asia/Riyadh89");
   
-  public static final ZoneInfo TZ_ID_ASIA_SAIGON = new ZoneInfo(new Integer(298), "Asia/Saigon");
+  public static final ZoneInfo TZ_ID_ASIA_SAIGON = new ZoneInfo(298, "Asia/Saigon");
   
-  public static final ZoneInfo TZ_ID_ASIA_SAKHALIN = new ZoneInfo(new Integer(299), "Asia/Sakhalin");
+  public static final ZoneInfo TZ_ID_ASIA_SAKHALIN = new ZoneInfo(299, "Asia/Sakhalin");
   
-  public static final ZoneInfo TZ_ID_ASIA_SAMARKAND = new ZoneInfo(new Integer(300), "Asia/Samarkand");
+  public static final ZoneInfo TZ_ID_ASIA_SAMARKAND = new ZoneInfo(300, "Asia/Samarkand");
   
-  public static final ZoneInfo TZ_ID_ASIA_SEOUL = new ZoneInfo(new Integer(301), "Asia/Seoul");
+  public static final ZoneInfo TZ_ID_ASIA_SEOUL = new ZoneInfo(301, "Asia/Seoul");
   
-  public static final ZoneInfo TZ_ID_ASIA_SHANGHAI = new ZoneInfo(new Integer(302), "Asia/Shanghai");
+  public static final ZoneInfo TZ_ID_ASIA_SHANGHAI = new ZoneInfo(302, "Asia/Shanghai");
   
-  public static final ZoneInfo TZ_ID_ASIA_SINGAPORE = new ZoneInfo(new Integer(303), "Asia/Singapore");
+  public static final ZoneInfo TZ_ID_ASIA_SINGAPORE = new ZoneInfo(303, "Asia/Singapore");
   
-  public static final ZoneInfo TZ_ID_ASIA_TAIPEI = new ZoneInfo(new Integer(304), "Asia/Taipei");
+  public static final ZoneInfo TZ_ID_ASIA_TAIPEI = new ZoneInfo(304, "Asia/Taipei");
   
-  public static final ZoneInfo TZ_ID_ASIA_TASHKENT = new ZoneInfo(new Integer(305), "Asia/Tashkent");
+  public static final ZoneInfo TZ_ID_ASIA_TASHKENT = new ZoneInfo(305, "Asia/Tashkent");
   
-  public static final ZoneInfo TZ_ID_ASIA_TBILISI = new ZoneInfo(new Integer(306), "Asia/Tbilisi");
+  public static final ZoneInfo TZ_ID_ASIA_TBILISI = new ZoneInfo(306, "Asia/Tbilisi");
   
-  public static final ZoneInfo TZ_ID_ASIA_TEHRAN = new ZoneInfo(new Integer(307), "Asia/Tehran");
+  public static final ZoneInfo TZ_ID_ASIA_TEHRAN = new ZoneInfo(307, "Asia/Tehran");
   
-  public static final ZoneInfo TZ_ID_ASIA_TEL_AVIV = new ZoneInfo(new Integer(308), "Asia/Tel_Aviv");
+  public static final ZoneInfo TZ_ID_ASIA_TEL_AVIV = new ZoneInfo(308, "Asia/Tel_Aviv");
   
-  public static final ZoneInfo TZ_ID_ASIA_THIMBU = new ZoneInfo(new Integer(309), "Asia/Thimbu");
+  public static final ZoneInfo TZ_ID_ASIA_THIMBU = new ZoneInfo(309, "Asia/Thimbu");
   
-  public static final ZoneInfo TZ_ID_ASIA_THIMPHU = new ZoneInfo(new Integer(310), "Asia/Thimphu");
+  public static final ZoneInfo TZ_ID_ASIA_THIMPHU = new ZoneInfo(310, "Asia/Thimphu");
   
-  public static final ZoneInfo TZ_ID_ASIA_TOKYO = new ZoneInfo(new Integer(311), "Asia/Tokyo");
+  public static final ZoneInfo TZ_ID_ASIA_TOKYO = new ZoneInfo(311, "Asia/Tokyo");
   
-  public static final ZoneInfo TZ_ID_ASIA_UJUNG_PANDANG = new ZoneInfo(new Integer(312), "Asia/Ujung_Pandang");
+  public static final ZoneInfo TZ_ID_ASIA_UJUNG_PANDANG = new ZoneInfo(312, "Asia/Ujung_Pandang");
   
-  public static final ZoneInfo TZ_ID_ASIA_ULAANBAATAR = new ZoneInfo(new Integer(313), "Asia/Ulaanbaatar");
+  public static final ZoneInfo TZ_ID_ASIA_ULAANBAATAR = new ZoneInfo(313, "Asia/Ulaanbaatar");
   
-  public static final ZoneInfo TZ_ID_ASIA_ULAN_BATOR = new ZoneInfo(new Integer(314), "Asia/Ulan_Bator");
+  public static final ZoneInfo TZ_ID_ASIA_ULAN_BATOR = new ZoneInfo(314, "Asia/Ulan_Bator");
   
-  public static final ZoneInfo TZ_ID_ASIA_URUMQI = new ZoneInfo(new Integer(315), "Asia/Urumqi");
+  public static final ZoneInfo TZ_ID_ASIA_URUMQI = new ZoneInfo(315, "Asia/Urumqi");
   
-  public static final ZoneInfo TZ_ID_ASIA_VIENTIANE = new ZoneInfo(new Integer(316), "Asia/Vientiane");
+  public static final ZoneInfo TZ_ID_ASIA_VIENTIANE = new ZoneInfo(316, "Asia/Vientiane");
   
-  public static final ZoneInfo TZ_ID_ASIA_VLADIVOSTOK = new ZoneInfo(new Integer(317), "Asia/Vladivostok");
+  public static final ZoneInfo TZ_ID_ASIA_VLADIVOSTOK = new ZoneInfo(317, "Asia/Vladivostok");
   
-  public static final ZoneInfo TZ_ID_ASIA_YAKUTSK = new ZoneInfo(new Integer(318), "Asia/Yakutsk");
+  public static final ZoneInfo TZ_ID_ASIA_YAKUTSK = new ZoneInfo(318, "Asia/Yakutsk");
   
-  public static final ZoneInfo TZ_ID_ASIA_YEKATERINBURG = new ZoneInfo(new Integer(319), "Asia/Yekaterinburg");
+  public static final ZoneInfo TZ_ID_ASIA_YEKATERINBURG = new ZoneInfo(319, "Asia/Yekaterinburg");
   
-  public static final ZoneInfo TZ_ID_ASIA_YEREVAN = new ZoneInfo(new Integer(320), "Asia/Yerevan");
+  public static final ZoneInfo TZ_ID_ASIA_YEREVAN = new ZoneInfo(320, "Asia/Yerevan");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_AZORES = new ZoneInfo(new Integer(321), "Atlantic/Azores");
+  public static final ZoneInfo TZ_ID_ATLANTIC_AZORES = new ZoneInfo(321, "Atlantic/Azores");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_BERMUDA = new ZoneInfo(new Integer(322), "Atlantic/Bermuda");
+  public static final ZoneInfo TZ_ID_ATLANTIC_BERMUDA = new ZoneInfo(322, "Atlantic/Bermuda");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_CANARY = new ZoneInfo(new Integer(323), "Atlantic/Canary");
+  public static final ZoneInfo TZ_ID_ATLANTIC_CANARY = new ZoneInfo(323, "Atlantic/Canary");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_CAPE_VERDE = new ZoneInfo(new Integer(324), "Atlantic/Cape_Verde");
+  public static final ZoneInfo TZ_ID_ATLANTIC_CAPE_VERDE = new ZoneInfo(324, "Atlantic/Cape_Verde");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_FAEROE = new ZoneInfo(new Integer(325), "Atlantic/Faeroe");
+  public static final ZoneInfo TZ_ID_ATLANTIC_FAEROE = new ZoneInfo(325, "Atlantic/Faeroe");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_FAROE = new ZoneInfo(new Integer(326), "Atlantic/Faroe");
+  public static final ZoneInfo TZ_ID_ATLANTIC_FAROE = new ZoneInfo(326, "Atlantic/Faroe");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_JAN_MAYEN = new ZoneInfo(new Integer(327), "Atlantic/Jan_Mayen");
+  public static final ZoneInfo TZ_ID_ATLANTIC_JAN_MAYEN = new ZoneInfo(327, "Atlantic/Jan_Mayen");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_MADEIRA = new ZoneInfo(new Integer(328), "Atlantic/Madeira");
+  public static final ZoneInfo TZ_ID_ATLANTIC_MADEIRA = new ZoneInfo(328, "Atlantic/Madeira");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_REYKJAVIK = new ZoneInfo(new Integer(329), "Atlantic/Reykjavik");
+  public static final ZoneInfo TZ_ID_ATLANTIC_REYKJAVIK = new ZoneInfo(329, "Atlantic/Reykjavik");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_SOUTH_GEORGIA = new ZoneInfo(new Integer(330), "Atlantic/South_Georgia");
+  public static final ZoneInfo TZ_ID_ATLANTIC_SOUTH_GEORGIA = new ZoneInfo(330, "Atlantic/South_Georgia");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_ST_HELENA = new ZoneInfo(new Integer(331), "Atlantic/St_Helena");
+  public static final ZoneInfo TZ_ID_ATLANTIC_ST_HELENA = new ZoneInfo(331, "Atlantic/St_Helena");
   
-  public static final ZoneInfo TZ_ID_ATLANTIC_STANLEY = new ZoneInfo(new Integer(332), "Atlantic/Stanley");
+  public static final ZoneInfo TZ_ID_ATLANTIC_STANLEY = new ZoneInfo(332, "Atlantic/Stanley");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_ACT = new ZoneInfo(new Integer(333), "Australia/ACT");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_ACT = new ZoneInfo(333, "Australia/ACT");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_ADELAIDE = new ZoneInfo(new Integer(334), "Australia/Adelaide");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_ADELAIDE = new ZoneInfo(334, "Australia/Adelaide");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_BRISBANE = new ZoneInfo(new Integer(335), "Australia/Brisbane");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_BRISBANE = new ZoneInfo(335, "Australia/Brisbane");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_BROKEN_HILL = new ZoneInfo(new Integer(336), "Australia/Broken_Hill");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_BROKEN_HILL = new ZoneInfo(336, "Australia/Broken_Hill");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_CANBERRA = new ZoneInfo(new Integer(337), "Australia/Canberra");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_CANBERRA = new ZoneInfo(337, "Australia/Canberra");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_CURRIE = new ZoneInfo(new Integer(338), "Australia/Currie");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_CURRIE = new ZoneInfo(338, "Australia/Currie");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_DARWIN = new ZoneInfo(new Integer(339), "Australia/Darwin");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_DARWIN = new ZoneInfo(339, "Australia/Darwin");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_EUCLA = new ZoneInfo(new Integer(340), "Australia/Eucla");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_EUCLA = new ZoneInfo(340, "Australia/Eucla");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_HOBART = new ZoneInfo(new Integer(341), "Australia/Hobart");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_HOBART = new ZoneInfo(341, "Australia/Hobart");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_LHI = new ZoneInfo(new Integer(342), "Australia/LHI");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_LHI = new ZoneInfo(342, "Australia/LHI");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_LINDEMAN = new ZoneInfo(new Integer(343), "Australia/Lindeman");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_LINDEMAN = new ZoneInfo(343, "Australia/Lindeman");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_LORD_HOWE = new ZoneInfo(new Integer(344), "Australia/Lord_Howe");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_LORD_HOWE = new ZoneInfo(344, "Australia/Lord_Howe");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_MELBOURNE = new ZoneInfo(new Integer(345), "Australia/Melbourne");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_MELBOURNE = new ZoneInfo(345, "Australia/Melbourne");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_NORTH = new ZoneInfo(new Integer(346), "Australia/North");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_NORTH = new ZoneInfo(346, "Australia/North");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_NSW = new ZoneInfo(new Integer(347), "Australia/NSW");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_NSW = new ZoneInfo(347, "Australia/NSW");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_PERTH = new ZoneInfo(new Integer(348), "Australia/Perth");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_PERTH = new ZoneInfo(348, "Australia/Perth");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_QUEENSLAND = new ZoneInfo(new Integer(349), "Australia/Queensland");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_QUEENSLAND = new ZoneInfo(349, "Australia/Queensland");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_SOUTH = new ZoneInfo(new Integer(350), "Australia/South");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_SOUTH = new ZoneInfo(350, "Australia/South");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_SYDNEY = new ZoneInfo(new Integer(351), "Australia/Sydney");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_SYDNEY = new ZoneInfo(351, "Australia/Sydney");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_TASMANIA = new ZoneInfo(new Integer(352), "Australia/Tasmania");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_TASMANIA = new ZoneInfo(352, "Australia/Tasmania");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_VICTORIA = new ZoneInfo(new Integer(353), "Australia/Victoria");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_VICTORIA = new ZoneInfo(353, "Australia/Victoria");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_WEST = new ZoneInfo(new Integer(354), "Australia/West");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_WEST = new ZoneInfo(354, "Australia/West");
   
-  public static final ZoneInfo TZ_ID_AUSTRALIA_YANCOWINNA = new ZoneInfo(new Integer(355), "Australia/Yancowinna");
+  public static final ZoneInfo TZ_ID_AUSTRALIA_YANCOWINNA = new ZoneInfo(355, "Australia/Yancowinna");
   
-  public static final ZoneInfo TZ_ID_BRAZIL_ACRE = new ZoneInfo(new Integer(356), "Brazil/Acre");
+  public static final ZoneInfo TZ_ID_BRAZIL_ACRE = new ZoneInfo(356, "Brazil/Acre");
   
-  public static final ZoneInfo TZ_ID_BRAZIL_DENORONHA = new ZoneInfo(new Integer(357), "Brazil/DeNoronha");
+  public static final ZoneInfo TZ_ID_BRAZIL_DENORONHA = new ZoneInfo(357, "Brazil/DeNoronha");
   
-  public static final ZoneInfo TZ_ID_BRAZIL_EAST = new ZoneInfo(new Integer(358), "Brazil/East");
+  public static final ZoneInfo TZ_ID_BRAZIL_EAST = new ZoneInfo(358, "Brazil/East");
   
-  public static final ZoneInfo TZ_ID_BRAZIL_WEST = new ZoneInfo(new Integer(359), "Brazil/West");
+  public static final ZoneInfo TZ_ID_BRAZIL_WEST = new ZoneInfo(359, "Brazil/West");
   
-  public static final ZoneInfo TZ_ID_CANADA_ATLANTIC = new ZoneInfo(new Integer(360), "Canada/Atlantic");
+  public static final ZoneInfo TZ_ID_CANADA_ATLANTIC = new ZoneInfo(360, "Canada/Atlantic");
   
-  public static final ZoneInfo TZ_ID_CANADA_CENTRAL = new ZoneInfo(new Integer(361), "Canada/Central");
+  public static final ZoneInfo TZ_ID_CANADA_CENTRAL = new ZoneInfo(361, "Canada/Central");
   
-  public static final ZoneInfo TZ_ID_CANADA_EAST_SASKATCHEWAN = new ZoneInfo(new Integer(362), "Canada/East-Saskatchewan");
+  public static final ZoneInfo TZ_ID_CANADA_EAST_SASKATCHEWAN = new ZoneInfo(362, "Canada/East-Saskatchewan");
   
-  public static final ZoneInfo TZ_ID_CANADA_EASTERN = new ZoneInfo(new Integer(363), "Canada/Eastern");
+  public static final ZoneInfo TZ_ID_CANADA_EASTERN = new ZoneInfo(363, "Canada/Eastern");
   
-  public static final ZoneInfo TZ_ID_CANADA_MOUNTAIN = new ZoneInfo(new Integer(364), "Canada/Mountain");
+  public static final ZoneInfo TZ_ID_CANADA_MOUNTAIN = new ZoneInfo(364, "Canada/Mountain");
   
-  public static final ZoneInfo TZ_ID_CANADA_NEWFOUNDLAND = new ZoneInfo(new Integer(365), "Canada/Newfoundland");
+  public static final ZoneInfo TZ_ID_CANADA_NEWFOUNDLAND = new ZoneInfo(365, "Canada/Newfoundland");
   
-  public static final ZoneInfo TZ_ID_CANADA_PACIFIC = new ZoneInfo(new Integer(366), "Canada/Pacific");
+  public static final ZoneInfo TZ_ID_CANADA_PACIFIC = new ZoneInfo(366, "Canada/Pacific");
   
-  public static final ZoneInfo TZ_ID_CANADA_SASKATCHEWAN = new ZoneInfo(new Integer(367), "Canada/Saskatchewan");
+  public static final ZoneInfo TZ_ID_CANADA_SASKATCHEWAN = new ZoneInfo(367, "Canada/Saskatchewan");
   
-  public static final ZoneInfo TZ_ID_CANADA_YUKON = new ZoneInfo(new Integer(368), "Canada/Yukon");
+  public static final ZoneInfo TZ_ID_CANADA_YUKON = new ZoneInfo(368, "Canada/Yukon");
   
-  public static final ZoneInfo TZ_ID_CET = new ZoneInfo(new Integer(369), "CET");
+  public static final ZoneInfo TZ_ID_CET = new ZoneInfo(369, "CET");
   
-  public static final ZoneInfo TZ_ID_CHILE_CONTINENTAL = new ZoneInfo(new Integer(370), "Chile/Continental");
+  public static final ZoneInfo TZ_ID_CHILE_CONTINENTAL = new ZoneInfo(370, "Chile/Continental");
   
-  public static final ZoneInfo TZ_ID_CHILE_EASTERISLAND = new ZoneInfo(new Integer(371), "Chile/EasterIsland");
+  public static final ZoneInfo TZ_ID_CHILE_EASTERISLAND = new ZoneInfo(371, "Chile/EasterIsland");
   
-  public static final ZoneInfo TZ_ID_CST6CDT = new ZoneInfo(new Integer(372), "CST6CDT");
+  public static final ZoneInfo TZ_ID_CST6CDT = new ZoneInfo(372, "CST6CDT");
   
-  public static final ZoneInfo TZ_ID_CUBA = new ZoneInfo(new Integer(373), "Cuba");
+  public static final ZoneInfo TZ_ID_CUBA = new ZoneInfo(373, "Cuba");
   
-  public static final ZoneInfo TZ_ID_EET = new ZoneInfo(new Integer(374), "EET");
+  public static final ZoneInfo TZ_ID_EET = new ZoneInfo(374, "EET");
   
-  public static final ZoneInfo TZ_ID_EGYPT = new ZoneInfo(new Integer(375), "Egypt");
+  public static final ZoneInfo TZ_ID_EGYPT = new ZoneInfo(375, "Egypt");
   
-  public static final ZoneInfo TZ_ID_EIRE = new ZoneInfo(new Integer(376), "Eire");
+  public static final ZoneInfo TZ_ID_EIRE = new ZoneInfo(376, "Eire");
   
-  public static final ZoneInfo TZ_ID_EST = new ZoneInfo(new Integer(377), "EST");
+  public static final ZoneInfo TZ_ID_EST = new ZoneInfo(377, "EST");
   
-  public static final ZoneInfo TZ_ID_EST5EDT = new ZoneInfo(new Integer(378), "EST5EDT");
+  public static final ZoneInfo TZ_ID_EST5EDT = new ZoneInfo(378, "EST5EDT");
   
-  public static final ZoneInfo TZ_ID_ETC_GMT = new ZoneInfo(new Integer(379), "Etc/GMT");
+  public static final ZoneInfo TZ_ID_ETC_GMT = new ZoneInfo(379, "Etc/GMT");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW0 = new ZoneInfo(new Integer(380), "Etc/GMT+0");
+  public static final ZoneInfo TZ_ID_ETC_GMTW0 = new ZoneInfo(380, "Etc/GMT+0");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW1 = new ZoneInfo(new Integer(381), "Etc/GMT+1");
+  public static final ZoneInfo TZ_ID_ETC_GMTW1 = new ZoneInfo(381, "Etc/GMT+1");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW10 = new ZoneInfo(new Integer(382), "Etc/GMT+10");
+  public static final ZoneInfo TZ_ID_ETC_GMTW10 = new ZoneInfo(382, "Etc/GMT+10");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW11 = new ZoneInfo(new Integer(383), "Etc/GMT+11");
+  public static final ZoneInfo TZ_ID_ETC_GMTW11 = new ZoneInfo(383, "Etc/GMT+11");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW12 = new ZoneInfo(new Integer(384), "Etc/GMT+12");
+  public static final ZoneInfo TZ_ID_ETC_GMTW12 = new ZoneInfo(384, "Etc/GMT+12");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW2 = new ZoneInfo(new Integer(385), "Etc/GMT+2");
+  public static final ZoneInfo TZ_ID_ETC_GMTW2 = new ZoneInfo(385, "Etc/GMT+2");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW3 = new ZoneInfo(new Integer(386), "Etc/GMT+3");
+  public static final ZoneInfo TZ_ID_ETC_GMTW3 = new ZoneInfo(386, "Etc/GMT+3");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW4 = new ZoneInfo(new Integer(387), "Etc/GMT+4");
+  public static final ZoneInfo TZ_ID_ETC_GMTW4 = new ZoneInfo(387, "Etc/GMT+4");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW5 = new ZoneInfo(new Integer(388), "Etc/GMT+5");
+  public static final ZoneInfo TZ_ID_ETC_GMTW5 = new ZoneInfo(388, "Etc/GMT+5");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW6 = new ZoneInfo(new Integer(389), "Etc/GMT+6");
+  public static final ZoneInfo TZ_ID_ETC_GMTW6 = new ZoneInfo(389, "Etc/GMT+6");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW7 = new ZoneInfo(new Integer(390), "Etc/GMT+7");
+  public static final ZoneInfo TZ_ID_ETC_GMTW7 = new ZoneInfo(390, "Etc/GMT+7");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW8 = new ZoneInfo(new Integer(391), "Etc/GMT+8");
+  public static final ZoneInfo TZ_ID_ETC_GMTW8 = new ZoneInfo(391, "Etc/GMT+8");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTW9 = new ZoneInfo(new Integer(392), "Etc/GMT+9");
+  public static final ZoneInfo TZ_ID_ETC_GMTW9 = new ZoneInfo(392, "Etc/GMT+9");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE0 = new ZoneInfo(new Integer(393), "Etc/GMT-0");
+  public static final ZoneInfo TZ_ID_ETC_GMTE0 = new ZoneInfo(393, "Etc/GMT-0");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE1 = new ZoneInfo(new Integer(394), "Etc/GMT-1");
+  public static final ZoneInfo TZ_ID_ETC_GMTE1 = new ZoneInfo(394, "Etc/GMT-1");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE10 = new ZoneInfo(new Integer(395), "Etc/GMT-10");
+  public static final ZoneInfo TZ_ID_ETC_GMTE10 = new ZoneInfo(395, "Etc/GMT-10");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE11 = new ZoneInfo(new Integer(396), "Etc/GMT-11");
+  public static final ZoneInfo TZ_ID_ETC_GMTE11 = new ZoneInfo(396, "Etc/GMT-11");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE12 = new ZoneInfo(new Integer(397), "Etc/GMT-12");
+  public static final ZoneInfo TZ_ID_ETC_GMTE12 = new ZoneInfo(397, "Etc/GMT-12");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE13 = new ZoneInfo(new Integer(398), "Etc/GMT-13");
+  public static final ZoneInfo TZ_ID_ETC_GMTE13 = new ZoneInfo(398, "Etc/GMT-13");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE14 = new ZoneInfo(new Integer(399), "Etc/GMT-14");
+  public static final ZoneInfo TZ_ID_ETC_GMTE14 = new ZoneInfo(399, "Etc/GMT-14");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE2 = new ZoneInfo(new Integer(400), "Etc/GMT-2");
+  public static final ZoneInfo TZ_ID_ETC_GMTE2 = new ZoneInfo(400, "Etc/GMT-2");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE3 = new ZoneInfo(new Integer(401), "Etc/GMT-3");
+  public static final ZoneInfo TZ_ID_ETC_GMTE3 = new ZoneInfo(401, "Etc/GMT-3");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE4 = new ZoneInfo(new Integer(402), "Etc/GMT-4");
+  public static final ZoneInfo TZ_ID_ETC_GMTE4 = new ZoneInfo(402, "Etc/GMT-4");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE5 = new ZoneInfo(new Integer(403), "Etc/GMT-5");
+  public static final ZoneInfo TZ_ID_ETC_GMTE5 = new ZoneInfo(403, "Etc/GMT-5");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE6 = new ZoneInfo(new Integer(404), "Etc/GMT-6");
+  public static final ZoneInfo TZ_ID_ETC_GMTE6 = new ZoneInfo(404, "Etc/GMT-6");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE7 = new ZoneInfo(new Integer(405), "Etc/GMT-7");
+  public static final ZoneInfo TZ_ID_ETC_GMTE7 = new ZoneInfo(405, "Etc/GMT-7");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE8 = new ZoneInfo(new Integer(406), "Etc/GMT-8");
+  public static final ZoneInfo TZ_ID_ETC_GMTE8 = new ZoneInfo(406, "Etc/GMT-8");
   
-  public static final ZoneInfo TZ_ID_ETC_GMTE9 = new ZoneInfo(new Integer(407), "Etc/GMT-9");
+  public static final ZoneInfo TZ_ID_ETC_GMTE9 = new ZoneInfo(407, "Etc/GMT-9");
   
-  public static final ZoneInfo TZ_ID_ETC_GMT0 = new ZoneInfo(new Integer(408), "Etc/GMT0");
+  public static final ZoneInfo TZ_ID_ETC_GMT0 = new ZoneInfo(408, "Etc/GMT0");
   
-  public static final ZoneInfo TZ_ID_ETC_GREENWICH = new ZoneInfo(new Integer(409), "Etc/Greenwich");
+  public static final ZoneInfo TZ_ID_ETC_GREENWICH = new ZoneInfo(409, "Etc/Greenwich");
   
-  public static final ZoneInfo TZ_ID_ETC_UCT = new ZoneInfo(new Integer(410), "Etc/UCT");
+  public static final ZoneInfo TZ_ID_ETC_UCT = new ZoneInfo(410, "Etc/UCT");
   
-  public static final ZoneInfo TZ_ID_ETC_UNIVERSAL = new ZoneInfo(new Integer(411), "Etc/Universal");
+  public static final ZoneInfo TZ_ID_ETC_UNIVERSAL = new ZoneInfo(411, "Etc/Universal");
   
-  public static final ZoneInfo TZ_ID_ETC_UTC = new ZoneInfo(new Integer(412), "Etc/UTC");
+  public static final ZoneInfo TZ_ID_ETC_UTC = new ZoneInfo(412, "Etc/UTC");
   
-  public static final ZoneInfo TZ_ID_ETC_ZULU = new ZoneInfo(new Integer(413), "Etc/Zulu");
+  public static final ZoneInfo TZ_ID_ETC_ZULU = new ZoneInfo(413, "Etc/Zulu");
   
-  public static final ZoneInfo TZ_ID_EUROPE_AMSTERDAM = new ZoneInfo(new Integer(414), "Europe/Amsterdam");
+  public static final ZoneInfo TZ_ID_EUROPE_AMSTERDAM = new ZoneInfo(414, "Europe/Amsterdam");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ANDORRA = new ZoneInfo(new Integer(415), "Europe/Andorra");
+  public static final ZoneInfo TZ_ID_EUROPE_ANDORRA = new ZoneInfo(415, "Europe/Andorra");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ATHENS = new ZoneInfo(new Integer(416), "Europe/Athens");
+  public static final ZoneInfo TZ_ID_EUROPE_ATHENS = new ZoneInfo(416, "Europe/Athens");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BELFAST = new ZoneInfo(new Integer(417), "Europe/Belfast");
+  public static final ZoneInfo TZ_ID_EUROPE_BELFAST = new ZoneInfo(417, "Europe/Belfast");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BELGRADE = new ZoneInfo(new Integer(418), "Europe/Belgrade");
+  public static final ZoneInfo TZ_ID_EUROPE_BELGRADE = new ZoneInfo(418, "Europe/Belgrade");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BERLIN = new ZoneInfo(new Integer(419), "Europe/Berlin");
+  public static final ZoneInfo TZ_ID_EUROPE_BERLIN = new ZoneInfo(419, "Europe/Berlin");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BRATISLAVA = new ZoneInfo(new Integer(420), "Europe/Bratislava");
+  public static final ZoneInfo TZ_ID_EUROPE_BRATISLAVA = new ZoneInfo(420, "Europe/Bratislava");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BRUSSELS = new ZoneInfo(new Integer(421), "Europe/Brussels");
+  public static final ZoneInfo TZ_ID_EUROPE_BRUSSELS = new ZoneInfo(421, "Europe/Brussels");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BUCHAREST = new ZoneInfo(new Integer(422), "Europe/Bucharest");
+  public static final ZoneInfo TZ_ID_EUROPE_BUCHAREST = new ZoneInfo(422, "Europe/Bucharest");
   
-  public static final ZoneInfo TZ_ID_EUROPE_BUDAPEST = new ZoneInfo(new Integer(423), "Europe/Budapest");
+  public static final ZoneInfo TZ_ID_EUROPE_BUDAPEST = new ZoneInfo(423, "Europe/Budapest");
   
-  public static final ZoneInfo TZ_ID_EUROPE_CHISINAU = new ZoneInfo(new Integer(424), "Europe/Chisinau");
+  public static final ZoneInfo TZ_ID_EUROPE_CHISINAU = new ZoneInfo(424, "Europe/Chisinau");
   
-  public static final ZoneInfo TZ_ID_EUROPE_COPENHAGEN = new ZoneInfo(new Integer(425), "Europe/Copenhagen");
+  public static final ZoneInfo TZ_ID_EUROPE_COPENHAGEN = new ZoneInfo(425, "Europe/Copenhagen");
   
-  public static final ZoneInfo TZ_ID_EUROPE_DUBLIN = new ZoneInfo(new Integer(426), "Europe/Dublin");
+  public static final ZoneInfo TZ_ID_EUROPE_DUBLIN = new ZoneInfo(426, "Europe/Dublin");
   
-  public static final ZoneInfo TZ_ID_EUROPE_GIBRALTAR = new ZoneInfo(new Integer(427), "Europe/Gibraltar");
+  public static final ZoneInfo TZ_ID_EUROPE_GIBRALTAR = new ZoneInfo(427, "Europe/Gibraltar");
   
-  public static final ZoneInfo TZ_ID_EUROPE_GUERNSEY = new ZoneInfo(new Integer(428), "Europe/Guernsey");
+  public static final ZoneInfo TZ_ID_EUROPE_GUERNSEY = new ZoneInfo(428, "Europe/Guernsey");
   
-  public static final ZoneInfo TZ_ID_EUROPE_HELSINKI = new ZoneInfo(new Integer(429), "Europe/Helsinki");
+  public static final ZoneInfo TZ_ID_EUROPE_HELSINKI = new ZoneInfo(429, "Europe/Helsinki");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ISLE_OF_MAN = new ZoneInfo(new Integer(430), "Europe/Isle_of_Man");
+  public static final ZoneInfo TZ_ID_EUROPE_ISLE_OF_MAN = new ZoneInfo(430, "Europe/Isle_of_Man");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ISTANBUL = new ZoneInfo(new Integer(431), "Europe/Istanbul");
+  public static final ZoneInfo TZ_ID_EUROPE_ISTANBUL = new ZoneInfo(431, "Europe/Istanbul");
   
-  public static final ZoneInfo TZ_ID_EUROPE_JERSEY = new ZoneInfo(new Integer(432), "Europe/Jersey");
+  public static final ZoneInfo TZ_ID_EUROPE_JERSEY = new ZoneInfo(432, "Europe/Jersey");
   
-  public static final ZoneInfo TZ_ID_EUROPE_KALININGRAD = new ZoneInfo(new Integer(433), "Europe/Kaliningrad");
+  public static final ZoneInfo TZ_ID_EUROPE_KALININGRAD = new ZoneInfo(433, "Europe/Kaliningrad");
   
-  public static final ZoneInfo TZ_ID_EUROPE_KIEV = new ZoneInfo(new Integer(434), "Europe/Kiev");
+  public static final ZoneInfo TZ_ID_EUROPE_KIEV = new ZoneInfo(434, "Europe/Kiev");
   
-  public static final ZoneInfo TZ_ID_EUROPE_LISBON = new ZoneInfo(new Integer(435), "Europe/Lisbon");
+  public static final ZoneInfo TZ_ID_EUROPE_LISBON = new ZoneInfo(435, "Europe/Lisbon");
   
-  public static final ZoneInfo TZ_ID_EUROPE_LJUBLJANA = new ZoneInfo(new Integer(436), "Europe/Ljubljana");
+  public static final ZoneInfo TZ_ID_EUROPE_LJUBLJANA = new ZoneInfo(436, "Europe/Ljubljana");
   
-  public static final ZoneInfo TZ_ID_EUROPE_LONDON = new ZoneInfo(new Integer(437), "Europe/London");
+  public static final ZoneInfo TZ_ID_EUROPE_LONDON = new ZoneInfo(437, "Europe/London");
   
-  public static final ZoneInfo TZ_ID_EUROPE_LUXEMBOURG = new ZoneInfo(new Integer(438), "Europe/Luxembourg");
+  public static final ZoneInfo TZ_ID_EUROPE_LUXEMBOURG = new ZoneInfo(438, "Europe/Luxembourg");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MADRID = new ZoneInfo(new Integer(439), "Europe/Madrid");
+  public static final ZoneInfo TZ_ID_EUROPE_MADRID = new ZoneInfo(439, "Europe/Madrid");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MALTA = new ZoneInfo(new Integer(440), "Europe/Malta");
+  public static final ZoneInfo TZ_ID_EUROPE_MALTA = new ZoneInfo(440, "Europe/Malta");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MARIEHAMN = new ZoneInfo(new Integer(441), "Europe/Mariehamn");
+  public static final ZoneInfo TZ_ID_EUROPE_MARIEHAMN = new ZoneInfo(441, "Europe/Mariehamn");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MINSK = new ZoneInfo(new Integer(442), "Europe/Minsk");
+  public static final ZoneInfo TZ_ID_EUROPE_MINSK = new ZoneInfo(442, "Europe/Minsk");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MONACO = new ZoneInfo(new Integer(443), "Europe/Monaco");
+  public static final ZoneInfo TZ_ID_EUROPE_MONACO = new ZoneInfo(443, "Europe/Monaco");
   
-  public static final ZoneInfo TZ_ID_EUROPE_MOSCOW = new ZoneInfo(new Integer(444), "Europe/Moscow");
+  public static final ZoneInfo TZ_ID_EUROPE_MOSCOW = new ZoneInfo(444, "Europe/Moscow");
   
-  public static final ZoneInfo TZ_ID_EUROPE_NICOSIA = new ZoneInfo(new Integer(445), "Europe/Nicosia");
+  public static final ZoneInfo TZ_ID_EUROPE_NICOSIA = new ZoneInfo(445, "Europe/Nicosia");
   
-  public static final ZoneInfo TZ_ID_EUROPE_OSLO = new ZoneInfo(new Integer(446), "Europe/Oslo");
+  public static final ZoneInfo TZ_ID_EUROPE_OSLO = new ZoneInfo(446, "Europe/Oslo");
   
-  public static final ZoneInfo TZ_ID_EUROPE_PARIS = new ZoneInfo(new Integer(447), "Europe/Paris");
+  public static final ZoneInfo TZ_ID_EUROPE_PARIS = new ZoneInfo(447, "Europe/Paris");
   
-  public static final ZoneInfo TZ_ID_EUROPE_PODGORICA = new ZoneInfo(new Integer(448), "Europe/Podgorica");
+  public static final ZoneInfo TZ_ID_EUROPE_PODGORICA = new ZoneInfo(448, "Europe/Podgorica");
   
-  public static final ZoneInfo TZ_ID_EUROPE_PRAGUE = new ZoneInfo(new Integer(449), "Europe/Prague");
+  public static final ZoneInfo TZ_ID_EUROPE_PRAGUE = new ZoneInfo(449, "Europe/Prague");
   
-  public static final ZoneInfo TZ_ID_EUROPE_RIGA = new ZoneInfo(new Integer(450), "Europe/Riga");
+  public static final ZoneInfo TZ_ID_EUROPE_RIGA = new ZoneInfo(450, "Europe/Riga");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ROME = new ZoneInfo(new Integer(451), "Europe/Rome");
+  public static final ZoneInfo TZ_ID_EUROPE_ROME = new ZoneInfo(451, "Europe/Rome");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SAMARA = new ZoneInfo(new Integer(452), "Europe/Samara");
+  public static final ZoneInfo TZ_ID_EUROPE_SAMARA = new ZoneInfo(452, "Europe/Samara");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SAN_MARINO = new ZoneInfo(new Integer(453), "Europe/San_Marino");
+  public static final ZoneInfo TZ_ID_EUROPE_SAN_MARINO = new ZoneInfo(453, "Europe/San_Marino");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SARAJEVO = new ZoneInfo(new Integer(454), "Europe/Sarajevo");
+  public static final ZoneInfo TZ_ID_EUROPE_SARAJEVO = new ZoneInfo(454, "Europe/Sarajevo");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SIMFEROPOL = new ZoneInfo(new Integer(455), "Europe/Simferopol");
+  public static final ZoneInfo TZ_ID_EUROPE_SIMFEROPOL = new ZoneInfo(455, "Europe/Simferopol");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SKOPJE = new ZoneInfo(new Integer(456), "Europe/Skopje");
+  public static final ZoneInfo TZ_ID_EUROPE_SKOPJE = new ZoneInfo(456, "Europe/Skopje");
   
-  public static final ZoneInfo TZ_ID_EUROPE_SOFIA = new ZoneInfo(new Integer(457), "Europe/Sofia");
+  public static final ZoneInfo TZ_ID_EUROPE_SOFIA = new ZoneInfo(457, "Europe/Sofia");
   
-  public static final ZoneInfo TZ_ID_EUROPE_STOCKHOLM = new ZoneInfo(new Integer(458), "Europe/Stockholm");
+  public static final ZoneInfo TZ_ID_EUROPE_STOCKHOLM = new ZoneInfo(458, "Europe/Stockholm");
   
-  public static final ZoneInfo TZ_ID_EUROPE_TALLINN = new ZoneInfo(new Integer(459), "Europe/Tallinn");
+  public static final ZoneInfo TZ_ID_EUROPE_TALLINN = new ZoneInfo(459, "Europe/Tallinn");
   
-  public static final ZoneInfo TZ_ID_EUROPE_TIRANE = new ZoneInfo(new Integer(460), "Europe/Tirane");
+  public static final ZoneInfo TZ_ID_EUROPE_TIRANE = new ZoneInfo(460, "Europe/Tirane");
   
-  public static final ZoneInfo TZ_ID_EUROPE_TIRASPOL = new ZoneInfo(new Integer(461), "Europe/Tiraspol");
+  public static final ZoneInfo TZ_ID_EUROPE_TIRASPOL = new ZoneInfo(461, "Europe/Tiraspol");
   
-  public static final ZoneInfo TZ_ID_EUROPE_UZHGOROD = new ZoneInfo(new Integer(462), "Europe/Uzhgorod");
+  public static final ZoneInfo TZ_ID_EUROPE_UZHGOROD = new ZoneInfo(462, "Europe/Uzhgorod");
   
-  public static final ZoneInfo TZ_ID_EUROPE_VADUZ = new ZoneInfo(new Integer(463), "Europe/Vaduz");
+  public static final ZoneInfo TZ_ID_EUROPE_VADUZ = new ZoneInfo(463, "Europe/Vaduz");
   
-  public static final ZoneInfo TZ_ID_EUROPE_VATICAN = new ZoneInfo(new Integer(464), "Europe/Vatican");
+  public static final ZoneInfo TZ_ID_EUROPE_VATICAN = new ZoneInfo(464, "Europe/Vatican");
   
-  public static final ZoneInfo TZ_ID_EUROPE_VIENNA = new ZoneInfo(new Integer(465), "Europe/Vienna");
+  public static final ZoneInfo TZ_ID_EUROPE_VIENNA = new ZoneInfo(465, "Europe/Vienna");
   
-  public static final ZoneInfo TZ_ID_EUROPE_VILNIUS = new ZoneInfo(new Integer(466), "Europe/Vilnius");
+  public static final ZoneInfo TZ_ID_EUROPE_VILNIUS = new ZoneInfo(466, "Europe/Vilnius");
   
-  public static final ZoneInfo TZ_ID_EUROPE_VOLGOGRAD = new ZoneInfo(new Integer(467), "Europe/Volgograd");
+  public static final ZoneInfo TZ_ID_EUROPE_VOLGOGRAD = new ZoneInfo(467, "Europe/Volgograd");
   
-  public static final ZoneInfo TZ_ID_EUROPE_WARSAW = new ZoneInfo(new Integer(468), "Europe/Warsaw");
+  public static final ZoneInfo TZ_ID_EUROPE_WARSAW = new ZoneInfo(468, "Europe/Warsaw");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ZAGREB = new ZoneInfo(new Integer(469), "Europe/Zagreb");
+  public static final ZoneInfo TZ_ID_EUROPE_ZAGREB = new ZoneInfo(469, "Europe/Zagreb");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ZAPOROZHYE = new ZoneInfo(new Integer(470), "Europe/Zaporozhye");
+  public static final ZoneInfo TZ_ID_EUROPE_ZAPOROZHYE = new ZoneInfo(470, "Europe/Zaporozhye");
   
-  public static final ZoneInfo TZ_ID_EUROPE_ZURICH = new ZoneInfo(new Integer(471), "Europe/Zurich");
+  public static final ZoneInfo TZ_ID_EUROPE_ZURICH = new ZoneInfo(471, "Europe/Zurich");
   
-  public static final ZoneInfo TZ_ID_GB = new ZoneInfo(new Integer(472), "GB");
+  public static final ZoneInfo TZ_ID_GB = new ZoneInfo(472, "GB");
   
-  public static final ZoneInfo TZ_ID_GB_EIRE = new ZoneInfo(new Integer(473), "GB-Eire");
+  public static final ZoneInfo TZ_ID_GB_EIRE = new ZoneInfo(473, "GB-Eire");
   
-  public static final ZoneInfo TZ_ID_GMT = new ZoneInfo(new Integer(474), "GMT");
+  public static final ZoneInfo TZ_ID_GMT = new ZoneInfo(474, "GMT");
   
-  public static final ZoneInfo TZ_ID_GMTW0 = new ZoneInfo(new Integer(475), "GMT+0");
+  public static final ZoneInfo TZ_ID_GMTW0 = new ZoneInfo(475, "GMT+0");
   
-  public static final ZoneInfo TZ_ID_GMTE0 = new ZoneInfo(new Integer(476), "GMT-0");
+  public static final ZoneInfo TZ_ID_GMTE0 = new ZoneInfo(476, "GMT-0");
   
-  public static final ZoneInfo TZ_ID_GMT0 = new ZoneInfo(new Integer(477), "GMT0");
+  public static final ZoneInfo TZ_ID_GMT0 = new ZoneInfo(477, "GMT0");
   
-  public static final ZoneInfo TZ_ID_GREENWICH = new ZoneInfo(new Integer(478), "Greenwich");
+  public static final ZoneInfo TZ_ID_GREENWICH = new ZoneInfo(478, "Greenwich");
   
-  public static final ZoneInfo TZ_ID_HONGKONG = new ZoneInfo(new Integer(479), "Hongkong");
+  public static final ZoneInfo TZ_ID_HONGKONG = new ZoneInfo(479, "Hongkong");
   
-  public static final ZoneInfo TZ_ID_HST = new ZoneInfo(new Integer(480), "HST");
+  public static final ZoneInfo TZ_ID_HST = new ZoneInfo(480, "HST");
   
-  public static final ZoneInfo TZ_ID_ICELAND = new ZoneInfo(new Integer(481), "Iceland");
+  public static final ZoneInfo TZ_ID_ICELAND = new ZoneInfo(481, "Iceland");
   
-  public static final ZoneInfo TZ_ID_INDIAN_ANTANANARIVO = new ZoneInfo(new Integer(482), "Indian/Antananarivo");
+  public static final ZoneInfo TZ_ID_INDIAN_ANTANANARIVO = new ZoneInfo(482, "Indian/Antananarivo");
   
-  public static final ZoneInfo TZ_ID_INDIAN_CHAGOS = new ZoneInfo(new Integer(483), "Indian/Chagos");
+  public static final ZoneInfo TZ_ID_INDIAN_CHAGOS = new ZoneInfo(483, "Indian/Chagos");
   
-  public static final ZoneInfo TZ_ID_INDIAN_CHRISTMAS = new ZoneInfo(new Integer(484), "Indian/Christmas");
+  public static final ZoneInfo TZ_ID_INDIAN_CHRISTMAS = new ZoneInfo(484, "Indian/Christmas");
   
-  public static final ZoneInfo TZ_ID_INDIAN_COCOS = new ZoneInfo(new Integer(485), "Indian/Cocos");
+  public static final ZoneInfo TZ_ID_INDIAN_COCOS = new ZoneInfo(485, "Indian/Cocos");
   
-  public static final ZoneInfo TZ_ID_INDIAN_COMORO = new ZoneInfo(new Integer(486), "Indian/Comoro");
+  public static final ZoneInfo TZ_ID_INDIAN_COMORO = new ZoneInfo(486, "Indian/Comoro");
   
-  public static final ZoneInfo TZ_ID_INDIAN_KERGUELEN = new ZoneInfo(new Integer(487), "Indian/Kerguelen");
+  public static final ZoneInfo TZ_ID_INDIAN_KERGUELEN = new ZoneInfo(487, "Indian/Kerguelen");
   
-  public static final ZoneInfo TZ_ID_INDIAN_MAHE = new ZoneInfo(new Integer(488), "Indian/Mahe");
+  public static final ZoneInfo TZ_ID_INDIAN_MAHE = new ZoneInfo(488, "Indian/Mahe");
   
-  public static final ZoneInfo TZ_ID_INDIAN_MALDIVES = new ZoneInfo(new Integer(489), "Indian/Maldives");
+  public static final ZoneInfo TZ_ID_INDIAN_MALDIVES = new ZoneInfo(489, "Indian/Maldives");
   
-  public static final ZoneInfo TZ_ID_INDIAN_MAURITIUS = new ZoneInfo(new Integer(490), "Indian/Mauritius");
+  public static final ZoneInfo TZ_ID_INDIAN_MAURITIUS = new ZoneInfo(490, "Indian/Mauritius");
   
-  public static final ZoneInfo TZ_ID_INDIAN_MAYOTTE = new ZoneInfo(new Integer(491), "Indian/Mayotte");
+  public static final ZoneInfo TZ_ID_INDIAN_MAYOTTE = new ZoneInfo(491, "Indian/Mayotte");
   
-  public static final ZoneInfo TZ_ID_INDIAN_REUNION = new ZoneInfo(new Integer(492), "Indian/Reunion");
+  public static final ZoneInfo TZ_ID_INDIAN_REUNION = new ZoneInfo(492, "Indian/Reunion");
   
-  public static final ZoneInfo TZ_ID_IRAN = new ZoneInfo(new Integer(493), "Iran");
+  public static final ZoneInfo TZ_ID_IRAN = new ZoneInfo(493, "Iran");
   
-  public static final ZoneInfo TZ_ID_ISRAEL = new ZoneInfo(new Integer(494), "Israel");
+  public static final ZoneInfo TZ_ID_ISRAEL = new ZoneInfo(494, "Israel");
   
-  public static final ZoneInfo TZ_ID_JAMAICA = new ZoneInfo(new Integer(495), "Jamaica");
+  public static final ZoneInfo TZ_ID_JAMAICA = new ZoneInfo(495, "Jamaica");
   
-  public static final ZoneInfo TZ_ID_JAPAN = new ZoneInfo(new Integer(496), "Japan");
+  public static final ZoneInfo TZ_ID_JAPAN = new ZoneInfo(496, "Japan");
   
-  public static final ZoneInfo TZ_ID_KWAJALEIN = new ZoneInfo(new Integer(497), "Kwajalein");
+  public static final ZoneInfo TZ_ID_KWAJALEIN = new ZoneInfo(497, "Kwajalein");
   
-  public static final ZoneInfo TZ_ID_LIBYA = new ZoneInfo(new Integer(498), "Libya");
+  public static final ZoneInfo TZ_ID_LIBYA = new ZoneInfo(498, "Libya");
   
-  public static final ZoneInfo TZ_ID_MET = new ZoneInfo(new Integer(499), "MET");
+  public static final ZoneInfo TZ_ID_MET = new ZoneInfo(499, "MET");
   
-  public static final ZoneInfo TZ_ID_MEXICO_BAJANORTE = new ZoneInfo(new Integer(500), "Mexico/BajaNorte");
+  public static final ZoneInfo TZ_ID_MEXICO_BAJANORTE = new ZoneInfo(500, "Mexico/BajaNorte");
   
-  public static final ZoneInfo TZ_ID_MEXICO_BAJASUR = new ZoneInfo(new Integer(501), "Mexico/BajaSur");
+  public static final ZoneInfo TZ_ID_MEXICO_BAJASUR = new ZoneInfo(501, "Mexico/BajaSur");
   
-  public static final ZoneInfo TZ_ID_MEXICO_GENERAL = new ZoneInfo(new Integer(502), "Mexico/General");
+  public static final ZoneInfo TZ_ID_MEXICO_GENERAL = new ZoneInfo(502, "Mexico/General");
   
-  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH87 = new ZoneInfo(new Integer(503), "Mideast/Riyadh87");
+  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH87 = new ZoneInfo(503, "Mideast/Riyadh87");
   
-  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH88 = new ZoneInfo(new Integer(504), "Mideast/Riyadh88");
+  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH88 = new ZoneInfo(504, "Mideast/Riyadh88");
   
-  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH89 = new ZoneInfo(new Integer(505), "Mideast/Riyadh89");
+  public static final ZoneInfo TZ_ID_MIDEAST_RIYADH89 = new ZoneInfo(505, "Mideast/Riyadh89");
   
-  public static final ZoneInfo TZ_ID_MST = new ZoneInfo(new Integer(506), "MST");
+  public static final ZoneInfo TZ_ID_MST = new ZoneInfo(506, "MST");
   
-  public static final ZoneInfo TZ_ID_MST7MDT = new ZoneInfo(new Integer(507), "MST7MDT");
+  public static final ZoneInfo TZ_ID_MST7MDT = new ZoneInfo(507, "MST7MDT");
   
-  public static final ZoneInfo TZ_ID_NAVAJO = new ZoneInfo(new Integer(508), "Navajo");
+  public static final ZoneInfo TZ_ID_NAVAJO = new ZoneInfo(508, "Navajo");
   
-  public static final ZoneInfo TZ_ID_NZ = new ZoneInfo(new Integer(509), "NZ");
+  public static final ZoneInfo TZ_ID_NZ = new ZoneInfo(509, "NZ");
   
-  public static final ZoneInfo TZ_ID_NZ_CHAT = new ZoneInfo(new Integer(510), "NZ-CHAT");
+  public static final ZoneInfo TZ_ID_NZ_CHAT = new ZoneInfo(510, "NZ-CHAT");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_APIA = new ZoneInfo(new Integer(511), "Pacific/Apia");
+  public static final ZoneInfo TZ_ID_PACIFIC_APIA = new ZoneInfo(511, "Pacific/Apia");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_AUCKLAND = new ZoneInfo(new Integer(512), "Pacific/Auckland");
+  public static final ZoneInfo TZ_ID_PACIFIC_AUCKLAND = new ZoneInfo(512, "Pacific/Auckland");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_CHATHAM = new ZoneInfo(new Integer(513), "Pacific/Chatham");
+  public static final ZoneInfo TZ_ID_PACIFIC_CHATHAM = new ZoneInfo(513, "Pacific/Chatham");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_CHUUK = new ZoneInfo(new Integer(514), "Pacific/Chuuk");
+  public static final ZoneInfo TZ_ID_PACIFIC_CHUUK = new ZoneInfo(514, "Pacific/Chuuk");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_EASTER = new ZoneInfo(new Integer(515), "Pacific/Easter");
+  public static final ZoneInfo TZ_ID_PACIFIC_EASTER = new ZoneInfo(515, "Pacific/Easter");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_EFATE = new ZoneInfo(new Integer(516), "Pacific/Efate");
+  public static final ZoneInfo TZ_ID_PACIFIC_EFATE = new ZoneInfo(516, "Pacific/Efate");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_ENDERBURY = new ZoneInfo(new Integer(517), "Pacific/Enderbury");
+  public static final ZoneInfo TZ_ID_PACIFIC_ENDERBURY = new ZoneInfo(517, "Pacific/Enderbury");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_FAKAOFO = new ZoneInfo(new Integer(518), "Pacific/Fakaofo");
+  public static final ZoneInfo TZ_ID_PACIFIC_FAKAOFO = new ZoneInfo(518, "Pacific/Fakaofo");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_FIJI = new ZoneInfo(new Integer(519), "Pacific/Fiji");
+  public static final ZoneInfo TZ_ID_PACIFIC_FIJI = new ZoneInfo(519, "Pacific/Fiji");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_FUNAFUTI = new ZoneInfo(new Integer(520), "Pacific/Funafuti");
+  public static final ZoneInfo TZ_ID_PACIFIC_FUNAFUTI = new ZoneInfo(520, "Pacific/Funafuti");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_GALAPAGOS = new ZoneInfo(new Integer(521), "Pacific/Galapagos");
+  public static final ZoneInfo TZ_ID_PACIFIC_GALAPAGOS = new ZoneInfo(521, "Pacific/Galapagos");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_GAMBIER = new ZoneInfo(new Integer(522), "Pacific/Gambier");
+  public static final ZoneInfo TZ_ID_PACIFIC_GAMBIER = new ZoneInfo(522, "Pacific/Gambier");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_GUADALCANAL = new ZoneInfo(new Integer(523), "Pacific/Guadalcanal");
+  public static final ZoneInfo TZ_ID_PACIFIC_GUADALCANAL = new ZoneInfo(523, "Pacific/Guadalcanal");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_GUAM = new ZoneInfo(new Integer(524), "Pacific/Guam");
+  public static final ZoneInfo TZ_ID_PACIFIC_GUAM = new ZoneInfo(524, "Pacific/Guam");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_HONOLULU = new ZoneInfo(new Integer(525), "Pacific/Honolulu");
+  public static final ZoneInfo TZ_ID_PACIFIC_HONOLULU = new ZoneInfo(525, "Pacific/Honolulu");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_JOHNSTON = new ZoneInfo(new Integer(526), "Pacific/Johnston");
+  public static final ZoneInfo TZ_ID_PACIFIC_JOHNSTON = new ZoneInfo(526, "Pacific/Johnston");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_KIRITIMATI = new ZoneInfo(new Integer(527), "Pacific/Kiritimati");
+  public static final ZoneInfo TZ_ID_PACIFIC_KIRITIMATI = new ZoneInfo(527, "Pacific/Kiritimati");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_KOSRAE = new ZoneInfo(new Integer(528), "Pacific/Kosrae");
+  public static final ZoneInfo TZ_ID_PACIFIC_KOSRAE = new ZoneInfo(528, "Pacific/Kosrae");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_KWAJALEIN = new ZoneInfo(new Integer(529), "Pacific/Kwajalein");
+  public static final ZoneInfo TZ_ID_PACIFIC_KWAJALEIN = new ZoneInfo(529, "Pacific/Kwajalein");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_MAJURO = new ZoneInfo(new Integer(530), "Pacific/Majuro");
+  public static final ZoneInfo TZ_ID_PACIFIC_MAJURO = new ZoneInfo(530, "Pacific/Majuro");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_MARQUESAS = new ZoneInfo(new Integer(531), "Pacific/Marquesas");
+  public static final ZoneInfo TZ_ID_PACIFIC_MARQUESAS = new ZoneInfo(531, "Pacific/Marquesas");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_MIDWAY = new ZoneInfo(new Integer(532), "Pacific/Midway");
+  public static final ZoneInfo TZ_ID_PACIFIC_MIDWAY = new ZoneInfo(532, "Pacific/Midway");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_NAURU = new ZoneInfo(new Integer(533), "Pacific/Nauru");
+  public static final ZoneInfo TZ_ID_PACIFIC_NAURU = new ZoneInfo(533, "Pacific/Nauru");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_NIUE = new ZoneInfo(new Integer(534), "Pacific/Niue");
+  public static final ZoneInfo TZ_ID_PACIFIC_NIUE = new ZoneInfo(534, "Pacific/Niue");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_NORFOLK = new ZoneInfo(new Integer(535), "Pacific/Norfolk");
+  public static final ZoneInfo TZ_ID_PACIFIC_NORFOLK = new ZoneInfo(535, "Pacific/Norfolk");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_NOUMEA = new ZoneInfo(new Integer(536), "Pacific/Noumea");
+  public static final ZoneInfo TZ_ID_PACIFIC_NOUMEA = new ZoneInfo(536, "Pacific/Noumea");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_PAGO_PAGO = new ZoneInfo(new Integer(537), "Pacific/Pago_Pago");
+  public static final ZoneInfo TZ_ID_PACIFIC_PAGO_PAGO = new ZoneInfo(537, "Pacific/Pago_Pago");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_PALAU = new ZoneInfo(new Integer(538), "Pacific/Palau");
+  public static final ZoneInfo TZ_ID_PACIFIC_PALAU = new ZoneInfo(538, "Pacific/Palau");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_PITCAIRN = new ZoneInfo(new Integer(539), "Pacific/Pitcairn");
+  public static final ZoneInfo TZ_ID_PACIFIC_PITCAIRN = new ZoneInfo(539, "Pacific/Pitcairn");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_POHNPEI = new ZoneInfo(new Integer(540), "Pacific/Pohnpei");
+  public static final ZoneInfo TZ_ID_PACIFIC_POHNPEI = new ZoneInfo(540, "Pacific/Pohnpei");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_PONAPE = new ZoneInfo(new Integer(541), "Pacific/Ponape");
+  public static final ZoneInfo TZ_ID_PACIFIC_PONAPE = new ZoneInfo(541, "Pacific/Ponape");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_PORT_MORESBY = new ZoneInfo(new Integer(542), "Pacific/Port_Moresby");
+  public static final ZoneInfo TZ_ID_PACIFIC_PORT_MORESBY = new ZoneInfo(542, "Pacific/Port_Moresby");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_RAROTONGA = new ZoneInfo(new Integer(543), "Pacific/Rarotonga");
+  public static final ZoneInfo TZ_ID_PACIFIC_RAROTONGA = new ZoneInfo(543, "Pacific/Rarotonga");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_SAIPAN = new ZoneInfo(new Integer(544), "Pacific/Saipan");
+  public static final ZoneInfo TZ_ID_PACIFIC_SAIPAN = new ZoneInfo(544, "Pacific/Saipan");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_SAMOA = new ZoneInfo(new Integer(545), "Pacific/Samoa");
+  public static final ZoneInfo TZ_ID_PACIFIC_SAMOA = new ZoneInfo(545, "Pacific/Samoa");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_TAHITI = new ZoneInfo(new Integer(546), "Pacific/Tahiti");
+  public static final ZoneInfo TZ_ID_PACIFIC_TAHITI = new ZoneInfo(546, "Pacific/Tahiti");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_TARAWA = new ZoneInfo(new Integer(547), "Pacific/Tarawa");
+  public static final ZoneInfo TZ_ID_PACIFIC_TARAWA = new ZoneInfo(547, "Pacific/Tarawa");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_TONGATAPU = new ZoneInfo(new Integer(548), "Pacific/Tongatapu");
+  public static final ZoneInfo TZ_ID_PACIFIC_TONGATAPU = new ZoneInfo(548, "Pacific/Tongatapu");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_TRUK = new ZoneInfo(new Integer(549), "Pacific/Truk");
+  public static final ZoneInfo TZ_ID_PACIFIC_TRUK = new ZoneInfo(549, "Pacific/Truk");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_WAKE = new ZoneInfo(new Integer(550), "Pacific/Wake");
+  public static final ZoneInfo TZ_ID_PACIFIC_WAKE = new ZoneInfo(550, "Pacific/Wake");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_WALLIS = new ZoneInfo(new Integer(551), "Pacific/Wallis");
+  public static final ZoneInfo TZ_ID_PACIFIC_WALLIS = new ZoneInfo(551, "Pacific/Wallis");
   
-  public static final ZoneInfo TZ_ID_PACIFIC_YAP = new ZoneInfo(new Integer(552), "Pacific/Yap");
+  public static final ZoneInfo TZ_ID_PACIFIC_YAP = new ZoneInfo(552, "Pacific/Yap");
   
-  public static final ZoneInfo TZ_ID_POLAND = new ZoneInfo(new Integer(553), "Poland");
+  public static final ZoneInfo TZ_ID_POLAND = new ZoneInfo(553, "Poland");
   
-  public static final ZoneInfo TZ_ID_PORTUGAL = new ZoneInfo(new Integer(554), "Portugal");
+  public static final ZoneInfo TZ_ID_PORTUGAL = new ZoneInfo(554, "Portugal");
   
-  public static final ZoneInfo TZ_ID_PRC = new ZoneInfo(new Integer(555), "PRC");
+  public static final ZoneInfo TZ_ID_PRC = new ZoneInfo(55, "PRC");
   
-  public static final ZoneInfo TZ_ID_PST8PDT = new ZoneInfo(new Integer(556), "PST8PDT");
+  public static final ZoneInfo TZ_ID_PST8PDT = new ZoneInfo(556, "PST8PDT");
   
-  public static final ZoneInfo TZ_ID_ROC = new ZoneInfo(new Integer(557), "ROC");
+  public static final ZoneInfo TZ_ID_ROC = new ZoneInfo(557, "ROC");
   
-  public static final ZoneInfo TZ_ID_ROK = new ZoneInfo(new Integer(558), "ROK");
+  public static final ZoneInfo TZ_ID_ROK = new ZoneInfo(558, "ROK");
   
-  public static final ZoneInfo TZ_ID_SINGAPORE = new ZoneInfo(new Integer(559), "Singapore");
+  public static final ZoneInfo TZ_ID_SINGAPORE = new ZoneInfo(559, "Singapore");
   
-  public static final ZoneInfo TZ_ID_TURKEY = new ZoneInfo(new Integer(560), "Turkey");
+  public static final ZoneInfo TZ_ID_TURKEY = new ZoneInfo(560, "Turkey");
   
-  public static final ZoneInfo TZ_ID_UCT = new ZoneInfo(new Integer(561), "UCT");
+  public static final ZoneInfo TZ_ID_UCT = new ZoneInfo(561, "UCT");
   
-  public static final ZoneInfo TZ_ID_UNIVERSAL = new ZoneInfo(new Integer(562), "Universal");
+  public static final ZoneInfo TZ_ID_UNIVERSAL = new ZoneInfo(562, "Universal");
   
-  public static final ZoneInfo TZ_ID_US_ALASKA = new ZoneInfo(new Integer(563), "US/Alaska");
+  public static final ZoneInfo TZ_ID_US_ALASKA = new ZoneInfo(563, "US/Alaska");
   
-  public static final ZoneInfo TZ_ID_US_ALEUTIAN = new ZoneInfo(new Integer(564), "US/Aleutian");
+  public static final ZoneInfo TZ_ID_US_ALEUTIAN = new ZoneInfo(564, "US/Aleutian");
   
-  public static final ZoneInfo TZ_ID_US_ARIZONA = new ZoneInfo(new Integer(565), "US/Arizona");
+  public static final ZoneInfo TZ_ID_US_ARIZONA = new ZoneInfo(565, "US/Arizona");
   
-  public static final ZoneInfo TZ_ID_US_CENTRAL = new ZoneInfo(new Integer(566), "US/Central");
+  public static final ZoneInfo TZ_ID_US_CENTRAL = new ZoneInfo(566, "US/Central");
   
-  public static final ZoneInfo TZ_ID_US_EAST_INDIANA = new ZoneInfo(new Integer(567), "US/East-Indiana");
+  public static final ZoneInfo TZ_ID_US_EAST_INDIANA = new ZoneInfo(567, "US/East-Indiana");
   
-  public static final ZoneInfo TZ_ID_US_EASTERN = new ZoneInfo(new Integer(568), "US/Eastern");
+  public static final ZoneInfo TZ_ID_US_EASTERN = new ZoneInfo(568, "US/Eastern");
   
-  public static final ZoneInfo TZ_ID_US_HAWAII = new ZoneInfo(new Integer(569), "US/Hawaii");
+  public static final ZoneInfo TZ_ID_US_HAWAII = new ZoneInfo(569, "US/Hawaii");
   
-  public static final ZoneInfo TZ_ID_US_INDIANA_STARKE = new ZoneInfo(new Integer(570), "US/Indiana-Starke");
+  public static final ZoneInfo TZ_ID_US_INDIANA_STARKE = new ZoneInfo(570, "US/Indiana-Starke");
   
-  public static final ZoneInfo TZ_ID_US_MICHIGAN = new ZoneInfo(new Integer(571), "US/Michigan");
+  public static final ZoneInfo TZ_ID_US_MICHIGAN = new ZoneInfo(571, "US/Michigan");
   
-  public static final ZoneInfo TZ_ID_US_MOUNTAIN = new ZoneInfo(new Integer(572), "US/Mountain");
+  public static final ZoneInfo TZ_ID_US_MOUNTAIN = new ZoneInfo(572, "US/Mountain");
   
-  public static final ZoneInfo TZ_ID_US_PACIFIC = new ZoneInfo(new Integer(573), "US/Pacific");
+  public static final ZoneInfo TZ_ID_US_PACIFIC = new ZoneInfo(573, "US/Pacific");
   
-  public static final ZoneInfo TZ_ID_US_PACIFIC_NEW = new ZoneInfo(new Integer(574), "US/Pacific-New");
+  public static final ZoneInfo TZ_ID_US_PACIFIC_NEW = new ZoneInfo(574, "US/Pacific-New");
   
-  public static final ZoneInfo TZ_ID_US_SAMOA = new ZoneInfo(new Integer(575), "US/Samoa");
+  public static final ZoneInfo TZ_ID_US_SAMOA = new ZoneInfo(575, "US/Samoa");
   
-  public static final ZoneInfo TZ_ID_UTC = new ZoneInfo(new Integer(576), "UTC");
+  public static final ZoneInfo TZ_ID_UTC = new ZoneInfo(576, "UTC");
   
-  public static final ZoneInfo TZ_ID_W_SU = new ZoneInfo(new Integer(577), "W-SU");
+  public static final ZoneInfo TZ_ID_W_SU = new ZoneInfo(577, "W-SU");
   
-  public static final ZoneInfo TZ_ID_WET = new ZoneInfo(new Integer(578), "WET");
+  public static final ZoneInfo TZ_ID_WET = new ZoneInfo(578, "WET");
   
-  public static final ZoneInfo TZ_ID_ZULU = new ZoneInfo(new Integer(579), "Zulu");
+  public static final ZoneInfo TZ_ID_ZULU = new ZoneInfo(579, "Zulu");
   
-  public static final ZoneInfo TZ_ID_EXT_PST = new ZoneInfo(new Integer(580), "PST");
+  public static final ZoneInfo TZ_ID_EXT_PST = new ZoneInfo(580, "PST");
   
-  public static final ZoneInfo TZ_ID_EXT_MAX = new ZoneInfo(new Integer(581), "TZ_ID_EXT_MAX");
+  public static final ZoneInfo TZ_ID_EXT_MAX = new ZoneInfo(581, "TZ_ID_EXT_MAX");
   
-  public static final ZoneInfo TZ_ID_DEFAULT = new ZoneInfo(new Integer(581), "TZ_ID_DEFAULT");
+  public static final ZoneInfo TZ_ID_DEFAULT = new ZoneInfo(581, "TZ_ID_DEFAULT");
   
-  public static final ZoneInfo TZ_ID_OFFSET = new ZoneInfo(new Integer(582), "TZ_ID_OFFSET");
+  public static final ZoneInfo TZ_ID_OFFSET = new ZoneInfo(582, "TZ_ID_OFFSET");
   
   public ZoneInfo(Integer paramInteger, String paramString) {
     this.id = paramInteger;
@@ -1186,7 +1186,7 @@ public class ZoneInfo {
   }
   
   public static String getZoneNameById(int paramInt) {
-    ZoneInfo zoneInfo = (ZoneInfo)zoneTabs.get(new Integer(paramInt));
+    ZoneInfo zoneInfo = (ZoneInfo)zoneTabs.get(paramInt);
     return (zoneInfo == null) ? TZ_ID_OFFSET.getName() : zoneInfo.getName();
   }
   

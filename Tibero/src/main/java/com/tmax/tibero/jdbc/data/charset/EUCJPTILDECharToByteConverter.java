@@ -186,8 +186,7 @@ public class EUCJPTILDECharToByteConverter extends JIS0208CharToByteConverter {
       for (byte b = 0; b < i1; b++)
         paramArrayOfbyte[j++] = arrayOfByte[b]; 
       continue;
-      i++;
-    } 
+    }
     return j - paramInt3;
   }
 }
