@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.DEFAULT;
+import static ch.admin.bar.siardsuite.ui.presenter.archive.browser.GenericArchiveBrowserPresenter.*;
 
 /**
  * 스키마 및 엔티티 선택 화면
@@ -47,7 +48,12 @@ public class PreviewArchiveBrowser {
             final Dialogs dialogs,
             final ErrorHandler errorHandler
     ) {
-        val archiveBrowserView = new TreeBuilder(new SiardArchive("", archive, true), true, false);
+        val archiveBrowserView = TreeBuilder.builder()
+                .siardArchive(new SiardArchive("", archive, true))
+                .readonly(true)
+                .columnSelectable(false)
+                .build();
+
         TreeItem<TreeAttributeWrapper> rootItem = archiveBrowserView.createRootItem();
         this.buttonsBox = new ButtonBox().make(DEFAULT);
 
@@ -56,7 +62,8 @@ public class PreviewArchiveBrowser {
                 (event) -> {
                     // 선택된 엔티티 조회
                     Map<String, List<String>> selectedSchemaTableMap = getSelectedSchemaTableMap(rootItem);
-                    if(!selectedSchemaTableMap.isEmpty()) archive.setSelectedSchemaTableMap(selectedSchemaTableMap); // 스키마, 테이블 세팅
+                    if (!selectedSchemaTableMap.isEmpty())
+                        archive.setSelectedSchemaTableMap(selectedSchemaTableMap); // 스키마, 테이블 세팅
                     navigator.next(new Tuple<>(archive, connectionData));
                 }
         );
@@ -64,7 +71,7 @@ public class PreviewArchiveBrowser {
         buttonsBox.previous().setOnAction((event) -> navigator.previous());
         buttonsBox.cancel().setOnAction(
                 (event) -> dialogs
-                .open(View.ARCHIVE_ABORT_DIALOG));
+                        .open(View.ARCHIVE_ABORT_DIALOG));
 
         this.loadedView = GenericArchiveBrowserPresenter.load(
                 dialogs,
@@ -72,7 +79,9 @@ public class PreviewArchiveBrowser {
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 this.buttonsBox,
-                rootItem
+                rootItem,
+                archiveBrowserView,
+                ArchiveStep.PREVIEW
         );
     }
 
@@ -95,6 +104,7 @@ public class PreviewArchiveBrowser {
 
     /**
      * 체크박스에 체크된 아이템
+     *
      * @param rootItem 생성한 루트 아이템
      * @return
      */
@@ -131,7 +141,9 @@ public class PreviewArchiveBrowser {
         TreeAttributeWrapper attr = item.getValue();
 
         if (attr == null) return;
-        if (attr.isSelected() && attr.isTransferable()) {selectedTables.add(item.getValue());}
+        if (attr.isSelected() && attr.isTransferable()) {
+            selectedTables.add(item.getValue());
+        }
         if (attr.shouldPropagate()) {
             item.getChildren().
                     forEach(child -> collectSelectedTables(child, selectedTables));

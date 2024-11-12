@@ -35,7 +35,7 @@ public class DatabaseTable {
     }
 
     public long getNumberOfRows() {
-        return table.getMetaTable().getRows();
+        return table.getCalculatedRows();
     }
 
     public void write() {

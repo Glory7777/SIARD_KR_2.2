@@ -20,6 +20,7 @@ import lombok.val;
 import java.io.IOException;
 
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.OPEN_PREVIEW;
+import static ch.admin.bar.siardsuite.ui.presenter.archive.browser.GenericArchiveBrowserPresenter.*;
 
 public class OpenArchiveBrowser {
     private static final I18nKey TITLE = I18nKey.of("open.siard.archive.preview.title");
@@ -34,7 +35,11 @@ public class OpenArchiveBrowser {
             final ErrorHandler errorHandler,
             final ArchiveHandler archiveHandler
     ) {
-        val archiveBrowserView = new TreeBuilder(new SiardArchive(archive.getFile().getName(), archive, false), false, false);
+        val archiveBrowserView = TreeBuilder.builder()
+                .siardArchive(new SiardArchive(archive.getFile().getName(), archive, false))
+                .readonly(false)
+                .columnSelectable(false)
+                .build();
 
         val buttonsBox = new ButtonBox().make(OPEN_PREVIEW);
         buttonsBox.cancel().setOnAction(event -> dialogs.open(
@@ -66,7 +71,9 @@ public class OpenArchiveBrowser {
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 buttonsBox,
-                archiveBrowserView.createRootItem());
+                archiveBrowserView.createRootItem(),
+                archiveBrowserView,
+                ArchiveStep.OPEN_ARCHIVE);
     }
 
     public Node getView() {

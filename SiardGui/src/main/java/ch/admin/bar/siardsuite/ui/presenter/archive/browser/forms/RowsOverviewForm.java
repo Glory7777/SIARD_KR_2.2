@@ -14,8 +14,11 @@ import ch.admin.bar.siardsuite.util.FileHelper;
 import ch.admin.bar.siardsuite.util.OS;
 import ch.enterag.utils.BU;
 import ch.enterag.utils.mime.MimeTypes;
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.tika.Tika;
 
 import java.io.IOException;
@@ -33,7 +36,7 @@ public class RowsOverviewForm {
     private static final I18nKey LABEL_TABLE = I18nKey.of("tableContainer.labelTable");
     private static final I18nKey LABEL_NUMBER_OF_ROWS = I18nKey.of("tableContainer.labelNumberOfRows");
 
-    public static RenderableForm<DatabaseTable> create(@NonNull final DatabaseTable table) {
+    public static RenderableForm<DatabaseTable> createAndUpdateWithSearchResult(@NonNull final DatabaseTable table, String searchTerm) {
         val tableProperties = table.getColumns().stream()
                 .map(column -> new TableColumnProperty<>(
                         DisplayableText.of(column.getName()),
@@ -45,16 +48,17 @@ public class RowsOverviewForm {
         return RenderableForm.<DatabaseTable>builder()
                 .dataSupplier(() -> table)
                 .group(RenderableFormGroup.<DatabaseTable>builder()
+                        .property(RenderableLazyLoadingTable.<DatabaseTable, RecordWrapper>builder()
+                                .dataExtractor(databaseTable -> new RecordDataSource(table.getTable(), searchTerm))
+                                .properties(tableProperties)
+                                .build())
                         .property(new ReadOnlyStringProperty<>(
                                 LABEL_TABLE,
                                 DatabaseTable::getName))
                         .property(new ReadOnlyStringProperty<>(
                                 LABEL_NUMBER_OF_ROWS,
-                                Converter.longToString(DatabaseTable::getNumberOfRows)))
-                        .property(RenderableLazyLoadingTable.<DatabaseTable, RecordWrapper>builder()
-                                .dataExtractor(databaseTable -> new RecordDataSource(table.getTable()))
-                                .properties(tableProperties)
-                                .build())
+                                Converter.longToString(t -> table.getNumberOfRows()))
+                        )
                         .build())
                 .build();
     }
@@ -117,28 +121,46 @@ public class RowsOverviewForm {
         }
     }
 
-    @RequiredArgsConstructor
     public static class RecordDataSource implements LazyLoadingDataSource<RecordWrapper> {
         private final Table table;
+        private final String searchTerm;
 
+        public RecordDataSource(Table table, String searchTerm) {
+            this.table = table;
+            this.searchTerm = searchTerm;
+        }
+
+        /**
+         * ROW 데이터를 읽어들임
+         * 검색인 경우 데이터가 검색 키워드를 포함하고 있으면 보여줄 화면으로 추가하고, 그렇지 않으면 생략
+         */
         @SneakyThrows
         @Override
         public List<RecordWrapper> load(int startIndex, int nrOfItems) {
+            log.info("data load ::");
             val recordDispenser = table.openRecords();
             recordDispenser.skip(startIndex);
 
             final List<RecordWrapper> collected = new ArrayList<>();
             for (int x = 0; x < nrOfItems; x++) {
-                val record = recordDispenser.get();
+                val record = recordDispenser.getWithSearchTerm(searchTerm);
 
                 if (record == null) {
                     break;
                 }
 
-                collected.add(new RecordWrapper(record));
+                if (!isSearchTermBlank()) {
+                    if (recordDispenser.anyMatches()) collected.add(new RecordWrapper(record));
+                } else {
+                    collected.add(new RecordWrapper(record));
+                }
             }
 
             return collected;
+        }
+
+        private boolean isSearchTermBlank() {
+            return searchTerm == null || searchTerm.isBlank();
         }
 
         @Override
@@ -148,7 +170,7 @@ public class RowsOverviewForm {
 
         @Override
         public long getNumberOfItems() {
-            return table.getMetaTable().getRows();
+            return table.getMatchedRows();
         }
     }
 

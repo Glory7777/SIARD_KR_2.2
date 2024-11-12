@@ -1,18 +1,20 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues;
 
+import ch.admin.bar.siardsuite.framework.ServicesFacade;
+import ch.admin.bar.siardsuite.framework.dialogs.DialogCloser;
+import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
+import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
+import ch.admin.bar.siardsuite.framework.view.FXMLLoadHelper;
+import ch.admin.bar.siardsuite.framework.view.LoadedView;
+import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
+import ch.admin.bar.siardsuite.model.TreeItemUtil;
+import ch.admin.bar.siardsuite.model.Tuple;
+import ch.admin.bar.siardsuite.ui.common.MetaSearchTerm;
 import ch.admin.bar.siardsuite.ui.component.CloseDialogButton;
 import ch.admin.bar.siardsuite.ui.component.SearchButton;
 import ch.admin.bar.siardsuite.ui.component.rendering.TreeItemsExplorer;
-import ch.admin.bar.siardsuite.framework.ServicesFacade;
-import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
-import ch.admin.bar.siardsuite.model.Tuple;
-import ch.admin.bar.siardsuite.ui.common.MetaSearchTerm;
-import ch.admin.bar.siardsuite.framework.view.FXMLLoadHelper;
-import ch.admin.bar.siardsuite.framework.view.LoadedView;
-import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
-import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
-import ch.admin.bar.siardsuite.framework.dialogs.DialogCloser;
 import io.github.palexdev.materialfx.controls.MFXButton;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -27,8 +29,10 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.val;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -50,6 +54,8 @@ public class SearchMetadataDialogPresenter {
     protected VBox searchHitsBox;
     @FXML
     protected HBox buttonBox;
+//    @FXML
+//    protected HBox recordSearchBox;
 
     protected DialogCloser dialogCloser;
     private Consumer<TreeItem<TreeAttributeWrapper>> onSelected;

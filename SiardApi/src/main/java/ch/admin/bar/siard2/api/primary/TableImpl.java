@@ -52,6 +52,8 @@ public class TableImpl extends SearchImpl implements Table {
     private static final ObjectFactory _OF = new ObjectFactory();
     @Getter @Setter private long tableSize;
     @Getter @Setter private String formattedTableSize;
+    @Getter @Setter private long matchedRows;
+    private boolean isSearchAction;
 
     private SftpConnection sftpConnection;
 
@@ -625,5 +627,25 @@ public class TableImpl extends SearchImpl implements Table {
     @Override
     public void setSftpConnection(SftpConnection sftpConnection) {
         this.sftpConnection = sftpConnection;
+    }
+
+    @Override
+    public void updateMatchedRows() {this.setMatchedRows(this.getMatchedRows() + 1);}
+
+    @Override
+    public void setSearchAction() {this.isSearchAction = true;}
+
+    @Override
+    public boolean isSearchAction() {return this.isSearchAction;}
+
+    @Override
+    public long getCalculatedRows() {
+        return isSearchAction ? this.getMatchedRows() : this.getMetaTable().getRows();
+    }
+
+    @Override
+    public void setRowsToDefault() {
+        this.matchedRows = 0;
+        this.isSearchAction = false;
     }
 }

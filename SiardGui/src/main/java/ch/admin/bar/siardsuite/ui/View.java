@@ -15,6 +15,7 @@ import ch.admin.bar.siardsuite.ui.presenter.StartPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.ArchiveStepperPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.OpenArchiveBrowser;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues.SearchMetadataDialogPresenter;
+import ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues.SearchRecordDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues.SearchTableDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues.UnsavedChangesDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.common.RecentConnectionsDialogPresenter;
@@ -69,6 +70,8 @@ public class View {
             new ShowDialogTarget<>(UnsavedChangesDialogPresenter::load);
     public static final ShowDialogTarget<Consumer<Optional<String>>> SEARCH_TABLE =
             new ShowDialogTarget<>(SearchTableDialogPresenter::load);
+    public static final ShowDialogTarget<Consumer<Optional<String>>> SEARCH_RECORD =
+            new ShowDialogTarget<>(SearchRecordDialogPresenter::load);
     public static final ShowDialogTarget<Tuple<TreeItemsExplorer, Consumer<TreeItem<TreeAttributeWrapper>>>> SEARCH_METADATA =
             new ShowDialogTarget<>(SearchMetadataDialogPresenter::load);
     public static final ShowDialogTarget<Failure> ERROR =

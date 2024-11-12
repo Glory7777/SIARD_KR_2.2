@@ -6,9 +6,11 @@ import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableForm;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.TreeItem;
 import lombok.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -72,16 +74,19 @@ public class TreeAttributeWrapper {
     public String getDisplayName() {
         return this.name.getText();
     }
-
     public boolean isTransferable(DatabaseAttribute attribute) { return DatabaseAttribute.isToBeTransferred(attribute); }
 
+    public boolean isSchemaAttr() { return this.databaseAttribute == DatabaseAttribute.SCHEMA; }
     public boolean isTableAttr() { return this.databaseAttribute == DatabaseAttribute.TABLE; }
-
     public boolean isColumnAttr() { return this.databaseAttribute == DatabaseAttribute.COLUMN; }
+    public boolean isRecordAttr() { return this.databaseAttribute == DatabaseAttribute.RECORD; }
 
     public boolean isTableForSftpConnection() {return isColumnSelectable() && isTableAttr();}
-
     public boolean isSelectedColumn() {return isColumnSelectable() && isSelected() && isColumnAttr();}
+
+    public void setTableToDefault() {
+        if (this.isRecordAttr()) this.getDatabaseTable().getTable().setRowsToDefault();
+    }
 
     @Getter
     @RequiredArgsConstructor
@@ -94,6 +99,7 @@ public class TreeAttributeWrapper {
         TABLE("table", false),
         COLUMN_TITLE("column_title", true),
         COLUMN("column", false),
+        RECORD("record", false)
         ;
 
         final String attribute;

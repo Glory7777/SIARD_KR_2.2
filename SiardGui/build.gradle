@@ -40,6 +40,12 @@ jar {
 
 }
 
+subprojects {
+
+    dependencies {
+    }
+}
+
 dependencies {
 
     implementation 'org.glavo.materialfx:materialfx:11.13.5'
@@ -61,16 +67,14 @@ dependencies {
     implementation group: 'org.openjfx', name: 'javafx-graphics', version: javaFxVersion, classifier: 'mac'
     implementation group: 'org.openjfx', name: 'javafx-graphics', version: javaFxVersion, classifier: 'linux'
 
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+    testImplementation 'org.testfx:testfx-core:4.0.16-alpha'
+    testImplementation 'org.testfx:testfx-junit5:4.0.16-alpha'
+    testImplementation 'org.testfx:openjfx-monocle:jdk-12.0.1+2'
+
+
     // transitive dependencies (for jar's in lib-folder)
     implementation 'org.apache.tika:tika-core:2.9.1' // used from lib/siardcmd.jar
-//    implementation 'com.mysql:mysql-connector-j:8.3.0' // used from lib/jdbcmysql-2-2-2.jar
-
-
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
-    testImplementation "org.testfx:testfx-core:4.0.16-alpha"
-    testImplementation "org.testfx:testfx-junit5:4.0.16-alpha"
-    testImplementation 'org.testfx:openjfx-monocle:jdk-12.0.1+2'
-    testImplementation 'org.mockito:mockito-core:2.1.0'
 
     // legacy: add all dependencies from lib folder
     implementation fileTree(include: ['*.jar'], dir: 'lib')
@@ -81,8 +85,6 @@ dependencies {
     implementation project(':Cubrid')
     implementation project(':JdbcBase')
     implementation project(':JdbcMysql')
-
-//    implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
 
 }
 
@@ -267,5 +269,11 @@ tasks.named("asciidoctorPdf") { finalizedBy(copyDocumentation)}
 tasks.named("processResources") { dependsOn(copyDocumentation)}
 
 tasks.named('test') {
-    enabled = false
+    onlyIf { gradle.startParameter.taskNames.contains(':test')} // run the test manually
+    useJUnitPlatform()
+    jvmArgs "-Djava.awt.headless=true", "-Dtestfx.headless=true",
+            "--add-opens=java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED",
+            "--add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED",
+            "--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+            "--add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED"
 }

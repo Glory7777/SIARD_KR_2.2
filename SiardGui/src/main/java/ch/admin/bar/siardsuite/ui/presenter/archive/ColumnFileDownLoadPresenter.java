@@ -10,7 +10,6 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.framework.steps.StepperNavigator;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
 import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
-import ch.admin.bar.siardsuite.model.TreeItemWrapper;
 import ch.admin.bar.siardsuite.model.Tuple;
 import ch.admin.bar.siardsuite.model.database.SiardArchive;
 import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
@@ -24,7 +23,7 @@ import lombok.val;
 
 import java.util.*;
 
-import static ch.admin.bar.siardsuite.model.TreeItemWrapper.*;
+import static ch.admin.bar.siardsuite.model.TreeItemUtil.*;
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.DEFAULT;
 
 /**
@@ -50,7 +49,13 @@ public class ColumnFileDownLoadPresenter {
             final Dialogs dialogs,
             final ErrorHandler errorHandler
     ) {
-        val archiveBrowserView = new TreeBuilder(new SiardArchive("", archive, true), true, true);
+        val archiveBrowserView =
+                TreeBuilder.builder()
+                        .siardArchive(new SiardArchive("", archive, true))
+                        .readonly(true)
+                        .columnSelectable(true)
+                        .build();
+
         TreeItem<TreeAttributeWrapper> rootItem = archiveBrowserView.createRootItemWithSelectedSchemas();
 
         this.buttonsBox = new ButtonBox().make(DEFAULT);

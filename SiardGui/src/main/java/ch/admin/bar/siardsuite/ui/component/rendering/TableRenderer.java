@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -56,8 +57,8 @@ public class TableRenderer<T, I> implements SearchableFormEntry {
     @Override
     public void applySearchTerm(final String searchTerm) {
         filteredTableItems.setPredicate(i -> renderableTable.getProperties().stream()
-                    .map(iReadOnlyStringProperty -> iReadOnlyStringProperty.getValueExtractor().apply(i))
-                    .anyMatch(s -> s.contains(searchTerm)));
+                .map(iReadOnlyStringProperty -> iReadOnlyStringProperty.getValueExtractor().apply(i))
+                .anyMatch(s -> s.contains(searchTerm)));
     }
 
     @Override
