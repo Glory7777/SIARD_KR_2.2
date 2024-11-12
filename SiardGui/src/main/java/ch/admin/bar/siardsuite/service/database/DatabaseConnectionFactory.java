@@ -1,5 +1,7 @@
 package ch.admin.bar.siardsuite.service.database;
 
+import ch.admin.bar.dbexception.proxy.ConnectionProxy;
+import ch.admin.bar.dbexception.proxy.DatabaseMetaDataProxy;
 import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
 import ch.admin.bar.siardsuite.service.preferences.UserPreferences;
 import lombok.NonNull;
@@ -8,9 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
 
 @Slf4j
 public class DatabaseConnectionFactory {
@@ -27,7 +32,7 @@ public class DatabaseConnectionFactory {
         });
     }
 
-    public Connection getOrCreateConnection(final DbmsConnectionData connectionData) {
+    public Connection getOrCreateConnectionProxy(final DbmsConnectionData connectionData) {
         return connectionCache.updateAndGet(establishedConnection -> {
             try {
                 if (establishedConnection != null) {
@@ -41,14 +46,17 @@ public class DatabaseConnectionFactory {
                     }
                 }
 
-                return new EstablishedConnection(createConnection(connectionData), connectionData);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                return new EstablishedConnection(createConnectionProxy(connectionData), connectionData);
+            } catch (SQLException sqlException) {
+                System.out.println("no connection made");
+                String databaseProductName = connectionData.getDbms().getName();
+                doHandleSqlException(databaseProductName, null, sqlException);
+                throw new RuntimeException(sqlException); // 위에서 처리안되는 경우 원본 예외 출력
             }
         }).getConnection();
     }
 
-    private static Connection createConnection(final DbmsConnectionData connectionData) throws SQLException {
+    private static Connection createConnectionProxy(final DbmsConnectionData connectionData) throws SQLException {
         log.info("Create new connection (Properties: {})", connectionData);
 
         loadDriver(connectionData.getDbms().getDriverClassName());
@@ -61,8 +69,9 @@ public class DatabaseConnectionFactory {
                 connectionData.getUser(),
                 connectionData.getPassword());
         connection.setAutoCommit(false);
-
-        return connection;
+        // setting proxy
+        Connection connectionProxy = ConnectionProxy.createProxy(connection);
+        return connectionProxy;
     }
 
     private static void loadDriver(String jdbcDriverClass) {
@@ -75,8 +84,10 @@ public class DatabaseConnectionFactory {
 
     @Value
     private static class EstablishedConnection {
-        @NonNull Connection connection;
-        @NonNull DbmsConnectionData dbmsConnectionData;
+        @NonNull
+        Connection connection;
+        @NonNull
+        DbmsConnectionData dbmsConnectionData;
 
         public void close() {
             try {
