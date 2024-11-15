@@ -95,7 +95,7 @@ public class SqlStatement extends SqlBase {
       for(int iQuestionMark = 0; iQuestionMark < listQuestionMarks.size(); ++iQuestionMark) {
          GeneralValueSpecification gvs = (GeneralValueSpecification)listQuestionMarks.get(iQuestionMark);
          this._mapQuestionMarkValues.put(gvs, (Object)null);
-         this._mapQuestionMarkTypes.put(gvs, (Object)null);
+         this._mapQuestionMarkTypes.put(gvs, null);
       }
 
    }

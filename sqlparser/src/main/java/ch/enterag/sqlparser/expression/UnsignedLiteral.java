@@ -319,7 +319,7 @@ public class UnsignedLiteral extends SqlBase {
                   long lNanos = iv.getNanoSeconds();
                   iSecondsDecimals = 9;
 
-                  for(int i = 10; i < 1000000000; i = 10 * i) {
+                  for(i = 10; i < 1000000000; i = 10 * i) {
                      if (lNanos % (long)i == 0L) {
                         --iSecondsDecimals;
                      }

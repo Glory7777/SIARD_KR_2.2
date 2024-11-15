@@ -350,9 +350,8 @@ public class NumericValueExpression extends SqlBase {
    }
 
    public int evaluateInteger(Object oValue) {
-      int iValue = true;
-      int iValue;
-      if (oValue instanceof BigDecimal) {
+      int iValue = 1;
+       if (oValue instanceof BigDecimal) {
          iValue = ((BigDecimal)oValue).intValueExact();
       } else {
          if (!(oValue instanceof Double)) {

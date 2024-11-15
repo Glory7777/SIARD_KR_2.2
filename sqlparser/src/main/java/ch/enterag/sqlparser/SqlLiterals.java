@@ -226,11 +226,11 @@ public abstract class SqlLiterals {
    }
 
    public static int getIdentifierEnd(String sQualified, int iStart) throws ParseException {
-      int iEnd = true;
+      int iEnd = 1;
       if (sQualified == null) {
          throw new NullPointerException("Qualified identifier must not be null!");
       } else {
-         int iEnd = sQualified.length();
+         iEnd = sQualified.length();
          char c = sQualified.charAt(iStart);
          if (c != "\"".charAt(0)) {
             if (!Character.isLetter(c)) {
@@ -420,7 +420,7 @@ public abstract class SqlLiterals {
       String sParsed = cutPrefix(sByteString, "X");
       if (sParsed != null) {
          sParsed = parseStringLiteral(sParsed);
-         byte[] bufParsed = BU.fromHex(sParsed);
+         bufParsed = BU.fromHex(sParsed);
          return bufParsed;
       } else {
          throw new ParseException("Byte character string literal must start with X!", 0);
@@ -633,7 +633,6 @@ public abstract class SqlLiterals {
                   String sSeconds = null;
                   String sDecimals = null;
                   int iDays;
-                  int iPeriod;
                   int iPeriod;
                   if (ifStart == IntervalField.DAY) {
                      sYears = sParsed;

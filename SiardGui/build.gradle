@@ -79,8 +79,8 @@ dependencies {
     implementation project(':SiardCmd')
     implementation project(':JdbcCubrid')
     implementation project(':Cubrid')
-    implementation project(':Tibero')
-//    implementation project(':sqlparser')
+//    implementation project(':Tibero')
+    implementation project(':sqlparser')
 //    implementation project(':JdbcTibero')
 
     implementation 'org.antlr:antlr4-runtime:4.9.2'

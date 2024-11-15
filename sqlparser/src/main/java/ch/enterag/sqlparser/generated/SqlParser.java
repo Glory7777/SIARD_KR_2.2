@@ -15780,7 +15780,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFromConstructor(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFromConstructor(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19029,7 +19029,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFrameStart(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowFrameStart(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19059,7 +19059,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFrameClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowFrameClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19085,7 +19085,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowOrderClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowOrderClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19123,7 +19123,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowPartitionClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowPartitionClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19153,7 +19153,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19179,7 +19179,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19213,7 +19213,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFunctionType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowFunctionType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19251,7 +19251,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWindowFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19293,7 +19293,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGroupingOperation(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitGroupingOperation(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19327,7 +19327,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFilterClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitFilterClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19353,7 +19353,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSortSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitSortSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19383,7 +19383,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSortSpecificationList(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitSortSpecificationList(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19425,7 +19425,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWithinGroupSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitWithinGroupSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19443,7 +19443,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIndependentVariableExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitIndependentVariableExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19461,7 +19461,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDependentVariableExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitDependentVariableExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19491,7 +19491,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRankFunctionArgumentList(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitRankFunctionArgumentList(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19573,7 +19573,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAggregateFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitAggregateFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19587,7 +19587,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGroupingOp(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitGroupingOp(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19601,7 +19601,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCaseExp(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitCaseExp(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19615,7 +19615,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferenceRes(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitReferenceRes(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19641,7 +19641,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayElementRef(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T)  ((SqlVisitor)visitor).visitArrayElementRef(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19655,7 +19655,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStaticMethodInvoc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStaticMethodInvoc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19677,7 +19677,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitValueExpressionPrimaryParen(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitValueExpressionPrimaryParen(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19691,7 +19691,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultisetValueConstruct(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultisetValueConstruct(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19705,7 +19705,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNextValueExp(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNextValueExp(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19719,7 +19719,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayValueConstruct(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitArrayValueConstruct(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19733,7 +19733,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRoutineInvoc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRoutineInvoc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19747,7 +19747,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGeneralizedMethodInvoc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitGeneralizedMethodInvoc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19761,7 +19761,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAggregateFunc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAggregateFunc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19775,7 +19775,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSubtypeTreat(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSubtypeTreat(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19789,7 +19789,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFunc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWindowFunc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19803,7 +19803,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGeneralValueSpec(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitGeneralValueSpec(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19829,7 +19829,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAttributeOrMethodRef(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAttributeOrMethodRef(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19843,7 +19843,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultisetElementRef(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultisetElementRef(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19857,7 +19857,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitScalarSubq(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitScalarSubq(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19883,7 +19883,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMethodInvoc(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMethodInvoc(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19925,7 +19925,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayElementRefConcat(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitArrayElementRefConcat(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19939,7 +19939,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCastSpec(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCastSpec(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19953,7 +19953,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNewSpec(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNewSpec(this) : visitor.visitChildren(this);
       }
    }
 
@@ -19967,7 +19967,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUnsignedLit(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUnsignedLit(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20034,7 +20034,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRowValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRowValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20056,7 +20056,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRowValuePredicand(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRowValuePredicand(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20078,7 +20078,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUdtSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUdtSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20128,7 +20128,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTypeCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTypeCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20158,7 +20158,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSetCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSetCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20188,7 +20188,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSubmultisetCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSubmultisetCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20218,7 +20218,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMemberCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMemberCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20248,7 +20248,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDistinctCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDistinctCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20270,7 +20270,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitOverlapsCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitOverlapsCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20308,7 +20308,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMatchCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMatchCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20342,7 +20342,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQuantifiedComparisonCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQuantifiedComparisonCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20368,7 +20368,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNullCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNullCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20406,7 +20406,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSimilarCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSimilarCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20440,7 +20440,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLikeCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLikeCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20490,7 +20490,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitInCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitInCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20528,7 +20528,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBetweenCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBetweenCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20550,7 +20550,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitComparisonCondition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitComparisonCondition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20668,7 +20668,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBooleanPrimary(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBooleanPrimary(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20710,7 +20710,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBooleanValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBooleanValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20756,7 +20756,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultisetValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultisetValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20786,7 +20786,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitArrayValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20804,7 +20804,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferenceValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferenceValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20822,7 +20822,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUdtValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUdtValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20896,7 +20896,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIntervalValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIntervalValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20942,7 +20942,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDatetimeValueFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDatetimeValueFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -20980,7 +20980,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIntervalPrimary(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIntervalPrimary(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21014,7 +21014,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTimeZone(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTimeZone(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21056,7 +21056,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDatetimeValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDatetimeValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21074,7 +21074,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStringLength(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStringLength(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21092,7 +21092,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStartPosition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStartPosition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21182,7 +21182,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStringValueFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStringValueFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21216,7 +21216,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStringValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStringValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21234,7 +21234,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWidthBucketCount(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWidthBucketCount(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21252,7 +21252,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWidthBucketBound2(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWidthBucketBound2(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21270,7 +21270,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWidthBucketBound1(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWidthBucketBound1(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21288,7 +21288,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWidthBucketOperand(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWidthBucketOperand(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21310,7 +21310,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitExtractField(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitExtractField(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21336,7 +21336,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAbsoluteValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAbsoluteValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21370,7 +21370,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPowerFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPowerFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21396,7 +21396,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNaturalLogarithm(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNaturalLogarithm(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21442,7 +21442,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWidthBucketFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWidthBucketFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21468,7 +21468,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitExponentialFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitExponentialFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21502,7 +21502,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPositionExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPositionExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21528,7 +21528,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFloorFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFloorFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21558,7 +21558,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCeilingFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCeilingFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21592,7 +21592,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLengthExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLengthExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21626,7 +21626,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitModulusExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitModulusExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21652,7 +21652,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSquareRoot(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSquareRoot(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21682,7 +21682,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCardinalityExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCardinalityExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21720,7 +21720,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitExtractExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitExtractExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21787,7 +21787,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNumericValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNumericValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21829,7 +21829,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCommonValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCommonValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21855,7 +21855,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21909,7 +21909,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCycleClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCycleClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21955,7 +21955,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSearchClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSearchClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -21977,7 +21977,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSearchOrCycleClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSearchOrCycleClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22039,7 +22039,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWithElement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWithElement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22069,7 +22069,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWithClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWithClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22115,7 +22115,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCorrespondingSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCorrespondingSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22145,7 +22145,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableRowValueExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableRowValueExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22223,7 +22223,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQueryExpressionBody(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQueryExpressionBody(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22245,7 +22245,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQueryExpression(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQueryExpression(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22283,7 +22283,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitOrdinaryGroupingSet(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitOrdinaryGroupingSet(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22341,7 +22341,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGroupingElement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitGroupingElement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22387,7 +22387,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableAlias(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableAlias(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22457,7 +22457,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTablePrimary(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTablePrimary(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22507,7 +22507,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitJoinSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitJoinSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22593,7 +22593,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableReference(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableReference(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22627,7 +22627,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWindowClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22649,7 +22649,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitHavingClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitHavingClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22691,7 +22691,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGroupByClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitGroupByClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22713,7 +22713,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWhereClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWhereClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22747,7 +22747,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFromClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFromClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22805,7 +22805,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSelectSublist(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSelectSublist(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22839,7 +22839,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSelectList(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSelectList(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22885,7 +22885,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQuerySpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQuerySpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22903,7 +22903,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLength(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLength(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22921,7 +22921,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitScale(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitScale(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22939,7 +22939,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPrecision(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPrecision(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22957,7 +22957,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSecondsDecimals(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSecondsDecimals(this) : visitor.visitChildren(this);
       }
    }
 
@@ -22979,7 +22979,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLobLength(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLobLength(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23049,7 +23049,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIntervalQualifier(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIntervalQualifier(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23067,7 +23067,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDatalinkType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDatalinkType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23089,7 +23089,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIntervalType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIntervalType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23123,7 +23123,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTimestampType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTimestampType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23157,7 +23157,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTimeType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTimeType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23175,7 +23175,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDateType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDateType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23193,7 +23193,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBooleanType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBooleanType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23215,7 +23215,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDoubleType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDoubleType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23233,7 +23233,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRealType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRealType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23263,7 +23263,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFloatType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFloatType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23281,7 +23281,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBigintType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBigintType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23303,7 +23303,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIntegerType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIntegerType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23321,7 +23321,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSmallintType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSmallintType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23363,7 +23363,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDecimalType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDecimalType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23401,7 +23401,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNumericType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNumericType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23443,7 +23443,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBlobType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBlobType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23481,7 +23481,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitVarbinaryType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitVarbinaryType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23511,7 +23511,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBinaryType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBinaryType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23529,7 +23529,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitXmlType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitXmlType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23583,7 +23583,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNclobType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNclobType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23629,7 +23629,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNvarcharType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNvarcharType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23671,7 +23671,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNcharType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNcharType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23717,7 +23717,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitClobType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitClobType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23759,7 +23759,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitVarcharType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitVarcharType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23793,7 +23793,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCharType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCharType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23903,7 +23903,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPredefinedType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPredefinedType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23941,7 +23941,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFieldDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFieldDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23963,7 +23963,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitScopeDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitScopeDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -23997,7 +23997,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferenceType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferenceType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24027,7 +24027,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRefType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRefType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24041,7 +24041,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitStructType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitStructType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24055,7 +24055,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPreType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPreType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24085,7 +24085,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitArrayType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24123,7 +24123,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRowType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRowType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24141,7 +24141,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultisetType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultisetType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24184,7 +24184,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDeleteAction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDeleteAction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24210,7 +24210,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUpdateAction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUpdateAction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24232,7 +24232,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferentialTriggeredAction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferentialTriggeredAction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24290,7 +24290,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferencesSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferencesSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24368,7 +24368,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnConstraint(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnConstraint(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24390,7 +24390,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitConstraintCharacteristics(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitConstraintCharacteristics(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24456,7 +24456,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableConstraint(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableConstraint(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24486,7 +24486,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnConstraintDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnConstraintDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24524,7 +24524,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitGenerationClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitGenerationClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24618,7 +24618,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDefaultOption(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDefaultOption(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24660,7 +24660,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnOptions(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnOptions(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24690,7 +24690,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSelfrefColumnSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSelfrefColumnSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24720,7 +24720,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLikeClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLikeClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24750,7 +24750,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableConstraintDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableConstraintDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24796,7 +24796,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24818,7 +24818,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitViewElement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitViewElement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24856,7 +24856,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitViewElementList(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitViewElementList(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24878,7 +24878,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSubviewClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSubviewClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24932,7 +24932,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitViewSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitViewSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -24966,7 +24966,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableElement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableElement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25004,7 +25004,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableElementList(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableElementList(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25026,7 +25026,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSubtableClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSubtableClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25100,7 +25100,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableContents(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableContents(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25118,7 +25118,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropColumnDefaultClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropColumnDefaultClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25140,7 +25140,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAddColumnScopeClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAddColumnScopeClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25162,7 +25162,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropColumnScopeClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropColumnScopeClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25184,7 +25184,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSetColumnDefaultClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSetColumnDefaultClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25219,7 +25219,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAddTableConstraintDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAddTableConstraintDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25245,7 +25245,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropTableConstraintDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropTableConstraintDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25271,7 +25271,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropColumnDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropColumnDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25297,7 +25297,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAlterColumnDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAlterColumnDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25319,7 +25319,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAddColumnDefinition(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAddColumnDefinition(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25394,7 +25394,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCreateViewStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCreateViewStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25424,7 +25424,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropViewStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropViewStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25454,7 +25454,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAlterTableStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAlterTableStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25492,7 +25492,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCreateTableStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCreateTableStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25522,7 +25522,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropTableStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropTableStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25560,7 +25560,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSpecialValue(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSpecialValue(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25590,7 +25590,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitOverrideClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitOverrideClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25612,7 +25612,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTriggerActionTime(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTriggerActionTime(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25634,7 +25634,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLevels(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLevels(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25656,7 +25656,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDeferrability(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDeferrability(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25682,7 +25682,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitConstraintCheckTime(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitConstraintCheckTime(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25708,7 +25708,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWithOrWithoutData(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWithOrWithoutData(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25730,7 +25730,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSign(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSign(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25768,7 +25768,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCompOp(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCompOp(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25806,7 +25806,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitPrimaryDatetimeField(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitPrimaryDatetimeField(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25832,7 +25832,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQueryOperator(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQueryOperator(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25862,7 +25862,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultisetOperator(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultisetOperator(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25892,7 +25892,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWithOrWithoutTimeZone(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWithOrWithoutTimeZone(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25918,7 +25918,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultiplier(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultiplier(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25940,7 +25940,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTimeZoneField(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTimeZoneField(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25962,7 +25962,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBooleanOperator(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBooleanOperator(this) : visitor.visitChildren(this);
       }
    }
 
@@ -25984,7 +25984,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAdditiveOperator(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAdditiveOperator(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26006,7 +26006,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMultiplicativeOperator(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMultiplicativeOperator(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26048,7 +26048,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFrameExclusion(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWindowFrameExclusion(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26070,7 +26070,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowFrameUnits(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWindowFrameUnits(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26092,7 +26092,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitInverseDistributionFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitInverseDistributionFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26154,7 +26154,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitBinarySetFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitBinarySetFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26228,7 +26228,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSetFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSetFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26258,7 +26258,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRankFunction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRankFunction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26284,7 +26284,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNullOrdering(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNullOrdering(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26306,7 +26306,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitOrderingSpecification(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitOrderingSpecification(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26340,7 +26340,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitJoinType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitJoinType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26362,7 +26362,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSampleMethod(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSampleMethod(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26384,7 +26384,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSetQuantifier(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSetQuantifier(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26410,7 +26410,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQuantifier(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQuantifier(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26432,7 +26432,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSymmetricOption(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSymmetricOption(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26458,7 +26458,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMethodType(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMethodType(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26496,7 +26496,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDataAccess(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDataAccess(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26518,7 +26518,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDeterministic(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDeterministic(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26556,7 +26556,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitNullCallClause(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitNullCallClause(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26578,7 +26578,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitParameterStyle(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitParameterStyle(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26624,7 +26624,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitLanguageName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitLanguageName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26650,7 +26650,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitParameterMode(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitParameterMode(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26672,7 +26672,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFinality(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFinality(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26694,7 +26694,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitInstantiability(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitInstantiability(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26720,7 +26720,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableScope(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableScope(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26762,7 +26762,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferentialAction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferentialAction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26792,7 +26792,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferenceScopeCheck(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferenceScopeCheck(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26822,7 +26822,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitReferenceGeneration(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitReferenceGeneration(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26848,7 +26848,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMatch(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMatch(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26874,7 +26874,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIdentityOption(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIdentityOption(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26900,7 +26900,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDefaultsOption(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDefaultsOption(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26934,7 +26934,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCommitAction(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCommitAction(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26956,7 +26956,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropBehavior(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropBehavior(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26974,7 +26974,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitArrayReference(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitArrayReference(this) : visitor.visitChildren(this);
       }
    }
 
@@ -26992,7 +26992,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTargetArrayReference(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTargetArrayReference(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27010,7 +27010,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnReference(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnReference(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27028,7 +27028,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSequenceName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSequenceName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27046,7 +27046,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTriggerName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTriggerName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27064,7 +27064,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRoutineName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRoutineName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27082,7 +27082,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSpecificMethodName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSpecificMethodName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27100,7 +27100,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUdtName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUdtName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27118,7 +27118,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitConstraintName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitConstraintName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27136,7 +27136,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitTableName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitTableName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27166,7 +27166,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitIdentifierChain(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitIdentifierChain(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27196,7 +27196,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQualifiedId(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQualifiedId(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27222,7 +27222,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSchemaName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSchemaName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27244,7 +27244,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitVariableName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitVariableName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27262,7 +27262,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitMethodName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitMethodName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27280,7 +27280,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCatalogName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCatalogName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27298,7 +27298,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitWindowName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitWindowName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27316,7 +27316,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCorrelationName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCorrelationName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27334,7 +27334,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitQueryName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitQueryName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27352,7 +27352,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitParameterName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitParameterName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27370,7 +27370,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCastIdentifier(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCastIdentifier(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27388,7 +27388,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAttributeName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAttributeName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27406,7 +27406,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitColumnName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitColumnName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27424,7 +27424,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitFieldName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitFieldName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27442,7 +27442,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitAuthorizationName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitAuthorizationName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27460,7 +27460,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitRoleName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitRoleName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27478,7 +27478,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitUserName(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitUserName(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27512,7 +27512,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitCreateSchemaStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitCreateSchemaStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27542,7 +27542,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDropSchemaStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDropSchemaStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27568,7 +27568,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDmlStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDmlStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27654,7 +27654,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitDdlStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitDdlStatement(this) : visitor.visitChildren(this);
       }
    }
 
@@ -27680,7 +27680,7 @@ public class SqlParser extends Parser {
       }
 
       public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-         return visitor instanceof SqlVisitor ? ((SqlVisitor)visitor).visitSqlStatement(this) : visitor.visitChildren(this);
+         return visitor instanceof SqlVisitor ? (T) ((SqlVisitor)visitor).visitSqlStatement(this) : visitor.visitChildren(this);
       }
    }
 }

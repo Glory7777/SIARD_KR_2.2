@@ -96,7 +96,7 @@ public abstract class MetaDataBase {
         rs.close();
 
         try {
-            Array array = this._dmd.getConnection().createArrayOf("INTEGER_OBJ", new Integer[]{1, 2});
+            Array array = this._dmd.getConnection().createArrayOf("INTEGER_ARRAY", new Integer[]{1, 2});
 //            Array array = this._dmd.getConnection().createArrayOf("INTEGER", new Integer[]{1, 2});
             array.free();
             this._bSupportsArrays = true;

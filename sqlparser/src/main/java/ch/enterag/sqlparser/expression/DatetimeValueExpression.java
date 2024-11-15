@@ -189,7 +189,7 @@ public class DatetimeValueExpression extends SqlBase {
             ivIntervalOperand.setSign(-ivIntervalOperand.getSign());
          }
 
-         Calendar cal = ivIntervalOperand.addTo(cal);
+         cal = ivIntervalOperand.addTo(cal);
          if (oDatetimeOperand instanceof Date) {
             oValue = new Date(cal.getTimeInMillis());
          } else if (oDatetimeOperand instanceof Time) {

@@ -975,24 +975,14 @@ public class MetaDataFromDb extends MetaDataBase {
 
 
     private void getColumns(MetaTable mt) throws IOException, SQLException {
-//        String pattern1 = mt.getParentMetaSchema().getName();
-//        String pattern2 = mt.getName();
-//        BaseDatabaseMetaData dmd = (BaseDatabaseMetaData) this._dmd;
-//        String pattern = dmd.toPattern(mt.getParentMetaSchema().getName());
-//        ResultSet rs = this._dmd.getColumns(
-//                null,
-//                ((BaseDatabaseMetaData) this._dmd)
-//                        .toPattern(mt.getParentMetaSchema().getName()),
-//                pattern1,
-//                ((BaseDatabaseMetaData) this._dmd)
-//                        .toPattern(mt.getName()),
-//                pattern2,
-//                pattern,
-//                "%"
-//        );
+        String pattern1 = mt.getParentMetaSchema().getName();
+        String pattern2 = mt.getName();
+
         ResultSet rs = this._dmd.getColumns(null,
-                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
-                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
+//                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
+//                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
+                pattern1,
+                pattern2,
                 "%");
 
         while (rs.next()) {
