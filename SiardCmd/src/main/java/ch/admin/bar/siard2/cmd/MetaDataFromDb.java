@@ -975,20 +975,25 @@ public class MetaDataFromDb extends MetaDataBase {
 
 
     private void getColumns(MetaTable mt) throws IOException, SQLException {
-        String pattern1 = mt.getParentMetaSchema().getName();
-        String pattern2 = mt.getName();
+//        String pattern1 = mt.getParentMetaSchema().getName();
+//        String pattern2 = mt.getName();
 //        BaseDatabaseMetaData dmd = (BaseDatabaseMetaData) this._dmd;
 //        String pattern = dmd.toPattern(mt.getParentMetaSchema().getName());
-        ResultSet rs = this._dmd.getColumns(
-                null,
+//        ResultSet rs = this._dmd.getColumns(
+//                null,
 //                ((BaseDatabaseMetaData) this._dmd)
-//                        .toPattern(mt.getParentMetaSchema().getName())
-                pattern1,
+//                        .toPattern(mt.getParentMetaSchema().getName()),
+//                pattern1,
 //                ((BaseDatabaseMetaData) this._dmd)
 //                        .toPattern(mt.getName()),
-                pattern2,
-                "%"
-        );
+//                pattern2,
+//                pattern,
+//                "%"
+//        );
+        ResultSet rs = this._dmd.getColumns(null,
+                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
+                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
+                "%");
 
         while (rs.next()) {
             String sTableSchema = rs.getString("TABLE_SCHEM");
@@ -1048,7 +1053,7 @@ public class MetaDataFromDb extends MetaDataBase {
             String sRemarks = rs.getString("REMARKS");
 
             // 특정 엔티티를 선택한 경우 선택되지 않은 엔티티는 메타 정보 조회 무시 1
-            if (hasSelected) { 
+            if (hasSelected) {
                 boolean selected = selectedSchemaTableMap.entrySet()
                         .stream()
                         .anyMatch(entry -> {
@@ -1060,7 +1065,7 @@ public class MetaDataFromDb extends MetaDataBase {
                         );
                 if (!selected) continue;
             }
-            
+
             Schema schema = this._md.getArchive().getSchema(sTableSchema);
             if (schema == null) schema = this._md.getArchive().createSchema(sTableSchema);
             Table table = schema.getTable(sTableName);
