@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.cmd;
 
+import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
@@ -25,6 +26,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
 
 public class MetaDataFromDb extends MetaDataBase {
     private static final Logger LOG = LoggerFactory.getLogger(MetaDataFromDb.class);
@@ -1196,58 +1199,66 @@ public class MetaDataFromDb extends MetaDataBase {
      * @param metaTable
      * @throws SQLException
      */
-    private void getTableSize(Table table, MetaTable metaTable) throws SQLException {
+    private void getTableSize(Table table, MetaTable metaTable) {
+        String dbName = null;
+        try {
+            String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
+            dbName = databaseProductName;
+            DataBase dataBase = DataBase.findByName(databaseProductName);
 
-        String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
-        DataBase dataBase = DataBase.findByName(databaseProductName);
+            String tableName = metaTable.getName();
+            String schemaName = metaTable.getParentMetaSchema().getName();
 
-        String tableName = metaTable.getName();
-        String schemaName = metaTable.getParentMetaSchema().getName();
-
-        if (dataBase.equals(DataBase.CUBRID)) {
-            return;
-        }
-
-        String query = switch (dataBase) {
-            case MYSQL -> "SELECT (data_length + index_length) AS size " +
-                    "FROM information_schema.tables " +
-                    "WHERE table_schema = ? " +
-                    "AND table_name = ?";
-            case ORACLE -> getOracleQuery();
-            case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
-            case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
-                    "FROM sys.tables t ...";
-            case CUBRID -> ";info stats " + tableName;
-            case TIBERO -> "";
-        };
-
-        long size = 0;
-        try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
-            switch (dataBase) {
-                case MYSQL -> {
-                    stmt.setString(1, schemaName);
-                    stmt.setString(2, tableName);
-                }
-                case ORACLE -> {
-                    stmt.setString(1, tableName);
-                    stmt.setString(2, tableName);
-                }
-                case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
-                // TODO :: more db
+            if (dataBase.equals(DataBase.CUBRID)) {
+                return;
             }
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                size = rs.getLong(1);  // Assuming the size is in the first column
+            String query = switch (dataBase) {
+                case MYSQL -> "SELECT (data_length + index_length) AS size " +
+                        "FROM information_schema.tables " +
+                        "WHERE table_schema = ? " +
+                        "AND table_name = ?";
+                case ORACLE -> getOracleQuery();
+                case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
+                case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
+                        "FROM sys.tables t ...";
+                case CUBRID -> ";info stats " + tableName;
+                case TIBERO -> "";
+            };
+
+            long size = 0;
+            try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
+                switch (dataBase) {
+                    case MYSQL -> {
+                        stmt.setString(1, schemaName);
+                        stmt.setString(2, tableName);
+                    }
+                    case ORACLE -> {
+                        stmt.setString(1, tableName);
+                        stmt.setString(2, tableName);
+                    }
+                    case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
+                    // TODO :: more db
+                }
+
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    size = rs.getLong(1);  // Assuming the size is in the first column
+                }
+            }
+
+            Schema parentSchema = table.getParentSchema();
+            parentSchema.addTableSize(size);
+
+            table.setFormattedTableSize(ByteFormatter.convertToBestFitUnit(size));
+            table.setTableSize(size);
+        } catch (Exception e) {
+            if (e instanceof SQLException) {
+                SQLException sqlException = (SQLException) e;
+                doHandleSqlException(dbName, "getTableSize", sqlException);
             }
         }
 
-
-        Schema parentSchema = table.getParentSchema();
-        parentSchema.addTableSize(size);
-
-        table.setFormattedTableSize(ByteFormatter.convertToBestFitUnit(size));
-        table.setTableSize(size);
     }
 
     private String getOracleQuery() {
@@ -1266,8 +1277,9 @@ public class MetaDataFromDb extends MetaDataBase {
     }
 
     private boolean isSysdba(String databaseUser) {
-        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
-        return !databaseUser.startsWith("C##") && databaseUser.startsWith("SYS");
+        return true;
+//        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
+//        return !databaseUser.startsWith("C##") && databaseUser.startsWith("SYS");
     }
 
 }

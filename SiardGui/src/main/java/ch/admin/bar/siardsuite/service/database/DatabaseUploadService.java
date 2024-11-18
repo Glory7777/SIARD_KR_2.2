@@ -46,7 +46,7 @@ public class DatabaseUploadService extends Service<String> {
 
         @Override
         protected String call() throws Exception {
-            val connection = connectionFactory.getOrCreateConnection(instruction.getConnectionData());
+            val connection = connectionFactory.getOrCreateConnectionProxy(instruction.getConnectionData());
             val timeout = userPreferences.getStoredOptions().getQueryTimeout();
 
             // TODO overwrite and metadataonly?

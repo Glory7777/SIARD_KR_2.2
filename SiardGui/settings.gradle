@@ -3,7 +3,8 @@
  */
 
 rootProject.name = 'siard-suite'
-include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid', ':JdbcBase', ':JdbcMysql'
+include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid', ':JdbcBase', ':JdbcMysql',
+        ':DbException'
 
 project(':SiardCmd').projectDir = file('../SiardCmd')
 project(':SiardApi').projectDir = file('../SiardApi')
@@ -12,3 +13,4 @@ project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
 project(':JdbcBase').projectDir = file('../JdbcBase')
 project(':JdbcMysql').projectDir = file('../JdbcMysql')
+project(':DbException').projectDir = file('../DbException')

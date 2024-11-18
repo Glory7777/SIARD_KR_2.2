@@ -4,27 +4,26 @@ plugins {
 
 group = 'ch.admin.bar'
 version = '1.0-SNAPSHOT'
+
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
+
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-//    testImplementation platform('org.junit:junit-bom:5.10.0')
-//    testImplementation 'org.junit.jupiter:junit-jupiter'
-
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
 
-    implementation fileTree(include: ['*.jar'], dir: "$rootDir/lib")
 
-    implementation project(':SiardApi')
-    implementation project(':JdbcBase')
-    implementation project(':JdbcMysql')
-    implementation project(':DbException')
-
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.mockito:mockito-core:5.9.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.9.0'
 }
 
 test {

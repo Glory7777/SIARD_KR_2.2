@@ -86,6 +86,7 @@ dependencies {
     implementation project(':Cubrid')
     implementation project(':JdbcBase')
     implementation project(':JdbcMysql')
+    implementation project(':DbException')
 
 }
 
