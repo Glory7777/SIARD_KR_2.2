@@ -40,7 +40,6 @@ public class TreeAttributeWrapper {
     private final FormData formData = new FormData();
 
     private boolean checkedForDownload;
-
     private final boolean columnSelectable;
 
     private final long size; // 테이블 예상 바이트 크기
@@ -74,6 +73,13 @@ public class TreeAttributeWrapper {
     public String getDisplayName() {
         return this.name.getText();
     }
+
+    /**
+     * 엔티티 추출(Archive) 시 선택 가능한 체크박스인지 확인하는 속성
+     *
+     * @param attribute
+     * @return
+     */
     public boolean isTransferable(DatabaseAttribute attribute) { return DatabaseAttribute.isToBeTransferred(attribute); }
 
     public boolean isSchemaAttr() { return this.databaseAttribute == DatabaseAttribute.SCHEMA; }
@@ -88,6 +94,10 @@ public class TreeAttributeWrapper {
         if (this.isRecordAttr()) this.getDatabaseTable().getTable().setRowsToDefault();
     }
 
+
+    /**
+     * 체크박스 트리의 속성.
+     */
     @Getter
     @RequiredArgsConstructor
     public enum DatabaseAttribute {
