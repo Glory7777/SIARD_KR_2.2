@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc.rowset;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.jdbc.TbDriver;
 import com.tmax.tibero.jdbc.err.TbError;
 import java.io.InputStream;
@@ -25,6 +26,9 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Map;
 import javax.naming.InitialContext;
@@ -974,14 +978,209 @@ public class TbJdbcRowSet extends TbRowSet implements JdbcRowSet, Joinable {
     this.rs.updateNClob(paramString, paramReader);
   }
 
-  @Override
-  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-    return null;
+  public <T> T getObject(int i, Class<T> clazz) throws SQLException {
+    Debug.logMethod("TbJdbcRowSet.getObject", new Object[]{this, Integer.toString(i), clazz});
+    String className = clazz.getName();
+    byte var5 = -1;
+    switch(className.hashCode()) {
+      case -2056817302:
+        if (className.equals("java.lang.Integer")) {
+          var5 = 11;
+        }
+        break;
+      case -1917484011:
+        if (className.equals("java.time.OffsetTime")) {
+          var5 = 24;
+        }
+        break;
+      case -1766012793:
+        if (className.equals("java.sql.Ref")) {
+          var5 = 14;
+        }
+        break;
+      case -1405464277:
+        if (className.equals("java.math.BigDecimal")) {
+          var5 = 2;
+        }
+        break;
+      case -1374008726:
+        if (className.equals("byte[]")) {
+          var5 = 5;
+        }
+        break;
+      case -1359732257:
+        if (className.equals("java.io.Reader")) {
+          var5 = 6;
+        }
+        break;
+      case -1246518012:
+        if (className.equals("java.time.LocalDate")) {
+          var5 = 21;
+        }
+        break;
+      case -1246033885:
+        if (className.equals("java.time.LocalTime")) {
+          var5 = 22;
+        }
+        break;
+      case -1179039247:
+        if (className.equals("java.time.LocalDateTime")) {
+          var5 = 23;
+        }
+        break;
+      case -682591005:
+        if (className.equals("java.time.OffsetDateTime")) {
+          var5 = 25;
+        }
+        break;
+      case -641510067:
+        if (className.equals("java.sql.Array")) {
+          var5 = 0;
+        }
+        break;
+      case -630909826:
+        if (className.equals("java.sql.NClob")) {
+          var5 = 13;
+        }
+        break;
+      case -625895543:
+        if (className.equals("java.sql.RowId")) {
+          var5 = 15;
+        }
+        break;
+      case -527879800:
+        if (className.equals("java.lang.Float")) {
+          var5 = 10;
+        }
+        break;
+      case -515992664:
+        if (className.equals("java.lang.Short")) {
+          var5 = 16;
+        }
+        break;
+      case 398507100:
+        if (className.equals("java.lang.Byte")) {
+          var5 = 4;
+        }
+        break;
+      case 398795216:
+        if (className.equals("java.lang.Long")) {
+          var5 = 12;
+        }
+        break;
+      case 761287205:
+        if (className.equals("java.lang.Double")) {
+          var5 = 9;
+        }
+        break;
+      case 833723470:
+        if (className.equals("java.io.InputStream")) {
+          var5 = 1;
+        }
+        break;
+      case 1087708713:
+        if (className.equals("java.sql.Blob")) {
+          var5 = 3;
+        }
+        break;
+      case 1087738504:
+        if (className.equals("java.sql.Clob")) {
+          var5 = 7;
+        }
+        break;
+      case 1087757882:
+        if (className.equals("java.sql.Date")) {
+          var5 = 8;
+        }
+        break;
+      case 1088242009:
+        if (className.equals("java.sql.Time")) {
+          var5 = 19;
+        }
+        break;
+      case 1195259493:
+        if (className.equals("java.lang.String")) {
+          var5 = 18;
+        }
+        break;
+      case 1252880906:
+        if (className.equals("java.sql.Timestamp")) {
+          var5 = 20;
+        }
+        break;
+      case 2050244018:
+        if (className.equals("java.net.URL")) {
+          var5 = 26;
+        }
+        break;
+      case 2071730933:
+        if (className.equals("java.sql.SQLXML")) {
+          var5 = 17;
+        }
+    }
+
+    switch(var5) {
+      case 0:
+        return (T) this.getObject(i);
+      case 1:
+        return (T) this.getBinaryStream(i);
+      case 2:
+        return (T) this.getBigDecimal(i);
+      case 3:
+        return (T) this.getBlob(i);
+      case 4:
+        return (T) Byte.valueOf(this.getByte(i));
+      case 5:
+        return (T) this.getBytes(i);
+      case 6:
+        return (T) this.getCharacterStream(i);
+      case 7:
+        return (T) this.getClob(i);
+      case 8:
+        return (T) this.getDate(i);
+      case 9:
+        return (T) Double.valueOf(this.getDouble(i));
+      case 10:
+        return (T) Float.valueOf(this.getFloat(i));
+      case 11:
+        return (T) Integer.valueOf(this.getInt(i));
+      case 12:
+        return (T) Long.valueOf(this.getLong(i));
+      case 13:
+        return (T) this.getNClob(i);
+      case 14:
+        return (T) this.getRef(i);
+      case 15:
+        return (T) this.getRowId(i);
+      case 16:
+        return (T) Short.valueOf(this.getShort(i));
+      case 17:
+        return (T) this.getSQLXML(i);
+      case 18:
+        return (T) this.getString(i);
+      case 19:
+        return (T) this.getTime(i);
+      case 20:
+        return (T) this.getTimestamp(i);
+      case 21:
+        return (T) this.getDate(i).toLocalDate();
+      case 22:
+        return (T) this.getTime(i).toLocalTime();
+      case 23:
+        return (T) this.getTimestamp(i).toLocalDateTime();
+      case 24:
+        return (T) OffsetTime.of(this.getTime(i).toLocalTime(), ZoneOffset.UTC);
+      case 25:
+        return (T) OffsetDateTime.of(this.getTimestamp(i).toLocalDateTime(), ZoneOffset.UTC);
+      case 26:
+        return (T) this.getURL(i);
+      default:
+        return (T) this.getObject(i);
+    }
   }
 
-  @Override
-  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-    return null;
+  public <T> T getObject(String columnLabel, Class<T> clazz) throws SQLException {
+    return this.getObject(this.findColumn(columnLabel), clazz);
   }
 
   public void updateNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {

@@ -115,9 +115,8 @@ public class TbDataSource implements DataSource, Serializable, Referenceable {
     return this.loginTimeout;
   }
 
-  @Override
   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-    return null;
+    throw new SQLFeatureNotSupportedException();
   }
 
   public synchronized PrintWriter getLogWriter() throws SQLException {

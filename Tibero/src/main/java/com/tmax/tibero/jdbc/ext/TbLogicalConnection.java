@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc.ext;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClob;
 import com.tmax.tibero.jdbc.TbConnection;
@@ -49,7 +50,7 @@ public class TbLogicalConnection extends TbConnection {
   private boolean reseted = true;
   
   private HashMap<StatementEventListener, StatementEventListener> listenerMap = new HashMap<StatementEventListener, StatementEventListener>();
-  
+
   public TbLogicalConnection(TbConnectionEventHandler paramTbConnectionEventHandler, TbConnection paramTbConnection, boolean paramBoolean) throws SQLException {
     this.eventHandler = paramTbConnectionEventHandler;
     this.physicalConn = paramTbConnection;
@@ -195,29 +196,29 @@ public class TbLogicalConnection extends TbConnection {
     return this.physicalConn.createStruct(paramString, paramArrayOfObject);
   }
 
-  @Override
   public void setSchema(String schema) throws SQLException {
-
+    Debug.logMethod("TbLogicalConnection.setSchema", new Object[]{this, this.physicalConn});
+    this.physicalConn.setSchema(schema);
   }
 
-  @Override
   public String getSchema() throws SQLException {
-    return "";
+    Debug.logMethod("TbLogicalConnection.getSchema", new Object[]{this, this.physicalConn});
+    return this.physicalConn.getSchema();
   }
 
-  @Override
   public void abort(Executor executor) throws SQLException {
-
+    Debug.logMethod("TbLogicalConnection.abort", new Object[]{this, this.physicalConn});
+    this.physicalConn.abort(executor);
   }
 
-  @Override
   public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-
+    Debug.logMethod("TbLogicalConnection.setNetworkTimeout", new Object[]{this, this.physicalConn});
+    this.physicalConn.setNetworkTimeout(executor, milliseconds);
   }
 
-  @Override
   public int getNetworkTimeout() throws SQLException {
-    return 0;
+    Debug.logMethod("TbLogicalConnection.getNetworkTimeout", new Object[]{this, this.physicalConn});
+    return this.physicalConn.getNetworkTimeout();
   }
 
   public void end(Xid paramXid, int paramInt) throws XAException {

@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.jdbc.driver.TbConnection;
 import com.tmax.tibero.jdbc.err.TbError;
 import java.io.ByteArrayInputStream;
@@ -344,13 +345,20 @@ public class TbSQLXML implements SQLData, SQLXML {
   }
 
   @Override
-  public <T extends Source> T getSource(Class<T> sourceClass) throws SQLException {
+  public <T extends Result> T setResult(Class<T> resultClass) throws SQLException {
     return null;
   }
 
-  @Override
-  public <T extends Result> T setResult(Class<T> resultClass) throws SQLException {
-    return null;
+  public Source getSource(Class sourceClass) throws SQLException {
+    Debug.logMethod("TbSQLXML.getSource", new Object[]{this, sourceClass});
+    this.checkXMLClosed();
+    this.checkReadStatus();
+    if (sourceClass == null) {
+      Source source = this.getSourceInternal(StreamSource.class);
+      return source;
+    } else {
+      return this.getSourceInternal(sourceClass);
+    }
   }
 
   protected TbSQLXML() {}

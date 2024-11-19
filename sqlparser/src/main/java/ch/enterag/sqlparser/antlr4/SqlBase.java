@@ -97,6 +97,7 @@ public abstract class SqlBase {
    }
 
    public static SqlParser newSqlParser(String sSql) {
+
       SqlParser sp = null;
 
       try {

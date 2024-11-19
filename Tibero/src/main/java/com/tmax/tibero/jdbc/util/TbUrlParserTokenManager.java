@@ -851,9 +851,71 @@ public class TbUrlParserTokenManager implements TbUrlParserConstants {
     return token;
   }
 
-    public Token getNextToken() {
-      return null;
+  public Token getNextToken() {
+    Token specialToken = null;
+    boolean var4 = false;
+
+    while(true) {
+      Token matchedToken;
+      try {
+        this.curChar = this.input_stream.BeginToken();
+      } catch (IOException var10) {
+        this.jjmatchedKind = 0;
+        matchedToken = this.jjFillToken();
+        return matchedToken;
+      }
+
+      try {
+        this.input_stream.backup(0);
+
+        while(this.curChar <= ' ' && (4294977024L & 1L << this.curChar) != 0L) {
+          this.curChar = this.input_stream.BeginToken();
+        }
+      } catch (IOException var12) {
+        continue;
+      }
+
+      this.jjmatchedKind = Integer.MAX_VALUE;
+      this.jjmatchedPos = 0;
+      int curPos = this.jjMoveStringLiteralDfa0_0();
+      if (this.jjmatchedKind == Integer.MAX_VALUE) {
+        int error_line = this.input_stream.getEndLine();
+        int error_column = this.input_stream.getEndColumn();
+        String error_after = null;
+        boolean EOFSeen = false;
+
+        try {
+          this.input_stream.readChar();
+          this.input_stream.backup(1);
+        } catch (IOException var11) {
+          EOFSeen = true;
+          error_after = curPos <= 1 ? "" : this.input_stream.GetImage();
+          if (this.curChar != '\n' && this.curChar != '\r') {
+            ++error_column;
+          } else {
+            ++error_line;
+            error_column = 0;
+          }
+        }
+
+        if (!EOFSeen) {
+          this.input_stream.backup(1);
+          error_after = curPos <= 1 ? "" : this.input_stream.GetImage();
+        }
+
+        throw new TokenMgrError(EOFSeen, this.curLexState, error_line, error_column, error_after, this.curChar, 0);
+      }
+
+      if (this.jjmatchedPos + 1 < curPos) {
+        this.input_stream.backup(curPos - this.jjmatchedPos - 1);
+      }
+
+      if ((jjtoToken[this.jjmatchedKind >> 6] & 1L << (this.jjmatchedKind & 63)) != 0L) {
+        matchedToken = this.jjFillToken();
+        return matchedToken;
+      }
     }
+  }
 
 //  public Token getNextToken() {
     // Byte code:

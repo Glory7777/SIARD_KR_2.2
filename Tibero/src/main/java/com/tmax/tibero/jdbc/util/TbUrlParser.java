@@ -6984,7 +6984,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
+    int b;
     for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
@@ -6997,7 +6997,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
+    int b;
     for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
@@ -7009,7 +7009,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
+    int b;
     for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)
@@ -7021,7 +7021,7 @@ public class TbUrlParser implements TbUrlParserConstants {
     this.token = new Token();
     this.jj_ntk = -1;
     this.jj_gen = 0;
-    byte b;
+    int b;
     for (b = 0; b < 0; b++)
       this.jj_la1[b] = -1; 
     for (b = 0; b < this.jj_2_rtns.length; b++)

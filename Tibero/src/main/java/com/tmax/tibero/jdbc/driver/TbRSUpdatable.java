@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc.driver;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.jdbc.TbBlob;
 import com.tmax.tibero.jdbc.TbClob;
 import com.tmax.tibero.jdbc.TbClobBase;
@@ -31,8 +32,12 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class TbRSUpdatable extends TbResultSet {
   private TbResultSetBase rset = null;
@@ -1356,14 +1361,250 @@ public class TbRSUpdatable extends TbResultSet {
     updateNClob(findColumn(paramString), paramReader);
   }
 
-  @Override
-  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-    return null;
+  public <T> T getObject(int i, Class<T> clazz) throws SQLException {
+    Debug.logMethod("TbRSUpdatable.getObject", new Object[]{this, Integer.toString(i), clazz});
+    String className = clazz.getName();
+    byte var5 = -1;
+    switch(className.hashCode()) {
+      case -2056817302:
+        if (className.equals("java.lang.Integer")) {
+          var5 = 12;
+        }
+        break;
+      case -1917484011:
+        if (className.equals("java.time.OffsetTime")) {
+          var5 = 25;
+        }
+        break;
+      case -1766012793:
+        if (className.equals("java.sql.Ref")) {
+          var5 = 15;
+        }
+        break;
+      case -1405464277:
+        if (className.equals("java.math.BigDecimal")) {
+          var5 = 2;
+        }
+        break;
+      case -1374008726:
+        if (className.equals("byte[]")) {
+          var5 = 6;
+        }
+        break;
+      case -1359732257:
+        if (className.equals("java.io.Reader")) {
+          var5 = 7;
+        }
+        break;
+      case -1246518012:
+        if (className.equals("java.time.LocalDate")) {
+          var5 = 22;
+        }
+        break;
+      case -1246033885:
+        if (className.equals("java.time.LocalTime")) {
+          var5 = 23;
+        }
+        break;
+      case -1179039247:
+        if (className.equals("java.time.LocalDateTime")) {
+          var5 = 24;
+        }
+        break;
+      case -989675752:
+        if (className.equals("java.math.BigInteger")) {
+          var5 = 3;
+        }
+        break;
+      case -682591005:
+        if (className.equals("java.time.OffsetDateTime")) {
+          var5 = 26;
+        }
+        break;
+      case -641510067:
+        if (className.equals("java.sql.Array")) {
+          var5 = 0;
+        }
+        break;
+      case -630909826:
+        if (className.equals("java.sql.NClob")) {
+          var5 = 14;
+        }
+        break;
+      case -625895543:
+        if (className.equals("java.sql.RowId")) {
+          var5 = 16;
+        }
+        break;
+      case -527879800:
+        if (className.equals("java.lang.Float")) {
+          var5 = 11;
+        }
+        break;
+      case -515992664:
+        if (className.equals("java.lang.Short")) {
+          var5 = 17;
+        }
+        break;
+      case 398507100:
+        if (className.equals("java.lang.Byte")) {
+          var5 = 5;
+        }
+        break;
+      case 398795216:
+        if (className.equals("java.lang.Long")) {
+          var5 = 13;
+        }
+        break;
+      case 761287205:
+        if (className.equals("java.lang.Double")) {
+          var5 = 10;
+        }
+        break;
+      case 833723470:
+        if (className.equals("java.io.InputStream")) {
+          var5 = 1;
+        }
+        break;
+      case 1087708713:
+        if (className.equals("java.sql.Blob")) {
+          var5 = 4;
+        }
+        break;
+      case 1087738504:
+        if (className.equals("java.sql.Clob")) {
+          var5 = 8;
+        }
+        break;
+      case 1087757882:
+        if (className.equals("java.sql.Date")) {
+          var5 = 9;
+        }
+        break;
+      case 1088242009:
+        if (className.equals("java.sql.Time")) {
+          var5 = 20;
+        }
+        break;
+      case 1195259493:
+        if (className.equals("java.lang.String")) {
+          var5 = 19;
+        }
+        break;
+      case 1252880906:
+        if (className.equals("java.sql.Timestamp")) {
+          var5 = 21;
+        }
+        break;
+      case 2050244018:
+        if (className.equals("java.net.URL")) {
+          var5 = 27;
+        }
+        break;
+      case 2071730933:
+        if (className.equals("java.sql.SQLXML")) {
+          var5 = 18;
+        }
+    }
+
+    switch (var5) {
+      case 0 -> {
+        return (T) this.getObject(i);
+      }
+      case 1 -> {
+        return (T) this.getBinaryStream(i);
+      }
+      case 2 -> {
+        return (T) this.getBigDecimal(i);
+      }
+      case 3 -> {
+        BigDecimal bigDecimal = this.getBigDecimal(i);
+        return (T) (bigDecimal != null ? bigDecimal.toBigInteger() : null);
+      }
+      case 4 -> {
+        return (T) this.getBlob(i);
+      }
+      case 5 -> {
+        return (T) Byte.valueOf(this.getByte(i));
+      }
+      case 6 -> {
+        return (T) this.getBytes(i);
+      }
+      case 7 -> {
+        return (T) this.getCharacterStream(i);
+      }
+      case 8 -> {
+        return (T) this.getClob(i);
+      }
+      case 9 -> {
+        return (T) this.getDate(i);
+      }
+      case 10 -> {
+        return (T) Double.valueOf(this.getDouble(i));
+      }
+      case 11 -> {
+        return (T) Float.valueOf(this.getFloat(i));
+      }
+      case 12 -> {
+        return (T) Integer.valueOf(this.getInt(i));
+      }
+      case 13 -> {
+        return (T) Long.valueOf(this.getLong(i));
+      }
+      case 14 -> {
+        return (T) this.getNClob(i);
+      }
+      case 15 -> {
+        return (T) this.getRef(i);
+      }
+      case 16 -> {
+        return (T) this.getRowId(i);
+      }
+      case 17 -> {
+        return (T) Short.valueOf(this.getShort(i));
+      }
+      case 18 -> {
+        return (T) this.getSQLXML(i);
+      }
+      case 19 -> {
+        return (T) this.getString(i);
+      }
+      case 20 -> {
+        return (T) this.getTime(i);
+      }
+      case 21 -> {
+        return (T) this.getTimestamp(i);
+      }
+      case 22 -> {
+        java.sql.Date date = this.getDate(i);
+        return (T) (date != null ? date.toLocalDate() : null);
+      }
+      case 23 -> {
+        java.sql.Time time = this.getTime(i);
+        return (T) (time != null ? time.toLocalTime() : null);
+      }
+      case 24 -> {
+        java.sql.Timestamp timestamp = this.getTimestamp(i);
+        return (T) (timestamp != null ? timestamp.toLocalDateTime() : null);
+      }
+      case 25 -> {
+        return (T) this.getOffsetTime(i);
+      }
+      case 26 -> {
+        return (T) this.getOffsetDateTime(i);
+      }
+      case 27 -> {
+        return (T) this.getURL(i);
+      }
+      default -> {
+        return (T) this.getObject(i);
+      }
+    }
+
   }
 
-  @Override
   public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-    return null;
+    return this.getObject(this.findColumn(columnLabel), type);
   }
 
   public void updateNClob(String paramString, Reader paramReader, long paramLong) throws SQLException {
@@ -1556,6 +1797,37 @@ public class TbRSUpdatable extends TbResultSet {
   
   public synchronized boolean wasNull() throws SQLException {
     return this.lastColumnWasNull;
+  }
+  private OffsetTime getOffsetTime(int i) throws SQLException {
+    this.checkColumnIndex(i);
+    if (this.setLastColumnWasNull(i)) {
+      return null;
+    } else if (this.hasBufferChanged(i)) {
+      if (this.columnLength[this.getRevisedColumnIndex(i)] == 17) {
+        TimeZone timezone = this.rset.typeConverter.toTimeZoneFromBytes((byte[])((byte[])this.columnBuffer[this.getRevisedColumnIndex(i)]), 0, this.columnLength[this.getRevisedColumnIndex(i)]);
+        return OffsetTime.of(this.getTimestamp(i).toLocalDateTime().toLocalTime(), ZoneOffset.ofTotalSeconds(timezone.getRawOffset() / 1000));
+      } else {
+        return OffsetTime.of(this.getTime(i).toLocalTime(), ZoneOffset.UTC);
+      }
+    } else {
+      return (OffsetTime)this.rset.getObject(i, OffsetTime.class);
+    }
+  }
+
+  private OffsetDateTime getOffsetDateTime(int i) throws SQLException {
+    this.checkColumnIndex(i);
+    if (this.setLastColumnWasNull(i)) {
+      return null;
+    } else if (this.hasBufferChanged(i)) {
+      if (this.columnLength[this.getRevisedColumnIndex(i)] == 17) {
+        TimeZone timezone = this.rset.typeConverter.toTimeZoneFromBytes((byte[])((byte[])this.columnBuffer[this.getRevisedColumnIndex(i)]), 0, this.columnLength[this.getRevisedColumnIndex(i)]);
+        return OffsetDateTime.of(this.getTimestamp(i).toLocalDateTime(), ZoneOffset.ofTotalSeconds(timezone.getRawOffset() / 1000));
+      } else {
+        return OffsetDateTime.of(this.getTimestamp(i).toLocalDateTime(), ZoneOffset.UTC);
+      }
+    } else {
+      return (OffsetDateTime)this.rset.getObject(i, OffsetDateTime.class);
+    }
   }
 }
 

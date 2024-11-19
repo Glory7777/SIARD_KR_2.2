@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc.driver;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.jdbc.data.BigLiteral;
 import com.tmax.tibero.jdbc.data.DataTypeConverter;
 import com.tmax.tibero.jdbc.data.RsetType;
@@ -910,14 +911,22 @@ public class TbStatement extends com.tmax.tibero.jdbc.TbStatement {
     }
   }
 
-  @Override
   public void closeOnCompletion() throws SQLException {
-
+    Debug.logMethod("TbStatement.closeOnCompletion", new Object[0]);
+    if (this.isClosed()) {
+      throw TbError.newSQLException(-90659);
+    } else {
+      this.closeOnCompletion = true;
+    }
   }
 
-  @Override
   public boolean isCloseOnCompletion() throws SQLException {
-    return false;
+    Debug.logMethod("TbStatement.isCloseOnCompletion", new Object[0]);
+    if (this.isClosed()) {
+      throw TbError.newSQLException(-90659);
+    } else {
+      return this.closeOnCompletion;
+    }
   }
 
   public boolean isWrapperFor(Class<?> var1) throws SQLException {

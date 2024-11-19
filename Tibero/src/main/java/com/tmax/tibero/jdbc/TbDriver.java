@@ -97,7 +97,7 @@ public class TbDriver implements Driver {
 
   @Override
   public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-    return null;
+    throw new SQLFeatureNotSupportedException();
   }
 
   static {

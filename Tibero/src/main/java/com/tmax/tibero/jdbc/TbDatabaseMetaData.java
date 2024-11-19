@@ -1,5 +1,6 @@
 package com.tmax.tibero.jdbc;
 
+import com.tmax.tibero.Debug;
 import com.tmax.tibero.DriverConstants;
 import com.tmax.tibero.jdbc.data.DataTypeConverter;
 import com.tmax.tibero.jdbc.data.charset.Charset;
@@ -312,7 +313,21 @@ public class TbDatabaseMetaData implements DatabaseMetaData {
 
   @Override
   public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
-    return null;
+    Debug.logMethod("TbDatabaseMetaData.getPseudoColumns", new Object[]{catalog, schemaPattern, tableNamePattern, columnNamePattern});
+    PreparedStatement pstmt = this.conn.prepareStatement(TbDatabaseMetaQuery.getPseudoColumnQuery());
+    pstmt.setString(1, schemaPattern == null ? "%" : schemaPattern);
+    pstmt.setString(2, tableNamePattern == null ? "%" : tableNamePattern);
+    pstmt.setString(3, schemaPattern == null ? "%" : schemaPattern);
+    pstmt.setString(4, tableNamePattern == null ? "%" : tableNamePattern);
+    pstmt.setString(5, schemaPattern == null ? "%" : schemaPattern);
+    pstmt.setString(6, tableNamePattern == null ? "%" : tableNamePattern);
+    pstmt.setInt(7, this.conn.getMapDateToTimestamp() ? 93 : 91);
+    pstmt.setString(8, schemaPattern == null ? "%" : schemaPattern);
+    pstmt.setString(9, tableNamePattern == null ? "%" : tableNamePattern);
+    pstmt.setString(10, columnNamePattern == null ? "%" : columnNamePattern);
+    TbResultSetBase rs = (TbResultSetBase)pstmt.executeQuery();
+    rs.closeStatementOnClose();
+    return rs;
   }
 
   @Override

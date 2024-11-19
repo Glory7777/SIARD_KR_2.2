@@ -12,7 +12,7 @@ project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
 
 //project(':JdbcTibero').projectDir = file('../JdbcTibero')
-//project(':Tibero').projectDir = file('../Tibero')
+project(':Tibero').projectDir = file('../Tibero')
 project(':sqlparser').projectDir = file('../sqlparser')
 //include 'src:main:Tibero'
 //findProject(':src:main:Tibero')?.name = 'Tibero'
