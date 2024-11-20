@@ -1247,14 +1247,17 @@ public class MetaDataFromDb extends MetaDataBase {
                     case MYSQL: {
                         stmt.setString(1, schemaName);
                         stmt.setString(2, tableName);
+                        break;
                     }
                     case ORACLE: {
                         stmt.setString(1, tableName);
                         stmt.setString(2, tableName);
+                        break;
                     }
                     case POSTGRESQL:
                         stmt.setString(1, schemaName + "." + tableName);
                         // TODO :: more db
+                        break;
                 }
 
                 ResultSet rs = stmt.executeQuery();
