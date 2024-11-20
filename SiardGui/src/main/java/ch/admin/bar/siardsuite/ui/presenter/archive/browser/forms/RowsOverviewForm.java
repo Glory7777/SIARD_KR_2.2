@@ -160,7 +160,7 @@ public class RowsOverviewForm {
         }
 
         private boolean isSearchTermBlank() {
-            return searchTerm == null || searchTerm.isBlank();
+            return searchTerm == null || searchTerm.isEmpty();
         }
 
         @Override

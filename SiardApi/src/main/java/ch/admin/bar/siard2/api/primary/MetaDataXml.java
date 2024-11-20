@@ -221,9 +221,9 @@ public class MetaDataXml {
     ActionTimeType att = null;
     if (attOld != null)
     {
-        att = switch (attOld) {
-            case BEFORE -> ActionTimeType.BEFORE;
-            case AFTER -> ActionTimeType.AFTER;
+        switch (attOld) {
+          case BEFORE: att = ActionTimeType.BEFORE; break;
+          case AFTER : att = ActionTimeType.AFTER; break;
         };
     }
     return att;

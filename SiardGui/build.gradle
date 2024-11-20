@@ -21,10 +21,19 @@ description = 'SIARD Suite'
 
 version = scmVersion.version
 
-java.sourceCompatibility = JavaVersion.VERSION_17
-java.targetCompatibility = JavaVersion.VERSION_17
+
 mainClassName = "ch.admin.bar.siardsuite.Launcher"
 applicationName = "SIARD-Suite"
+
+allprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
+    }
+}
 
 jar {
     doFirst {

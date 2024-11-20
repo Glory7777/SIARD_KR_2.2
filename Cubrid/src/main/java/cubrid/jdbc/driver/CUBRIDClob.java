@@ -422,7 +422,8 @@ public class CUBRIDClob implements Clob {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDClob that) {
+		if (obj instanceof CUBRIDClob) {
+            CUBRIDClob that = (CUBRIDClob) obj;
             return lobHandle.equals(that.lobHandle);
 		}
 		return false;

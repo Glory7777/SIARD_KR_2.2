@@ -35,13 +35,7 @@ public class SftpConnectionFormData {
     private final Label userErrorLabel = new Label();
     private final Label passwordErrorLabel = new Label();
 
-    private final List<Label> errorLabelList = List.of(
-            hostErrorLabel,
-            portErrorLabel,
-            userErrorLabel,
-            passwordLabel
-    );
-
+    private final List<Label> errorLabelList = new ArrayList<>();
     private final TreeAttributeWrapper treeAttributeWrapper;
     private final TextField hostField;
     private final TextField portField;
@@ -59,25 +53,40 @@ public class SftpConnectionFormData {
         this.userField = new TextField(sftpConnection.getUser());
         this.passwordField = new TextField(sftpConnection.getPassword());
         this.targetDirectoryField = new TextField(item.getFormData().getTargetDirectory());
-        validationProperties.addAll(
-                List.of(new ValidationProperty(
-                                hostField,
-                                hostErrorLabel,
-                                "connection.view.error.database.server"),
-                        new ValidationProperty(
-                                portField,
-                                portErrorLabel,
-                                "connection.view.error.port.number"),
-                        new ValidationProperty(
-                                userField,
-                                userErrorLabel,
-                                "connection.view.error.user.name"),
-                        new ValidationProperty(
-                                passwordField,
-                                passwordErrorLabel,
-                                "connection.view.error.user.password")
-                )
-        );
+        setErrorLabel();
+        setupValidationProperty();
+    }
+
+    private void setErrorLabel() {
+        errorLabelList.add(hostErrorLabel);
+        errorLabelList.add(portErrorLabel);
+        errorLabelList.add(userErrorLabel);
+        errorLabelList.add(passwordLabel);
+    }
+
+    private void setupValidationProperty() {
+        validationProperties.add(
+                new ValidationProperty(
+                        hostField,
+                        hostErrorLabel,
+                        "connection.view.error.database.server"));
+        validationProperties.add(
+                new ValidationProperty(
+                        portField,
+                        portErrorLabel,
+                        "connection.view.error.port.number"));
+
+        validationProperties.add(
+                new ValidationProperty(
+                        userField,
+                        userErrorLabel,
+                        "connection.view.error.user.name"));
+
+        validationProperties.add(
+                new ValidationProperty(
+                        passwordField,
+                        passwordErrorLabel,
+                        "connection.view.error.user.password"));
     }
 
     public Tab getSftpConnectionTab() {

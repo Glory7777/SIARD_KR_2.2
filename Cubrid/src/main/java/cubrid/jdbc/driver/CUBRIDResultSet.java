@@ -312,7 +312,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob clob) {
+		if (obj != null && obj instanceof Clob) {
+            Clob clob = (Clob) obj;
             int length;
 			if (clob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
@@ -444,7 +445,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob blob) {
+		if (obj != null && obj instanceof Blob) {
+            Blob blob = (Blob) obj;
             int length;
 			if (blob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
@@ -517,7 +519,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob clob) {
+		if (obj != null && obj instanceof Clob) {
+            Clob clob = (Clob) obj;
             InputStream stream = clob.getAsciiStream();
 			addStream(stream);
 			return stream;
@@ -553,7 +556,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob blob) {
+		if (obj != null && obj instanceof Blob) {
+            Blob blob = (Blob) obj;
             InputStream stream = blob.getBinaryStream();
 			addStream(stream);
 			return stream;
@@ -709,7 +713,8 @@ public class CUBRIDResultSet implements ResultSet {
 			obj = u_stmt.getObject(columnIndex - 1);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob clob) {
+		if (obj != null && obj instanceof Clob) {
+            Clob clob = (Clob) obj;
             Reader stream = clob.getCharacterStream();
 			addStream(stream);
 			return stream;
@@ -1930,7 +1935,8 @@ public class CUBRIDResultSet implements ResultSet {
 			strvalue = "'" + format.format((java.util.Date) value) + "'";
 		} else if (value instanceof CUBRIDOID) {
 			strvalue = "'" + ((CUBRIDOID) value).getOidString() + "'";
-		} else if (value instanceof byte[] v) {
+		} else if (value instanceof byte[]) {
+            byte[] v = (byte[]) value;
             strvalue = "";
 			for (int i = v.length - 1; i >= 0; i--) {
 				int t = v[i] + 256;

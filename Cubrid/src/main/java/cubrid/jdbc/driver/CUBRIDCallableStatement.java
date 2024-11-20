@@ -97,7 +97,8 @@ public class CUBRIDCallableStatement extends CUBRIDPreparedStatement implements
 			obj = u_stmt.getObject(index);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Clob clob) {
+		if (obj != null && obj instanceof Clob) {
+            Clob clob = (Clob) obj;
             int length;
 			if (clob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;
@@ -203,7 +204,8 @@ public class CUBRIDCallableStatement extends CUBRIDPreparedStatement implements
 			obj = u_stmt.getObject(index);
 			error = u_stmt.getRecentError();
 		}
-		if (obj != null && obj instanceof Blob blob) {
+		if (obj != null && obj instanceof Blob) {
+            Blob blob = (Blob) obj;
             int length;
 			if (blob.length() > (long) Integer.MAX_VALUE) {
 				length = Integer.MAX_VALUE;

@@ -72,7 +72,7 @@ public class FormDataHelper {
     }
 
     private String getOrDefaultTargetDirectory() {
-        String targetDirectory = formData.getTargetDirectory();
-        return targetDirectory == null || targetDirectory.isBlank() ? defaultTargetDirectory : formData.getTargetDirectory();
+        String targetDirectory = formData.getTargetDirectory().trim();
+        return targetDirectory == null || targetDirectory.isEmpty() ? defaultTargetDirectory : formData.getTargetDirectory();
     }
 }

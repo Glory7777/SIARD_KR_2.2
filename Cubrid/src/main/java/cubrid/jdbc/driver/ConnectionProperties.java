@@ -263,7 +263,8 @@ public class ConnectionProperties {
 
 	@Override
 	boolean validateValue(Object o) {
-	    if (o instanceof String behavior) {
+	    if (o instanceof String) {
+            String behavior = (String) o;
             return behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
                     || behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_EXCEPTION)
                     || behavior.equals(UConnection.ZERO_DATETIME_BEHAVIOR_ROUND);
@@ -279,7 +280,8 @@ public class ConnectionProperties {
 
 	@Override
 	boolean validateValue(Object o) {
-	    if (o instanceof String support) {
+	    if (o instanceof String) {
+            String support = (String) o;
             return support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_YES)
                     || support.equals(UConnection.RESULT_WITH_CUBRID_TYPES_NO);
 	    }

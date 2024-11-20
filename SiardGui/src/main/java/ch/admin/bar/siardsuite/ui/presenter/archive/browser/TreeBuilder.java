@@ -153,7 +153,7 @@ public class TreeBuilder {
 
     private TreeItem<TreeAttributeWrapper> createItemForSchemas() {
         Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
-        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
+        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).collect(Collectors.toList());
 
         long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
         String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
@@ -182,7 +182,7 @@ public class TreeBuilder {
     private TreeItem<TreeAttributeWrapper> createItemForSchemas(String searchTerm) {
 
         Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
-        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
+        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).collect(Collectors.toList());
 
         long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
         String formattedSchemaSize = ByteFormatter.convertToBestFitUnit(schemaSize);
@@ -441,7 +441,7 @@ public class TreeBuilder {
         List<String> strings = siardArchive.getArchive().getSelectedSchemaTableMap().get(schema.getName());
         Set<String> selectedTableSet = strings != null ? new HashSet<>(strings) : Collections.emptySet();
 
-        val tables = selectedTableSet.isEmpty() ? schema.getTables() : schema.getTables().stream().filter(databaseTable -> selectedTableSet.contains(databaseTable.getName())).toList();
+        val tables = selectedTableSet.isEmpty() ? schema.getTables() : schema.getTables().stream().filter(databaseTable -> selectedTableSet.contains(databaseTable.getName())).collect(Collectors.toList());
 
         val tablesItem = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(TABLES_ELEMENT_NAME, tables.size()))

@@ -120,7 +120,7 @@ public abstract class MetaDataBase {
 //        final Version version;
 
         public static DataBase findByName(String name) {
-            if (name.isBlank()) throw new NoSuchElementException("No enum value is found");
+            if (name.isEmpty()) throw new NoSuchElementException("No enum value is found");
             return Arrays.stream(DataBase.values())
                     .filter(dataBase -> dataBase.getName().equals(name))
                     .findFirst()

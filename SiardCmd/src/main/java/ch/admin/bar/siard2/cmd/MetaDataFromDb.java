@@ -1213,32 +1213,48 @@ public class MetaDataFromDb extends MetaDataBase {
                 return;
             }
 
-            String query = switch (dataBase) {
-                case MYSQL -> "SELECT (data_length + index_length) AS size " +
-                        "FROM information_schema.tables " +
-                        "WHERE table_schema = ? " +
-                        "AND table_name = ?";
-                case ORACLE -> getOracleQuery();
-                case POSTGRESQL -> "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
-                case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
-                        "FROM sys.tables t ...";
-                case CUBRID -> ";info stats " + tableName;
-                case TIBERO -> "";
-            };
+            String query = null;
+            switch (dataBase) {
+                case MYSQL:
+                    query = "SELECT (data_length + index_length) AS size " +
+                            "FROM information_schema.tables " +
+                            "WHERE table_schema = ? " +
+                            "AND table_name = ?";
+                    break;
+                case ORACLE:
+                    query = getOracleQuery();
+                    break;
+                case POSTGRESQL:
+                    query = "SELECT pg_size_pretty(pg_total_relation_size(?)) AS size";
+                    break;
+                case MSSQL:
+                    query = "SELECT SUM(a.total_pages) AS size_mb " +
+                            "FROM sys.tables t ...";
+                    break;
+                case CUBRID:
+                    query = ";info stats " + tableName;
+                    break;
+                case TIBERO:
+                    query = "";
+                    break;
+                default:
+                    query = "";
+            }
 
             long size = 0;
             try (PreparedStatement stmt = _dmd.getConnection().prepareStatement(query)) {
                 switch (dataBase) {
-                    case MYSQL -> {
+                    case MYSQL: {
                         stmt.setString(1, schemaName);
                         stmt.setString(2, tableName);
                     }
-                    case ORACLE -> {
+                    case ORACLE: {
                         stmt.setString(1, tableName);
                         stmt.setString(2, tableName);
                     }
-                    case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
-                    // TODO :: more db
+                    case POSTGRESQL:
+                        stmt.setString(1, schemaName + "." + tableName);
+                        // TODO :: more db
                 }
 
                 ResultSet rs = stmt.executeQuery();

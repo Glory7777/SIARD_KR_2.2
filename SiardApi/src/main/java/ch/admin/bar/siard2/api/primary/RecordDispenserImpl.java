@@ -294,7 +294,7 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     public Record getWithSearchTerm(final String searchTerm) throws IOException {
-        if (searchTerm == null || searchTerm.isBlank()) return get();
+        if (searchTerm == null || searchTerm.isEmpty()) return get();
 
         Record record = null;
 

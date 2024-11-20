@@ -51,7 +51,8 @@ public class UBindKey {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof UBindKey k) {
+		if (obj instanceof UBindKey) {
+            UBindKey k = (UBindKey) obj;
             if (num_key == k.num_key) {
 				for (int i = 0; i < num_key; i++) {
 					if (!values[i].equals(k.values[i]))

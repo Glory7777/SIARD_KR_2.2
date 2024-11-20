@@ -115,13 +115,15 @@ public class CUBRIDResultSet
       blob.setBytes(1L, (byte[])o);
       o = blob;
 	  }
-	  else if ((o instanceof Integer i) && (iType == Types.SMALLINT))
+	  else if ((o instanceof Integer) && (iType == Types.SMALLINT))
 	  {
+          Integer i = (Integer) o;
           Short sh = Short.valueOf(i.shortValue());
 	    o = sh;
 	  }
-    else if ((o instanceof Integer i) && (iType == Types.TINYINT))
+    else if ((o instanceof Integer) && (iType == Types.TINYINT))
     {
+        Integer i = (Integer) o;
         Short sh = Short.valueOf(i.shortValue());
       o = sh;
     }

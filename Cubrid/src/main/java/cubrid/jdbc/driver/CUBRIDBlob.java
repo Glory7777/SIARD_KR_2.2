@@ -285,7 +285,8 @@ public class CUBRIDBlob implements Blob {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDBlob that) {
+		if (obj instanceof CUBRIDBlob) {
+            CUBRIDBlob that = (CUBRIDBlob) obj;
             return lobHandle.equals(that.lobHandle);
 		}
 		return false;

@@ -100,7 +100,7 @@ public class ColumnCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
 
     private String getFormattedSize(TreeAttributeWrapper item) {
         String formatted = item.getFormattedSize();
-        return formatted == null || formatted.isBlank() ? null : " (" + item.getFormattedSize() + ")";
+        return formatted == null || formatted.isEmpty() ? null : " (" + item.getFormattedSize() + ")";
     }
 
     private void propagateSelection(TreeItem<TreeAttributeWrapper> currentTreeItem, boolean isSelected) {

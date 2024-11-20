@@ -99,7 +99,8 @@ public class CUBRIDLobHandle {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof CUBRIDLobHandle that) {
+		if (obj instanceof CUBRIDLobHandle) {
+            CUBRIDLobHandle that = (CUBRIDLobHandle) obj;
             return lobType == that.lobType && lobSize == that.lobSize
 					&& locator.equals(that.locator);
 		}

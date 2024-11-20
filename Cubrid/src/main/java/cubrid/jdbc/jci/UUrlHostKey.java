@@ -48,8 +48,9 @@ public class UUrlHostKey {
 	}
 
 	public boolean equals(Object obj) {
-		if (!(obj instanceof UUrlHostKey key))
+		if (!(obj instanceof UUrlHostKey))
 			return false;
+        UUrlHostKey key = (UUrlHostKey) obj;
 
         return host.equals(key.host) && port == key.port
                 && dbname.equals(key.dbname) && user.equals(key.user);

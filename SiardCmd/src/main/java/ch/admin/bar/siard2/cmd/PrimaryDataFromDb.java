@@ -147,23 +147,28 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
                 value.setDate((Date) oValue);
             } else if (oValue instanceof Duration) {
                 value.setDuration((Duration) oValue);
-            } else if (oValue instanceof Clob clob) {
+            } else if (oValue instanceof Clob) {
+                Clob clob = (Clob) oValue;
                 mimeTypeHandler.add(value, clob);
                 value.setReader(clob.getCharacterStream());
                 clob.free();
-            } else if (oValue instanceof SQLXML sqlxml) {
+            } else if (oValue instanceof SQLXML) {
+                SQLXML sqlxml = (SQLXML) oValue;
                 value.setReader(sqlxml.getCharacterStream());
                 sqlxml.free();
-            } else if (oValue instanceof Blob blob) {
+            } else if (oValue instanceof Blob) {
+                Blob blob = (Blob) oValue;
                 mimeTypeHandler.add(value, blob);
                 value.setInputStream(blob.getBinaryStream());
                 blob.free();
-            } else if (oValue instanceof URL url) {
+            } else if (oValue instanceof URL) {
+                URL url = (URL) oValue;
                 value.setInputStream(url.openStream(), url.getPath());
             } else {
                 Object[] ao;
                 int iAttribute;
-                if (oValue instanceof Array array) {
+                if (oValue instanceof Array) {
+                    Array array = (Array) oValue;
                     ao = (Object[]) array.getArray();
 
                     for (iAttribute = 0; iAttribute < ao.length; ++iAttribute) {
@@ -174,9 +179,10 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
 
                     array.free();
                 } else {
-                    if (!(oValue instanceof Struct struct)) {
+                    if (!(oValue instanceof Struct)) {
                         throw new SQLException("Invalid value type " + oValue.getClass().getName() + " encountered!");
                     }
+                    Struct struct = (Struct) oValue;
 
                     ao = struct.getAttributes();
 

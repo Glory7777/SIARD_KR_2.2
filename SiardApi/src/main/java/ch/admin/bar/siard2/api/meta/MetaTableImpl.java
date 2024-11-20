@@ -335,7 +335,8 @@ public class MetaTableImpl extends MetaSearchImpl implements MetaTable {
                             if (sName.equals(XU.fromXml(ctTry.getName())))
                                 ctTemplate = ctTry;
                         }
-                        if (ctTemplate != null && mc instanceof MetaColumnImpl mci) {
+                        if (ctTemplate != null && mc instanceof MetaColumnImpl) {
+                            MetaColumnImpl mci = (MetaColumnImpl) mc;
 
                             mci.setTemplate(ctTemplate);
                         }
@@ -423,7 +424,8 @@ public class MetaTableImpl extends MetaSearchImpl implements MetaTable {
                             if (sName.equals(XU.fromXml(fktTry.getName())))
                                 fktTemplate = fktTry;
                         }
-                        if (fktTemplate != null && mfk instanceof MetaForeignKeyImpl mfki) {
+                        if (fktTemplate != null && mfk instanceof MetaForeignKeyImpl) {
+                            MetaForeignKeyImpl mfki = (MetaForeignKeyImpl) mfk;
 
                             mfki.setTemplate(fktTemplate);
                         }
@@ -493,7 +495,8 @@ public class MetaTableImpl extends MetaSearchImpl implements MetaTable {
                             if (sName.equals(XU.fromXml(uktTry.getName())))
                                 uktTemplate = uktTry;
                         }
-                        if (uktTemplate != null && muk instanceof MetaUniqueKeyImpl muki) {
+                        if (uktTemplate != null && muk instanceof MetaUniqueKeyImpl) {
+                            MetaUniqueKeyImpl muki = (MetaUniqueKeyImpl) muk;
 
                             muki.setTemplate(uktTemplate);
                         }
@@ -563,7 +566,8 @@ public class MetaTableImpl extends MetaSearchImpl implements MetaTable {
                             if (sName.equals(XU.fromXml(cctTry.getName())))
                                 cctTemplate = cctTry;
                         }
-                        if (cctTemplate != null && mcc instanceof MetaCheckConstraintImpl mcci) {
+                        if (cctTemplate != null && mcc instanceof MetaCheckConstraintImpl) {
+                            MetaCheckConstraintImpl mcci = (MetaCheckConstraintImpl) mcc;
 
                             mcci.setTemplate(cctTemplate);
                         }
@@ -633,7 +637,8 @@ public class MetaTableImpl extends MetaSearchImpl implements MetaTable {
                             if (sName.equals(XU.fromXml(ttTry.getName())))
                                 ttTemplate = ttTry;
                         }
-                        if (ttTemplate != null && mt instanceof MetaTriggerImpl mti) {
+                        if (ttTemplate != null && mt instanceof MetaTriggerImpl) {
+                            MetaTriggerImpl mti = (MetaTriggerImpl) mt;
 
                             mti.setTemplate(ttTemplate);
                         }

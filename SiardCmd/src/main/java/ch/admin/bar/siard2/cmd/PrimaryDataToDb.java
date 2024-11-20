@@ -245,7 +245,8 @@ public class PrimaryDataToDb extends PrimaryDataTransfer {
       int iDataType = 0;
       int iCardinality = -1;
       MetaType mt = null;
-      if (value instanceof Cell cell) {
+      if (value instanceof Cell) {
+          Cell cell = (Cell) value;
 
           MetaColumn mc = cell.getMetaColumn();
         sType = mc.getType();
@@ -253,7 +254,8 @@ public class PrimaryDataToDb extends PrimaryDataTransfer {
         iCardinality = mc.getCardinality();
         mt = mc.getMetaType();
       }
-      else if (value instanceof Field field) {
+      else if (value instanceof Field) {
+          Field field = (Field) value;
 
           MetaField mf = field.getMetaField();
         sType = mf.getType();

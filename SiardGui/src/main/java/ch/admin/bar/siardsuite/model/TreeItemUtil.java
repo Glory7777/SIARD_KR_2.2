@@ -35,7 +35,7 @@ public class TreeItemUtil extends TreeItem<TreeAttributeWrapper> {
 
         return root.getChildren()
                 .stream().filter(c -> c.getValue().isSchemaAttr())
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public static List<TreeItem<TreeAttributeWrapper>> findChildrenTreeItemList(TreeItem<TreeAttributeWrapper> treeItem,
