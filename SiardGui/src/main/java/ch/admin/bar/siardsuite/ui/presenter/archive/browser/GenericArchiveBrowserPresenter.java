@@ -127,7 +127,7 @@ public class GenericArchiveBrowserPresenter {
         this.errorHandler = errorHandler;
         this.borderPane.setBottom(footerNode);
         this.treeView.setRoot(rootTreeItem);
-        this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory(this));
+        this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory(this, treeView));
         this.treeBuilder = treeBuilder;
 
         this.archiveStep = archiveStep;
@@ -202,6 +202,7 @@ public class GenericArchiveBrowserPresenter {
                 .addListener(new DeactivatableListener<>(this::onSelectedTreeItemChanged));
 
         treeView.getSelectionModel().select(rootTreeItem);
+
     }
 
     private void refreshTree(String searchTerm) {

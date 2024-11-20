@@ -14,6 +14,7 @@ import javafx.util.Callback;
 /**
  * <p>{@link CheckBoxTreeCell} 을 상속하는 클래스.</p>
  * {@link CheckBoxTreeCell#updateItem(Object, boolean)}를 재정의하여 체크박스가 필요한 목록과 체크박스를 연동한다
+ * 파일 다운로드 화면에서 사용되는 체크박스
  */
 public class ColumnCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrapper> {
 
@@ -54,6 +55,7 @@ public class ColumnCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
 
                 checkBox.selectedProperty().bindBidirectional(item.selectedProperty());
                 checkBox.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+                    System.out.println("observable = " + observable);
                     // 속성을 아래 노드에도 세팅하기 위해 TreeItem을 호출
                     propagateSelection(getTreeItem(), isNowSelected);
                 });
@@ -128,5 +130,7 @@ public class ColumnCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
     private void setSelection(TreeAttributeWrapper currentItem, boolean isSelected) {
         if (currentItem == null) return;
         currentItem.setSelected(isSelected);
+
+        System.out.println("currentItem selected = " + currentItem.getDisplayName());
     }
 }

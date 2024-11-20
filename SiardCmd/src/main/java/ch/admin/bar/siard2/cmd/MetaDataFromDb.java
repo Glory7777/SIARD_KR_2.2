@@ -1293,9 +1293,9 @@ public class MetaDataFromDb extends MetaDataBase {
     }
 
     private boolean isSysdba(String databaseUser) {
-        return true;
-//        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
-//        return !databaseUser.startsWith("C##") && databaseUser.startsWith("SYS");
+//        return true;
+        Optional.ofNullable(databaseUser).orElseThrow(() -> new IllegalArgumentException("database user is not specified!!"));
+        return !databaseUser.startsWith("C##") && databaseUser.startsWith("SYS");
     }
 
 }
