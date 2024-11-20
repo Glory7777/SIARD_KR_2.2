@@ -68,7 +68,7 @@ public class FormDataHelper {
         String sourceFilePath = oValue.toString();
         String targetFilePath = getOrDefaultTargetDirectory();
 
-        return FileDownloadPathHolder.createInstance(sourceFilePath, targetFilePath);
+        return FileDownloadPathHolder.createInstance(sourceFilePath, targetFilePath, isSftp());
     }
 
     private String getOrDefaultTargetDirectory() {

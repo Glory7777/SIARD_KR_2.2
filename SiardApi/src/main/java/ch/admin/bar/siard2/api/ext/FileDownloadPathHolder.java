@@ -13,13 +13,13 @@ public class FileDownloadPathHolder {
         return targetFilePath;
     }
 
-    private FileDownloadPathHolder(String sourceFile, String targetFile) {
+    private FileDownloadPathHolder(String sourceFile, String targetFile, boolean shouldReplaceSlashes) { // TODO :: shouldReplace는 추후에 로직 변경 필요
         this.sourceFilePath = sourceFile.replace("\\", "/");
         this.targetFilePath = targetFile.replace("\\", "/");
     }
 
-    public static FileDownloadPathHolder createInstance(String sourceFilePath, String targetFilePath) {
-        return new FileDownloadPathHolder(sourceFilePath, targetFilePath);
+    public static FileDownloadPathHolder createInstance(String sourceFilePath, String targetFilePath, boolean shouldReplaceSlashes) {
+        return new FileDownloadPathHolder(sourceFilePath, targetFilePath, shouldReplaceSlashes);
     }
 
     public String getTargetPathToMakeDirectory () {

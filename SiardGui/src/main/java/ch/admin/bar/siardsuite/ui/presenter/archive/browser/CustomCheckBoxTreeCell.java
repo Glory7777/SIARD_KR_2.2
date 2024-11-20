@@ -2,11 +2,21 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 
 import ch.admin.bar.siard2.cmd.utils.ByteFormatter;
 import ch.admin.bar.siardsuite.model.TreeAttributeWrapper;
+import ch.admin.bar.siardsuite.model.TreeItemUtil;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.util.Callback;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static ch.admin.bar.siardsuite.model.TreeAttributeWrapper.DatabaseAttribute.TABLE;
+import static ch.admin.bar.siardsuite.model.TreeItemUtil.findChildrenTreeItemList;
 
 /**
  * <p>{@link CheckBoxTreeCell} 을 상속하는 클래스.</p>
@@ -15,18 +25,25 @@ import javafx.util.Callback;
 public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrapper> {
 
     private final GenericArchiveBrowserPresenter genericArchiveBrowserPresenter;
+    private final TreeView<TreeAttributeWrapper> treeView;
 
-    private CustomCheckBoxTreeCell(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback, GenericArchiveBrowserPresenter genericArchiveBrowserPresenter) {
+    private CustomCheckBoxTreeCell(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback,
+                                   GenericArchiveBrowserPresenter genericArchiveBrowserPresenter,
+                                   TreeView<TreeAttributeWrapper> treeView) {
         super(callback);
         this.genericArchiveBrowserPresenter = genericArchiveBrowserPresenter;
+        this.treeView = treeView;
+        bindNodes();
     }
 
-    public static CustomCheckBoxTreeCell initCheckBoxTree(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback, GenericArchiveBrowserPresenter genericArchiveBrowserPresenter) {
-        return new CustomCheckBoxTreeCell(callback, genericArchiveBrowserPresenter);
+    public static CustomCheckBoxTreeCell initCheckBoxTree(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback,
+                                                          GenericArchiveBrowserPresenter genericArchiveBrowserPresenter,
+                                                          TreeView<TreeAttributeWrapper> treeView) {
+        return new CustomCheckBoxTreeCell(callback, genericArchiveBrowserPresenter, treeView);
     }
 
     /**
-     * 체크박스에 하위 트리까지 전부 상위 노드의 상태로 업데이트
+     * 동작이 일어날 때 노드와 트리를 그리는 메서드
      */
     @Override
     public void updateItem(TreeAttributeWrapper item, boolean empty) {
@@ -35,31 +52,32 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
         if (empty || item == null) {
             setText(null);
             setGraphic(null);
-        } else {
-
-            setText(getDisplayText(item));
-
-            if (item.shouldHaveCheckBox() && item.isTransferable(item.getDatabaseAttribute())) {
-                CheckBox checkBox = new CheckBox();
-
-                checkBox.selectedProperty().bindBidirectional(item.selectedProperty());
-                checkBox.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
-                    // 속성을 아래 노드에도 세팅하기 위해 TreeItem을 호출
-                    propagateSelection(getTreeItem(), isNowSelected);
-                    updateTotalSelectedSize();
-                });
-                setGraphic(checkBox);
-            } else {
-                setGraphic(null);
-            }
+            return;
         }
-    }
 
+        setText(getDisplayText(item));
+
+        if (item.shouldHaveCheckBox() && item.isTransferable(item.getDatabaseAttribute())) {
+            CheckBox checkBox = new CheckBox();
+
+            // 중복 바인딩 방지
+            checkBox.selectedProperty().unbindBidirectional(item.selectedProperty());
+            checkBox.selectedProperty().bindBidirectional(item.selectedProperty());
+
+            checkBox.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+                updateTotalSelectedSize();
+            });
+            setGraphic(checkBox);
+        } else {
+            setGraphic(null);
+        }
+
+    }
 
     /**
      * 엔티티, 스키마 별로 용량 표기
      *
-     * @param item 
+     * @param item
      * @return
      */
     private String getDisplayText(TreeAttributeWrapper item) {
@@ -72,37 +90,42 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
         String formatted = item.getFormattedSize();
         return formatted == null || formatted.isBlank() ? null : " (" + item.getFormattedSize() + ")";
     }
-    
-    private void propagateSelection(TreeItem<TreeAttributeWrapper> currentTreeItem, boolean isSelected) {
-        if (currentTreeItem == null || currentTreeItem.getChildren().isEmpty()) {
-            return;
-        }
 
-        // 현재 선택된 박스를 업데이트
-        setSelection(currentTreeItem.getValue(), isSelected);
-        
-        // 자식 노드 체크박스 상태 업데이트
-        for (TreeItem<TreeAttributeWrapper> child : currentTreeItem.getChildren()) {
-            TreeAttributeWrapper childValue = child.getValue();
-            if (childValue != null) {
-                if (childValue.isTransferable()) {
-                    setSelection(childValue, isSelected);
-                }
-                if (childValue.shouldPropagate()) { // 부모 노드인 경우 하위 노드까지 체크 박스 상태 업데이트
-                    propagateSelection(child, isSelected);
-                }
-            }
-        }
+    /**
+     * 스키마 - 테이블 간 노드 상태 전파
+     * 스키마에 이벤트 리스너를 붙여 스키마가 선택되면 전체 테이블이 선택. 
+     * 테이블만 단독 선택도 가능
+     */
+    private void bindNodes() {
+        TreeItem<TreeAttributeWrapper> root = treeView.getRoot();
+        findChildrenTreeItemList(root,
+                new ArrayList<>(),
+                TreeAttributeWrapper.DatabaseAttribute.SCHEMA)
+                .forEach(this::bindParentToChildren);
     }
 
-    private void setSelection(TreeAttributeWrapper currentItem, boolean isSelected) {
-        if (currentItem == null) return;
-        currentItem.setSelected(isSelected);
+    // schema -> table
+    private void bindParentToChildren(TreeItem<TreeAttributeWrapper> parent) {
+        if (parent == null) return;
+        Optional.ofNullable(parent.getValue())
+                .filter(TreeAttributeWrapper::isSchemaAttr)
+                .ifPresent(parentTreeAttribute -> {
+                            List<TreeItem<TreeAttributeWrapper>> children = findChildrenTreeItemList(parent, new ArrayList<>(), TABLE);
+                            parentTreeAttribute.selectedProperty().addListener((observable, wasSelected, isNowSelected) -> {
+                                // Update all children when parent changes
+                                children.forEach(child -> {
+                                    TreeAttributeWrapper childAttribute = child.getValue();
+                                    if (childAttribute != null) {
+                                        childAttribute.setSelected(isNowSelected);
+                                    }
+                                });
+                            });
+                        }
+                );
     }
 
     private void updateTotalSelectedSize() {
         long totalSize = calculateTotalSize(getTreeView().getRoot());
-        System.out.println("selected totalSize = " + totalSize);
         updateTotalSizeLabel(totalSize);
     }
 

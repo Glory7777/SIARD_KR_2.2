@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.cmd;
 
+import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.MetaAttribute;
 import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siard2.api.MetaData;
@@ -14,10 +15,7 @@ import ch.enterag.utils.background.Progress;
 import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +26,8 @@ import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
 
 public class MetaDataToDb extends MetaDataBase {
     private static final Logger LOG = LoggerFactory.getLogger(MetaDataToDb.class);
@@ -315,13 +315,20 @@ public class MetaDataToDb extends MetaDataBase {
         String sqlStatement = sbSql.toString();
         LOG.trace("SQL statement: '{}'", sqlStatement);
 
+        String databaseProductName = null;
         try {
-            Statement stmt = this._dmd.getConnection().createStatement();
+            Connection connection = this._dmd.getConnection();
+            Statement stmt = connection.createStatement();
+            databaseProductName = connection.getMetaData().getDatabaseProductName();
             stmt.setQueryTimeout(this._iQueryTimeoutSeconds);
             stmt.executeUpdate(sqlStatement);
             stmt.close();
         } catch (Exception ex) {
             System.out.println("Failed SQL statement:\n" + sqlStatement);
+            if (ex instanceof SQLException) {
+                SQLException sqlException = (SQLException) ex;
+                doHandleSqlException(databaseProductName, "createTable", sqlException);
+            }
             throw ex;
         }
 
@@ -412,8 +419,9 @@ public class MetaDataToDb extends MetaDataBase {
 
             String sSql = "CREATE SCHEMA \"" + sm.getMappedSchemaName() + "\"";
             LOG.trace("SQL statement: '{}'", sSql);
-
-            Statement stmt = this._dmd.getConnection().createStatement();
+            Connection connection = this._dmd.getConnection();
+            Statement stmt = connection.createStatement();
+            String databaseProductName = connection.getMetaData().getDatabaseProductName();
             stmt.setQueryTimeout(this._iQueryTimeoutSeconds);
 
             try {
@@ -427,6 +435,8 @@ public class MetaDataToDb extends MetaDataBase {
                         String.format("Can not create schema '%s' with SQL statement '%s'", sm.getMappedSchemaName(), sSql), se);
 
                 stmt.getConnection().rollback();
+
+                doHandleSqlException(databaseProductName, "createSchema", se);
 
                 throw new SQLException(se.getMessage(), se.getCause());
             } finally {

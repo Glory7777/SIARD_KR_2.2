@@ -22,10 +22,11 @@ public class FileUtil {
 
     public void copy() {
 
-        String sourceFilePath = fileDownloadPathHolder.getSourceFilePath();
-        String targetFilePath = fileDownloadPathHolder.getTargetFilePath();
-
+        String sourceFilePath = fileDownloadPathHolder.getSourceFilePath().replace("/","\\").trim();
+        String targetFilePath = fileDownloadPathHolder.getTargetFilePath().replace("/","\\").trim();
+//        String test = "C:\\Users\\lenovo\\Downloads\\test\\테스트텍스트.txt";
         File sourceFile = new File(sourceFilePath);
+//        File sourceFile = new File(test);
         if (!sourceFile.exists()) {
             System.out.println("File does not exist :: " + sourceFilePath);
             return;
