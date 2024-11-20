@@ -28,8 +28,6 @@ import javax.xml.datatype.Duration;
 public abstract class BaseResultSet
         implements ResultSet {
     private ResultSet _rsWrapped = null;
-
-
     protected boolean _bWasNull = false;
 
 

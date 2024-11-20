@@ -4,7 +4,9 @@
 
 rootProject.name = 'siard-suite'
 include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid', ':JdbcBase', ':JdbcMysql',
-        ':DbException'
+        ':DbException' ,
+        ':Tibero-linux-18'
+//        ':Tibero'
 
 project(':SiardCmd').projectDir = file('../SiardCmd')
 project(':SiardApi').projectDir = file('../SiardApi')
@@ -14,3 +16,6 @@ project(':Cubrid').projectDir = file('../Cubrid')
 project(':JdbcBase').projectDir = file('../JdbcBase')
 project(':JdbcMysql').projectDir = file('../JdbcMysql')
 project(':DbException').projectDir = file('../DbException')
+//project(':Tibero').projectDir = file('C:\\Users\\lenovo\\Desktop\\tibero\\tibero6-win\\jdbc')
+//project(':Tibero').projectDir = file('C:\\Users\\lenovo\\Desktop\\tibero\\tibero6-win\\jdbc')
+project(':Tibero-linux-18').projectDir = file('C:\\Users\\lenovo\\Desktop\\tibero\\tibero6-linux\\jdbc-18')

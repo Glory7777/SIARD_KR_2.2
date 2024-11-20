@@ -21,8 +21,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 
-public abstract class BaseConnection
-        implements Connection {
+public abstract class BaseConnection implements Connection {
     private Connection _connWrapped = null;
 
 
@@ -83,8 +82,7 @@ public abstract class BaseConnection
 
     public boolean isClosed() throws SQLException {
         boolean bClosed = true;
-        if (this._connWrapped != null)
-            bClosed = this._connWrapped.isClosed();
+        if (this._connWrapped != null) bClosed = this._connWrapped.isClosed();
         return bClosed;
     }
 
@@ -341,8 +339,7 @@ public abstract class BaseConnection
     public <T> T unwrap(Class<T> iface) throws SQLException {
         Connection connection = null;
         T wrapped = null;
-        if (isWrapperFor(iface))
-            connection = this._connWrapped;
+        if (isWrapperFor(iface)) connection = this._connWrapped;
         return (T) connection;
     }
 }

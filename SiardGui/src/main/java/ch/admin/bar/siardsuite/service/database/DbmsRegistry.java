@@ -261,7 +261,7 @@ public class DbmsRegistry {
             ServerBasedDbms.builder()
                     .name("TIBERO")
                     .id("tibero")
-                    .driverClassName("ch.admin.bar.siard2.jdbc.Tibero")
+                    .driverClassName("com.tmax.tibero.jdbc.TbDriver")
                     .jdbcConnectionStringEncoder(config -> {
                         // JDBC URL 구성
                         String baseUrl = String.format(
@@ -296,9 +296,9 @@ public class DbmsRegistry {
                         String user = "";
                         String password = "";
 
-                        if (portAndDbName.length > 1) {
-                            String[] options = portAndDbName[1].split("&");
-                            for (String option : options) {
+                        if (encoded.contains("?")) {
+                            String[] queryParams = encoded.split("\\?")[1].split("&");
+                            for (String option : queryParams) {
                                 if (option.startsWith("user=")) {
                                     user = option.substring("user=".length());
                                 } else if (option.startsWith("password=")) {

@@ -1,0 +1,456 @@
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/AbstractExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/AbstractExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/AbstractExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731650640985)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/AbstractExceptionHandler.java	(date 1731650640985)
+@@ -0,0 +1,47 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++import ch.admin.bar.siardsuite.exception.ApplicationException;
++import javafx.scene.control.Alert;
++
++public abstract class AbstractExceptionHandler implements DatabaseExceptionHandler {
++
++    public void handleException(ApplicationException e) {
++        switch (e.getErrorCode().getExceptionLevel()) {
++            case INFO:
++                log(e);
++                break;
++            case WARNING:
++                showWarningAlert(e);
++                break;
++            case ERROR:
++                showErrorAlert(e);
++                break;
++            case CRITICAL:
++                rethrowAsRuntimeException(e);
++                break;
++        }
++    }
++
++    protected void log(ApplicationException e) {
++        System.out.println("INFO: " + e.getMessage()); // Replace with proper logging
++    }
++
++    protected void showWarningAlert(ApplicationException e) {
++        Alert alert = new Alert(Alert.AlertType.WARNING, e.getMessage());
++        alert.showAndWait();
++    }
++
++    protected void showErrorAlert(ApplicationException e) {
++        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
++        alert.showAndWait();
++    }
++
++    protected void rethrowAsRuntimeException(ApplicationException e) {
++        System.out.println("thrown by handler:: " + e.getMessage());
++        throw new RuntimeException(buildCustomMessage(e), e.getOriginalException());
++    }
++
++    protected String buildCustomMessage(ApplicationException e) {
++        return e.getErrorCode().getCustomMessage() + " / 원본 메시지 : " + e.getOriginalException().getMessage();
++    }
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/CubridExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/CubridExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/CubridExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731572414807)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/CubridExceptionHandler.java	(date 1731572414807)
+@@ -0,0 +1,4 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++public class CubridExceptionHandler extends AbstractExceptionHandler {
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/DatabaseExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/DatabaseExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/DatabaseExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731646894440)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/DatabaseExceptionHandler.java	(date 1731646894440)
+@@ -0,0 +1,9 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++import ch.admin.bar.siardsuite.exception.ApplicationException;
++
++import java.sql.SQLException;
++
++public interface DatabaseExceptionHandler {
++    void handleException(ApplicationException applicationException);
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/GenericExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/GenericExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/GenericExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731574788621)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/GenericExceptionHandler.java	(date 1731574788621)
+@@ -0,0 +1,4 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++public class GenericExceptionHandler extends AbstractExceptionHandler {
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/MysqlExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/MysqlExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/MysqlExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731571632270)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/MysqlExceptionHandler.java	(date 1731571632270)
+@@ -0,0 +1,4 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++public class MysqlExceptionHandler extends AbstractExceptionHandler {
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/handler/OracleExceptionHandler.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/handler/OracleExceptionHandler.java b/src/main/java/ch/admin/bar/siardsuite/exception/handler/OracleExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1731571632284)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/handler/OracleExceptionHandler.java	(date 1731571632284)
+@@ -0,0 +1,4 @@
++package ch.admin.bar.siardsuite.exception.handler;
++
++public class OracleExceptionHandler extends AbstractExceptionHandler {
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/vendor/DatabaseVendor.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/vendor/DatabaseVendor.java b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/DatabaseVendor.java
+new file mode 100644
+--- /dev/null	(date 1731573447446)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/DatabaseVendor.java	(date 1731573447446)
+@@ -0,0 +1,31 @@
++package ch.admin.bar.siardsuite.exception.vendor;
++
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++
++import java.util.Arrays;
++import java.util.NoSuchElementException;
++
++@Getter
++@RequiredArgsConstructor
++public enum DatabaseVendor {
++
++    MYSQL("mysql"),
++    ORACLE("oracle"),
++    POSTGRESQL("postgresql"),
++    MSSQL("mssql"),
++    CUBRID("cubrid"),
++    TIBERO("tibero"),
++    ;
++
++    final String name;
++
++    public static DatabaseVendor findByName(String name) {
++        if (name.isEmpty()) throw new NoSuchElementException("No enum value is found");
++        return Arrays.stream(DatabaseVendor.values())
++                .filter(dataBase -> dataBase.getName().equals(name))
++                .findFirst()
++                .orElseThrow(() -> new NoSuchElementException("No value is found"));
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCode.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCode.java b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCode.java
+new file mode 100644
+--- /dev/null	(date 1731657703526)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCode.java	(date 1731657703526)
+@@ -0,0 +1,36 @@
++package ch.admin.bar.siardsuite.exception.vendor;
++
++import ch.admin.bar.siardsuite.exception.ExceptionLevel;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++
++import java.sql.SQLException;
++import java.util.Arrays;
++import java.util.Optional;
++
++import static ch.admin.bar.siardsuite.exception.vendor.DatabaseVendor.MYSQL;
++import static ch.admin.bar.siardsuite.exception.vendor.DatabaseVendor.ORACLE;
++
++@Getter
++@RequiredArgsConstructor
++public enum ErrorCode {
++
++    ACCESS_DENIED_MYSQL(MYSQL, 1044, ExceptionLevel.CRITICAL, "스키마에 대한 접근 권한이 부족합니다. 유저 SELECT 권한을 확인해주세요"),
++    ACCESS_DENIED_ORACLE(ORACLE, 1045, ExceptionLevel.CRITICAL, "커넥션 세션에 대한 권한이 없습니다. 유저 CREATE SESSION 권한을 확인해주세요"),
++
++
++    ;
++
++    final DatabaseVendor vendor;
++    final int vendorCode;
++    final ExceptionLevel exceptionLevel;
++    final String customMessage;
++
++    public static Optional<ErrorCode> findByNameAndException(String databaseName, SQLException sqlException) {
++        return Arrays.stream(ErrorCode.values())
++                .filter(e -> e.vendor.getName().equals(databaseName.toLowerCase()) &&
++                        e.vendorCode == sqlException.getErrorCode())
++                .findFirst();
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCodeMessage.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCodeMessage.java b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCodeMessage.java
+new file mode 100644
+--- /dev/null	(date 1731650476852)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/vendor/ErrorCodeMessage.java	(date 1731650476852)
+@@ -0,0 +1,17 @@
++package ch.admin.bar.siardsuite.exception.vendor;
++
++public class ErrorCodeMessage {
++
++    private final ErrorCode errorCode;
++    private final String originalMessage;
++
++    public ErrorCodeMessage(ErrorCode errorCode, String originalMessage) {
++        this.errorCode = errorCode;
++        this.originalMessage = originalMessage;
++    }
++
++    public String buildErrorMessage() {
++        return this.errorCode.getCustomMessage() + "원본 메시지 : " + originalMessage;
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/ApplicationException.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/ApplicationException.java b/src/main/java/ch/admin/bar/siardsuite/exception/ApplicationException.java
+new file mode 100644
+--- /dev/null	(date 1731574214670)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/ApplicationException.java	(date 1731574214670)
+@@ -0,0 +1,20 @@
++package ch.admin.bar.siardsuite.exception;
++
++import ch.admin.bar.siardsuite.exception.vendor.ErrorCode;
++import lombok.Getter;
++
++import java.sql.SQLException;
++
++@Getter
++public class ApplicationException extends Exception {
++
++    private final SQLException originalException;
++    private final ErrorCode errorCode;
++
++    public ApplicationException(SQLException sqlException, ErrorCode errorCode) {
++        super(sqlException.getMessage(), sqlException.getCause());
++        this.originalException = sqlException;
++        this.errorCode = errorCode;
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/ConnectionProxy.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/ConnectionProxy.java b/src/main/java/ch/admin/bar/siardsuite/exception/ConnectionProxy.java
+new file mode 100644
+--- /dev/null	(date 1731633981525)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/ConnectionProxy.java	(date 1731633981525)
+@@ -0,0 +1,47 @@
++package ch.admin.bar.siardsuite.exception;
++
++import lombok.extern.slf4j.Slf4j;
++
++import java.lang.reflect.InvocationHandler;
++import java.lang.reflect.Method;
++import java.lang.reflect.Proxy;
++import java.sql.Connection;
++import java.sql.SQLException;
++
++import static ch.admin.bar.siardsuite.exception.DatabaseExceptionHandlerHelper.doHandleSqlException;
++
++@Slf4j
++public class ConnectionProxy implements InvocationHandler {
++
++    private final Connection connection;
++
++    public ConnectionProxy(Connection connection) {
++        this.connection = connection;
++    }
++
++    @Override
++    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
++        try {
++            return method.invoke(connection, args);
++        } catch (Exception e) {
++            log.error("caught by proxy :: {}", e.getMessage());
++            String databaseProductName = connection.getMetaData().getDatabaseProductName();
++            handleSqlException(databaseProductName, e);
++            throw e;
++        }
++    }
++
++    public static Connection createProxy(Connection realConnection) {
++        return (Connection) Proxy.newProxyInstance(realConnection.getClass().getClassLoader(),
++                new Class<?>[]{Connection.class},
++                new ConnectionProxy(realConnection));
++    }
++
++    private void handleSqlException(String databaseProductName, Throwable cause) {
++        if (cause instanceof SQLException) {
++            SQLException sqlException = (SQLException) cause;
++            doHandleSqlException(databaseProductName, sqlException);
++        }
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerFactory.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerFactory.java b/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerFactory.java
+new file mode 100644
+--- /dev/null	(date 1731574923347)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerFactory.java	(date 1731574923347)
+@@ -0,0 +1,24 @@
++package ch.admin.bar.siardsuite.exception;
++
++import ch.admin.bar.siardsuite.exception.handler.*;
++
++import java.util.HashMap;
++import java.util.Map;
++import java.util.function.Supplier;
++
++public class DatabaseExceptionHandlerFactory {
++
++    private static final Map<String, Supplier<DatabaseExceptionHandler>> handlerMap = new HashMap<>();
++
++    static {
++        handlerMap.put("oracle", OracleExceptionHandler::new);
++        handlerMap.put("mysql", MysqlExceptionHandler::new);
++        handlerMap.put("cubrid", CubridExceptionHandler::new);
++        handlerMap.put("default", GenericExceptionHandler::new);
++    }
++
++    public static DatabaseExceptionHandler getHandler(String databaseName) {
++        return handlerMap.getOrDefault(databaseName.toLowerCase(), handlerMap.get("default")).get();
++    }
++
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerHelper.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerHelper.java b/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerHelper.java
+new file mode 100644
+--- /dev/null	(date 1731646174379)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/DatabaseExceptionHandlerHelper.java	(date 1731646174379)
+@@ -0,0 +1,21 @@
++package ch.admin.bar.siardsuite.exception;
++
++import ch.admin.bar.siardsuite.exception.handler.DatabaseExceptionHandler;
++import ch.admin.bar.siardsuite.exception.vendor.ErrorCode;
++
++import java.sql.SQLException;
++
++public class DatabaseExceptionHandlerHelper {
++
++    private DatabaseExceptionHandlerHelper() {
++    }
++
++    public static void doHandleSqlException(String databaseProductName, SQLException sqlException) {
++        ErrorCode.findByNameAndException(databaseProductName, sqlException)
++                .ifPresent(errorCode -> {
++                    ApplicationException applicationException = new ApplicationException(sqlException, errorCode);
++                    DatabaseExceptionHandler exceptionHandler = DatabaseExceptionHandlerFactory.getHandler(databaseProductName);
++                    exceptionHandler.handleException(applicationException);
++                });
++    }
++}
+Index: src/main/java/ch/admin/bar/siardsuite/exception/ExceptionLevel.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/exception/ExceptionLevel.java b/src/main/java/ch/admin/bar/siardsuite/exception/ExceptionLevel.java
+new file mode 100644
+--- /dev/null	(date 1731474259246)
++++ b/src/main/java/ch/admin/bar/siardsuite/exception/ExceptionLevel.java	(date 1731474259246)
+@@ -0,0 +1,15 @@
++package ch.admin.bar.siardsuite.exception;
++
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++
++@Getter
++@RequiredArgsConstructor
++public enum ExceptionLevel {
++
++    INFO,       // Minor issues; log and continue
++    WARNING,    // Issues that need attention but are not critical
++    ERROR,      // Significant issues; may require alert
++    CRITICAL,  // should rethrow
++    ;
++}
+Index: src/main/java/ch/admin/bar/siardsuite/service/database/DatabaseConnectionFactory.java
+===================================================================
+diff --git a/src/main/java/ch/admin/bar/siardsuite/service/database/DatabaseConnectionFactory.java b/src/main/java/ch/admin/bar/siardsuite/service/database/DatabaseConnectionFactory.java
+--- a/src/main/java/ch/admin/bar/siardsuite/service/database/DatabaseConnectionFactory.java	(revision f3b6b9aff527ee32f4ee9b0288798a71c3383022)
++++ b/src/main/java/ch/admin/bar/siardsuite/service/database/DatabaseConnectionFactory.java	(date 1731634729998)
+@@ -1,5 +1,13 @@
+ package ch.admin.bar.siardsuite.service.database;
+ 
++import ch.admin.bar.siardsuite.exception.ApplicationException;
++import ch.admin.bar.siardsuite.exception.ConnectionProxy;
++import ch.admin.bar.siardsuite.exception.DatabaseExceptionHandlerFactory;
++import ch.admin.bar.siardsuite.exception.DatabaseExceptionHandlerHelper;
++import ch.admin.bar.siardsuite.exception.handler.DatabaseExceptionHandler;
++import ch.admin.bar.siardsuite.exception.handler.GenericExceptionHandler;
++import ch.admin.bar.siardsuite.exception.vendor.ErrorCode;
++import ch.admin.bar.siardsuite.service.database.model.Dbms;
+ import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
+ import ch.admin.bar.siardsuite.service.preferences.UserPreferences;
+ import lombok.NonNull;
+@@ -12,6 +20,8 @@
+ import java.sql.SQLException;
+ import java.util.concurrent.atomic.AtomicReference;
+ 
++import static ch.admin.bar.siardsuite.exception.DatabaseExceptionHandlerHelper.doHandleSqlException;
++
+ @Slf4j
+ public class DatabaseConnectionFactory {
+ 
+@@ -42,8 +52,11 @@
+                 }
+ 
+                 return new EstablishedConnection(createConnection(connectionData), connectionData);
+-            } catch (SQLException e) {
+-                throw new RuntimeException(e);
++            } catch (SQLException sqlException) {
++                System.out.println("no connection made");
++                String databaseProductName = connectionData.getDbms().getName();
++                doHandleSqlException(databaseProductName, sqlException);
++                throw new RuntimeException(sqlException); // 위에서 처리안되는 경우 원본 예외 출력
+             }
+         }).getConnection();
+     }
+@@ -61,8 +74,18 @@
+                 connectionData.getUser(),
+                 connectionData.getPassword());
+         connection.setAutoCommit(false);
++        // setting proxy
++        Connection connectionProxy = ConnectionProxy.createProxy(connection);
++        return connectionProxy;
++
++//        val connection = DriverManager.getConnection(
++//                connectionData.getJdbcConnectionString(),
++//                connectionData.getUser(),
++//                connectionData.getPassword());
++//        connection.setAutoCommit(false);
+ 
+-        return connection;
++//        return connection;
++
+     }
+ 
+     private static void loadDriver(String jdbcDriverClass) {
+@@ -75,8 +98,10 @@
+ 
+     @Value
+     private static class EstablishedConnection {
+-        @NonNull Connection connection;
+-        @NonNull DbmsConnectionData dbmsConnectionData;
++        @NonNull
++        Connection connection;
++        @NonNull
++        DbmsConnectionData dbmsConnectionData;
+ 
+         public void close() {
+             try {

@@ -96,6 +96,7 @@ dependencies {
     implementation project(':JdbcBase')
     implementation project(':JdbcMysql')
     implementation project(':DbException')
+    implementation project(':Tibero-linux-18')
 
 }
 
@@ -272,7 +273,7 @@ tasks.register('copyDocumentation', Copy) {
 }
 
 tasks.named("asciidoctorPdf") { finalizedBy(copyDocumentation)}
-    tasks.named("build") {
+tasks.named("build") {
     dependsOn(asciidoctorPdf)
     dependsOn("plantUml")
 }
