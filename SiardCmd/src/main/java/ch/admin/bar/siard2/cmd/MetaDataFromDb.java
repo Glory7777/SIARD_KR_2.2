@@ -664,6 +664,7 @@ public class MetaDataFromDb extends MetaDataBase {
                 sColumnDefault != null) mc.setDefaultValue(sColumnDefault);
 
         int iOrdinalPosition = rs.getInt("ORDINAL_POSITION");
+        System.out.println("Expected position: " + mc.getPosition() + ", Actual position: " + iOrdinalPosition);
         if (iOrdinalPosition != mc.getPosition()) throw new IOException("Invalid column position found!");
 
     }
@@ -979,10 +980,20 @@ public class MetaDataFromDb extends MetaDataBase {
 
     private void getColumns(MetaTable mt) throws IOException, SQLException {
 
-        ResultSet rs = this._dmd.getColumns(null,
-                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getParentMetaSchema().getName()),
-                ((BaseDatabaseMetaData) this._dmd).toPattern(mt.getName()),
-                "%");
+        String pattern1 = mt.getParentMetaSchema().getName();
+        String pattern2 = mt.getName();
+//        BaseDatabaseMetaData dmd = (BaseDatabaseMetaData) this._dmd;
+//        String pattern = dmd.toPattern(mt.getParentMetaSchema().getName());
+        ResultSet rs = this._dmd.getColumns(
+                null,
+//                ((BaseDatabaseMetaData) this._dmd)
+//                        .toPattern(mt.getParentMetaSchema().getName())
+                pattern1,
+//                ((BaseDatabaseMetaData) this._dmd)
+//                        .toPattern(mt.getName()),
+                pattern2,
+                "%"
+        );
 
 
         while (rs.next()) {
