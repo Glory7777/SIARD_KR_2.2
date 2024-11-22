@@ -73,13 +73,15 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.1.0'
 
     // legacy: add all dependencies from lib folder
-    implementation fileTree(include: ['*.jar'], dir: 'lib')
+    implementation fileTree(dir: 'lib', include: ['*.jar']
+//            , exclude: ['tibero6-jdbc.jar'] )
+    , exclude : ['tibero6-jdbc-18.jar'])
 
     implementation project(':SiardApi')
     implementation project(':SiardCmd')
     implementation project(':JdbcCubrid')
     implementation project(':Cubrid')
-    implementation project(':Tibero')
+//    implementation project(':Tibero')
     implementation project(':sqlparser')
 //    implementation project(':JdbcTibero')
 

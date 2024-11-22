@@ -661,7 +661,8 @@ public class MetaDataFromDb extends MetaDataBase {
                 sColumnDefault != null) mc.setDefaultValue(sColumnDefault);
 
         int iOrdinalPosition = rs.getInt("ORDINAL_POSITION");
-        if (iOrdinalPosition != mc.getPosition()) throw new IOException("Invalid column position found!");
+        // TODO:: tibero 는 ordinalPosition 0부터 시작
+        if (iOrdinalPosition != mc.getPosition() - 1) throw new IOException("Invalid column position found!");
 
     }
 

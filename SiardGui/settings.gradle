@@ -3,7 +3,9 @@
  */
 
 rootProject.name = 'siard-suite'
-include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid', ':Tibero', ':sqlparser'
+include ':SiardCmd', ':SiardApi', ':EnterUtils', ':JdbcCubrid', ':Cubrid',
+//        ':Tibero',
+        ':sqlparser'
 
 project(':SiardCmd').projectDir = file('../SiardCmd')
 project(':SiardApi').projectDir = file('../SiardApi')
@@ -12,7 +14,7 @@ project(':JdbcCubrid').projectDir = file('../JdbcCubrid')
 project(':Cubrid').projectDir = file('../Cubrid')
 
 //project(':JdbcTibero').projectDir = file('../JdbcTibero')
-project(':Tibero').projectDir = file('../Tibero')
+//project(':Tibero').projectDir = file('../Tibero')
 project(':sqlparser').projectDir = file('../sqlparser')
 //include 'src:main:Tibero'
 //findProject(':src:main:Tibero')?.name = 'Tibero'
