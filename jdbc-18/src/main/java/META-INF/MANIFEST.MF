@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.8.2
+Created-By: 1.8.0_392-b08 (Red Hat, Inc.)
+Main-Class: com.tmax.tibero.jdbc.util.JDBCVersion
+Specification-Title: Tibero JDBC driver classes for use with JDK 1.8
+Specification-Vendor: TmaxTibero
+Specification-Version: 6.7.d279558e85
+Implementation-Title: Tibero_6.7.d279558e85_JDBC_1.8_release_20240826
+Implementation-Time: 2024-08-26 12:25:18
+
