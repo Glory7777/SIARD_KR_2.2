@@ -40,12 +40,6 @@ jar {
 
 }
 
-subprojects {
-
-    dependencies {
-    }
-}
-
 dependencies {
 
     implementation 'org.glavo.materialfx:materialfx:11.13.5'
@@ -78,7 +72,7 @@ dependencies {
     implementation 'org.apache.tika:tika-core:2.9.1' // used from lib/siardcmd.jar
 
     // legacy: add all dependencies from lib folder
-    implementation fileTree(include: ['*.jar'], dir: 'lib')
+    implementation fileTree(dir: 'lib', include: ['*.jar'])
 
     implementation project(':SiardApi')
     implementation project(':SiardCmd')
@@ -87,6 +81,8 @@ dependencies {
     implementation project(':JdbcBase')
     implementation project(':JdbcMysql')
     implementation project(':DbException')
+
+    implementation 'org.antlr:antlr4-runtime:4.9.2'
 
 }
 

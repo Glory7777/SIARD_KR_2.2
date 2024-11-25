@@ -406,7 +406,10 @@ public class MetaDataToDb extends MetaDataBase {
 
     private boolean existsSchema(String sMangledSchema) throws SQLException {
         boolean bExists = false;
-        ResultSet rs = this._dmd.getSchemas(null, ((BaseDatabaseMetaData) this._dmd).toPattern(sMangledSchema));
+        ResultSet rs = this._dmd.getSchemas(null,
+//                ((BaseDatabaseMetaData) this._dmd).toPattern(sMangledSchema)
+                sMangledSchema
+        );
         if (rs.next())
             bExists = true;
         rs.close();
