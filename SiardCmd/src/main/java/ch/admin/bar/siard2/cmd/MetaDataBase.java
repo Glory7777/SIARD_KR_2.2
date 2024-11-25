@@ -1,6 +1,5 @@
 package ch.admin.bar.siard2.cmd;
 
-import ch.admin.bar.dbexception.proxy.ConnectionProxy;
 import ch.admin.bar.siard2.api.MetaData;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 import lombok.Getter;
@@ -8,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
+import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
 import static ch.admin.bar.siard2.cmd.MetaDataBase.DataBase.isTibero;
 
 public abstract class MetaDataBase {
@@ -93,9 +96,10 @@ public abstract class MetaDataBase {
 
         rs.close();
 
+        String databaseProductName = null;
         try {
             Connection connection = this._dmd.getConnection();
-            String databaseProductName = connection.getMetaData().getDatabaseProductName();
+            databaseProductName = connection.getMetaData().getDatabaseProductName();
             // tibero 인 경우 분기
             String typeName = isTibero(databaseProductName) ? "INTEGER_OBJ" : "INTEGER";
             Array array = connection.createArrayOf(typeName, new Integer[]{1, 2});
@@ -103,6 +107,8 @@ public abstract class MetaDataBase {
             this._bSupportsArrays = true;
         } catch (SQLFeatureNotSupportedException var8) {
             this._bSupportsArrays = false;
+        } catch (SQLException var9) {
+            doHandleSqlException(databaseProductName, null, var9);
         }
 
     }

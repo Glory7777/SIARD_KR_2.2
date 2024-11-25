@@ -1118,6 +1118,10 @@ public class MetaDataFromDb extends MetaDataBase {
         rs.close();
     }
 
+    private boolean isSysTables(String schemaName) {
+        return schemaName.startsWith("SYS") || schemaName.equals("OUTLN");
+    }
+
     private void getTables() throws IOException, SQLException {
         String[] asTypes = {"TABLE"};
         if (this._bViewsAsTables) asTypes = new String[]{"TABLE", "VIEW"};
@@ -1133,10 +1137,7 @@ public class MetaDataFromDb extends MetaDataBase {
             String sTableName = rs.getString("TABLE_NAME");
             String sTableType = rs.getString("TABLE_TYPE");
 
-            // FIXME :: tibero, sys 테이블 강제 무시
-            if (sTableSchema.startsWith("SYS") || sTableSchema.equals("OUTLN")) {
-                continue;
-            }
+            if (isDbTibero() && isSysTables(sTableSchema)) continue;
 
             if (!Arrays.asList(asTypes).contains(sTableType))
                 throw new IOException("Invalid table type found!");
