@@ -94,11 +94,11 @@ public abstract class MetaDataBase {
         rs.close();
 
         try {
-            Connection proxy = ConnectionProxy.createProxy(this._dmd.getConnection());
-            String databaseProductName = proxy.getMetaData().getDatabaseProductName();
+            Connection connection = this._dmd.getConnection();
+            String databaseProductName = connection.getMetaData().getDatabaseProductName();
             // tibero 인 경우 분기
             String typeName = isTibero(databaseProductName) ? "INTEGER_OBJ" : "INTEGER";
-            Array array = proxy.createArrayOf(typeName, new Integer[]{1, 2});
+            Array array = connection.createArrayOf(typeName, new Integer[]{1, 2});
             array.free();
             this._bSupportsArrays = true;
         } catch (SQLFeatureNotSupportedException var8) {
