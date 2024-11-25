@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.cmd;
 
+import ch.admin.bar.dbexception.proxy.ConnectionProxy;
 import ch.admin.bar.siard2.api.MetaData;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 import lombok.Getter;
@@ -7,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
+
+import static ch.admin.bar.siard2.cmd.MetaDataBase.DataBase.isTibero;
 
 public abstract class MetaDataBase {
     protected DatabaseMetaData _dmd = null;
@@ -94,7 +94,11 @@ public abstract class MetaDataBase {
         rs.close();
 
         try {
-            Array array = this._dmd.getConnection().createArrayOf("INTEGER", new Integer[]{1, 2});
+            Connection proxy = ConnectionProxy.createProxy(this._dmd.getConnection());
+            String databaseProductName = proxy.getMetaData().getDatabaseProductName();
+            // tibero 인 경우 분기
+            String typeName = isTibero(databaseProductName) ? "INTEGER_OBJ" : "INTEGER";
+            Array array = proxy.createArrayOf(typeName, new Integer[]{1, 2});
             array.free();
             this._bSupportsArrays = true;
         } catch (SQLFeatureNotSupportedException var8) {
@@ -107,7 +111,7 @@ public abstract class MetaDataBase {
     @RequiredArgsConstructor
     public enum DataBase {
         MYSQL("mysql"),
-//        MYSQL_80("mysql", new Version("mysql", 8, 0)),
+        //        MYSQL_80("mysql", new Version("mysql", 8, 0)),
         ORACLE("oracle"),
         POSTGRESQL("postgresql"),
         MSSQL("mssql"),
@@ -122,9 +126,16 @@ public abstract class MetaDataBase {
         public static DataBase findByName(String name) {
             if (name.isBlank()) throw new NoSuchElementException("No enum value is found");
             return Arrays.stream(DataBase.values())
-                    .filter(dataBase -> dataBase.getName().equals(name))
+                    .filter(dataBase -> dataBase.getName().equalsIgnoreCase(name))
                     .findFirst()
                     .orElseThrow(() -> new NoSuchElementException("No value is found"));
         }
+
+        public static boolean isTibero(String databaseProductName) {
+            if (databaseProductName.isBlank()) throw new NoSuchElementException("No enum value is found");
+            return Arrays.stream(DataBase.values())
+                    .anyMatch(database -> DataBase.TIBERO.getName().equalsIgnoreCase(databaseProductName));
+        }
+
     }
 }
