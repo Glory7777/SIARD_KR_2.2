@@ -151,9 +151,10 @@ public class MetaDataToDb extends MetaDataBase {
 
     private boolean existsType(String sMangledSchema, String sMangledType) throws SQLException {
         boolean bExists = false;
-        ResultSet rs = this._dmd.getUDTs(null, ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sMangledSchema), ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sMangledType), new int[]{2002, 2001});
+        ResultSet rs = this._dmd.getUDTs(null,
+                getPatternedName(sMangledSchema),
+                getPatternedName(sMangledType),
+                new int[]{2002, 2001});
 
         while (rs.next())
             bExists = true;
@@ -342,9 +343,10 @@ public class MetaDataToDb extends MetaDataBase {
             sm.setMappedSchemaName(qiTable.getSchema());
             tm.setMappedTableName(qiTable.getName());
         }
-        ResultSet rsColumns = this._dmd.getColumns(null, ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(qiTable.getSchema()), ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(qiTable.getName()), "%");
+        ResultSet rsColumns = this._dmd.getColumns(null,
+                getPatternedName(qiTable.getSchema()),
+                getPatternedName(qiTable.getName()),
+                "%");
 
         while (rsColumns.next()) {
 
@@ -382,9 +384,10 @@ public class MetaDataToDb extends MetaDataBase {
 
     private boolean existsTable(String sMangledSchema, String sMangledTable) throws SQLException {
         boolean bExists = false;
-        ResultSet rs = this._dmd.getTables(null, ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sMangledSchema), ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sMangledTable), new String[]{"TABLE"});
+        ResultSet rs = this._dmd.getTables(null,
+                getPatternedName(sMangledSchema),
+                getPatternedName(sMangledTable),
+                new String[]{"TABLE"});
 
         if (rs.next())
             bExists = true;
@@ -407,8 +410,7 @@ public class MetaDataToDb extends MetaDataBase {
     private boolean existsSchema(String sMangledSchema) throws SQLException {
         boolean bExists = false;
         ResultSet rs = this._dmd.getSchemas(null,
-//                ((BaseDatabaseMetaData) this._dmd).toPattern(sMangledSchema)
-                sMangledSchema
+                getPatternedName(sMangledSchema)
         );
         if (rs.next())
             bExists = true;
@@ -545,9 +547,10 @@ public class MetaDataToDb extends MetaDataBase {
         boolean bMatches = true;
         TypeMapping tm = sm.getTypeMapping(mt.getName());
         int iPosition = 0;
-        ResultSet rs = this._dmd.getAttributes(null, ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sm.getMappedSchemaName()), ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(tm.getMappedTypeName()), "%");
+        ResultSet rs = this._dmd.getAttributes(null,
+                getPatternedName(sm.getMappedSchemaName()),
+                getPatternedName(tm.getMappedTypeName()),
+                "%");
         while (bMatches && rs.next()) {
 
             iPosition++;
@@ -650,9 +653,10 @@ public class MetaDataToDb extends MetaDataBase {
         int iDataType = 2002;
         if (cat == CategoryType.DISTINCT)
             iDataType = 2001;
-        ResultSet rs = this._dmd.getUDTs(null, ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(sm.getMappedSchemaName()), ((BaseDatabaseMetaData) this._dmd)
-                .toPattern(tm.getMappedTypeName()), null);
+        ResultSet rs = this._dmd.getUDTs(null,
+                getPatternedName(sm.getMappedSchemaName()),
+                getPatternedName(tm.getMappedTypeName()),
+                null);
         while (rs.next()) {
 
 

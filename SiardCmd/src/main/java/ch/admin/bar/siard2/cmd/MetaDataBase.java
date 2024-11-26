@@ -2,6 +2,7 @@ package ch.admin.bar.siard2.cmd;
 
 import ch.admin.bar.siard2.api.MetaData;
 import ch.enterag.sqlparser.identifier.QualifiedId;
+import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ public abstract class MetaDataBase {
     private boolean _bSupportsDistincts = false;
     private boolean _bSupportsUdts = false;
     private Set<QualifiedId> _setUsedTypes = null;
+    protected final String databaseProductName;
 
     public void setQueryTimeout(int iQueryTimeoutSeconds) {
         this._iQueryTimeoutSeconds = iQueryTimeoutSeconds;
@@ -110,7 +112,7 @@ public abstract class MetaDataBase {
         } catch (SQLException var9) {
             doHandleSqlException(databaseProductName, null, var9);
         }
-
+        this.databaseProductName = databaseProductName;
     }
 
     @Getter
@@ -144,4 +146,15 @@ public abstract class MetaDataBase {
         }
 
     }
+
+    protected boolean isTiberoDb() {
+        return isTibero(this.databaseProductName);
+    }
+
+    protected String getPatternedName(String name) throws SQLException {
+        return isTiberoDb() ?
+                name :
+                ((BaseDatabaseMetaData) this._dmd).toPattern(name);
+    }
+
 }

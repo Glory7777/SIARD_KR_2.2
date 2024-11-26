@@ -42,7 +42,6 @@ public class MetaDataFromDb extends MetaDataBase {
     private int _iTablesAnalyzed;
     private int _iTables;
     private int _iTablesPercent;
-    private final String databaseProductName;
 
     private MetaDataFromDb(DatabaseMetaData dmd, MetaData md) throws SQLException {
         super(dmd, md);
@@ -52,7 +51,6 @@ public class MetaDataFromDb extends MetaDataBase {
         this._iTablesAnalyzed = -1;
         this._iTables = -1;
         this._iTablesPercent = -1;
-        this.databaseProductName = dmd.getDatabaseProductName();
     }
 
     public static MetaDataFromDb newInstance(DatabaseMetaData dmd, MetaData md) throws SQLException {
@@ -240,15 +238,7 @@ public class MetaDataFromDb extends MetaDataBase {
         return rat.value();
     }
 
-    private String getPatternedName(String name) throws SQLException {
-        return isDbTibero() ?
-                name :
-                ((BaseDatabaseMetaData) this._dmd).toPattern(name);
-    }
 
-    private boolean isDbTibero() {
-        return isTibero(this.databaseProductName);
-    }
 
     private void getAttributes(MetaType mt) throws IOException, SQLException {
         int iPosition = 0;
@@ -686,7 +676,7 @@ public class MetaDataFromDb extends MetaDataBase {
         if (mc.getParentMetaTable() != null && sColumnDefault != null) mc.setDefaultValue(sColumnDefault);
 
         int iOrdinalPosition = rs.getInt("ORDINAL_POSITION");
-        int metaColumnPosition = isDbTibero() ? mc.getPosition() - 1 : mc.getPosition(); // 티베로는 ordinal_position 0부터 시작
+        int metaColumnPosition = isTiberoDb() ? mc.getPosition() - 1 : mc.getPosition(); // 티베로는 ordinal_position 0부터 시작
         if (iOrdinalPosition != metaColumnPosition) throw new IOException("Invalid column position found!");
 
     }
@@ -1119,7 +1109,7 @@ public class MetaDataFromDb extends MetaDataBase {
     }
 
     private boolean isSysTables(String schemaName) {
-        return schemaName.startsWith("SYS") || schemaName.equals("OUTLN");
+        return schemaName.startsWith("SYS") || schemaName.equals("OUTLN"); // FIXME:: 추후 수정 필요
     }
 
     private void getTables() throws IOException, SQLException {
@@ -1137,7 +1127,7 @@ public class MetaDataFromDb extends MetaDataBase {
             String sTableName = rs.getString("TABLE_NAME");
             String sTableType = rs.getString("TABLE_TYPE");
 
-            if (isDbTibero() && isSysTables(sTableSchema)) continue;
+            if (isTiberoDb() && isSysTables(sTableSchema)) continue; // 티베로인 경우 시스템 테이블도 조회되므로 무시
 
             if (!Arrays.asList(asTypes).contains(sTableType))
                 throw new IOException("Invalid table type found!");
