@@ -40,12 +40,11 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
     private StopWatch setValueStopWatch = null;
     private final Tika tika = new Tika();
 
-    private PrimaryDataFromDb(Connection connection, Archive archive) {
+    private PrimaryDataFromDb(Connection connection, Archive archive) throws SQLException {
         super(connection, archive, null, true, true, true);
     }
 
-    public static PrimaryDataFromDb newInstance(Connection connection, Archive archive) {
-        System.out.println("instantiate");
+    public static PrimaryDataFromDb newInstance(Connection connection, Archive archive) throws SQLException {
         return new PrimaryDataFromDb(connection, archive);
     }
 

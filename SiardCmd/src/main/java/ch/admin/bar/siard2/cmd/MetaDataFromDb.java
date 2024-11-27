@@ -1,6 +1,5 @@
 package ch.admin.bar.siard2.cmd;
 
-import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
@@ -14,7 +13,6 @@ import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.ProgramInfo;
 import ch.enterag.utils.background.Progress;
-import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
-import static ch.admin.bar.siard2.cmd.MetaDataBase.DataBase.isTibero;
 
 public class MetaDataFromDb extends MetaDataBase {
     private static final Logger LOG = LoggerFactory.getLogger(MetaDataFromDb.class);
@@ -237,7 +234,6 @@ public class MetaDataFromDb extends MetaDataBase {
         }
         return rat.value();
     }
-
 
 
     private void getAttributes(MetaType mt) throws IOException, SQLException {
@@ -1108,9 +1104,6 @@ public class MetaDataFromDb extends MetaDataBase {
         rs.close();
     }
 
-    private boolean isSysTables(String schemaName) {
-        return schemaName.startsWith("SYS") || schemaName.equals("OUTLN"); // FIXME:: 추후 수정 필요
-    }
 
     private void getTables() throws IOException, SQLException {
         String[] asTypes = {"TABLE"};
@@ -1127,7 +1120,8 @@ public class MetaDataFromDb extends MetaDataBase {
             String sTableName = rs.getString("TABLE_NAME");
             String sTableType = rs.getString("TABLE_TYPE");
 
-            if (isTiberoDb() && isSysTables(sTableSchema)) continue; // 티베로인 경우 시스템 테이블도 조회되므로 무시
+//            sTableName = trimTableNameIfCubrid(sTableName);
+            if (isTiberoSkippable(sTableSchema) || isCubridSkippable(sTableName)) continue; // 티베로, 큐브리드 경우 시스템 테이블도 조회되므로 무시
 
             if (!Arrays.asList(asTypes).contains(sTableType))
                 throw new IOException("Invalid table type found!");

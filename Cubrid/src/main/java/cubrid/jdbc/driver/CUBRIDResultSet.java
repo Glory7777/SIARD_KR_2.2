@@ -1354,7 +1354,9 @@ public class CUBRIDResultSet implements ResultSet {
 							if (!first)
 								sql += ",";
 							first = false;
-							sql += "[" + column_info[i].getRealColumnName() + "]";
+							String columnName = column_info[i].getRealColumnName();
+							columnName = columnName == null || columnName.isEmpty() ? column_info[i].getColumnName() : columnName;
+							sql += "[" + columnName + "]";
 						}
 	
 						sql += ") values (";
