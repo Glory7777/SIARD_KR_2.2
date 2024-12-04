@@ -996,7 +996,8 @@ public class MetaDataFromDb extends MetaDataBase {
         if (mapPkColumns.size() > 0) {
             MetaUniqueKey muk = mt.createMetaPrimaryKey(sPkName);
             for (int iColumn = 0; iColumn < mapPkColumns.size(); iColumn++) {
-                String sColumnName = mapPkColumns.get(Integer.valueOf(iColumn + 1));
+                int idx = isTiberoDb() ? iColumn : iColumn + 1;
+                String sColumnName = mapPkColumns.get(idx);
                 muk.addColumn(sColumnName);
             }
         }
