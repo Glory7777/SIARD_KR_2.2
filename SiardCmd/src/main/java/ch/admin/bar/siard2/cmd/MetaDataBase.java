@@ -1,8 +1,9 @@
 package ch.admin.bar.siard2.cmd;
 
-import ch.admin.bar.dbexception.proxy.ConnectionProxy;
 import ch.admin.bar.siard2.api.MetaData;
+import ch.admin.bar.siard2.cmd.utils.db.AbstractSkippableDb;
 import ch.enterag.sqlparser.identifier.QualifiedId;
+import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,9 +11,11 @@ import java.sql.*;
 import java.text.ParseException;
 import java.util.*;
 
+import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
 import static ch.admin.bar.siard2.cmd.MetaDataBase.DataBase.isTibero;
 
-public abstract class MetaDataBase {
+public abstract class MetaDataBase extends AbstractSkippableDb {
+
     protected DatabaseMetaData _dmd = null;
     protected MetaData _md = null;
     protected int _iQueryTimeoutSeconds = 30;
@@ -73,6 +76,7 @@ public abstract class MetaDataBase {
     }
 
     protected MetaDataBase(DatabaseMetaData dmd, MetaData md) throws SQLException {
+        super(dmd.getDatabaseProductName());
         this._dmd = dmd;
         this._md = md;
         ResultSet rs = this._dmd.getUDTs(null, "%", "%", null);
@@ -93,9 +97,10 @@ public abstract class MetaDataBase {
 
         rs.close();
 
+        String databaseProductName = null;
         try {
             Connection connection = this._dmd.getConnection();
-            String databaseProductName = connection.getMetaData().getDatabaseProductName();
+            databaseProductName = connection.getMetaData().getDatabaseProductName();
             // tibero 인 경우 분기
             String typeName = isTibero(databaseProductName) ? "INTEGER_OBJ" : "INTEGER";
             Array array = connection.createArrayOf(typeName, new Integer[]{1, 2});
@@ -103,15 +108,15 @@ public abstract class MetaDataBase {
             this._bSupportsArrays = true;
         } catch (SQLFeatureNotSupportedException var8) {
             this._bSupportsArrays = false;
+        } catch (SQLException var9) {
+            doHandleSqlException(databaseProductName, null, var9);
         }
-
     }
 
     @Getter
     @RequiredArgsConstructor
     public enum DataBase {
         MYSQL("mysql"),
-        //        MYSQL_80("mysql", new Version("mysql", 8, 0)),
         ORACLE("oracle"),
         POSTGRESQL("postgresql"),
         MSSQL("mssql"),
@@ -121,7 +126,6 @@ public abstract class MetaDataBase {
         ;
 
         final String name;
-//        final Version version;
 
         public static DataBase findByName(String name) {
             if (name.isBlank()) throw new NoSuchElementException("No enum value is found");
@@ -137,5 +141,18 @@ public abstract class MetaDataBase {
                     .anyMatch(database -> DataBase.TIBERO.getName().equalsIgnoreCase(databaseProductName));
         }
 
+        public static boolean isCubrid(String databaseProductName){
+            if (databaseProductName.isBlank()) throw new NoSuchElementException("No enum value is found");
+            return Arrays.stream(DataBase.values())
+                    .anyMatch(database -> DataBase.CUBRID.getName().equalsIgnoreCase(databaseProductName));
+        }
+
     }
+
+    protected String getPatternedName(String name) throws SQLException {
+        return isTiberoDb() ?
+                name :
+                ((BaseDatabaseMetaData) this._dmd).toPattern(name);
+    }
+
 }

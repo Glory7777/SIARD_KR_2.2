@@ -201,7 +201,6 @@ public class DbmsRegistry {
                     .exampleDbName("MS-SQL-Database")
                     .build(),
 
-            // TODO:: cubrid, tibero 드라이버 추가 시 경로 및 설정 변경 필요
             ServerBasedDbms.builder()
                     .name("CUBRID")
                     .id("cubrid")
@@ -230,8 +229,10 @@ public class DbmsRegistry {
                         String user = splitEncoded[5];
 
                         String password = ""; // 비밀번호가 없거나 필요 없는 경우
-
-                        String[] parts = splitEncoded[6].split("\\?", 2);
+                        String[] parts = null;
+                        if (splitEncoded.length >= 7) {
+                            parts = splitEncoded[6].split("\\?", 2);
+                        }
 
                         return ServerBasedDbmsConnectionProperties.builder()
                                 .host(host)

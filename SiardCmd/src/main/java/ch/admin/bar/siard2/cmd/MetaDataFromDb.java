@@ -1,6 +1,5 @@
 package ch.admin.bar.siard2.cmd;
 
-import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.admin.bar.siard2.api.generated.ReferentialActionType;
@@ -14,7 +13,6 @@ import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.ProgramInfo;
 import ch.enterag.utils.background.Progress;
-import ch.enterag.utils.jdbc.BaseDatabaseMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper.doHandleSqlException;
-import static ch.admin.bar.siard2.cmd.MetaDataBase.DataBase.isTibero;
 
 public class MetaDataFromDb extends MetaDataBase {
     private static final Logger LOG = LoggerFactory.getLogger(MetaDataFromDb.class);
@@ -42,7 +39,6 @@ public class MetaDataFromDb extends MetaDataBase {
     private int _iTablesAnalyzed;
     private int _iTables;
     private int _iTablesPercent;
-    private final String databaseProductName;
 
     private MetaDataFromDb(DatabaseMetaData dmd, MetaData md) throws SQLException {
         super(dmd, md);
@@ -52,7 +48,6 @@ public class MetaDataFromDb extends MetaDataBase {
         this._iTablesAnalyzed = -1;
         this._iTables = -1;
         this._iTablesPercent = -1;
-        this.databaseProductName = dmd.getDatabaseProductName();
     }
 
     public static MetaDataFromDb newInstance(DatabaseMetaData dmd, MetaData md) throws SQLException {
@@ -240,15 +235,6 @@ public class MetaDataFromDb extends MetaDataBase {
         return rat.value();
     }
 
-    private String getPatternedName(String name) throws SQLException {
-        return isDbTibero() ?
-                name :
-                ((BaseDatabaseMetaData) this._dmd).toPattern(name);
-    }
-
-    private boolean isDbTibero() {
-        return isTibero(this.databaseProductName);
-    }
 
     private void getAttributes(MetaType mt) throws IOException, SQLException {
         int iPosition = 0;
@@ -686,7 +672,7 @@ public class MetaDataFromDb extends MetaDataBase {
         if (mc.getParentMetaTable() != null && sColumnDefault != null) mc.setDefaultValue(sColumnDefault);
 
         int iOrdinalPosition = rs.getInt("ORDINAL_POSITION");
-        int metaColumnPosition = isDbTibero() ? mc.getPosition() - 1 : mc.getPosition(); // 티베로는 ordinal_position 0부터 시작
+        int metaColumnPosition = isTiberoDb() ? mc.getPosition() - 1 : mc.getPosition(); // 티베로는 ordinal_position 0부터 시작
         if (iOrdinalPosition != metaColumnPosition) throw new IOException("Invalid column position found!");
 
     }
@@ -1118,6 +1104,7 @@ public class MetaDataFromDb extends MetaDataBase {
         rs.close();
     }
 
+
     private void getTables() throws IOException, SQLException {
         String[] asTypes = {"TABLE"};
         if (this._bViewsAsTables) asTypes = new String[]{"TABLE", "VIEW"};
@@ -1133,10 +1120,8 @@ public class MetaDataFromDb extends MetaDataBase {
             String sTableName = rs.getString("TABLE_NAME");
             String sTableType = rs.getString("TABLE_TYPE");
 
-            // FIXME :: tibero, sys 테이블 강제 무시
-            if (sTableSchema.startsWith("SYS") || sTableSchema.equals("OUTLN")) {
-                continue;
-            }
+//            sTableName = trimTableNameIfCubrid(sTableName);
+            if (isTiberoSkippable(sTableSchema) || isCubridSkippable(sTableName)) continue; // 티베로, 큐브리드 경우 시스템 테이블도 조회되므로 무시
 
             if (!Arrays.asList(asTypes).contains(sTableType))
                 throw new IOException("Invalid table type found!");

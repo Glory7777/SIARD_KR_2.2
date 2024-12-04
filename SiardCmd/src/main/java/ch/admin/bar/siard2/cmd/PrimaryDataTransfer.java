@@ -3,6 +3,7 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.MetaTable;
 import ch.admin.bar.siard2.api.Table;
+import ch.admin.bar.siard2.cmd.utils.db.AbstractSkippableDb;
 import ch.enterag.sqlparser.SqlLiterals;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 
@@ -17,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class PrimaryDataTransfer {
+public class PrimaryDataTransfer extends AbstractSkippableDb {
     private static final Logger LOG = LoggerFactory.getLogger(PrimaryDataTransfer.class);
 
 
@@ -107,7 +108,8 @@ public class PrimaryDataTransfer {
     }
 
 
-    protected PrimaryDataTransfer(Connection conn, Archive archive, ArchiveMapping am, boolean bSupportsArrays, boolean bSupportsDistincts, boolean bSupportsUdts) {
+    protected PrimaryDataTransfer(Connection conn, Archive archive, ArchiveMapping am, boolean bSupportsArrays, boolean bSupportsDistincts, boolean bSupportsUdts) throws SQLException {
+        super(conn.getMetaData().getDatabaseProductName());
         this._conn = conn;
         this._archive = archive;
         this._am = am;
@@ -116,9 +118,3 @@ public class PrimaryDataTransfer {
         this._bSupportsUdts = bSupportsUdts;
     }
 }
-
-
-/* Location:              C:\Users\lenovo\IdeaProjects\SIARD_KR_2.2\lib\siardcmd.jar!\ch\admin\bar\siard2\cmd\PrimaryDataTransfer.class
- * Java compiler version: 8 (52.0)
- * JD-Core Version:       1.1.3
- */

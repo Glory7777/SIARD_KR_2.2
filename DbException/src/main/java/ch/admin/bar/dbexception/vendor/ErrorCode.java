@@ -23,6 +23,7 @@ public enum ErrorCode {
     CANNOT_COMMUNICATE_BROKER(CUBRID, -21003, ExceptionLevel.CRITICAL, "DB 서버(브로커)와의 통신에 문제가 발생했습니다. SIARD 프로그램을 종료 후 다시 시도해주세요.", "", ARCHIVE),
     INSUFFICIENT_AUTH(CUBRID, -494, ExceptionLevel.CRITICAL, "유저 권한이 부족합니다. 현재 유저에 _db_data_type 테이블에 대한 SELECT 권한이 필요합니다", "", ARCHIVE),
 
+    TABLE_ALREADY_EXISTS(MYSQL, 1050, ExceptionLevel.CRITICAL, "이미 존재하는 테이블이 있습니다" ,"", UPLOAD),
     INSUFFICIENT_PRIVILEGE_CREATE(MYSQL, 1044, ExceptionLevel.CRITICAL, "스키마에 대한 접근 권한이 부족합니다. 유저에 생성할 스키마에 대한 CREATE, SELECT, INSERT 권한을 부여해주세요", "createSchema", UPLOAD),
 //    MISSING_DATA(ORACLE, "missing data (tables without columns present", CustomExceptionHandler.ExceptionLevel.SKIP),
 //    FAILED_TO_CONNECT(10003, "failed to connect to DB", CustomExceptionHandler.ExceptionLevel.THROWS),
