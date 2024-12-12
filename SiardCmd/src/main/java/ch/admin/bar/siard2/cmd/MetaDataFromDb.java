@@ -1256,7 +1256,7 @@ public class MetaDataFromDb extends MetaDataBase {
                 case MSSQL -> "SELECT SUM(a.total_pages) AS size_mb " +
                         "FROM sys.tables t ...";
                 case CUBRID -> ";info stats " + tableName;
-                case TIBERO -> "";
+                case TIBERO -> getTiberoQuery();
             };
 
             long size = 0;
@@ -1272,6 +1272,10 @@ public class MetaDataFromDb extends MetaDataBase {
                     }
                     case POSTGRESQL -> stmt.setString(1, schemaName + "." + tableName);
                     // TODO :: more db
+                    case TIBERO -> {
+                        stmt.setString(1, tableName);
+                        stmt.setString(2, tableName);
+                    }
                 }
 
                 ResultSet rs = stmt.executeQuery();
@@ -1292,6 +1296,22 @@ public class MetaDataFromDb extends MetaDataBase {
             }
         }
 
+    }
+
+
+    private String getTiberoQuery() {
+        String databaseUser = this._md.getArchive().getMetaData().getDatabaseUser();
+        if (isSysdba(databaseUser)) {
+            return "SELECT bytes AS table_size " +
+                    "FROM dba_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        } else {
+            return "SELECT bytes AS table_size " +
+                    "FROM USER_segments " +
+                    "WHERE (segment_name = UPPER(?) OR segment_name = LOWER(?)) " +
+                    "AND segment_type = 'TABLE'";
+        }
     }
 
     private String getOracleQuery() {
