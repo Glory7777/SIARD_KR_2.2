@@ -219,6 +219,7 @@ public class MetaDataToDb extends MetaDataBase {
         sbSql.append(" ");
         MetaType mt = mc.getMetaType();
 
+        //여기서 타입 설정하는 듯함
         if (mt == null) {
             DataTypeConverter dataTypeConverter = DataTypeConverterFactory.getInstance(super.getDatabaseProductName(), mc);
             String type = dataTypeConverter != null ? dataTypeConverter.getColumnType() : mc.getType();
