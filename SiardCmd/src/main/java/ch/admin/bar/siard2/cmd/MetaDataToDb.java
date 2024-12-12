@@ -218,10 +218,16 @@ public class MetaDataToDb extends MetaDataBase {
         sbSql.append(SqlLiterals.formatId(tm.getMappedColumnName(mc.getName())));
         sbSql.append(" ");
         MetaType mt = mc.getMetaType();
+
         if (mt == null) {
             DataTypeConverter dataTypeConverter = DataTypeConverterFactory.getInstance(super.getDatabaseProductName(), mc);
             String type = dataTypeConverter != null ? dataTypeConverter.getColumnType() : mc.getType();
 //            String type = mc.getType();
+            // MySQL에서 NUMBER(p, s)를 DECIMAL(p, s)로 변환
+            if ("MySQL".equalsIgnoreCase(super.getDatabaseProductName()) && type.startsWith("NUMBER")) {
+                type = type.replaceAll("NUMBER\\((\\d+),\\s*(\\d+)\\)", "DECIMAL($1, $2)")
+                        .replaceAll("NUMBER\\((\\d+)\\)", "DECIMAL($1, 0)");
+            }
             sbSql.append(type);
 
             if (mc.getCardinality() >= 0) {
@@ -317,7 +323,7 @@ public class MetaDataToDb extends MetaDataBase {
         String sqlStatement = sbSql.toString();
         LOG.trace("SQL statement: '{}'", sqlStatement);
 
-        String databaseProductName = null;
+          String databaseProductName = null;
         try {
             Connection connection = this._dmd.getConnection();
             Statement stmt = connection.createStatement();
