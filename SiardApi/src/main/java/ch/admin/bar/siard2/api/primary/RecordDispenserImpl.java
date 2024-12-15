@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.api.primary;
 
+import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.RecordDispenser;
 import ch.admin.bar.siard2.api.Table;
@@ -10,6 +11,7 @@ import ch.admin.bar.siard2.api.utli.ValidCellCounter;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.jaxb.XMLStreamFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,7 +19,10 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import ch.enterag.utils.zip.Zip64File;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -239,6 +244,7 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
         System.out.println("This is searchTerm in containsSearchTerm : " + searchTerm);
+        String filePath = "";
         if (searchTerm != null && !searchTerm.isEmpty()) {
             // searchTerm을 |를 기준으로 분리
             String[] parts = searchTerm.split("\\|", 2);
@@ -247,7 +253,7 @@ public class RecordDispenserImpl implements RecordDispenser {
             searchTerm = parts[0];
             System.out.println("This is searchTerm after split: " + searchTerm);
             // filePath는 | 뒤의 값으로 할당
-            String filePath = parts.length > 1 ? parts[1] : "";
+            filePath = parts.length > 1 ? parts[1] : "";
             System.out.println("This is filePath after split: " + filePath);
         }
 
@@ -259,7 +265,15 @@ public class RecordDispenserImpl implements RecordDispenser {
                 Element elColumn = (Element) nodeChild;
                 String cPath = elColumn.getAttribute("file");
                 System.out.println("This is cPath : " + cPath);
-                String textContent = elColumn.getTextContent();
+           //     String textContent = elColumn.getTextContent();
+                String textContent;
+                if (cPath == null || cPath.isEmpty()) {
+                    // cPath가 비어있으면 elColumn의 텍스트 내용을 사용
+                    textContent = elColumn.getTextContent();
+                } else {
+                    // cPath가 비어있지 않으면 filePath와 cPath로 readRecord 호출
+                    textContent = LobReader.readRecordByCPath(filePath, cPath);
+                }
                 if (searchUtil.matches(textContent)) {
                     this.anyMatches = true;
                     break;
