@@ -209,6 +209,7 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private RecordType getRecordType(XMLStreamReader xsr, final String searchTerm) throws IOException, XMLStreamException {
+        System.out.println("This is searchTerm in getRecordType : " + searchTerm);
         RecordType rt = null;
         String sNamespace = xsr.getNamespaceURI();
         rt = _OF_TABLE.createRecordType();
@@ -237,12 +238,15 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
+        System.out.println("This is searchTerm in containsSearchTerm : " + searchTerm);
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
         for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
             Node nodeChild = elRow.getChildNodes().item(i);
             if (nodeChild.getNodeType() == 1) {
                 Element elColumn = (Element) nodeChild;
+                String cPath = elColumn.getAttribute("file");
+                System.out.println("This is cPath : " + cPath);
                 String textContent = elColumn.getTextContent();
                 if (searchUtil.matches(textContent)) {
                     this.anyMatches = true;
@@ -268,6 +272,7 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     Record readRecordWithSearchTerm(XMLStreamReader xsr, final String searchTerm) throws IOException, XMLStreamException {
         Record record = null;
+        System.out.println("This is searchTerm in readRecordWithSearchTerm : " + searchTerm);
         if (xsr.isStartElement() && "row".equals(xsr.getLocalName())) {
             RecordType rt = getRecordType(xsr, searchTerm);
             record = RecordImpl.newInstance(this._table, getPosition(), rt);
@@ -294,6 +299,7 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     public Record getWithSearchTerm(final String searchTerm) throws IOException {
+        System.out.println("This is searchTerm in getWithSearchTerm : " + searchTerm);
         if (searchTerm == null || searchTerm.isBlank()) return get();
 
         Record record = null;
