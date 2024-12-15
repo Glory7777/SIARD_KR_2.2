@@ -146,9 +146,12 @@ public class RowsOverviewForm {
             for (int x = 0; x < nrOfItems; x++) {
 
                 // 다른 곳에서 GlobalState를 통해 경로 확인
-                System.out.println("Stored file path: " + GlobalState.getInstance().getFilePath());
-                System.out.println("This is searchTerm in load : " + searchTerm);
-                val record = recordDispenser.getWithSearchTerm(searchTerm);
+                String filePath = GlobalState.getInstance().getFilePath();
+                System.out.println("Stored file path: " + filePath);
+                // searchTerm에 filePath를 구분자와 함께 추가
+                String combineSearchTerm = searchTerm + "|" + filePath;
+                System.out.println("This is searchTerm in load : " + combineSearchTerm);
+                val record = recordDispenser.getWithSearchTerm(combineSearchTerm);
 
                 if (record == null) {
                     break;

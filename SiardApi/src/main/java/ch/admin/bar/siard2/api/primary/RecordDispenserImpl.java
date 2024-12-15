@@ -239,6 +239,18 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
         System.out.println("This is searchTerm in containsSearchTerm : " + searchTerm);
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            // searchTerm을 |를 기준으로 분리
+            String[] parts = searchTerm.split("\\|", 2);
+
+            // searchTerm은 | 앞의 값으로 재할당
+            searchTerm = parts[0];
+            System.out.println("This is searchTerm after split: " + searchTerm);
+            // filePath는 | 뒤의 값으로 할당
+            String filePath = parts.length > 1 ? parts[1] : "";
+            System.out.println("This is filePath after split: " + filePath);
+        }
+
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
         for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
