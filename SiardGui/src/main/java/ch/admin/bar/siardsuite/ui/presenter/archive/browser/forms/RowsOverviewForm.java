@@ -3,6 +3,7 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.Table;
+import ch.admin.bar.siard2.api.primary.GlobalState;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.model.database.DatabaseColumn;
@@ -143,6 +144,9 @@ public class RowsOverviewForm {
 
             final List<RecordWrapper> collected = new ArrayList<>();
             for (int x = 0; x < nrOfItems; x++) {
+
+                // 다른 곳에서 GlobalState를 통해 경로 확인
+                System.out.println("Stored file path: " + GlobalState.getInstance().getFilePath());
                 System.out.println("This is searchTerm in load : " + searchTerm);
                 val record = recordDispenser.getWithSearchTerm(searchTerm);
 
