@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -54,12 +55,29 @@ public class TableRenderer<T, I> implements SearchableFormEntry {
         return tableView;
     }
 
+//    기존 코드
+//    @Override
+//    public void applySearchTerm(final String searchTerm) {
+//        filteredTableItems.setPredicate(i -> renderableTable.getProperties().stream()
+//                .map(iReadOnlyStringProperty -> iReadOnlyStringProperty.getValueExtractor().apply(i))
+//                .anyMatch(s -> s.contains(searchTerm)));
+//    }
+
     @Override
     public void applySearchTerm(final String searchTerm) {
-        filteredTableItems.setPredicate(i -> renderableTable.getProperties().stream()
-                .map(iReadOnlyStringProperty -> iReadOnlyStringProperty.getValueExtractor().apply(i))
-                .anyMatch(s -> s.contains(searchTerm)));
+        filteredTableItems.setPredicate(i -> {
+            boolean hasNonNullMatch; // 검색어를 포함하는지 확인
+            hasNonNullMatch = renderableTable.getProperties().stream()
+                    .map(iReadOnlyStringProperty -> iReadOnlyStringProperty.getValueExtractor().apply(i))
+                    .filter(Objects::nonNull) // null이 아닌 값만 필터링
+                    .anyMatch(s -> s.contains(searchTerm));
+
+            return hasNonNullMatch;
+        });
     }
+
+
+
 
     @Override
     public void clearSearchTerm() {
