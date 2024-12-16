@@ -26,11 +26,11 @@ public class GlobalState {
     }
 
 
-//    public void clearFilePath() {
-//        this.filePath = null;
-//        System.out.println("File path cleared.");
-//        System.out.flush();
-//    }
+    public void clearFilePath() {
+        this.filePath = null;
+        System.out.println("File path cleared.");
+        System.out.flush();
+    }
 
 
 //    public synchronized void setFilePath(String filePath) {
