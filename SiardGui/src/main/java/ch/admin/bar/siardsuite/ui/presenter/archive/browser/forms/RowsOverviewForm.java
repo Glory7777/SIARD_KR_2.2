@@ -151,7 +151,12 @@ public class RowsOverviewForm {
                 // searchTerm에 filePath를 구분자와 함께 추가
                 String combineSearchTerm = searchTerm + "|" + filePath;
                 System.out.println("This is searchTerm in load : " + combineSearchTerm);
-                val record = recordDispenser.getWithSearchTerm(combineSearchTerm);
+                val record = (searchTerm == null)
+                        ? recordDispenser.getWithSearchTerm(searchTerm)
+                        : recordDispenser.getWithSearchTerm(combineSearchTerm);
+
+                System.out.println("This is searchTerm or combineSearchTerm in load : " + (searchTerm == null ? searchTerm : combineSearchTerm));
+
 
                 if (record == null) {
                     break;

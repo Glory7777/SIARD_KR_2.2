@@ -3,6 +3,7 @@ package ch.admin.bar.siard2.api.primary;
 import ch.admin.bar.siard2.api.Archive;
 import lombok.SneakyThrows;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ public class LobReader {
 
         System.out.println("Attempting to read cPath: " + cPath);
 
+        cPath = cPath.replace("\\", "/").trim();
         ZipEntry entry = zipFile.getEntry(cPath);
         if (entry == null) {
             throw new IOException("File not found in SIARD archive: " + cPath);
@@ -40,7 +42,18 @@ public class LobReader {
 
         try (InputStream inputStream = zipFile.getInputStream(entry)) {
             System.out.println("File found in archive: " + cPath);
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+            //bin 데이터를 읽기 위한 코드 추가
+            byte[] data = inputStream.readAllBytes();
+
+            // 파일 확장자로 텍스트/바이너리 구분
+            if(cPath.toLowerCase().endsWith(".txt")){
+                return new String(data, StandardCharsets.UTF_8);
+            } else {
+                // 바이너리 파일: byte[]로 반환
+                 return DatatypeConverter.printHexBinary(data);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException("Error reading record from SIARD file at: " + cPath, e);
         }

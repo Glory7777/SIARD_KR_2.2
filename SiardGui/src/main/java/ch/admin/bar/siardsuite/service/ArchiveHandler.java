@@ -38,6 +38,7 @@ public class ArchiveHandler {
     @SneakyThrows
     public Archive init(final File destination) {
         if (destination.exists()) {
+            GlobalState.getInstance().clearFilePath();
             log.warn("Archive at location {} will be overwritten", destination.getAbsolutePath());
             destination.delete();
         }

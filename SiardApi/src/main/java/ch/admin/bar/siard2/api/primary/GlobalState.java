@@ -26,6 +26,7 @@ public class GlobalState {
     }
 
 
+    // 다른데서 사용할 땐  GlobalState.getInstance().clearFilePath(); 호출
     public void clearFilePath() {
         this.filePath = null;
         System.out.println("File path cleared.");
