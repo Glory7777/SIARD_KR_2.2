@@ -247,6 +247,8 @@ public class RecordDispenserImpl implements RecordDispenser {
             Node nodeChild = elRow.getChildNodes().item(i);
             if (nodeChild.getNodeType() == 1) {
                 Element elColumn = (Element) nodeChild;
+                String cPath = elColumn.getAttribute("file");
+                System.out.println("This is cPath : " + cPath);
                 String textContent = elColumn.getTextContent();
                 if (searchUtil.matches(textContent)) {
                     this.anyMatches = true;
