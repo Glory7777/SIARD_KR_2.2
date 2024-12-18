@@ -143,6 +143,7 @@ public class RowsOverviewForm {
 
             final List<RecordWrapper> collected = new ArrayList<>();
             for (int x = 0; x < nrOfItems; x++) {
+                System.out.println("This is searchTerm in load : " + searchTerm);
                 val record = recordDispenser.getWithSearchTerm(searchTerm);
 
                 if (record == null) {
