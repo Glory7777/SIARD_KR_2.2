@@ -239,6 +239,8 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
         System.out.println("This is searchTerm in containsSearchTerm : " + searchTerm);
+        String filePath = GlobalState.getInstance().getFilePath();
+        System.out.println("Stored file path: " + filePath);
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
         for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
