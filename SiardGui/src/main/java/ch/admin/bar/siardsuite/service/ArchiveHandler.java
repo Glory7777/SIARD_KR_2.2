@@ -4,6 +4,7 @@ import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siard2.api.Table;
 import ch.admin.bar.siard2.api.primary.ArchiveImpl;
+import ch.admin.bar.siard2.api.primary.GlobalState;
 import ch.admin.bar.siardsuite.model.UserDefinedMetadata;
 import ch.admin.bar.siardsuite.model.facades.PreTypeFacade;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.ListAssembler;
@@ -84,6 +85,10 @@ public class ArchiveHandler {
 
     @SneakyThrows
     public Archive open(final File file) {
+
+        // GlobalState에 file의 경로를 설정
+        GlobalState.getInstance().setFilePath(file.getAbsolutePath());
+
         val archive = ArchiveImpl.newInstance();
         archive.open(file);
 
