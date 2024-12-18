@@ -38,6 +38,12 @@ public class ArchiveHandler {
     @SneakyThrows
     public Archive init(final File destination) {
         if (destination.exists()) {
+
+            //전역 상태값으로 넣은 filePath 때문인지 새 Siard 파일을 기존에 존재하던 파일로 덮어쓰려고 하면
+            // overwritten 되지 않고 존재하는 파일이라는 예외가 가끔 떠서,
+            //아카이브 추출할 때마다 명시적으로 globalState - filePath 초기화시켜주기
+            GlobalState.getInstance().clearFilePath();
+
             log.warn("Archive at location {} will be overwritten", destination.getAbsolutePath());
             destination.delete();
         }
