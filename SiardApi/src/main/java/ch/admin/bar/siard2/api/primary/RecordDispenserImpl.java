@@ -243,19 +243,29 @@ public class RecordDispenserImpl implements RecordDispenser {
         System.out.println("Stored file path: " + filePath);
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
-        for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
-            Node nodeChild = elRow.getChildNodes().item(i);
-            if (nodeChild.getNodeType() == 1) {
-                Element elColumn = (Element) nodeChild;
-                String cPath = elColumn.getAttribute("file");
-                System.out.println("This is cPath : " + cPath);
-                String textContent = elColumn.getTextContent();
-                if (searchUtil.matches(textContent)) {
-                    this.anyMatches = true;
-                    break;
+
+            for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
+                Node nodeChild = elRow.getChildNodes().item(i);
+                if (nodeChild.getNodeType() == 1) {
+                    Element elColumn = (Element) nodeChild;
+                    String cPath = elColumn.getAttribute("file");
+                    System.out.println("This is cPath : " + cPath);
+                    String textContent;
+                    if (cPath.isEmpty()) {
+                        // cPath가 비어있으면 elColumn의 텍스트 내용을 사용
+                        textContent = elColumn.getTextContent();
+                    } else {
+                        // cPath가 비어있지 않으면 filePath와 cPath로 readRecord 호출
+                        textContent = LobReader.readRecordByCPath(filePath, cPath);
+                    }
+                    //  String textContent = elColumn.getTextContent();
+                    if (searchUtil.matches(textContent)) {
+                        this.anyMatches = true;
+                        break;
+                    }
                 }
             }
-        }
+
         return this.anyMatches;
     }
 
