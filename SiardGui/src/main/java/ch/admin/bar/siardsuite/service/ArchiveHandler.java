@@ -47,7 +47,7 @@ public class ArchiveHandler {
             log.warn("Archive at location {} will be overwritten", destination.getAbsolutePath());
             destination.delete();
         }
-
+        GlobalState.getInstance().clearFilePath();
         final Archive archive = ArchiveImpl.newInstance();
         archive.create(destination);
 

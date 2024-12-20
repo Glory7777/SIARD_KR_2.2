@@ -242,8 +242,13 @@ public class FormRenderer<T> {
                             .concat(titleSuffix));
             title.getStyleClass().add(TITLE_STYLE_CLASS);
 
+            // 제목 로그 출력
+          //  System.out.println("Title: " + property.getTitle().getText() + titleSuffix);
+
             value = new TextField();
             value.getStyleClass().add(FIELD_STYLE_CLASS);
+
+         //  System.out.println("Value: " + property.getValueExtractor().apply(data));
 
             validationMsg = new Label();
             validationMsg.getStyleClass().add(VALIDATION_STYLE_CLASS);
