@@ -248,15 +248,6 @@ public class MetaDataFromDb extends MetaDataBase {
                 getPatternedName(tableName),
                 "%");
 
-        // ResultSet의 메타데이터 가져오기
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnCount = rsmd.getColumnCount();
-
-        System.out.println("ResultSet의 모든 컬럼 이름:");
-        for (int i = 1; i <= columnCount; i++) {
-            System.out.println("Column " + i + ": " + rsmd.getColumnLabel(i));
-        }
-
         while (rs.next()) {
             iPosition++;
             String sTypeSchema = rs.getString("TYPE_SCHEM");

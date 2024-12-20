@@ -43,8 +43,6 @@ public class LobReader {
 
 
         try (InputStream inputStream = zip64File.openEntryInputStream(entry.getName())){
-            System.out.println("File found in archive: " + cPath);
-
             //bin 데이터를 읽기 위한 코드 추가
             byte[] data = inputStream.readAllBytes();
 
