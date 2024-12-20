@@ -357,4 +357,12 @@ public class GenericArchiveBrowserPresenter {
         ;
     }
 
+    //preview 화면에는 recordSearchButton 필요 없음
+    public void removeRecordSearchButton() {
+        if (recordSearchButton != null) {
+            recordSearchButton.setVisible(false);
+            recordSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
+        }
+    }
+
 }
