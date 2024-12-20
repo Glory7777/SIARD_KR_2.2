@@ -62,6 +62,7 @@ public class ArchiveHandler {
      */
     @SneakyThrows
     public Archive init() {
+        GlobalState.getInstance().clearFilePath();
         val tempFile = createTempFile();
         tempFile.delete(); // needs to be deleted, otherwise ArchiveImpl.java throws an error
 

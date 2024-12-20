@@ -21,45 +21,21 @@ public class LobReader {
 
     @SneakyThrows
     public static void openSiardForReadLob(File file) throws IOException {
-
-      //  System.out.println("Attempting to open New SIARD file: " + file.getAbsolutePath());
         zip64File = new Zip64File(file);
-      //  System.out.println("SIARD file opened successfully: " + file.getAbsolutePath());
-      //  System.out.println("SIARD file opened successfully: " + file.getAbsolutePath());
     }
 
     @SneakyThrows
     public static String readRecordByCPath(String filePath, String cPath) {
 
-//        System.out.println("Check previousFilePath : " + previousFilePath);
-//        System.out.println("Current filePath: " + filePath);
-//
-//        //콘솔 로그 포함 코드
-//        if (zip64File == null || !filePath.equals(previousFilePath)) {
-//            if (zip64File != null) {
-//                System.out.println("File paths are different. Closing current SIARD file.");
-//                close(); // 기존 파일 닫기
-//            } else {
-//                System.out.println("zip64File is null. Opening new SIARD file.");
-//            }
-//            openSiardForReadLob(new File(filePath)); // 새 파일 열기
-//            previousFilePath = filePath; // previousFilePath 업데이트
-//        } else {
-//            System.out.println("File paths are the same. Reusing current SIARD file.");
-//        }
-
-
-        //콘솔 로그 제외한 코드(최종 코드)
+        //저장된 filePath = previousFilePath 가 새로 전달받은 filePath와 다르면 파일 닫아주기
      if(zip64File == null || !filePath.equals(previousFilePath)) {
          if (zip64File != null) {
-             close(); // 기존 파일 닫기
+             close();
          }
      }
         openSiardForReadLob(new File(filePath)); // 새 파일 열기
-        previousFilePath = filePath; // 이전 filePath 업데이트
+        previousFilePath = filePath; // filePath 업데이트
 
-
-        // 엔트리 찾기 (이름이 일치하는 엔트리를 찾기 위해 반복)
         FileEntry entry = zip64File.getFileEntry(cPath);
         if (entry == null) {
             throw new IOException("File not found in SIARD archive: " + cPath);
@@ -72,15 +48,17 @@ public class LobReader {
             //bin 데이터를 읽기 위한 코드 추가
             byte[] data = inputStream.readAllBytes();
 
-            // 파일 확장자로 텍스트/바이너리 구분
-            if(cPath.toLowerCase().endsWith(".txt")){
+            if (cPath.toLowerCase().endsWith(".txt")) {
                 return new String(data, StandardCharsets.UTF_8);
             } else {
-                // 바이너리 파일: byte[]로 반환
-//                return DatatypeConverter.printHexBinary(data);
-                // Tika를 사용해 바이너리 데이터에서 텍스트 추출
-                Tika tika = new Tika();
-                return tika.parseToString(new ByteArrayInputStream(data));
+                // 바이너리 파일: Tika를 사용해 텍스트 추출 시도
+                try {
+                    Tika tika = new Tika();
+                    return tika.parseToString(new ByteArrayInputStream(data));
+                } catch (Exception tikaException) {
+                    // Tika 실패 시, DatatypeConverter로 16진수 문자열 반환
+                    return DatatypeConverter.printHexBinary(data);
+                }
             }
 
         } catch (IOException e) {
@@ -92,12 +70,10 @@ public class LobReader {
         if (zip64File != null) {
             try {
                 zip64File.close();
-               // System.out.println("SIARD archive closed successfully.");
             } catch (IOException e) {
                 System.err.println("Error closing SIARD archive: " + e.getMessage());
             } finally {
                 zip64File = null;
-              //  System.out.println("zip64File reset to null.");
             }
         }
     }

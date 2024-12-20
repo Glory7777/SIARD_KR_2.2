@@ -209,7 +209,6 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private RecordType getRecordType(XMLStreamReader xsr, final String searchTerm) throws IOException, XMLStreamException {
-        System.out.println("This is searchTerm in getRecordType : " + searchTerm);
         RecordType rt = null;
         String sNamespace = xsr.getNamespaceURI();
         rt = _OF_TABLE.createRecordType();
@@ -238,9 +237,7 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
-        System.out.println("This is searchTerm in containsSearchTerm : " + searchTerm);
         String filePath = GlobalState.getInstance().getFilePath();
-      //  System.out.println("Stored file path: " + filePath);
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
 
@@ -252,11 +249,10 @@ public class RecordDispenserImpl implements RecordDispenser {
 
                     String textContent;
                     if (cPath.isEmpty()) {
-                        // cPath가 비어있으면 elColumn의 텍스트 내용을 사용
+                        // cPath 비어있으면 elColumn 텍스트 내용을 사용
                         textContent = elColumn.getTextContent();
                     } else {
-                        // cPath가 비어있지 않으면 filePath와 cPath로 readRecord 호출
-                        System.out.println("This is cPath : " + cPath);
+                        // cPath 비어있지 않으면 filePath, cPath 로 readRecordByCPath 호출
                         textContent = LobReader.readRecordByCPath(filePath, cPath);
                     }
                     //  String textContent = elColumn.getTextContent();
@@ -285,7 +281,6 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     Record readRecordWithSearchTerm(XMLStreamReader xsr, final String searchTerm) throws IOException, XMLStreamException {
         Record record = null;
-      //  System.out.println("This is searchTerm in readRecordWithSearchTerm : " + searchTerm);
         if (xsr.isStartElement() && "row".equals(xsr.getLocalName())) {
             RecordType rt = getRecordType(xsr, searchTerm);
             record = RecordImpl.newInstance(this._table, getPosition(), rt);
@@ -312,7 +307,6 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     public Record getWithSearchTerm(final String searchTerm) throws IOException {
-      //  System.out.println("This is searchTerm in getWithSearchTerm : " + searchTerm);
         if (searchTerm == null || searchTerm.isBlank()) return get();
 
         Record record = null;
