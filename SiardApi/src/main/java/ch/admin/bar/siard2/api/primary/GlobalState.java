@@ -15,13 +15,11 @@ public class GlobalState {
     public void setFilePath(String filePath) {
         // 기존 filePath가 존재하면 초기화
         if (this.filePath != null) {
-            System.out.println("Clearing existing file path: " + this.filePath);
             this.filePath = null;
         }
 
         // 새로운 filePath 설정
         this.filePath = filePath;
-        System.out.println("File path set to: " + filePath);
         System.out.flush();
     }
 
@@ -29,7 +27,6 @@ public class GlobalState {
     // 다른데서 사용할 땐  GlobalState.getInstance().clearFilePath(); 호출
     public void clearFilePath() {
         this.filePath = null;
-        System.out.println("File path cleared.");
         System.out.flush();
     }
 
