@@ -237,19 +237,32 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
+        String filePath = GlobalState.getInstance().getFilePath();
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
-        for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
-            Node nodeChild = elRow.getChildNodes().item(i);
-            if (nodeChild.getNodeType() == 1) {
-                Element elColumn = (Element) nodeChild;
-                String textContent = elColumn.getTextContent();
-                if (searchUtil.matches(textContent)) {
-                    this.anyMatches = true;
-                    break;
+
+            for (int i = 0; i < elRow.getChildNodes().getLength(); i++) {
+                Node nodeChild = elRow.getChildNodes().item(i);
+                if (nodeChild.getNodeType() == 1) {
+                    Element elColumn = (Element) nodeChild;
+                    String cPath = elColumn.getAttribute("file");
+
+                    String textContent;
+                    if (cPath.isEmpty()) {
+                        // cPath 비어있으면 elColumn 텍스트 내용을 사용
+                        textContent = elColumn.getTextContent();
+                    } else {
+                        // cPath 비어있지 않으면 filePath, cPath 로 readRecordByCPath 호출
+                        textContent = LobReader.readRecordByCPath(filePath, cPath);
+                    }
+                    //  String textContent = elColumn.getTextContent();
+                    if (searchUtil.matches(textContent)) {
+                        this.anyMatches = true;
+                        break;
+                    }
                 }
             }
-        }
+
         return this.anyMatches;
     }
 

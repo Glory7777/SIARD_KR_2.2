@@ -4,40 +4,18 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @XmlType(name = "digestTypeType", namespace = "http://www.bar.admin.ch/xmlns/siard/2/metadata.xsd")
 @XmlEnum
 public enum DigestTypeType
 {
+  //MD5("MD5"),
+  @javax.xml.bind.annotation.XmlEnumValue("MD5")
   MD_5("MD5"),
-  
+
+  @javax.xml.bind.annotation.XmlEnumValue("SHA-1")
   SHA_1("SHA-1"),
-  
+
+  @javax.xml.bind.annotation.XmlEnumValue("SHA-256")
   SHA_256("SHA-256");
   
   private final String value;

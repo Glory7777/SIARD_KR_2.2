@@ -4,6 +4,7 @@ import ch.admin.bar.siard2.api.Archive;
 import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siard2.api.Table;
 import ch.admin.bar.siard2.api.primary.ArchiveImpl;
+import ch.admin.bar.siard2.api.primary.GlobalState;
 import ch.admin.bar.siardsuite.model.UserDefinedMetadata;
 import ch.admin.bar.siardsuite.model.facades.PreTypeFacade;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.ListAssembler;
@@ -37,10 +38,16 @@ public class ArchiveHandler {
     @SneakyThrows
     public Archive init(final File destination) {
         if (destination.exists()) {
+
+            //전역 상태값으로 넣은 filePath 때문인지 새 Siard 파일을 기존에 존재하던 파일로 덮어쓰려고 하면
+            // overwritten 되지 않고 존재하는 파일이라는 예외가 가끔 떠서,
+            //아카이브 추출할 때마다 명시적으로 globalState - filePath 초기화시켜주기
+            GlobalState.getInstance().clearFilePath();
+
             log.warn("Archive at location {} will be overwritten", destination.getAbsolutePath());
             destination.delete();
         }
-
+        GlobalState.getInstance().clearFilePath();
         final Archive archive = ArchiveImpl.newInstance();
         archive.create(destination);
 
@@ -55,6 +62,7 @@ public class ArchiveHandler {
      */
     @SneakyThrows
     public Archive init() {
+        GlobalState.getInstance().clearFilePath();
         val tempFile = createTempFile();
         tempFile.delete(); // needs to be deleted, otherwise ArchiveImpl.java throws an error
 
@@ -84,6 +92,10 @@ public class ArchiveHandler {
 
     @SneakyThrows
     public Archive open(final File file) {
+
+        // GlobalState에 file의 경로를 설정
+        GlobalState.getInstance().setFilePath(file.getAbsolutePath());
+
         val archive = ArchiveImpl.newInstance();
         archive.open(file);
 

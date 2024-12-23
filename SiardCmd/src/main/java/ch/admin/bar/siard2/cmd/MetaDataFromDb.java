@@ -40,6 +40,8 @@ public class MetaDataFromDb extends MetaDataBase {
     private int _iTables;
     private int _iTablesPercent;
 
+    String databaseProductName;
+
     private MetaDataFromDb(DatabaseMetaData dmd, MetaData md) throws SQLException {
         super(dmd, md);
         this._lMaxLobSize = -1L;
@@ -1049,6 +1051,26 @@ public class MetaDataFromDb extends MetaDataBase {
         }
     }
 
+
+    private String extractComment(String remarks) throws SQLException {
+        if (remarks == null) {
+            return null;
+        }
+        String databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
+        // CUBRID인 경우에만 COMMENT 추출
+        if ("cubrid".equalsIgnoreCase(databaseProductName)) {
+            Pattern pattern = Pattern.compile("COMMENT='(.*?)'");
+            Matcher matcher = pattern.matcher(remarks);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+            return null; // COMMENT가 없으면 null 반환
+        }
+        // CUBRID가 아닌 경우 원본 remarks 반환
+        return remarks;
+    }
+
+
     private void getTables(Map<String, List<String>> selectedSchemaTableMap) throws IOException, SQLException {
         String[] asTypes = {"TABLE"};
         if (this._bViewsAsTables) asTypes = new String[]{"TABLE", "VIEW"};
@@ -1069,7 +1091,6 @@ public class MetaDataFromDb extends MetaDataBase {
             if (!Arrays.asList(asTypes).contains(sTableType))
                 throw new IOException("Invalid table type found!");
             String sRemarks = rs.getString("REMARKS");
-
             // 특정 엔티티를 선택한 경우 선택되지 않은 엔티티는 메타 정보 조회 무시 1
             if (hasSelected) {
                 boolean selected = selectedSchemaTableMap.entrySet()
@@ -1091,7 +1112,12 @@ public class MetaDataFromDb extends MetaDataBase {
             MetaTable mt = table.getMetaTable();
             QualifiedId qiTable = new QualifiedId(null, sTableSchema, sTableName);
             System.out.println("  Table: " + qiTable.format());
-            if (sRemarks != null && sRemarks.length() > 0) mt.setDescription(sRemarks);
+
+          // if (sRemarks != null && sRemarks.length() > 0) mt.setDescription(sRemarks);
+            if (sRemarks != null && !sRemarks.isEmpty()) {
+                sRemarks = extractComment(sRemarks);
+                mt.setDescription(sRemarks);
+            }
 
             LOG.debug("Load metadata for table '{}.{}'", sTableSchema, sTableName);
 
@@ -1106,7 +1132,7 @@ public class MetaDataFromDb extends MetaDataBase {
     }
 
 
-    private void getTables() throws IOException, SQLException {
+    private void getTables() throws IOException, SQLException {//  databaseProductName = this._dmd.getConnection().getMetaData().getDatabaseProductName().toLowerCase();
         String[] asTypes = {"TABLE"};
         if (this._bViewsAsTables) asTypes = new String[]{"TABLE", "VIEW"};
         ResultSet rs = this._dmd.getTables(null, "%", "%", asTypes);
@@ -1134,7 +1160,11 @@ public class MetaDataFromDb extends MetaDataBase {
             MetaTable mt = table.getMetaTable();
             QualifiedId qiTable = new QualifiedId(null, sTableSchema, sTableName);
             System.out.println("  Table: " + qiTable.format());
-            if (sRemarks != null && sRemarks.length() > 0) mt.setDescription(sRemarks);
+            // if (sRemarks != null && sRemarks.length() > 0) mt.setDescription(sRemarks);
+            if (sRemarks != null && !sRemarks.isEmpty()) {
+                sRemarks = extractComment(sRemarks);
+                mt.setDescription(sRemarks);
+            }
 
             LOG.debug("Load metadata for table '{}.{}'", sTableSchema, sTableName);
 
@@ -1298,6 +1328,11 @@ public class MetaDataFromDb extends MetaDataBase {
 
     }
 
+
+//    private String getCubridCommentQuery() {
+//        String databaseUser = this._md.getArchive().getMetaData().getDatabaseUser();
+//
+//    }
 
     private String getTiberoQuery() {
         String databaseUser = this._md.getArchive().getMetaData().getDatabaseUser();
