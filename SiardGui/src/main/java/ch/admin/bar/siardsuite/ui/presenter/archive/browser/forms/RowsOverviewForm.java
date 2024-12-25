@@ -178,7 +178,6 @@ public class RowsOverviewForm {
             }
         }
 
-
         private boolean isSearchTermBlank() {
             return searchTerm == null || searchTerm.isBlank();
         }
