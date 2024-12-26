@@ -28,7 +28,6 @@ public class FileDownloadPathHolder {
         return targetFilePath.substring(0, targetFilePath.lastIndexOf("/") + 1);
     }
 
-    // 공통 경로를 제외한 상대 경로 계산
     public String getRemainingSourcePath() {
         String[] sourceParts = sourceFilePath.split("/");
         String[] targetParts = targetFilePath.split("/");
