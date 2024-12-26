@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class SchemaMapping extends Mapping {
   private String _sMappedSchemaName = null;
-  public String getMappedSchemaName() { return this._sMappedSchemaName; } public void setMappedSchemaName(String sMappedSchemaName) {
+  public String getMappedSchemaName() { return this._sMappedSchemaName; }
+  public void setMappedSchemaName(String sMappedSchemaName) {
     this._sMappedSchemaName = sMappedSchemaName;
   } private final Map<String, TableMapping> _mapTables = new HashMap<>();
   public TableMapping getTableMapping(String sTableName) { return this._mapTables.get(sTableName); } String getMappedTableName(String sTableName) {

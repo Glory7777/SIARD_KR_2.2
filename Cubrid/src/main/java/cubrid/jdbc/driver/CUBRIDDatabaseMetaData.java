@@ -862,7 +862,7 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 		Object[] value = new Object[5];
 		value[0] = null;
-		value[1] = u_con.dbname;
+		value[1] = u_con.getCUBRIDConnection().user;
 		if (!has_remarks) {
 			value[4] = null;
 		}

@@ -261,17 +261,21 @@ public class MetaDataToDb extends MetaDataBase {
     private Set<QualifiedId> getTables() throws SQLException {
         Set<QualifiedId> setTables = new HashSet<>();
         ResultSet rs = this._dmd.getTables(null, "%", "%", new String[]{"TABLE"});
+
         while (rs.next()) {
 
             String sCatalog = rs.getString("TABLE_CAT");
             String sSchema = rs.getString("TABLE_SCHEM");
             String sTable = rs.getString("TABLE_NAME");
+
+
             QualifiedId qiTable = new QualifiedId(sCatalog, sSchema, sTable);
             setTables.add(qiTable);
         }
         rs.close();
         return setTables;
     }
+
 
 
     private void createTable(MetaTable mt, SchemaMapping sm) throws IOException, SQLException {
@@ -488,6 +492,7 @@ public class MetaDataToDb extends MetaDataBase {
 
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
+            LOG.info("Creating schema: {}", sm.getMappedSchemaName());
             createSchema(ms, sm);
         }
         for (iSchema = 0; iSchema < this._md.getMetaSchemas() && !cancelRequested(); iSchema++) {
@@ -495,6 +500,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
+                LOG.info("Dropping tables in schema: {}", sm.getMappedSchemaName());
                 dropTables(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -506,6 +512,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
+                LOG.info("Dropping types in schema: {}", sm.getMappedSchemaName());
                 dropTypes(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -517,6 +524,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
+                LOG.info("Creating types in schema: {}", sm.getMappedSchemaName());
                 createTypes(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -528,6 +536,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
+                LOG.info("Creating tables in schema: {}", sm.getMappedSchemaName());
                 createTables(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms

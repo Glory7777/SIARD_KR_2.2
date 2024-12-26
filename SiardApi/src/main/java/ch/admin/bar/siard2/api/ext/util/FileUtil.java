@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.Objects;
 
 public class FileUtil {
 
@@ -33,20 +34,20 @@ public class FileUtil {
         }
 
         makeDirectoryIfNotExists();
-
         String remainingPath = fileDownloadPathHolder.getRemainingSourcePath();
+        remainingPath = remainingPath.replace("/", "\\");
         System.out.println("targetFile Path: " + targetFilePath);
+        System.out.println("sourceFile Path: " + sourceFilePath);
         System.out.println("Remaining Path: " + remainingPath);
-
-        makeFullDirectoryPath(targetFilePath, remainingPath);
 
         // 최종 파일 저장 경로
         String finalTargetPath = targetFilePath;
-        if (remainingPath != null && !remainingPath.isEmpty()) {
-            remainingPath = remainingPath.replace("/", "\\");
+        if (!remainingPath.isEmpty()) {
             finalTargetPath += "\\" + remainingPath;
-            System.out.println("targetFile Path: " + finalTargetPath);
+            System.out.println("FinalTargetFile Path: " + finalTargetPath);
         }
+
+        makeFullDirectoryPath(targetFilePath, remainingPath);
 
         try (FileInputStream fis = new FileInputStream(sourceFile);
              FileOutputStream fos = new FileOutputStream(finalTargetPath + File.separator + sourceFile.getName());
@@ -69,6 +70,7 @@ public class FileUtil {
         }
     }
 
+
     private void makeFullDirectoryPath(String targetFilePath, String remainingPath) {
         // remainingPath가 null이거나 비어있으면 아무 작업도 하지 않음
         if (remainingPath == null || remainingPath.isEmpty()) {
@@ -81,6 +83,7 @@ public class FileUtil {
         // remainingPath에서 슬래시를 통일하고 경로 결합
         remainingPath = remainingPath.replace("/", "\\");
         String fullPath = targetFilePath + remainingPath;
+        System.out.println("Directory created: " + fullPath);
         // 최종 경로의 디렉토리 객체 생성
         File directory = new File(fullPath);
         // 디렉토리 존재 여부 확인 후 생성
