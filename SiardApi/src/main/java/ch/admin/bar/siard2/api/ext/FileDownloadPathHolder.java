@@ -28,29 +28,19 @@ public class FileDownloadPathHolder {
         return targetFilePath.substring(0, targetFilePath.lastIndexOf("/") + 1);
     }
 
-    // 추가된 메서드
+    // 공통 경로를 제외한 상대 경로 계산
     public String getRemainingSourcePath() {
-        // 슬래시로 경로 나누기
         String[] sourceParts = sourceFilePath.split("/");
         String[] targetParts = targetFilePath.split("/");
         // 공통 부분 찾기
-        int i = 0;
-        while (i < sourceParts.length && i < targetParts.length && sourceParts[i].equals(targetParts[i])) {
-            i++;
+        int commonLength = 0;
+        while (commonLength < sourceParts.length && commonLength < targetParts.length && sourceParts[commonLength].equals(targetParts[commonLength])) {
+            commonLength++;
         }
         // 공통 부분 이후의 경로 생성
-        String[] remainingParts = Arrays.copyOfRange(sourceParts, i, sourceParts.length);
-        // 마지막 요소(파일명) 제거
-        if (remainingParts.length > 1) {
-            remainingParts = Arrays.copyOf(remainingParts, remainingParts.length - 1);
-        } else {
-            return ""; // 파일명만 남은 경우 빈 문자열 반환
-        }
-        // 결과 출력
-        String remainingPath;
-        remainingPath = String.join("/", remainingParts);
+        String[] remainingParts = Arrays.copyOfRange(sourceParts, commonLength, sourceParts.length - 1);
 
-        return remainingPath;
+        return String.join("/", remainingParts);
     }
 
 }

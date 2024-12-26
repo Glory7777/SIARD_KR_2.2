@@ -36,18 +36,14 @@ public class FileUtil {
         makeDirectoryIfNotExists();
         String remainingPath = fileDownloadPathHolder.getRemainingSourcePath();
         remainingPath = remainingPath.replace("/", "\\");
-        System.out.println("targetFile Path: " + targetFilePath);
-        System.out.println("sourceFile Path: " + sourceFilePath);
-        System.out.println("Remaining Path: " + remainingPath);
 
         // 최종 파일 저장 경로
         String finalTargetPath = targetFilePath;
         if (!remainingPath.isEmpty()) {
             finalTargetPath += "\\" + remainingPath;
-            System.out.println("FinalTargetFile Path: " + finalTargetPath);
         }
 
-        makeFullDirectoryPath(targetFilePath, remainingPath);
+        makeFullDirectoryPath(finalTargetPath, remainingPath);
 
         try (FileInputStream fis = new FileInputStream(sourceFile);
              FileOutputStream fos = new FileOutputStream(finalTargetPath + File.separator + sourceFile.getName());
@@ -71,30 +67,21 @@ public class FileUtil {
     }
 
 
-    private void makeFullDirectoryPath(String targetFilePath, String remainingPath) {
-        // remainingPath가 null이거나 비어있으면 아무 작업도 하지 않음
+    private void makeFullDirectoryPath(String finalTargetPath, String remainingPath) {
+        // remainingPath가 null이거나 비어있으면 똑같은 경로라는 뜻이므로 아무 작업도 하지 않음
         if (remainingPath == null || remainingPath.isEmpty()) {
             return;
         }
-        // targetFilePath가 슬래시로 끝나지 않으면 추가
-        if (!targetFilePath.endsWith("\\")) {
-            targetFilePath += "\\";
-        }
-        // remainingPath에서 슬래시를 통일하고 경로 결합
-        remainingPath = remainingPath.replace("/", "\\");
-        String fullPath = targetFilePath + remainingPath;
-        System.out.println("Directory created: " + fullPath);
-        // 최종 경로의 디렉토리 객체 생성
-        File directory = new File(fullPath);
+        File directory = new File(finalTargetPath);
         // 디렉토리 존재 여부 확인 후 생성
         if (!directory.exists()) {
             if (directory.mkdirs()) {
-                System.out.println("Directory created: " + fullPath);
+                System.out.println("Directory created: " + finalTargetPath);
             } else {
-                System.err.println("Failed to create directory: " + fullPath);
+                System.err.println("Failed to create directory: " + finalTargetPath);
             }
         } else {
-            System.out.println("Directory already exists: " + fullPath);
+            System.out.println("Directory already exists: " + finalTargetPath);
         }
     }
 

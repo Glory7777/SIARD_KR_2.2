@@ -862,7 +862,9 @@ public class CUBRIDDatabaseMetaData implements DatabaseMetaData {
 
 		Object[] value = new Object[5];
 		value[0] = null;
-		value[1] = u_con.getCUBRIDConnection().user;
+		//value[1] = u_con.dbname; -> 이러면 어느 순간 스키마명이 db명으로 맵핑되어 버려서 db명을 스키마로 인지하여 그런 user 없다는 오류가 떠서 필요시 아래처럼 수정
+		//value[1] = u_con.getCUBRIDConnection().user;
+		value[1] = u_con.dbname;
 		if (!has_remarks) {
 			value[4] = null;
 		}
