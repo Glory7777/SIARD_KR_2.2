@@ -15,7 +15,8 @@ public class GlobalState {
     public void setFilePath(String filePath) {
         // 기존 filePath가 존재하면 초기화
         if (this.filePath != null) {
-            this.filePath = null;
+           this.filePath = null;
+
         }
 
         // 새로운 filePath 설정

@@ -3,6 +3,7 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.Table;
+import ch.admin.bar.siard2.api.primary.TableImpl;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.model.database.DatabaseColumn;
@@ -137,6 +138,9 @@ public class RowsOverviewForm {
         @SneakyThrows
         @Override
         public List<RecordWrapper> load(int startIndex, int nrOfItems) {
+
+            resetState();
+
             log.info("data load ::");
             val recordDispenser = table.openRecords();
             recordDispenser.skip(startIndex);
@@ -157,6 +161,21 @@ public class RowsOverviewForm {
             }
 
             return collected;
+        }
+
+        private void resetState() {
+            try {
+                // TableImpl 객체의 matchedRows 값을 0으로 설정
+                if (table instanceof TableImpl tableImpl) {
+                    tableImpl.setMatchedRows(0); // matchedRows 초기화
+                    log.info("TableImpl.matchedRows has been reset to 0.");
+                } else {
+                    log.warn("Table is not an instance of TableImpl. Reset skipped.");
+                }
+            } catch (Exception e) {
+                log.error("Failed to reset matchedRows in TableImpl.", e);
+                throw new RuntimeException("Error resetting matchedRows", e);
+            }
         }
 
         private boolean isSearchTermBlank() {
