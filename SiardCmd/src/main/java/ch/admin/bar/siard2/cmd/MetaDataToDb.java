@@ -492,7 +492,6 @@ public class MetaDataToDb extends MetaDataBase {
 
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
-            LOG.info("Creating schema: {}", sm.getMappedSchemaName());
             createSchema(ms, sm);
         }
         for (iSchema = 0; iSchema < this._md.getMetaSchemas() && !cancelRequested(); iSchema++) {
@@ -500,7 +499,6 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
-                LOG.info("Dropping tables in schema: {}", sm.getMappedSchemaName());
                 dropTables(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -512,7 +510,6 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
-                LOG.info("Dropping types in schema: {}", sm.getMappedSchemaName());
                 dropTypes(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -524,7 +521,6 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
-                LOG.info("Creating types in schema: {}", sm.getMappedSchemaName());
                 createTypes(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
@@ -536,8 +532,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
-                LOG.info("Creating tables in schema: {}", sm.getMappedSchemaName());
-                createTables(ms, sm);
+               createTables(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
                         .getName() + "\" to existing schema.");
@@ -577,7 +572,6 @@ public class MetaDataToDb extends MetaDataBase {
                 getPatternedName(tm.getMappedTypeName()),
                 "%");
         while (bMatches && rs.next()) {
-
             iPosition++;
             String sTypeSchema = rs.getString("TYPE_SCHEM");
             if (!sTypeSchema.equals(this._am.getMappedSchemaName(mt.getParentMetaSchema().getName())))
@@ -586,7 +580,6 @@ public class MetaDataToDb extends MetaDataBase {
             if (!sTypeName.equals(sm.getMappedTypeName(mt.getName())))
                 throw new IOException("Attribute with unexpected type name found");
             String sAttributeName = rs.getString("ATTR_NAME");
-
 
             MetaAttribute ma = null;
             for (int iAttribute = 0; ma == null && iAttribute < mt.getMetaAttributes(); iAttribute++) {
@@ -601,13 +594,11 @@ public class MetaDataToDb extends MetaDataBase {
                 String sAttrTypeName = rs.getString("ATTR_TYPE_NAME");
                 if (iDataType != 2001 && iDataType != 2003 && iDataType != 2002) {
 
-
                     if (iDataType != ma.getPreType())
                         bMatches = false;
                     continue;
                 }
                 if (iDataType == 2003) {
-
 
                     Matcher m = MetaDataFromDb._patARRAY_CONSTRUCTOR.matcher(sTypeName);
                     if (m.matches()) {
@@ -620,7 +611,6 @@ public class MetaDataToDb extends MetaDataBase {
                     }
                     throw new SQLException("Invalid ARRAY constructor for attribute " + ma.getName() + " of type " + mt.getName() + "!");
                 }
-
 
                 try {
                     QualifiedId qiAttrType = new QualifiedId(sAttrTypeName);
