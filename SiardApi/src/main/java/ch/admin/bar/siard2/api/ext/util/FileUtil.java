@@ -43,7 +43,7 @@ public class FileUtil {
             finalTargetPath += "\\" + remainingPath;
         }
 
-        makeFullDirectoryPath(finalTargetPath, remainingPath);
+        makeFullDirectoryPath(finalTargetPath);
 
         try (FileInputStream fis = new FileInputStream(sourceFile);
              FileOutputStream fos = new FileOutputStream(finalTargetPath + File.separator + sourceFile.getName());
@@ -67,21 +67,12 @@ public class FileUtil {
     }
 
 
-    private void makeFullDirectoryPath(String finalTargetPath, String remainingPath) {
-        // remainingPath가 null이거나 비어있으면 똑같은 경로라는 뜻이므로 아무 작업도 하지 않음
-        if (remainingPath == null || remainingPath.isEmpty()) {
-            return;
-        }
-        File directory = new File(finalTargetPath);
-        // 디렉토리 존재 여부 확인 후 생성
-        if (!directory.exists()) {
-            if (directory.mkdirs()) {
+    private void makeFullDirectoryPath(String finalTargetPath) {
+        File file = new File(finalTargetPath);
+        if (!file.exists()) {  // 디렉토리 존재 여부 확인 후 생성
+            if (file.mkdirs()) {
                 System.out.println("Directory created: " + finalTargetPath);
-            } else {
-                System.err.println("Failed to create directory: " + finalTargetPath);
             }
-        } else {
-            System.out.println("Directory already exists: " + finalTargetPath);
         }
     }
 
