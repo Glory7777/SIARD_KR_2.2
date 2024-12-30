@@ -469,7 +469,9 @@ public class TreeBuilder {
 
 
 
-    private TreeItem<TreeAttributeWrapper> createItemForViews(DatabaseSchema schema, boolean shouldUseCustom) {
+
+    private TreeItem<TreeAttributeWrapper> createItemForViews(DatabaseSchema schema, boolean isCustom) {
+
         val views = schema.getViews();
         val item = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(VIEWS_ELEMENT_NAME, views.size()))
@@ -481,7 +483,8 @@ public class TreeBuilder {
                 .build());
 
         val viewItems = views.stream()
-                .map(view -> createItemForView(view, shouldUseCustom))
+                .map(view -> createItemForView(view, isCustom))
+
                 .collect(Collectors.toList());
 
         item.getChildren().addAll(viewItems);
@@ -489,7 +492,9 @@ public class TreeBuilder {
         return item;
     }
 
-    private TreeItem<TreeAttributeWrapper> createItemForView(DatabaseView view, boolean shouldUseCustom) {
+
+    private TreeItem<TreeAttributeWrapper> createItemForView(DatabaseView view, boolean isCustom) {
+
         val item = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(view.name()))
                 .viewTitle(DisplayableText.of(VIEW_VIEW_TITLE))
@@ -500,7 +505,9 @@ public class TreeBuilder {
                 .build());
 
         item.getChildren().add(
-                shouldUseCustom
+
+                isCustom
+
                         ?  customCreateItemForColumns(view) // 커스텀 동작
                         :  createItemForColumns(view) // 일반 동작
         );

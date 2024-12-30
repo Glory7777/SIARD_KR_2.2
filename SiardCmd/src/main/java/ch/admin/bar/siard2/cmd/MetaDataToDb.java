@@ -261,17 +261,21 @@ public class MetaDataToDb extends MetaDataBase {
     private Set<QualifiedId> getTables() throws SQLException {
         Set<QualifiedId> setTables = new HashSet<>();
         ResultSet rs = this._dmd.getTables(null, "%", "%", new String[]{"TABLE"});
+
         while (rs.next()) {
 
             String sCatalog = rs.getString("TABLE_CAT");
             String sSchema = rs.getString("TABLE_SCHEM");
             String sTable = rs.getString("TABLE_NAME");
+
+
             QualifiedId qiTable = new QualifiedId(sCatalog, sSchema, sTable);
             setTables.add(qiTable);
         }
         rs.close();
         return setTables;
     }
+
 
 
     private void createTable(MetaTable mt, SchemaMapping sm) throws IOException, SQLException {
@@ -528,7 +532,7 @@ public class MetaDataToDb extends MetaDataBase {
             MetaSchema ms = this._md.getMetaSchema(iSchema);
             SchemaMapping sm = this._am.getSchemaMapping(ms.getName());
             if (existsSchema(sm.getMappedSchemaName())) {
-                createTables(ms, sm);
+               createTables(ms, sm);
             } else {
                 throw new SQLException("Schema \"" + sm.getMappedSchemaName() + "\" could not be created! Map \"" + ms
                         .getName() + "\" to existing schema.");
@@ -568,7 +572,6 @@ public class MetaDataToDb extends MetaDataBase {
                 getPatternedName(tm.getMappedTypeName()),
                 "%");
         while (bMatches && rs.next()) {
-
             iPosition++;
             String sTypeSchema = rs.getString("TYPE_SCHEM");
             if (!sTypeSchema.equals(this._am.getMappedSchemaName(mt.getParentMetaSchema().getName())))
@@ -577,7 +580,6 @@ public class MetaDataToDb extends MetaDataBase {
             if (!sTypeName.equals(sm.getMappedTypeName(mt.getName())))
                 throw new IOException("Attribute with unexpected type name found");
             String sAttributeName = rs.getString("ATTR_NAME");
-
 
             MetaAttribute ma = null;
             for (int iAttribute = 0; ma == null && iAttribute < mt.getMetaAttributes(); iAttribute++) {
@@ -592,13 +594,11 @@ public class MetaDataToDb extends MetaDataBase {
                 String sAttrTypeName = rs.getString("ATTR_TYPE_NAME");
                 if (iDataType != 2001 && iDataType != 2003 && iDataType != 2002) {
 
-
                     if (iDataType != ma.getPreType())
                         bMatches = false;
                     continue;
                 }
                 if (iDataType == 2003) {
-
 
                     Matcher m = MetaDataFromDb._patARRAY_CONSTRUCTOR.matcher(sTypeName);
                     if (m.matches()) {
@@ -611,7 +611,6 @@ public class MetaDataToDb extends MetaDataBase {
                     }
                     throw new SQLException("Invalid ARRAY constructor for attribute " + ma.getName() + " of type " + mt.getName() + "!");
                 }
-
 
                 try {
                     QualifiedId qiAttrType = new QualifiedId(sAttrTypeName);
