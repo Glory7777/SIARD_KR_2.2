@@ -231,7 +231,7 @@ public class GenericArchiveBrowserPresenter {
                 .columnSelectable(true)
                 .searchTerm(searchTerm)
                 .build();
-        TreeItem<TreeAttributeWrapper> rootItem = newTreeBuilder.createRootItem();
+        TreeItem<TreeAttributeWrapper> rootItem = newTreeBuilder.customCreateRootItem();
         treeView.setRoot(rootItem);
     }
 
@@ -355,6 +355,22 @@ public class GenericArchiveBrowserPresenter {
         COLUMN_SFTP_SELECTION,
         OPEN_ARCHIVE,
         ;
+    }
+
+    //preview 화면에는 recordSearchButton 필요 없음
+    public void removeRecordSearchButton() {
+        if (recordSearchButton != null) {
+            recordSearchButton.setVisible(false);
+            recordSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
+        }
+    }
+
+    //Open 화면에는 테이블 사이즈 크기 필요 없음 - 어차피 0Byte 로 나오고 있음
+    public void removeTableSize() {
+        if (totalSizeLabel != null) {
+            totalSizeLabel.setVisible(false);
+            totalSizeLabel.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
+        }
     }
 
 }

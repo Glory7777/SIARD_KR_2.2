@@ -71,12 +71,15 @@ public class OpenArchiveBrowser {
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 buttonsBox,
-                archiveBrowserView.createRootItem(),
+                archiveBrowserView.customCreateRootItem(),
                 archiveBrowserView,
                 ArchiveStep.OPEN_ARCHIVE);
     }
 
     public Node getView() {
+        //폼 가장자리의 Schema Total Size: 0 비활성화하기 - 그냥 SIARD File 이라고 출력
+        GenericArchiveBrowserPresenter presenter = loadedView.getController();
+        presenter.removeTableSize();
         return loadedView.getNode();
     }
 

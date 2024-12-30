@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum CategoryType
 {
   DISTINCT("distinct"),
-  
+
+  @javax.xml.bind.annotation.XmlEnumValue("udt")
   UDT("udt");
   
   private final String value;

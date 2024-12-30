@@ -1,5 +1,7 @@
 package ch.admin.bar.siard2.api.ext;
 
+import java.util.Arrays;
+
 public class FileDownloadPathHolder {
 
     private final String sourceFilePath;
@@ -24,6 +26,20 @@ public class FileDownloadPathHolder {
 
     public String getTargetPathToMakeDirectory () {
         return targetFilePath.substring(0, targetFilePath.lastIndexOf("/") + 1);
+    }
+
+    public String getRemainingSourcePath() {
+        String[] sourceParts = sourceFilePath.split("/");
+        String[] targetParts = targetFilePath.split("/");
+        // 공통 부분 찾기
+        int commonLength = 0;
+        while (commonLength < sourceParts.length && commonLength < targetParts.length && sourceParts[commonLength].equals(targetParts[commonLength])) {
+            commonLength++;
+        }
+        // 공통 부분 이후의 경로 생성
+        String[] remainingParts = Arrays.copyOfRange(sourceParts, commonLength, sourceParts.length - 1);
+
+        return String.join("/", remainingParts);
     }
 
 }
