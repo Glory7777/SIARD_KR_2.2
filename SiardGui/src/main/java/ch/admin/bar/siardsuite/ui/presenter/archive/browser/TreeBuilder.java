@@ -21,10 +21,7 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKeyArg;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import lombok.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,6 +76,7 @@ public class TreeBuilder {
     private final boolean readonly;
     private final boolean columnSelectable;
     private final String searchTerm;
+
 
     //  1.  RootItem
     public TreeItem<TreeAttributeWrapper> createRootItem() {
@@ -136,6 +134,11 @@ public class TreeBuilder {
     }
 
 
+
+    //  createRootItemWithSelectedSchemas 랑 createItemForSchemasAndCountTableSize 는
+    //  columnFileDownLoadBrowser 을 위한 메서드, 본래
+    //  createRootItemWithSelectedSchemas - createItemForSchemas 였으나 formatted[]Size 값의 변경이 있으므로
+    // 그냥 복사해서 메서드명 변경함
     /**2. createRootItemWithSelectedSchemas
      * create root item with schemas and entities chosen in the previous step
      *
@@ -155,10 +158,44 @@ public class TreeBuilder {
                 new ImageView(Icon.DB.toResizedImageOfHeight(16)));
 
         rootItem.setExpanded(true);
-        rootItem.getChildren().add(createItemForSchemas());
+        rootItem.getChildren().add(createItemForSchemasAndCountTableSize());
 
         return rootItem;
     }
+
+
+    private TreeItem<TreeAttributeWrapper> createItemForSchemasAndCountTableSize() {
+        Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
+        val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
+
+           long countTableSize = CustomCheckBoxTreeCell.selectedTotalSize;
+           System.out.println("countTableSize   :   " + countTableSize);
+           String formattedCountTableSize = ByteFormatter.convertToBestFitUnit(countTableSize);
+
+        long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
+
+        val schemasItem = new TreeItem<>(
+                TreeAttributeWrapper.builder()
+                        .name(DisplayableText.of(SCHEMAS_ELEMENT_NAME, schemas.size()))
+                        .viewTitle(DisplayableText.of(SCHEMAS_VIEW_TITLE))
+                        .renderableForm(MetadataDetailsForm.create(siardArchive).toBuilder()
+                                .readOnlyForm(readonly)
+                                .build())
+                        .databaseAttribute(SCHEMA_TITLE)
+                        .shouldPropagate(true)
+                        .shouldHaveCheckBox(true)
+                        .size(schemaSize)
+                        .formattedSize(formattedCountTableSize)
+                        .build());
+
+        val schemaItems = schemas.stream()
+                .map(this::createItemsForSchema)
+                .collect(Collectors.toList());
+        schemasItem.getChildren().setAll(schemaItems);
+
+        return schemasItem;
+    }
+
 
 
     //4. createItemForPrivileges
@@ -258,6 +295,7 @@ public class TreeBuilder {
             schemaItem.getChildren().add(createItemForTypes(schema));
         }
 
+
         if (!schema.getTables().isEmpty()) {
             schemaItem.getChildren().add(createItemForTables(schema));
         }
@@ -269,6 +307,7 @@ public class TreeBuilder {
         if (!schema.getViews().isEmpty()) {
             schemaItem.getChildren().add(createItemForViews(schema));
         }
+
 
         return schemaItem;
     }
@@ -507,7 +546,6 @@ public class TreeBuilder {
         item.getChildren().add(
 
                 isCustom
-
                         ?  customCreateItemForColumns(view) // 커스텀 동작
                         :  createItemForColumns(view) // 일반 동작
         );
@@ -519,6 +557,7 @@ public class TreeBuilder {
     private TreeItem<TreeAttributeWrapper> createItemForViews(DatabaseSchema schema) {
         return createItemForViews(schema, false);
     }
+
     // 커스텀 메서드
     private TreeItem<TreeAttributeWrapper> customCreateItemForViews(DatabaseSchema schema) {
         return createItemForViews(schema, true);

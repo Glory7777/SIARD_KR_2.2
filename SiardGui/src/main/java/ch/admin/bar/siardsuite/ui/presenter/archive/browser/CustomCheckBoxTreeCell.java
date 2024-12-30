@@ -10,6 +10,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.util.Callback;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
 
     private final GenericArchiveBrowserPresenter genericArchiveBrowserPresenter;
     private final TreeView<TreeAttributeWrapper> treeView;
+
+     public static long selectedTotalSize = 0;
 
     private CustomCheckBoxTreeCell(Callback<TreeItem<TreeAttributeWrapper>, ObservableValue<Boolean>> callback,
                                    GenericArchiveBrowserPresenter genericArchiveBrowserPresenter,
@@ -127,6 +130,8 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
     private void updateTotalSelectedSize() {
         long totalSize = calculateTotalSize(getTreeView().getRoot());
         updateTotalSizeLabel(totalSize);
+        selectedTotalSize = totalSize;
+        System.out.println("선택된 테이블별 사이즈 크기 :  "  + selectedTotalSize);
     }
 
     private long calculateTotalSize(TreeItem<TreeAttributeWrapper> root) {
