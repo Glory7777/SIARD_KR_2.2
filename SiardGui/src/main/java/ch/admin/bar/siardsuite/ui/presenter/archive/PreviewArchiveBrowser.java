@@ -38,10 +38,11 @@ public class PreviewArchiveBrowser {
     private LoadedView<GenericArchiveBrowserPresenter> loadedView;
 
     public Node getView() {
-        //Preview 에서는 search in record 버튼을 비활성화하기 위해
-        // GenericArchiveBrowserPresenter 에서 removeRecordSearchButton 호출
+        //Preview 에서는 reset, Search in records 버튼을 비활성화하기 위해
+        // GenericArchiveBrowserPresenter 에서 removeRecordSearchButton, removeResetButton 호출
         GenericArchiveBrowserPresenter presenter = loadedView.getController();
         presenter.removeRecordSearchButton();
+        presenter.removeResetButton();
         return loadedView.getNode();
     }
 
