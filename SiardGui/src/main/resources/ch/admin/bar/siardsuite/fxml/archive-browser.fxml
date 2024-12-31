@@ -154,6 +154,14 @@
                                             </styleClass>
                                         </Label>
                                 </VBox>
+                                <MFXButton fx:id="resetSearchButton"
+                                           alignment="CENTER_RIGHT"
+                                           rippleAnimateBackground="false">
+                                    <styleClass>
+<!--                                        <String fx:value="search-icon"/>-->
+                                        <String fx:value="icon-text-button"/>
+                                    </styleClass>
+                                </MFXButton>
                                 <TwoStatesButton fx:id="tableSearchButton"
                                                  alignment="CENTER_RIGHT"
                                                  rippleAnimateBackground="false">
