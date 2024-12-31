@@ -16,6 +16,7 @@ import ch.admin.bar.siardsuite.service.database.model.DbmsConnectionData;
 import ch.admin.bar.siardsuite.ui.View;
 import ch.admin.bar.siardsuite.ui.component.ButtonBox;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.ColumnFileDownloadPresenter;
+import ch.admin.bar.siardsuite.ui.presenter.archive.browser.GenericArchiveBrowserPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.TreeBuilder;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
@@ -39,7 +40,9 @@ public class ColumnFileDownLoadPresenter {
     private LoadedView<ColumnFileDownloadPresenter> loadedView;
 
     public Node getView() {
-        return loadedView.getNode();
+        //폼 가장자리의 Schema Total Size: 0 비활성화하기 - 그냥 SIARD File 이라고 출력
+        ColumnFileDownloadPresenter presenter = loadedView.getController();
+        presenter.removeTableSize();return loadedView.getNode();
     }
 
     public void init(
