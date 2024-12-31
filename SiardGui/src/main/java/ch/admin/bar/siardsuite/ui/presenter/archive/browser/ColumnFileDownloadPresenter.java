@@ -244,6 +244,14 @@ public class ColumnFileDownloadPresenter {
         this.errorMessageLabel.setManaged(false);
     }
 
+    //테이블 사이즈 크기 안보이게
+    public void removeTableSize() {
+        if (totalSizeLabel != null) {
+            totalSizeLabel.setVisible(false);
+            totalSizeLabel.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
+        }
+    }
+
     public static LoadedView<ColumnFileDownloadPresenter> load(
             final Dialogs dialogs,
             final ErrorHandler errorHandler,
