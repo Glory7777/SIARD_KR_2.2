@@ -377,6 +377,7 @@ public class GenericArchiveBrowserPresenter {
             recordSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
     }
+
     //preview 화면에는 recordSearchButton 필요 없음
     public void removeResetButton() {
         if (resetSearchButton != null) {
@@ -384,6 +385,7 @@ public class GenericArchiveBrowserPresenter {
             resetSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
     }
+
     //Open 화면에는 테이블 사이즈 크기 필요 없음 - 어차피 0Byte 로 나오고 있음
     public void removeTableSize() {
         if (totalSizeLabel != null) {

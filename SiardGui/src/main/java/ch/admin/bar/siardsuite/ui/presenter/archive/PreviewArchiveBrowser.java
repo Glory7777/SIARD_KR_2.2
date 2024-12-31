@@ -43,6 +43,7 @@ public class PreviewArchiveBrowser {
         GenericArchiveBrowserPresenter presenter = loadedView.getController();
         presenter.removeRecordSearchButton();
         presenter.removeResetButton();
+
         return loadedView.getNode();
     }
 
