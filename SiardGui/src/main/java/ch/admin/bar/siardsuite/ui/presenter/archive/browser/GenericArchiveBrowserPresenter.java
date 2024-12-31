@@ -312,36 +312,6 @@ public class GenericArchiveBrowserPresenter {
     }
 
 
-    private void refreshContentPaneHoweverNull(TreeAttributeWrapper wrapper) {
-        if (wrapper == null) {
-            hideSaveAndDropButtons();
-            hideErrorMessage();
-
-            final RenderableForm form = wrapper.getRenderableForm();
-            currentFormRenderer = FormRenderer.builder()
-                    .renderableForm(form)
-                    .hasChanged(hasChanged)
-                    .errorHandler(errorHandler)
-                    .build();
-
-            this.titleTableContainer.textProperty().bind(wrapper.getViewTitle().bindable());
-            this.tableSearchButton.setVisible(currentFormRenderer.hasSearchableData());
-
-            val vbox = currentFormRenderer.getRendered();
-            AnchorPane.setLeftAnchor(vbox, 0D);
-            AnchorPane.setRightAnchor(vbox, 0D);
-            VBox.setVgrow(vbox, Priority.ALWAYS);
-            vbox.setPadding(new Insets(25));
-
-            this.contentPane.getChildren().setAll(vbox);
-        } else {
-            // wrapper가 null이 아닐 경우에는 아무 동작도 하지 않음.
-            System.out.println("Wrapper is not null. Skipping refresh.");
-        }
-    }
-
-
-
     private void showSaveAndDropButtons() {
         this.saveChangesButton.setVisible(true);
         this.saveChangesButton.setManaged(true);
@@ -407,7 +377,6 @@ public class GenericArchiveBrowserPresenter {
             recordSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
     }
-
     //preview 화면에는 recordSearchButton 필요 없음
     public void removeResetButton() {
         if (resetSearchButton != null) {
@@ -415,8 +384,6 @@ public class GenericArchiveBrowserPresenter {
             resetSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
     }
-
-
     //Open 화면에는 테이블 사이즈 크기 필요 없음 - 어차피 0Byte 로 나오고 있음
     public void removeTableSize() {
         if (totalSizeLabel != null) {

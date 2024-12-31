@@ -167,7 +167,6 @@ public class TreeBuilder {
         val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
 
            long countTableSize = CustomCheckBoxTreeCell.selectedTotalSize;
-           System.out.println("countTableSize   :   " + countTableSize);
            String formattedCountTableSize = ByteFormatter.convertToBestFitUnit(countTableSize);
 
         long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
@@ -606,8 +605,14 @@ public class TreeBuilder {
 
     public TreeItem<TreeAttributeWrapper> createItemForTable(DatabaseTable table, boolean isCustom) {
         // TreeItem 생성
+        String countRecords =  " (" + table.getNumberOfRows() + ")";
+        DisplayableText tableAndCount = DisplayableText.of(table.getName() + countRecords);
+
         val tableItem = new TreeItem<>(TreeAttributeWrapper.builder()
-                .name(DisplayableText.of(table.getName()))
+               // .name(DisplayableText.of(table.getName()))
+                .name(isCustom
+                        ? tableAndCount
+                        : DisplayableText.of(table.getName()))
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
                 .renderableForm(
                         TableOverviewForm.create(table).toBuilder()
