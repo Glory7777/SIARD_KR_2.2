@@ -1,5 +1,7 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms;
 
+import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
+import ch.admin.bar.dbexception.DbOutOfMemoryException;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.Table;
@@ -138,7 +140,7 @@ public class RowsOverviewForm {
         @SneakyThrows
         @Override
         public List<RecordWrapper> load(int startIndex, int nrOfItems) {
-
+            try {
             resetState();
 
             log.info("data load ::");
@@ -159,8 +161,13 @@ public class RowsOverviewForm {
                     collected.add(new RecordWrapper(record));
                 }
             }
-
             return collected;
+
+            } catch (OutOfMemoryError e) {
+                log.error("OutOfMemoryError 발생: 초기화 중 또는 데이터 로드 중 메모리 부족", e);
+                DatabaseExceptionHandlerHelper.doHandleOutOfMemoryException(e);
+                throw e;
+            }
         }
 
         private void resetState() {
