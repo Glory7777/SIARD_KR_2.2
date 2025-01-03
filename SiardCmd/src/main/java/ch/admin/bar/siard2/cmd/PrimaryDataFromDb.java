@@ -59,7 +59,7 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         this.recordsPercent = (this.recordsTotal + 99L) / 100L;
         this.recordsDownloaded = 0L;
 
-        processData();
+        processData(progress);
 
         if (this.cancelRequested()) {
             throw new IOException("\r\nDownload of primary data cancelled!");
@@ -75,9 +75,39 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
                 .forEach((s, schema) -> this.recordsTotal += schema.getRecordCount());
     }
 
-    private void processData() {
-        Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty() ? _archive.getSchemaMap() : _archive.getSelectedSchemaMap();
-        map.forEach((s, schema) -> this.tryGetSchema(schema));
+    private void processData(Progress progress) {
+//        Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty() ? _archive.getSchemaMap() : _archive.getSelectedSchemaMap();
+//        map.forEach((s, schema) -> this.tryGetSchema(schema));
+        // 스키마 맵 가져오기
+        Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty()
+                ? _archive.getSchemaMap()
+                : _archive.getSelectedSchemaMap();
+
+        long totalTasks = map.values().stream()
+                .mapToLong(schema -> schema.getSelectedTables().size())
+                .sum();
+
+        long completedTasks = 0;
+
+        for (Map.Entry<String, Schema> entry : map.entrySet()) {
+            Schema schema = entry.getValue();
+
+            for (Table table : schema.getSelectedTables()) {
+                this.tryGetTable(table); // 테이블 처리
+                completedTasks++;
+
+                // 진행 상태 업데이트
+                if (progress != null) {
+                    int percentage = (int) ((double) completedTasks / totalTasks * 100);
+                    progress.notifyProgress(percentage);
+                }
+
+                // 취소 요청 확인
+                if (progress != null && progress.cancelRequested()) {
+                    throw new RuntimeException("Download cancelled!");
+                }
+            }
+        }
     }
 
     private void tryGetSchema(Schema schema) {
