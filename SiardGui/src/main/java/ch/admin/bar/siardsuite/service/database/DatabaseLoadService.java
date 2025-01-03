@@ -97,8 +97,12 @@ public class DatabaseLoadService extends Service<ObservableList<Pair<String, Lon
 
                     data.setQueryTimeout(timeout);
                     updateValue(FXCollections.observableArrayList(new Pair<>("Dataload", -1L)));
-                   // updateProgress(0, 100);
-                    data.download(new SiardCmdProgressListener(this::updateProgress)); // 읽어들인 데이터 다운로드
+                    updateProgress(0, 100);
+                    //data.download(new SiardCmdProgressListener(this::updateProgress)); // 읽어들인 데이터 다운로드
+                    data.download(new SiardCmdProgressListener((current, total) -> {
+                        double progressPercentage = (double) current / total * 100;
+                        updateProgress(progressPercentage, 100); // Progress Bar 업데이트
+                    })); // 읽어들인 데이터 다운로드
 
                     // 프로그레스 바
                     archive.getSchemaMap().forEach(
