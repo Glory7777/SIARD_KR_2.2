@@ -12,7 +12,6 @@ import ch.admin.bar.siard2.api.generated.CategoryType;
 import ch.enterag.sqlparser.identifier.QualifiedId;
 import ch.enterag.utils.StopWatch;
 import ch.enterag.utils.background.Progress;
-import javafx.application.Platform;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +54,12 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         this.progress = progress;
         this.recordsTotal = 0L;
 
-        countRecords(); //전체 레코드 수 계산
+        countRecords();
+
         this.recordsPercent = (this.recordsTotal + 99L) / 100L;
         this.recordsDownloaded = 0L;
 
-        processData(); //데이터 다운로드
+        processData();
 
         if (this.cancelRequested()) {
             throw new IOException("\r\nDownload of primary data cancelled!");
@@ -70,10 +70,10 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         }
     }
 
-//    private void countRecords() {
-//        _archive.getSelectedSchemaMap()
-//                .forEach((s, schema) -> this.recordsTotal += schema.getRecordCount());
-//    }
+    private void countRecords() {
+        _archive.getSelectedSchemaMap()
+                .forEach((s, schema) -> this.recordsTotal += schema.getRecordCount());
+    }
 
     private void processData() {
         Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty() ? _archive.getSchemaMap() : _archive.getSelectedSchemaMap();
@@ -98,10 +98,11 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
 
     private void incDownloaded() {
         ++this.recordsDownloaded;
-        if (this.progress != null && this.recordsTotal > 0L) {
+        if (this.progress != null && this.recordsTotal > 0L && this.recordsDownloaded % this.recordsPercent == 0L) {
             int iPercent = (int) (100L * this.recordsDownloaded / this.recordsTotal);
-            Platform.runLater(() -> this.progress.notifyProgress(iPercent)); // UI 스레드에서 실행
+            this.progress.notifyProgress(iPercent);
         }
+
     }
 
     private boolean cancelRequested() {
@@ -261,74 +262,45 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         return iDataType;
     }
 
-    private int tablesProcessed = 0; // 현재까지 처리된 테이블 수
-    private int totalTables = 0;     // 전체 테이블 수
-
-    private void countRecords() {
-        _archive.getSelectedSchemaMap().forEach((schemaName, schema) -> {
-            this.recordsTotal += schema.getRecordCount(); // 총 레코드 수 계산
-            this.totalTables += schema.getSelectedTables().size(); // 전체 테이블 수 계산
-        });
-        LOG.info("Total records: {}, Total tables: {}", recordsTotal, totalTables);
-    }
-
-//    public void download(Progress progress) throws IOException, SQLException {
-//        LOG.info("Starting data download...");
-//        this.progress = progress;
-//
-//        // 전체 테이블 및 레코드 수 계산
-//        countRecords();
-//
-//        // 데이터 처리 시작
-//        processData();
-//
-//        if (this.cancelRequested()) {
-//            throw new IOException("Download cancelled by user.");
-//        }
-//        LOG.info("Data download completed successfully.");
-//    }
-
     private void getTable(Table table) throws IOException, SQLException {
+        this.getCellStopWatch = StopWatch.getInstance();
+        this.getValueStopWatch = StopWatch.getInstance();
+        this.setValueStopWatch = StopWatch.getInstance();
+        QualifiedId qiTable = new QualifiedId(null, table.getParentSchema().getMetaSchema().getName(), table.getMetaTable().getName());
+        System.out.println("  Table: " + qiTable.format());
         long lRecord = 0L;
         RecordRetainer rr = table.createRecords();
-        ResultSet rs = null;
-        Statement stmt = null;
+        ResultSet rs = this.openTable(table, null);
+        Statement stmt = rs.getStatement();
+        StopWatch swCreate = StopWatch.getInstance();
+        StopWatch swGet = StopWatch.getInstance();
+        StopWatch swPut = StopWatch.getInstance();
+        StopWatch sw = StopWatch.getInstance();
+        sw.start();
+        long lBytesStart = rr.getByteCount();
+        MimeTypeHandler mimeTypeHandler = new MimeTypeHandler(this.tika);
 
-        try {
-            rs = this.openTable(table, null);
-            stmt = rs.getStatement();
-
-            while (rs.next() && !this.cancelRequested()) {
-                try {
-                    Record record = rr.create();
-                    lRecord++;
-                } catch (Exception e) {
-                    LOG.error("Error processing record {} in table '{}': {}", lRecord, table.getMetaTable().getName(), e.getMessage());
-                    continue;
-                }
-            }
-
-            LOG.info("Finished processing table '{}': {} records downloaded", table.getMetaTable().getName(), lRecord);
-        } finally {
-            // ResultSet과 Statement를 각각 닫아야함
-            if (rs != null && !rs.isClosed()) {
-                rs.close();
-            }
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-            rr.close(); // RecordRetainer는 테이블 처리 완료 후 닫음
+        while (rs.next() && !this.cancelRequested()) {
+            Record record = createRecord(swCreate, rr);
+            this.readRecord(swGet, rs, record, mimeTypeHandler);
+            putRecord(swPut, rr, record);
+            lBytesStart = logRecordProgress(lRecord++, sw, rr, lBytesStart);
+            this.incDownloaded();
         }
 
-        // 테이블 단위로 프로그레스 업데이트
-        Platform.runLater(() -> {
-            if (this.progress != null && this.totalTables > 0) {
-                int progressValue = (int) ((++this.tablesProcessed / (double) this.totalTables) * 100);
-                this.progress.notifyProgress(progressValue);
-            }
-        });
-    }
+        System.out.println("    Record " + lRecord + " (" + sw.formatRate(rr.getByteCount() - lBytesStart, sw.stop()) + " kB/s)");
+        System.out.println("    Total: " + StopWatch.formatLong(lRecord) + " records (" + StopWatch.formatLong(rr.getByteCount()) + " bytes in " + sw.formatMs() + " ms)");
+        if (!rs.isClosed()) {
+            rs.close();
+        }
 
+        if (!stmt.isClosed()) {
+            stmt.close();
+        }
+
+        rr.close();
+        LOG.debug("All data of table '{}.{}' successfully downloaded", qiTable.getSchema(), qiTable.getName());
+    }
 
     private static long logRecordProgress(long lRecord, StopWatch sw, RecordRetainer rr, long lBytesStart) {
         if (lRecord % 1000L == 0L) {
