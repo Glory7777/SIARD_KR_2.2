@@ -131,6 +131,7 @@ public class CustomCheckBoxTreeCell extends CheckBoxTreeCell<TreeAttributeWrappe
         long totalSize = calculateTotalSize(getTreeView().getRoot());
         updateTotalSizeLabel(totalSize);
         selectedTotalSize = totalSize;
+        System.out.println("선택된 테이블별 사이즈 크기 :  "  + selectedTotalSize);
     }
 
     private long calculateTotalSize(TreeItem<TreeAttributeWrapper> root) {

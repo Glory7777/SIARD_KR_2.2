@@ -19,8 +19,4 @@ public class DatabaseExceptionHandlerHelper {
                     exceptionHandler.handleException(applicationException);
                 });
     }
-
-    public static void doHandleOutOfMemoryException(OutOfMemoryError error) {
-        throw new DbOutOfMemoryException();
-    }
 }

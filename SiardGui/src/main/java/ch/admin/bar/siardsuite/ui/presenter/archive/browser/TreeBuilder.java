@@ -134,6 +134,7 @@ public class TreeBuilder {
     }
 
 
+
     //  createRootItemWithSelectedSchemas 랑 createItemForSchemasAndCountTableSize 는
     //  columnFileDownLoadBrowser 을 위한 메서드, 본래
     //  createRootItemWithSelectedSchemas - createItemForSchemas 였으나 formatted[]Size 값의 변경이 있으므로
@@ -162,11 +163,13 @@ public class TreeBuilder {
         return rootItem;
     }
 
+
     private TreeItem<TreeAttributeWrapper> createItemForSchemasAndCountTableSize() {
         Set<String> schemaSet = siardArchive.getArchive().getSelectedSchemaTableMap().keySet();
         val schemas = schemaSet.isEmpty() ? this.siardArchive.schemas() : this.siardArchive.schemas().stream().filter(databaseSchema -> schemaSet.contains(databaseSchema.getName())).toList();
 
            long countTableSize = CustomCheckBoxTreeCell.selectedTotalSize;
+           System.out.println("countTableSize   :   " + countTableSize);
            String formattedCountTableSize = ByteFormatter.convertToBestFitUnit(countTableSize);
 
         long schemaSize = schemas.stream().mapToLong(s -> s.getSchema().getSchemaSize()).sum();
@@ -192,7 +195,6 @@ public class TreeBuilder {
 
         return schemasItem;
     }
-
 
 
 
@@ -293,6 +295,7 @@ public class TreeBuilder {
             schemaItem.getChildren().add(createItemForTypes(schema));
         }
 
+
         if (!schema.getTables().isEmpty()) {
             schemaItem.getChildren().add(createItemForTables(schema));
         }
@@ -304,6 +307,7 @@ public class TreeBuilder {
         if (!schema.getViews().isEmpty()) {
             schemaItem.getChildren().add(createItemForViews(schema));
         }
+
 
         return schemaItem;
     }
@@ -504,7 +508,9 @@ public class TreeBuilder {
 
 
 
+
     private TreeItem<TreeAttributeWrapper> createItemForViews(DatabaseSchema schema, boolean isCustom) {
+
         val views = schema.getViews();
         val item = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(VIEWS_ELEMENT_NAME, views.size()))
@@ -517,6 +523,7 @@ public class TreeBuilder {
 
         val viewItems = views.stream()
                 .map(view -> createItemForView(view, isCustom))
+
                 .collect(Collectors.toList());
 
         item.getChildren().addAll(viewItems);
@@ -524,7 +531,9 @@ public class TreeBuilder {
         return item;
     }
 
+
     private TreeItem<TreeAttributeWrapper> createItemForView(DatabaseView view, boolean isCustom) {
+
         val item = new TreeItem<>(TreeAttributeWrapper.builder()
                 .name(DisplayableText.of(view.name()))
                 .viewTitle(DisplayableText.of(VIEW_VIEW_TITLE))
@@ -535,6 +544,7 @@ public class TreeBuilder {
                 .build());
 
         item.getChildren().add(
+
                 isCustom
                         ?  customCreateItemForColumns(view) // 커스텀 동작
                         :  createItemForColumns(view) // 일반 동작
@@ -547,6 +557,7 @@ public class TreeBuilder {
     private TreeItem<TreeAttributeWrapper> createItemForViews(DatabaseSchema schema) {
         return createItemForViews(schema, false);
     }
+
     // 커스텀 메서드
     private TreeItem<TreeAttributeWrapper> customCreateItemForViews(DatabaseSchema schema) {
         return createItemForViews(schema, true);
@@ -605,14 +616,8 @@ public class TreeBuilder {
 
     public TreeItem<TreeAttributeWrapper> createItemForTable(DatabaseTable table, boolean isCustom) {
         // TreeItem 생성
-        String countRecords =  " (" + table.getNumberOfRows() + ")";
-        DisplayableText tableAndCount = DisplayableText.of(table.getName() + countRecords);
-
         val tableItem = new TreeItem<>(TreeAttributeWrapper.builder()
-               // .name(DisplayableText.of(table.getName()))
-                .name(isCustom
-                        ? tableAndCount
-                        : DisplayableText.of(table.getName()))
+                .name(DisplayableText.of(table.getName()))
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
                 .renderableForm(
                         TableOverviewForm.create(table).toBuilder()
