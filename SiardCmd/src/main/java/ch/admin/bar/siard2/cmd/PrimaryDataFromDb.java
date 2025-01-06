@@ -79,6 +79,7 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
     private void processData(Progress progress) {
 //        Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty() ? _archive.getSchemaMap() : _archive.getSelectedSchemaMap();
 //        map.forEach((s, schema) -> this.tryGetSchema(schema));
+
         // 스키마 맵 가져오기
         Map<String, Schema> map = _archive.getSelectedSchemaMap().isEmpty()
                 ? _archive.getSchemaMap()
