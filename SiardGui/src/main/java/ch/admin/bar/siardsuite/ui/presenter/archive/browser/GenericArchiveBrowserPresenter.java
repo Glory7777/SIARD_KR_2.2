@@ -53,6 +53,7 @@ import static ch.admin.bar.siardsuite.util.OptionalHelper.ifPresentOrElse;
 @Slf4j
 public class GenericArchiveBrowserPresenter {
 
+    private static final I18nKey RESET_SEARCH = I18nKey.of("tableContainer.resetSearchButton");
     private static final I18nKey META_SEARCH = I18nKey.of("tableContainer.metaSearchButton");
     private static final I18nKey TABLE_SEARCH = I18nKey.of("tableContainer.tableSearchButton");
     private static final I18nKey RECORD_SEARCH = I18nKey.of("tableContainer.recordSearchButton");
@@ -82,6 +83,8 @@ public class GenericArchiveBrowserPresenter {
     private IconButton saveChangesButton;
     @FXML
     private IconButton dropChangesButton;
+    @FXML
+    private MFXButton resetSearchButton;
     @FXML
     private TwoStatesButton tableSearchButton;
     @FXML
@@ -132,6 +135,7 @@ public class GenericArchiveBrowserPresenter {
 
         this.archiveStep = archiveStep;
 
+        this.resetSearchButton.textProperty().bind(DisplayableText.of(RESET_SEARCH).bindable());
         this.metaSearchButton.textProperty().bind(DisplayableText.of(META_SEARCH).bindable());
         this.tableSearchButton.textProperty().bind(DisplayableText.of(TABLE_SEARCH).bindable());
         this.recordSearchButton.textProperty().bind(DisplayableText.of(RECORD_SEARCH).bindable());
@@ -164,6 +168,14 @@ public class GenericArchiveBrowserPresenter {
         this.dropChangesButton.setOnAction(() -> {
             hideErrorMessage();
             currentFormRenderer.dropChanges();
+        });
+
+        resetSearchButton.setOnAction(event -> {
+            TreeItem<TreeAttributeWrapper> rootNode = treeView.getRoot();
+            TreeAttributeWrapper wrapper = rootNode.getValue();
+            currentSearchLabel.setText("");
+            refreshContentPane(wrapper); // 초기 상태로 리셋
+            this.refreshTree(null);
         });
 
         tableSearchButton.setNormalStateAction(event ->
@@ -362,6 +374,14 @@ public class GenericArchiveBrowserPresenter {
         if (recordSearchButton != null) {
             recordSearchButton.setVisible(false);
             recordSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
+        }
+    }
+
+    //preview 화면에는 recordSearchButton 필요 없음
+    public void removeResetButton() {
+        if (resetSearchButton != null) {
+            resetSearchButton.setVisible(false);
+            resetSearchButton.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
     }
 

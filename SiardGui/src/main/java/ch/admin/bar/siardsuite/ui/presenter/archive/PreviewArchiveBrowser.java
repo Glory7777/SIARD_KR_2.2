@@ -42,6 +42,7 @@ public class PreviewArchiveBrowser {
         // GenericArchiveBrowserPresenter 에서 removeRecordSearchButton 호출
         GenericArchiveBrowserPresenter presenter = loadedView.getController();
         presenter.removeRecordSearchButton();
+        presenter.removeResetButton();
         return loadedView.getNode();
     }
 
