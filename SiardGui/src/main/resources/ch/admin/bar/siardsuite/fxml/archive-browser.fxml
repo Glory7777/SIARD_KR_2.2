@@ -158,7 +158,7 @@
                                            alignment="CENTER_RIGHT"
                                            rippleAnimateBackground="false">
                                     <styleClass>
-<!--                                        <String fx:value="search-icon"/>-->
+                                        <!-- <String fx:value="search-icon"/>-->
                                         <String fx:value="icon-text-button"/>
                                     </styleClass>
                                 </MFXButton>

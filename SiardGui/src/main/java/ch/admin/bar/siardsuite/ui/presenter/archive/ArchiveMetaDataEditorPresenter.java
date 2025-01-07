@@ -21,10 +21,7 @@ import ch.admin.bar.siardsuite.ui.component.SiardTooltip;
 import ch.admin.bar.siardsuite.util.I18n;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -34,6 +31,9 @@ import lombok.val;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -77,8 +77,8 @@ public class ArchiveMetaDataEditorPresenter {
     TextArea description;
     @FXML
     TextField owner;
-    @FXML
-    TextField dataOriginTimespan;
+    //@FXML
+    //TextField dataOriginTimespan;
     @FXML
     TextField archiverName;
     @FXML
@@ -95,6 +95,8 @@ public class ArchiveMetaDataEditorPresenter {
     public Label ownerLabel;
     @FXML
     public Label dataOriginTimespanLabel;
+    @FXML
+    private ComboBox<String> dataOriginTimespan;
     @FXML
     public Label archiverLabel;
     @FXML
@@ -201,12 +203,15 @@ public class ArchiveMetaDataEditorPresenter {
                     });
 
             if (targetArchive != null) {
+                // 선택한 시간대에 따른 현재 시간 가져오기
+                String timestamp = getCurrentTimestampForTimeZone(this.dataOriginTimespan.getValue());
+
                 return Optional.of(
                         UserDefinedMetadata.builder()
                                 .dbName(this.name.getText())
                                 .description(Optional.ofNullable(this.description.getText()).filter(text -> !text.isEmpty()))
                                 .owner(this.owner.getText())
-                                .dataOriginTimespan(this.dataOriginTimespan.getText())
+                                .dataOriginTimespan(timestamp) // 타임스탬프 저장
                                 .archiverName(Optional.ofNullable(this.archiverName.getText()).filter(text -> !text.isEmpty()))
                                 .archiverContact(Optional.ofNullable(this.archiverContact.getText()).filter(text -> !text.isEmpty()))
                                 .lobFolder(lobFolder)
@@ -228,11 +233,36 @@ public class ArchiveMetaDataEditorPresenter {
         this.name.setText(metadata.getDbName());
         this.description.setText(metadata.getDescription());
         this.owner.setText(removePlaceholder(metadata.getDataOwner()));
-        this.dataOriginTimespan.setText(removePlaceholder(metadata.getDataOriginTimespan()));
+        this.dataOriginTimespan.setValue(removePlaceholder(metadata.getDataOriginTimespan()));
         this.archiverName.setText(metadata.getArchiver());
         this.archiverContact.setText(metadata.getArchiverContact());
         Optional.ofNullable(metadata.getLobFolder())
                 .ifPresent(lobFolder -> this.lobExportLocation.setText(lobFolder.toString()));
+
+        // ComboBox 선택 이벤트 핸들러 추가
+        this.dataOriginTimespan.setOnAction(event -> handleTimeZoneSelection());
+    }
+
+    // 시간대 선택 핸들러
+    private void handleTimeZoneSelection() {
+        String selectedTimeZone = dataOriginTimespan.getValue();
+        if (selectedTimeZone != null) {
+            String timestamp = getCurrentTimestampForTimeZone(selectedTimeZone);
+
+            // 바인딩 해제
+            if (dataOriginTimespanLabel.textProperty().isBound()) {
+                dataOriginTimespanLabel.textProperty().unbind();
+            }
+
+            // 텍스트 업데이트
+            dataOriginTimespanLabel.setText("Current Time: " + timestamp);
+        }
+    }
+
+    // 시간대에 따른 현재 시간 반환
+    private String getCurrentTimestampForTimeZone(String timeZone) {
+        ZoneId zoneId = "KTC".equals(timeZone) ? ZoneId.of("Asia/Seoul") : ZoneId.of("UTC");
+        return ZonedDateTime.now(zoneId).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private String removePlaceholder(String value) {
@@ -240,14 +270,16 @@ public class ArchiveMetaDataEditorPresenter {
     }
 
     private boolean validateProperties() {
-        List<ValidationProperty> validationProperties = Arrays.asList(new ValidationProperty(owner,
+        List<ValidationProperty> validationProperties = Arrays.asList(
+                new ValidationProperty(owner,
                         ownerValidationMsg,
-                        "archiveMetaData.owner.missing"),
+                        "archiveMetaData.owner.missing"), // owner 필드 유효성 검사 유지
                 new ValidationProperty(dataOriginTimespan,
                         dataOriginTimespanValidationMsg,
-                        "archiveMetaData.timespan.missing"));
+                        "archiveMetaData.timespan.missing") // dataOriginTimespan 필드 유효성 검사 추가
+        );
 
-        return new ValidationProperties(validationProperties).validate();
+        return validationProperties.stream().allMatch(ValidationProperty::validate);
     }
 
     public static LoadedView<ArchiveMetaDataEditorPresenter> load(
