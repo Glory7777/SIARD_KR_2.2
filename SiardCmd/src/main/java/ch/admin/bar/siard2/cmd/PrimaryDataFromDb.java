@@ -1,5 +1,6 @@
 package ch.admin.bar.siard2.cmd;
 
+import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.*;
 import ch.admin.bar.siard2.api.ext.FileDownloadPathHolder;
@@ -179,16 +180,14 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
             } else if (oValue instanceof Duration) {
                 value.setDuration((Duration) oValue);
             } else if (oValue instanceof Clob clob) {
+                // mimeTypeHandler.add(value, clob);
+                // value.setReader(clob.getCharacterStream());
+                // clob.free();
                 try {
                     Reader reader;
-                    if (isTiberoDb()) {  // 데이터베이스가 TIBERO 일 때만 아래 방식으로 clob 처리
-                        // 스트림 상태 확인 및 처리
-                        reader = clob.getCharacterStream();
-                        if (reader == null || !reader.ready()) {
-                            // CLOB 데이터를 문자열로 가져와 새로운 Reader 생성
-                            String clobData = clob.getSubString(1, (int) clob.length());
-                            reader = new StringReader(clobData);
-                        }
+                    if (isTiberoDb()) {  // 데이터베이스가 TIBERO 일 때만 스트림 대신 데이터를 직접 읽음
+                        String clobData = clob.getSubString(1, (int) clob.length()); // CLOB 전체 데이터를 읽음
+                        reader = new StringReader(clobData);
                     } else {   // TIBERO 외에 다른 데이터베이스 clob 처리(기존 방식)
                        reader = clob.getCharacterStream();
                     }
@@ -199,29 +198,24 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
                     throw new IOException("Error handling clob data : ", e);
                 } catch (SQLException e) {
                     throw new SQLException("Error accessing clob data : ", e);
+                }catch (OutOfMemoryError e) {
+                    DatabaseExceptionHandlerHelper.doHandleOutOfMemoryException(e); // 기존 로직 활용
+                    throw e;
                 }
 
             } else if (oValue instanceof SQLXML sqlxml) {
                 value.setReader(sqlxml.getCharacterStream());
                 sqlxml.free();
             } else if (oValue instanceof Blob blob) {
+                // mimeTypeHandler.add(value, blob);
+                // value.setInputStream(blob.getBinaryStream());
+                // blob.free();
                 try {
                     InputStream inputStream;
-                    if (isTiberoDb()) { // 데이터베이스가 TIBERO 일 때만 아래 방식으로 Blob 처리
-                        // InputStream 가져오기
-                        InputStream originalInputStream = blob.getBinaryStream();
-                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                        // 바이너리 데이터를 읽어서 복사
-                        byte[] temp = new byte[1024];
-                        int bytesRead;
-                        while ((bytesRead = originalInputStream.read(temp)) != -1) {
-                            buffer.write(temp, 0, bytesRead);
-                        }
-                        // 복사된 데이터를 기반으로 새로운 InputStream 생성
-                        byte[] blobBytes = buffer.toByteArray();
-                        inputStream = new ByteArrayInputStream(blobBytes);
-                        originalInputStream.close(); // 원래 InputStream 닫기
-                    } else {  // TIBERO 외에 다른 데이터베이스 Blob 처리(기존 방식)
+                    if (isTiberoDb()) {  // Tibero 라면 데이터를 한 번에 읽어 처리
+                        byte[] blobBytes = blob.getBytes(1, (int) blob.length()); // BLOB 전체를 바이트 배열로 읽음
+                        inputStream = new ByteArrayInputStream(blobBytes);        // InputStream 생성
+                    } else {  // Tibero 외의 데이터베이스에서는 기존 스트림 방식 유지
                         inputStream = blob.getBinaryStream();
                     }
                     mimeTypeHandler.add(value, blob);
@@ -231,6 +225,9 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
                     throw new IOException("Error handling blob data : ", e);
                 } catch (SQLException e) {
                     throw new SQLException("Error accessing blob data : ", e);
+                }catch (OutOfMemoryError e) {
+                    DatabaseExceptionHandlerHelper.doHandleOutOfMemoryException(e); // 기존 로직 활용
+                    throw e;
                 }
             } else if (oValue instanceof URL url) {
                 value.setInputStream(url.openStream(), url.getPath());
