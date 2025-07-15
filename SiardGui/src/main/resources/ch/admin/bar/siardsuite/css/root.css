@@ -30,7 +30,6 @@
 
 .root-center {
     -fx-background-color: #f5f7fa;
-
 }
 
 
@@ -61,7 +60,9 @@
 }
 
 .header-app-label {
-    -fx-graphic: url(../icons/logo.png);
+
+    /*-fx-graphic: url(../icons/logo.png);*/
+    -fx-graphic: url(../icons/logo-brand.png);
     -fx-max-height: 24;
     -fx-max-width: infinity;
     -fx-font-size: 14;
@@ -73,8 +74,8 @@
 .info-container .button,
 .folder-container .button,
 .header .button {
-    -fx-min-width: 40;
-    -fx-min-height: 40;
+    -fx-min-width: 50;
+    -fx-min-height: 50;
 }
 
 .folder-container .button {
@@ -444,6 +445,10 @@
 
 .search-icon {
     -fx-graphic: url(../icons/search.png);
+}
+
+.reload-icon {
+    -fx-graphic: url(../icons/reload.png);
 }
 
 .download-icon {

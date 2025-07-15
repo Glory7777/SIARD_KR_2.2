@@ -18,6 +18,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Pane?>
 <AnchorPane styleClass="root-center"
             stylesheets="@../css/root.css"
             xmlns="http://javafx.com/javafx/1.8"
@@ -154,14 +155,6 @@
                                             </styleClass>
                                         </Label>
                                 </VBox>
-                                <MFXButton fx:id="resetSearchButton"
-                                           alignment="CENTER_RIGHT"
-                                           rippleAnimateBackground="false">
-                                    <styleClass>
-                                        <!-- <String fx:value="search-icon"/>-->
-                                        <String fx:value="icon-text-button"/>
-                                    </styleClass>
-                                </MFXButton>
                                 <TwoStatesButton fx:id="tableSearchButton"
                                                  alignment="CENTER_RIGHT"
                                                  rippleAnimateBackground="false">
@@ -182,6 +175,14 @@
                                            rippleAnimateBackground="false">
                                     <styleClass>
                                         <String fx:value="search-icon"/>
+                                        <String fx:value="icon-text-button"/>
+                                    </styleClass>
+                                </MFXButton>
+                                <MFXButton fx:id="resetSearchButton"
+                                           alignment="CENTER"
+                                           rippleAnimateBackground="false">
+                                    <styleClass>
+                                        <String fx:value="reload-icon"/>
                                         <String fx:value="icon-text-button"/>
                                     </styleClass>
                                 </MFXButton>

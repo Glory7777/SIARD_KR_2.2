@@ -70,7 +70,8 @@ public class RootStage extends Stage implements ViewDisplay, DialogDisplay {
 
         this.setMaximized(true);
         this.initStyle(StageStyle.DECORATED);
-        this.getIcons().add(Icon.ARCHIVE_RED.toImage());
+        //this.getIcons().add(Icon.ARCHIVE_RED.toImage());
+        this.getIcons().add(Icon.ARCHIVE_LOGO.toImage());
         this.setScene(scene);
         this.show();
     }

@@ -25,6 +25,7 @@ public enum Icon {
     SIARD_DB_RED(resolve("ch/admin/bar/siardsuite/icons/siard-db_red.png")),
     ARCHIVE(resolve("ch/admin/bar/siardsuite/icons/archive.png")),
     ARCHIVE_RED(resolve("ch/admin/bar/siardsuite/icons/archive_red.png")),
+    ARCHIVE_LOGO(resolve("ch/admin/bar/siardsuite/icons/archive_logo.png")),
     EXPORT(resolve("ch/admin/bar/siardsuite/icons/export.png")),
     EXPORT_RED(resolve("ch/admin/bar/siardsuite/icons/export_red.png")),
     DB(resolve("ch/admin/bar/siardsuite/icons/server.png"));

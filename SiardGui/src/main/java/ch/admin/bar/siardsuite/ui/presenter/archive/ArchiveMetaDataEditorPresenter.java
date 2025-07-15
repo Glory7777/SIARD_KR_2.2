@@ -233,7 +233,10 @@ public class ArchiveMetaDataEditorPresenter {
         this.name.setText(metadata.getDbName());
         this.description.setText(metadata.getDescription());
         this.owner.setText(removePlaceholder(metadata.getDataOwner()));
-        this.dataOriginTimespan.setValue(removePlaceholder(metadata.getDataOriginTimespan()));
+        //this.dataOriginTimespan.setValue(removePlaceholder(metadata.getDataOriginTimespan()));
+        this.dataOriginTimespan.setValue("KTC");
+        handleTimeZoneSelection();
+
         this.archiverName.setText(metadata.getArchiver());
         this.archiverContact.setText(metadata.getArchiverContact());
         Optional.ofNullable(metadata.getLobFolder())

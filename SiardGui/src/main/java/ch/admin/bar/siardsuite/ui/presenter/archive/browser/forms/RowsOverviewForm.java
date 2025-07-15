@@ -156,7 +156,9 @@ public class RowsOverviewForm {
                 }
 
                 if (!isSearchTermBlank()) {
-                    if (recordDispenser.anyMatches()) collected.add(new RecordWrapper(record));
+                    if (recordDispenser.anyMatches()){
+                        collected.add(new RecordWrapper(record));
+                    }
                 } else {
                     collected.add(new RecordWrapper(record));
                 }
@@ -200,6 +202,7 @@ public class RowsOverviewForm {
         }
     }
 
+    // siard open
     private static Optional<TableColumnProperty.CellClickedListener<RecordWrapper>> createCellClickListener(final DatabaseColumn column) {
         try {
             val type = column.getColumn().getPreType();
