@@ -158,9 +158,19 @@ public class ArchiveHandler {
      */
     @SneakyThrows
     public void setExternalLobFolder(final Archive archive, final URI lobsDest) {
-        val lobDestAsString = lobsDest.toString().toLowerCase();
-        val root = lobDestAsString.endsWith("/") ? lobDestAsString : lobDestAsString + "/";
-        archive.getMetaData().setLobFolder(new URI(root));
+        String lobPath = lobsDest.toString();
+
+        // 절대 경로 들어오면 예외 처리 또는 상대경로로 변환
+        if (lobsDest.isAbsolute() || !lobPath.startsWith("..")) {
+            lobPath = "../lobs/";
+        }
+
+        if (!lobPath.endsWith("/")) {
+            lobPath += "/";
+        }
+
+        URI relativeLobUri = new URI(lobPath);
+        archive.getMetaData().setLobFolder(relativeLobUri);
 
         val blobColumns = findBlobColumns(archive);
 
@@ -169,10 +179,11 @@ public class ArchiveHandler {
             val tableName = blobColumn.getParentMetaTable().getName().toLowerCase();
             val columnName = blobColumn.getName().toLowerCase();
 
-            val columnBlobUri = new URI(schemaName + "/" + tableName + "/" + columnName + "/"); // relative to the lob-folder of the siard-archive
+            val columnBlobUri = new URI(schemaName + "/" + tableName + "/" + columnName + "/");
             blobColumn.setLobFolder(columnBlobUri);
         }
     }
+
 
     private List<MetaColumn> findBlobColumns(final Archive archive) {
         return ListAssembler.assemble(archive.getSchemas(), archive::getSchema).stream()
