@@ -204,7 +204,7 @@ public class MetaColumnImpl extends MetaValueImpl implements MetaColumn {
     super(iPosition);
     this._mtParent = mtParent;
     this._ct = ct;
-    this._sFolder = "../lob" + (iPosition - 1) + "/";
+    this._sFolder = "lob" + (iPosition - 1) + "/";
     openMetaFields();
   }
 
