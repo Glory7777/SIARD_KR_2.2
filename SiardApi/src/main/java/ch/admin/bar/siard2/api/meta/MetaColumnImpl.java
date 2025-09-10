@@ -204,7 +204,8 @@ public class MetaColumnImpl extends MetaValueImpl implements MetaColumn {
     super(iPosition);
     this._mtParent = mtParent;
     this._ct = ct;
-    this._sFolder = "../lob" + (iPosition - 1) + "/";
+    // LOB 내부 폴더는 테이블 폴더 하위로만 구성해야 한다. 상위 경로 참조("../")를 제거한다.
+    this._sFolder = "lob" + (iPosition - 1) + "/";
     openMetaFields();
   }
 

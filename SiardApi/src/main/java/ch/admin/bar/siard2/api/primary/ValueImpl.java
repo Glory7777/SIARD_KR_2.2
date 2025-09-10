@@ -936,13 +936,43 @@ public abstract class ValueImpl implements Value {
             String lobFileName = getValueElement().getAttribute("file");
             URI externalLobFolderUri = getAbsoluteLobFolder();
             if (externalLobFolderUri == null) {
-                inputStream = getArchiveImpl().openFileEntry(lobFileName);
+                // 내부 LOB: table 폴더를 기준으로 상대 경로를 해석 후 정규화
+                String base = getTableImpl().getTableFolder();
+                String resolved = resolveAgainstBase(base, lobFileName);
+                inputStream = getArchiveImpl().openFileEntry(resolved);
             } else {
+                // 외부 LOB: 외부 폴더 URI 기준으로 해석
                 URI uriExternal = externalLobFolderUri.resolve(lobFileName);
                 inputStream = new FileInputStream(FU.fromUri(uriExternal));
             }
         }
         return inputStream;
+    }
+
+    private String normalizeZipEntryPath(String path) {
+        if (path == null || path.isEmpty()) return path;
+        String[] parts = path.split("/");
+        Deque<String> stack = new ArrayDeque<>();
+        for (String part : parts) {
+            if (part.isEmpty() || part.equals(".")) continue;
+            if (part.equals("..")) {
+                if (!stack.isEmpty()) stack.removeLast();
+            } else {
+                stack.addLast(part);
+            }
+        }
+        return String.join("/", stack);
+    }
+
+    private String resolveAgainstBase(String base, String relative) {
+        if (relative == null || relative.isEmpty()) return normalizeZipEntryPath(base);
+        // 이미 content/로 시작하면 content 루트 기준으로 정규화만 수행
+        if (relative.startsWith("content/")) {
+            return normalizeZipEntryPath(relative);
+        }
+        // base + relative 결합 후 정규화
+        String joined = base + relative;
+        return normalizeZipEntryPath(joined);
     }
 
 
@@ -1013,9 +1043,12 @@ public abstract class ValueImpl implements Value {
     private AbstractMap.SimpleEntry<File, String> getLobFileAndUpdateLobFilename(String lobFilename, URI externalLobFolderUri) throws IOException {
         File lobFile;
         if (externalLobFolderUri == null) {
-            lobFilename = getInternalLobFolder() + lobFilename;
+            // 내부 LOB: 테이블 폴더 하위에 LOB 폴더 생성
+            String internalLobFolder = getInternalLobFolder(); // "lobX/"
+            lobFilename = internalLobFolder + lobFilename;
             URI uriTemporaryLobFolder = getTemporaryLobFolder();
             lobFile = FU.fromUri(uriTemporaryLobFolder.resolve(lobFilename));
+            // XML에서 참조할 상대 경로: 테이블 폴더 기준
             lobFilename = getTableImpl().getTableFolder() + lobFilename;
         } else {
             int iMaxLobsPerFolder = getArchiveImpl().getMaxLobsPerFolder();
@@ -1026,9 +1059,12 @@ public abstract class ValueImpl implements Value {
             URI uriExternal = externalLobFolderUri.resolve(lobFilename);
             lobFile = FU.fromUri(uriExternal);
         }
+        // LOB 파일의 부모 디렉토리 생성 (임시 폴더 내)
         if (!lobFile.getParentFile().exists()) {
-            lobFile.getParentFile().mkdirs();
+            boolean created = lobFile.getParentFile().mkdirs();
+            System.out.println("DEBUG: LOB 폴더 생성 시도: " + lobFile.getParentFile().getAbsolutePath() + " -> " + created);
         }
+        System.out.println("DEBUG: LOB 파일 경로: " + lobFile.getAbsolutePath() + ", XML 참조: " + lobFilename);
         return new AbstractMap.SimpleEntry<>(lobFile, lobFilename);
     }
 
