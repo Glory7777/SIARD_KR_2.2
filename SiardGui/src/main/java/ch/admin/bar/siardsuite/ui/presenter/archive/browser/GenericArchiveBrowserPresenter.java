@@ -184,11 +184,23 @@ public class GenericArchiveBrowserPresenter {
             currentFormRenderer.dropChanges();
         });
 
+        // 동일 항목 재클릭 시에도 강제 새로고침되도록 처리
+        this.treeView.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
+            try {
+                final TreeItem<TreeAttributeWrapper> selected = treeView.getSelectionModel().getSelectedItem();
+                if (selected != null && selected.getValue() != null) {
+                    refreshContentPane(selected.getValue());
+                }
+            } catch (Exception ignore) {
+            }
+        });
+
         resetSearchButton.setOnAction(event -> {
             TreeItem<TreeAttributeWrapper> rootNode = treeView.getRoot();
             TreeAttributeWrapper wrapper = rootNode.getValue();
             currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
             currentSearchTerm = null;
+            currentSearchIndex = null; // SearchIndex 초기화
             searchResultCache.clear(); // 캐시 클리어
             treeCache.clear();
             setCurrentInputInteractive(false);

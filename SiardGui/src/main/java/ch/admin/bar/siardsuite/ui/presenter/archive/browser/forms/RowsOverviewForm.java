@@ -50,32 +50,36 @@ public class RowsOverviewForm {
                         createCellClickListener(column)))
                 .collect(Collectors.toList());
 
-        // No. 컬럼: 검색 시에는 "뷰 내 순번(페이지 기준)"을, 비검색 시에는 절대 인덱스(Record+1)를 보여준다
+        // No. 컬럼: 단순히 데이터 개수 순번 (1, 2, 3...)
         tableProperties.add(0, new TableColumnProperty<>(
                 DisplayableText.of("No."),
-                row -> {
-                    if (searchTerm != null && !searchTerm.isBlank()) {
-                        return String.valueOf(row.getViewIndex());
-                    }
-                    return String.valueOf(row.getAbsoluteIndex());
-                },
+                row -> String.valueOf(row.getViewIndex()), // 항상 1부터 시작하는 순번
                 Optional.empty()
         ));
 
         // 검색인 경우 매치된 테이블과 값의 스니펫을 별도 컬럼으로 추가해 가독성을 높인다
         if (searchTerm != null && !searchTerm.isBlank()) {
-            // 절대 인덱스(Record+1) 보조 컬럼을 추가하여 통합 결과의 특정 항목과 대조 확인을 쉽게 한다
+            // 통합검색결과의 No.와 일치하는 Matched No. 컬럼 추가 (No. 바로 다음)
             tableProperties.add(1, new TableColumnProperty<>(
-                    DisplayableText.of("Abs. Row"),
-                    row -> String.valueOf(row.getAbsoluteIndex()),
+                    DisplayableText.of("Matched No."),
+                    row -> {
+                        try {
+                            long recordZeroBased = row.getRecord().getRecord();
+                            Long global = (searchIndex != null) ?
+                                    searchIndex.getGlobalIndex(table, recordZeroBased) : null;
+                            return global != null ? String.valueOf(global) : "";
+                        } catch (Exception e) {
+                            return "";
+                        }
+                    },
                     Optional.empty()
             ));
-            tableProperties.add(1, new TableColumnProperty<>(
+            tableProperties.add(2, new TableColumnProperty<>(
                     DisplayableText.of("Matched Table"),
                     row -> table.getName(),
                     Optional.empty()
             ));
-            tableProperties.add(2, new TableColumnProperty<>(
+            tableProperties.add(3, new TableColumnProperty<>(
                     DisplayableText.of("Matched Value"),
                     row -> row.findFirstMatchedSnippet(searchTerm),
                     Optional.empty()
@@ -505,23 +509,20 @@ public class RowsOverviewForm {
             dispenser.skip(startIndex);
 
             final List<RecordWrapper> collected = new ArrayList<>();
-            long viewSeq = startIndex + 1L;
+            long viewSeq = startIndex + 1L; // No. 컬럼용 순번 (1, 2, 3...)
             for (int i = 0; i < nrOfItems; i++) {
                 val record = dispenser.getWithSearchTerm(searchTerm);
                 if (record == null) break;
 
                 if (isSearchTermBlank()) {
-                        collected.add(new RecordWrapper(record));
+                    // 비검색 모드: No. = 절대 인덱스
+                    collected.add(new RecordWrapper(record, viewSeq, record.getRecord() + 1));
                 } else if (dispenser.anyMatches()) {
+                    // 검색 모드: No. = 순번, Matched No. = 절대 인덱스
                     long abs1Based = record.getRecord() + 1;
-                    // SearchIndex가 있다면 전역 순번을 뷰 순번으로 사용한다(통합 결과와 동일하게 보이도록)
-                    long globalView = abs1Based; // 기본값: 절대 인덱스
-                    try {
-                        // DatabaseTable을 통해 SearchIndex 접근은 Presenter에서 주입하는 방식으로 확장 가능
-                        // 현재는 절대 인덱스를 그대로 사용해도 UX에 큰 문제 없음
-                    } catch (Exception ignore) {}
-                    collected.add(new RecordWrapper(record, globalView, abs1Based));
+                    collected.add(new RecordWrapper(record, viewSeq, abs1Based));
                 }
+                viewSeq++;
             }
 
             return collected;

@@ -622,15 +622,9 @@ public class TreeBuilder {
 
         // 검색어가 있으면 Presenter에서 구축한 SearchIndex를 사용하여 매치 건수 표시(재스캔 금지)
         DisplayableText tableNameDisplay;
-        if (searchTerm != null && !searchTerm.isBlank()) {
-            try {
-                long matchedRows = 0;
-                // SearchIndex는 Presenter가 보유하므로, 여기서는 안전하게 총만 표시(불일치 방지를 위해)
-                // 트리 라벨은 총/… 형식으로, Rows에서 정확 매치 수를 보여주도록 한다.
-                tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + "/…)");
-            } catch (Exception e) {
-                tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + "/…)");
-            }
+        if (searchTerm != null && !searchTerm.isBlank() && searchIndex != null) {
+            long matchedRows = searchIndex.getMatchedCount(table);
+            tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + ")");
         } else {
             tableNameDisplay = (isCustom ? tableAndCount : DisplayableText.of(table.getName()));
         }
@@ -659,15 +653,11 @@ public class TreeBuilder {
                     .readOnlyForm(readonly)
                     .build();
 
-            // 검색어가 있으면 Rows 라벨은 Presenter에서 계산된 값으로 이후 UI에서 표시되므로 여기서는 총만 표기
+            // 검색어가 있으면 Rows 라벨은 매치된 개수만 표시
             long rowCountForLabel;
-            if (searchTerm != null && !searchTerm.isBlank()) {
-                try {
-                    long matched = (searchIndex != null) ? searchIndex.getMatchedCount(table) : 0L;
-                    rowCountForLabel = matched;
-                } catch (Exception e) {
-                    rowCountForLabel = table.getNumberOfRows(); // 오류 시 전체 행 수 표시
-                }
+            if (searchTerm != null && !searchTerm.isBlank() && searchIndex != null) {
+                long matched = searchIndex.getMatchedCount(table);
+                rowCountForLabel = matched; // 매치된 개수만 표시
             } else {
                 rowCountForLabel = table.getNumberOfRows(); // 검색어가 없으면 전체 행 수 표시
             }
