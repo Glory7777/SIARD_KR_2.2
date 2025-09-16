@@ -76,8 +76,6 @@ public class TreeBuilder {
     private final boolean readonly;
     private final boolean columnSelectable;
     private final String searchTerm;
-    // Presenter에서 만든 SearchIndex를 주입 받아 라벨/Rows에 재사용(재스캔 금지)
-    private final SearchIndex searchIndex;
 
 
     //  1.  RootItem
@@ -620,23 +618,11 @@ public class TreeBuilder {
         String countRecords =  " (" + table.getNumberOfRows() + ")";
         DisplayableText tableAndCount = DisplayableText.of(table.getName() + countRecords);
 
-        // 검색어가 있으면 Presenter에서 구축한 SearchIndex를 사용하여 매치 건수 표시(재스캔 금지)
-        DisplayableText tableNameDisplay;
-        if (searchTerm != null && !searchTerm.isBlank()) {
-            try {
-                long matchedRows = 0;
-                // SearchIndex는 Presenter가 보유하므로, 여기서는 안전하게 총만 표시(불일치 방지를 위해)
-                // 트리 라벨은 총/… 형식으로, Rows에서 정확 매치 수를 보여주도록 한다.
-                tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + "/…)");
-            } catch (Exception e) {
-                tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + "/…)");
-            }
-        } else {
-            tableNameDisplay = (isCustom ? tableAndCount : DisplayableText.of(table.getName()));
-        }
-
         val tableItem = new TreeItem<>(TreeAttributeWrapper.builder()
-                .name(tableNameDisplay)
+                // .name(DisplayableText.of(table.getName()))
+                .name(isCustom
+                        ? tableAndCount
+                        : DisplayableText.of(table.getName()))
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
                 .renderableForm(
                         TableOverviewForm.create(table).toBuilder()
@@ -654,27 +640,14 @@ public class TreeBuilder {
 
         // Row 아이템 추가
         if (!siardArchive.onlyMetaData()) {
-            RenderableForm<DatabaseTable> form = RowsOverviewForm.createAndUpdateWithSearchResult(table, searchTerm, searchIndex)
+            RenderableForm<DatabaseTable> form = RowsOverviewForm.createAndUpdateWithSearchResult(table, searchTerm)
                     .toBuilder()
                     .readOnlyForm(readonly)
                     .build();
 
-            // 검색어가 있으면 Rows 라벨은 Presenter에서 계산된 값으로 이후 UI에서 표시되므로 여기서는 총만 표기
-            long rowCountForLabel;
-            if (searchTerm != null && !searchTerm.isBlank()) {
-                try {
-                    long matched = (searchIndex != null) ? searchIndex.getMatchedCount(table) : 0L;
-                    rowCountForLabel = matched;
-                } catch (Exception e) {
-                    rowCountForLabel = table.getNumberOfRows(); // 오류 시 전체 행 수 표시
-                }
-            } else {
-                rowCountForLabel = table.getNumberOfRows(); // 검색어가 없으면 전체 행 수 표시
-            }
-            
             val rowsItem = new TreeItem<>(TreeAttributeWrapper.builder()
                     .renderableForm(form)
-                    .name(DisplayableText.of(ROWS_ELEMENT_NAME, rowCountForLabel))
+                    .name(DisplayableText.of(ROWS_ELEMENT_NAME, table.getNumberOfRows()))
                     .viewTitle(DisplayableText.of(ROWS_VIEW_TITLE))
                     .databaseAttribute(RECORD)
                     .databaseTable(table)
@@ -766,24 +739,6 @@ public class TreeBuilder {
     // 커스텀 메서드
     private TreeItem<TreeAttributeWrapper> customCreateColumnItem(DatabaseColumn column) {
         return createColumnItem(column, false); // 체크박스 비활성화
-    }
-
-    private long calculateMatchedRows(DatabaseTable table, String searchTerm) {
-        try {
-            val dispenser = table.getTable().openRecords();
-            long count = 0;
-            final int MAX_COUNT = 1000; // 성능을 위해 최대 1000개로 제한
-            while (count < MAX_COUNT) {
-                val rec = dispenser.getWithSearchTerm(searchTerm);
-                if (rec == null) break;
-                if (dispenser.anyMatches()) {
-                    count++;
-                }
-            }
-            return count;
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
 }

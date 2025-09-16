@@ -32,20 +32,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.concurrent.Task;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.input.MouseEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static ch.admin.bar.siardsuite.model.TreeItemUtil.findChildrenTreeItemList;
 import static ch.admin.bar.siardsuite.util.I18n.localeProperty;
@@ -122,10 +115,6 @@ public class GenericArchiveBrowserPresenter {
     private ErrorHandler errorHandler;
 
     private final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
-    private String currentSearchTerm = null;
-    private Map<String, Long> searchResultCache = new HashMap<>();
-    private Map<String, TreeItem<TreeAttributeWrapper>> treeCache = new HashMap<>();
-    private SearchIndex currentSearchIndex = null; // 검색 인덱스(전역 캐시)
 
     public void init(
             final Dialogs dialogs,
@@ -152,9 +141,6 @@ public class GenericArchiveBrowserPresenter {
         this.recordSearchButton.textProperty().bind(DisplayableText.of(RECORD_SEARCH).bindable());
         this.currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
         this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText());
-        
-        // Current Input 초기 상태: 비활성(검색 전에는 클릭/파랑 표시 금지)
-        setCurrentInputInteractive(false);
         this.title.textProperty().bind(titleValue.bindable());
         this.text.textProperty().bind(textValue.bindable());
 
@@ -187,11 +173,7 @@ public class GenericArchiveBrowserPresenter {
         resetSearchButton.setOnAction(event -> {
             TreeItem<TreeAttributeWrapper> rootNode = treeView.getRoot();
             TreeAttributeWrapper wrapper = rootNode.getValue();
-            currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
-            currentSearchTerm = null;
-            searchResultCache.clear(); // 캐시 클리어
-            treeCache.clear();
-            setCurrentInputInteractive(false);
+            currentSearchLabel.setText("");
             refreshContentPane(wrapper); // 초기 상태로 리셋
             this.refreshTree(null);
         });
@@ -236,143 +218,33 @@ public class GenericArchiveBrowserPresenter {
     }
 
     private void refreshTree(String searchTerm) {
-        // 검색 시작: "Searching..." 표시 및 중앙 팝업 오버레이
-        this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " Searching...");
-        this.currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText() + " " + (searchTerm == null ? "" : searchTerm));
-        this.currentSearchTerm = searchTerm;
-        // 검색 중에는 Current Input을 비활성(파랑/클릭 해제)
-        setCurrentInputInteractive(false);
+        SiardArchive cachedArchive = treeBuilder.getSiardArchive();
+        TreeItem<TreeAttributeWrapper> root = treeView.getRoot();
+        List<TreeItem<TreeAttributeWrapper>> recordTreeItemList = findChildrenTreeItemList(root, new ArrayList<>(), TreeAttributeWrapper.DatabaseAttribute.RECORD);
 
-        // 전체 화면을 덮는 오버레이 생성
-        final ProgressIndicator indicator = new ProgressIndicator();
-        indicator.setPrefSize(80, 80);
-        
-        final StackPane fullOverlay = new StackPane(indicator);
-        fullOverlay.setStyle("-fx-background-color: rgba(255,255,255,0.9);");
-        fullOverlay.setPickOnBounds(true);
-        
-        // 검색 버튼만 비활성화 (사용자가 다른 작업 가능하도록)
-        if (recordSearchButton != null) recordSearchButton.setDisable(true);
-        
-        //  // 모든 버튼과 트리 비활성화 (검색 중 상호작용 차단)
-        // if (metaSearchButton != null) metaSearchButton.setDisable(true);
-        // if (tableSearchButton != null) tableSearchButton.setDisable(true);
-        // if (resetSearchButton != null) resetSearchButton.setDisable(true);
-        // treeView.setDisable(true);
-        
-        // 컨테이너에 오버레이 추가 (모든 상호작용 차단)
-        this.container.getChildren().add(fullOverlay);
-
-        Task<Void> task = new Task<>() {
-            TreeItem<TreeAttributeWrapper> newRootItem;
-
-            @Override
-            protected Void call() {
-                SiardArchive cachedArchive = treeBuilder.getSiardArchive();
-
-                // 1) 검색 인덱스 구축: 전 테이블 전수 스캔(한 번)
-                if (searchTerm != null && !searchTerm.isBlank()) {
-                    currentSearchIndex = new SearchIndex();
-                    cachedArchive.getSchemas().forEach(schema -> {
-                        schema.getTables().forEach(dbTable -> {
-                            try {
-                                val dispenser = dbTable.getTable().openRecords();
-                                while (true) {
-                                    val rec = dispenser.getWithSearchTerm(searchTerm);
-                                    if (rec == null) break;
-                                    if (dispenser.anyMatches()) {
-                                        currentSearchIndex.addMatch(dbTable, rec.getRecord());
-                                    }
-                                }
-                            } catch (Exception ignore) {}
-                        });
-                    });
-                } else {
-                    currentSearchIndex = null; // 검색 아님
-                }
-
-                // 2) 트리 생성(필요 시 인덱스를 참조하도록 동일 searchTerm 전달)
-                TreeBuilder newTreeBuilder = TreeBuilder.builder()
-                        .siardArchive(cachedArchive)
-                        .readonly(true)
-                        .columnSelectable(true)
-                        .searchTerm(searchTerm)
-                        .searchIndex(currentSearchIndex)
-                        .build();
-                newRootItem = newTreeBuilder.customCreateRootItem();
-                // 캐시에 저장 (카운트는 저장하지 않음)
-                treeCache.put(searchTerm, newRootItem);
-                
-                return null;
-            }
-
-            @Override
-            protected void succeeded() {
-                // 검색 완료: 실제 매치 개수 계산하여 표시
-                long totalMatched = (currentSearchIndex != null) ? currentSearchIndex.getTotalMatched() : 0L;
-                resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " " + totalMatched);
-                treeView.setRoot(newRootItem);
-                
-                // 오버레이 제거 및 검색 버튼 다시 활성화
-                container.getChildren().remove(fullOverlay);
-                if (recordSearchButton != null) recordSearchButton.setDisable(false);
-
-                // if (metaSearchButton != null) metaSearchButton.setDisable(false);
-                // if (tableSearchButton != null) tableSearchButton.setDisable(false);
-                // if (resetSearchButton != null) resetSearchButton.setDisable(false);
-                // treeView.setDisable(false);
-                
-                // 우측 컨텐츠 보이기
-                contentPane.setVisible(true);
-                
-                // 검색 완료 후 자동으로 통합 검색 결과 표시
-                if (searchTerm != null && !searchTerm.isBlank()) {
-                    // 통합 검색 결과 자동 표시
-                    try {
-                        val unifiedForm = RowsOverviewForm.createUnifiedSearchResult(treeBuilder.getSiardArchive(), searchTerm, currentSearchIndex);
-                        currentFormRenderer = FormRenderer.builder()
-                                .renderableForm(unifiedForm)
-                                .hasChanged(hasChanged)
-                                .errorHandler(errorHandler)
-                                .build();
-
-                        val vbox = currentFormRenderer.getRendered();
-                        AnchorPane.setLeftAnchor(vbox, 0D);
-                        AnchorPane.setRightAnchor(vbox, 0D);
-                        VBox.setVgrow(vbox, Priority.ALWAYS);
-                        vbox.setPadding(new Insets(25));
-
-                        contentPane.getChildren().setAll(vbox);
-                        contentPane.setVisible(true);
-                    } catch (Exception e) {
-                        log.error("Failed to show unified search results", e);
-                        // 오류 시 첫 번째 RECORD 노드 선택
-                        TreeItem<TreeAttributeWrapper> recordNode = findFirstRecordNode(newRootItem);
-                        if (recordNode != null) {
-                            treeView.getSelectionModel().select(recordNode);
+        long resultsFound = recordTreeItemList.stream()
+                .map(TreeItem::getValue)
+                .mapToLong(
+                        attr -> {
+                            attr.setTableToDefault();
+                            RowsOverviewForm.RecordDataSource recordDataSource = new RowsOverviewForm.RecordDataSource(attr.getDatabaseTable().getTable(), searchTerm);
+                            recordDataSource.load(0, (int) attr.getDatabaseTable().getNumberOfRows());
+                            return recordDataSource.getNumberOfItems();
                         }
-                    }
-                } else {
-                    // 검색어가 없으면 첫 번째 RECORD 노드 선택
-                    TreeItem<TreeAttributeWrapper> recordNode = findFirstRecordNode(newRootItem);
-                    if (recordNode != null) {
-                        treeView.getSelectionModel().select(recordNode);
-                    }
-                }
-                
-                // Current Input은 검색 후에만 활성화
-                setCurrentInputInteractive(searchTerm != null && !searchTerm.isBlank());
-            }
+                )
+                .sum();
 
-            @Override
-            protected void failed() {
-                // 오버레이 제거 및 검색 버튼 다시 활성화
-                container.getChildren().remove(fullOverlay);
-                if (recordSearchButton != null) recordSearchButton.setDisable(false);
-            }
-        };
+        System.out.println("resultsFound = " + resultsFound);
+        this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + resultsFound);
 
-        new Thread(task).start();
+        TreeBuilder newTreeBuilder = TreeBuilder.builder()
+                .siardArchive(cachedArchive)
+                .readonly(true)
+                .columnSelectable(true)
+                .searchTerm(searchTerm)
+                .build();
+        TreeItem<TreeAttributeWrapper> rootItem = newTreeBuilder.customCreateRootItem();
+        treeView.setRoot(rootItem);
     }
 
     private void onSelectedTreeItemChanged(final DeactivatableListener.Change<TreeItem<TreeAttributeWrapper>> change) {
@@ -519,85 +391,6 @@ public class GenericArchiveBrowserPresenter {
             totalSizeLabel.setVisible(false);
             totalSizeLabel.setManaged(false); // 레이아웃에서 공간도 차지하지 않게 설정
         }
-    }
-
-    /**
-     * Current Input 클릭 시 통합 검색 결과를 표시
-     */
-    private void onCurrentInputClicked(MouseEvent event) {
-        if (currentSearchTerm != null && !currentSearchTerm.isBlank() && currentSearchIndex != null) {
-            // 통합 검색 결과 표시 (캐시된 결과 사용)
-            try {
-                val unifiedForm = RowsOverviewForm.createUnifiedSearchResult(treeBuilder.getSiardArchive(), currentSearchTerm, currentSearchIndex );
-                currentFormRenderer = FormRenderer.builder()
-                        .renderableForm(unifiedForm)
-                        .hasChanged(hasChanged)
-                        .errorHandler(errorHandler)
-                        .build();
-
-                val vbox = currentFormRenderer.getRendered();
-                AnchorPane.setLeftAnchor(vbox, 0D);
-                AnchorPane.setRightAnchor(vbox, 0D);
-                VBox.setVgrow(vbox, Priority.ALWAYS);
-                vbox.setPadding(new Insets(25));
-
-                this.contentPane.getChildren().setAll(vbox);
-                this.contentPane.setVisible(true);
-            } catch (Exception e) {
-                log.error("Failed to show unified search results", e);
-            }
-        }
-    }
-
-    // Current Input 라벨의 클릭 가능/스타일을 토글하는 헬퍼
-    private void setCurrentInputInteractive(boolean interactive) {
-        if (interactive) {
-            this.currentSearchLabel.setOnMouseClicked(this::onCurrentInputClicked);
-            this.currentSearchLabel.setStyle("-fx-text-fill: #0066cc; -fx-underline: true; -fx-cursor: hand;");
-        } else {
-            this.currentSearchLabel.setOnMouseClicked(null);
-            this.currentSearchLabel.setStyle("");
-        }
-    }
-
-    /**
-     * 트리에서 모든 RECORD 노드의 매치된 행 수를 합산
-     */
-    private long calculateTotalMatchedRows(TreeItem<TreeAttributeWrapper> rootItem) {
-        long total = 0;
-        if (rootItem == null) return total;
-        
-        // 모든 자식 노드를 재귀적으로 탐색
-        for (TreeItem<TreeAttributeWrapper> child : rootItem.getChildren()) {
-            TreeAttributeWrapper wrapper = child.getValue();
-            if (wrapper != null && wrapper.getDatabaseAttribute() == TreeAttributeWrapper.DatabaseAttribute.RECORD) {
-                // RECORD 노드인 경우 매치된 행 수 추가
-                try {
-                    val recordDataSource = new RowsOverviewForm.RecordDataSource(wrapper.getDatabaseTable(), currentSearchTerm);
-                    long matchedRows = recordDataSource.getNumberOfItems();
-                    total += matchedRows;
-                    log.info("Table {} has {} matched rows", wrapper.getDatabaseTable().getName(), matchedRows);
-                } catch (Exception e) {
-                    log.error("Error calculating matched rows for table {}", wrapper.getDatabaseTable().getName(), e);
-                }
-            }
-            // 재귀적으로 자식 노드들도 탐색
-            total += calculateTotalMatchedRows(child);
-        }
-        return total;
-    }
-
-    // 새 트리에서 첫 번째 RECORD 노드를 찾는다.
-    private TreeItem<TreeAttributeWrapper> findFirstRecordNode(TreeItem<TreeAttributeWrapper> root) {
-        if (root == null) return null;
-        if (root.getValue() != null && root.getValue().getDatabaseAttribute() == TreeAttributeWrapper.DatabaseAttribute.RECORD) {
-            return root;
-        }
-        for (TreeItem<TreeAttributeWrapper> child : root.getChildren()) {
-            TreeItem<TreeAttributeWrapper> found = findFirstRecordNode(child);
-            if (found != null) return found;
-        }
-        return null;
     }
 
 }
