@@ -55,6 +55,8 @@ public class MySqlDriver extends BaseDriver implements Driver {
         info.setProperty("enableEscapeProcessing", "false");
         info.setProperty("processEscapeCodesForPrepStmts", "false");
         info.setProperty("sessionVariables", "sql_mode='ANSI'"); // NO_BACKSLASH_ESCAPSES 설정 제거
+        info.setProperty("zeroDateTimeBehavior", "convertToNull");
+
         Connection conn = super.connect(url, info);
         if (conn != null)
             conn = new MySqlConnection(conn);
