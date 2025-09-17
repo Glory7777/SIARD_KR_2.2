@@ -620,11 +620,11 @@ public class TreeBuilder {
         String countRecords =  " (" + table.getNumberOfRows() + ")";
         DisplayableText tableAndCount = DisplayableText.of(table.getName() + countRecords);
 
-        // 검색어가 있으면 Presenter에서 구축한 SearchIndex를 사용하여 매치 건수 표시(재스캔 금지)
+        // 검색 중에는 매치된 건수를, 리셋/초기 상태에서는 전체 행수를 표시
         DisplayableText tableNameDisplay;
         if (searchTerm != null && !searchTerm.isBlank() && searchIndex != null) {
             long matchedRows = searchIndex.getMatchedCount(table);
-            tableNameDisplay = DisplayableText.of(table.getName() + " (" + table.getNumberOfRows() + ")");
+            tableNameDisplay = DisplayableText.of(table.getName() + " (" + matchedRows + ")");
         } else {
             tableNameDisplay = (isCustom ? tableAndCount : DisplayableText.of(table.getName()));
         }
@@ -762,7 +762,7 @@ public class TreeBuilder {
         try {
             val dispenser = table.getTable().openRecords();
             long count = 0;
-            final int MAX_COUNT = 1000; // 성능을 위해 최대 1000개로 제한
+            final int MAX_COUNT = 100000; // 성능을 위해 최대 100000개로 제한
             while (count < MAX_COUNT) {
                 val rec = dispenser.getWithSearchTerm(searchTerm);
                 if (rec == null) break;

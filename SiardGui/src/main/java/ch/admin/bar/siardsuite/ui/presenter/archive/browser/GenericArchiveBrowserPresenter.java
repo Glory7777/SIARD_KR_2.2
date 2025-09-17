@@ -126,6 +126,10 @@ public class GenericArchiveBrowserPresenter {
     private Map<String, Long> searchResultCache = new HashMap<>();
     private Map<String, TreeItem<TreeAttributeWrapper>> treeCache = new HashMap<>();
     private SearchIndex currentSearchIndex = null; // 검색 인덱스(전역 캐시)
+    private boolean rebuildingTree = false; // 트리 재구성 중 선택 이벤트 무시
+    private TreeItem<TreeAttributeWrapper> initialRootItem; // 최초 로드된 트리(정확한 카운트 유지)
+    private Task<Void> currentSearchTask; // 진행 중인 검색 태스크
+    private StackPane currentSearchOverlay; // 진행 중 오버레이
 
     public void init(
             final Dialogs dialogs,
@@ -143,6 +147,7 @@ public class GenericArchiveBrowserPresenter {
         this.treeView.setRoot(rootTreeItem);
         this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory(this, treeView));
         this.treeBuilder = treeBuilder;
+        this.initialRootItem = rootTreeItem; // 초기 트리 보관
 
         this.archiveStep = archiveStep;
 
@@ -152,6 +157,9 @@ public class GenericArchiveBrowserPresenter {
         this.recordSearchButton.textProperty().bind(DisplayableText.of(RECORD_SEARCH).bindable());
         this.currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
         this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText());
+        // 초기 화면에서는 결과 라벨 비노출 (검색 수행 시에만 노출)
+        this.resultsFound.setVisible(false);
+        this.resultsFound.setManaged(false);
         
         // Current Input 초기 상태: 비활성(검색 전에는 클릭/파랑 표시 금지)
         setCurrentInputInteractive(false);
@@ -187,6 +195,7 @@ public class GenericArchiveBrowserPresenter {
         // 동일 항목 재클릭 시에도 강제 새로고침되도록 처리
         this.treeView.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, event -> {
             try {
+                if (rebuildingTree) return; // 재구성 중에는 무시
                 final TreeItem<TreeAttributeWrapper> selected = treeView.getSelectionModel().getSelectedItem();
                 if (selected != null && selected.getValue() != null) {
                     refreshContentPane(selected.getValue());
@@ -196,7 +205,19 @@ public class GenericArchiveBrowserPresenter {
         });
 
         resetSearchButton.setOnAction(event -> {
-            TreeItem<TreeAttributeWrapper> rootNode = treeView.getRoot();
+            // 진행 중 검색이 있으면 즉시 취소 및 오버레이 제거
+            try {
+                if (currentSearchTask != null && currentSearchTask.isRunning()) {
+                    currentSearchTask.cancel();
+                }
+                if (currentSearchOverlay != null) {
+                    container.getChildren().remove(currentSearchOverlay);
+                    currentSearchOverlay = null;
+                }
+                if (recordSearchButton != null) recordSearchButton.setDisable(false);
+            } catch (Exception ignore) {}
+
+            TreeItem<TreeAttributeWrapper> rootNode = initialRootItem;
             TreeAttributeWrapper wrapper = rootNode.getValue();
             currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
             currentSearchTerm = null;
@@ -204,8 +225,22 @@ public class GenericArchiveBrowserPresenter {
             searchResultCache.clear(); // 캐시 클리어
             treeCache.clear();
             setCurrentInputInteractive(false);
-            refreshContentPane(wrapper); // 초기 상태로 리셋
-            this.refreshTree(null);
+            // 결과 라벨 숨김 처리
+            this.resultsFound.setVisible(false);
+            this.resultsFound.setManaged(false);
+            // 컨텐츠를 메타데이터(루트)로 우선 전환
+            refreshContentPane(wrapper);
+            // 트리를 최초 상태로 즉시 복원(재구성 없이 원본을 사용)
+            try {
+                rebuildingTree = true;
+                treeView.getSelectionModel().clearSelection();
+                treeView.setRoot(null);
+                treeView.setRoot(initialRootItem);
+                treeView.getSelectionModel().select(initialRootItem);
+                treeView.refresh();
+            } finally {
+                rebuildingTree = false;
+            }
         });
 
         tableSearchButton.setNormalStateAction(event ->
@@ -248,8 +283,16 @@ public class GenericArchiveBrowserPresenter {
     }
 
     private void refreshTree(String searchTerm) {
-        // 검색 시작: "Searching..." 표시 및 중앙 팝업 오버레이
-        this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " Searching...");
+        // 검색 시작 UI 처리
+        if (searchTerm != null && !searchTerm.isBlank()) {
+            this.resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " Searching...");
+            this.resultsFound.setVisible(true);
+            this.resultsFound.setManaged(true);
+        } else {
+            // 검색어가 없으면 결과 라벨 숨김
+            this.resultsFound.setVisible(false);
+            this.resultsFound.setManaged(false);
+        }
         this.currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText() + " " + (searchTerm == null ? "" : searchTerm));
         this.currentSearchTerm = searchTerm;
         // 검색 중에는 Current Input을 비활성(파랑/클릭 해제)
@@ -274,6 +317,7 @@ public class GenericArchiveBrowserPresenter {
         
         // 컨테이너에 오버레이 추가 (모든 상호작용 차단)
         this.container.getChildren().add(fullOverlay);
+        this.currentSearchOverlay = fullOverlay;
 
         Task<Void> task = new Task<>() {
             TreeItem<TreeAttributeWrapper> newRootItem;
@@ -286,10 +330,13 @@ public class GenericArchiveBrowserPresenter {
                 if (searchTerm != null && !searchTerm.isBlank()) {
                     currentSearchIndex = new SearchIndex();
                     cachedArchive.getSchemas().forEach(schema -> {
+                        if (isCancelled()) return; // 취소 시 빠른 종료
                         schema.getTables().forEach(dbTable -> {
+                            if (isCancelled()) return; // 취소 시 빠른 종료
                             try {
                                 val dispenser = dbTable.getTable().openRecords();
                                 while (true) {
+                                    if (isCancelled()) break; // 취소 체크
                                     val rec = dispenser.getWithSearchTerm(searchTerm);
                                     if (rec == null) break;
                                     if (dispenser.anyMatches()) {
@@ -320,13 +367,32 @@ public class GenericArchiveBrowserPresenter {
 
             @Override
             protected void succeeded() {
-                // 검색 완료: 실제 매치 개수 계산하여 표시
-                long totalMatched = (currentSearchIndex != null) ? currentSearchIndex.getTotalMatched() : 0L;
-                resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " " + totalMatched);
-                treeView.setRoot(newRootItem);
+                // 검색 완료: 결과 라벨 업데이트/토글
+                if (searchTerm != null && !searchTerm.isBlank()) {
+                    long totalMatched = (currentSearchIndex != null) ? currentSearchIndex.getTotalMatched() : 0L;
+                    resultsFound.setText(DisplayableText.of(RESULTS_FOUND).getText() + " " + totalMatched);
+                    resultsFound.setVisible(true);
+                    resultsFound.setManaged(true);
+                } else {
+                    resultsFound.setVisible(false);
+                    resultsFound.setManaged(false);
+                }
+                try {
+                    rebuildingTree = true;
+                    treeView.getSelectionModel().clearSelection();
+                    treeView.setRoot(null);
+                    treeView.setRoot(newRootItem);
+                    if (searchTerm == null || searchTerm.isBlank()) {
+                        treeView.getSelectionModel().select(newRootItem);
+                    }
+                    treeView.refresh();
+                } finally {
+                    rebuildingTree = false;
+                }
                 
                 // 오버레이 제거 및 검색 버튼 다시 활성화
                 container.getChildren().remove(fullOverlay);
+                currentSearchOverlay = null;
                 if (recordSearchButton != null) recordSearchButton.setDisable(false);
 
                 // if (metaSearchButton != null) metaSearchButton.setDisable(false);
@@ -364,30 +430,31 @@ public class GenericArchiveBrowserPresenter {
                             treeView.getSelectionModel().select(recordNode);
                         }
                     }
-                } else {
-                    // 검색어가 없으면 첫 번째 RECORD 노드 선택
-                    TreeItem<TreeAttributeWrapper> recordNode = findFirstRecordNode(newRootItem);
-                    if (recordNode != null) {
-                        treeView.getSelectionModel().select(recordNode);
-                    }
                 }
                 
                 // Current Input은 검색 후에만 활성화
                 setCurrentInputInteractive(searchTerm != null && !searchTerm.isBlank());
+                currentSearchTask = null;
             }
 
             @Override
             protected void failed() {
                 // 오버레이 제거 및 검색 버튼 다시 활성화
                 container.getChildren().remove(fullOverlay);
+                currentSearchOverlay = null;
                 if (recordSearchButton != null) recordSearchButton.setDisable(false);
+                currentSearchTask = null;
             }
         };
 
+        this.currentSearchTask = task;
         new Thread(task).start();
     }
 
     private void onSelectedTreeItemChanged(final DeactivatableListener.Change<TreeItem<TreeAttributeWrapper>> change) {
+        if (rebuildingTree) {
+            return; // 재구성 중에는 선택 변경 무시
+        }
         if (!hasChanged.get()) {
             contentPane.setVisible(true);
             refreshContentPane(change.getNewValue().getValue());

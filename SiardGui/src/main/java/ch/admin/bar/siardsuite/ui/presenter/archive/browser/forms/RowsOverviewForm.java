@@ -529,6 +529,10 @@ public class RowsOverviewForm {
             } catch (OutOfMemoryError e) {
                 DatabaseExceptionHandlerHelper.doHandleOutOfMemoryException(e);
                 throw e;
+            } catch (Exception e) {
+                // ZIP 파일이 일시적으로 준비되지 않았거나(Reset 타이밍), 암호화 미지원 예외 등인 경우 빈 결과로 안전 복귀
+                log.warn("RecordDataSource.load skipped due to transient error: {}", e.getMessage());
+                return new ArrayList<>();
             }
         }
 
