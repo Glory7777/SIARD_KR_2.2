@@ -76,6 +76,8 @@ public class TreeBuilder {
     private final boolean readonly;
     private final boolean columnSelectable;
     private final String searchTerm;
+    // Presenter에서 만든 SearchIndex를 주입 받아 라벨/Rows에 재사용(재스캔 금지)
+    private final SearchIndex searchIndex;
 
 
     //  1.  RootItem
@@ -618,11 +620,17 @@ public class TreeBuilder {
         String countRecords =  " (" + table.getNumberOfRows() + ")";
         DisplayableText tableAndCount = DisplayableText.of(table.getName() + countRecords);
 
+        // 검색 중에는 매치된 건수를, 리셋/초기 상태에서는 전체 행수를 표시
+        DisplayableText tableNameDisplay;
+        if (searchTerm != null && !searchTerm.isBlank() && searchIndex != null) {
+            long matchedRows = searchIndex.getMatchedCount(table);
+            tableNameDisplay = DisplayableText.of(table.getName() + " (" + matchedRows + ")");
+        } else {
+            tableNameDisplay = (isCustom ? tableAndCount : DisplayableText.of(table.getName()));
+        }
+
         val tableItem = new TreeItem<>(TreeAttributeWrapper.builder()
-                // .name(DisplayableText.of(table.getName()))
-                .name(isCustom
-                        ? tableAndCount
-                        : DisplayableText.of(table.getName()))
+                .name(tableNameDisplay)
                 .viewTitle(DisplayableText.of(TABLE_VIEW_TITLE))
                 .renderableForm(
                         TableOverviewForm.create(table).toBuilder()
@@ -640,14 +648,23 @@ public class TreeBuilder {
 
         // Row 아이템 추가
         if (!siardArchive.onlyMetaData()) {
-            RenderableForm<DatabaseTable> form = RowsOverviewForm.createAndUpdateWithSearchResult(table, searchTerm)
+            RenderableForm<DatabaseTable> form = RowsOverviewForm.createAndUpdateWithSearchResult(table, searchTerm, searchIndex)
                     .toBuilder()
                     .readOnlyForm(readonly)
                     .build();
 
+            // 검색어가 있으면 Rows 라벨은 매치된 개수만 표시
+            long rowCountForLabel;
+            if (searchTerm != null && !searchTerm.isBlank() && searchIndex != null) {
+                long matched = searchIndex.getMatchedCount(table);
+                rowCountForLabel = matched; // 매치된 개수만 표시
+            } else {
+                rowCountForLabel = table.getNumberOfRows(); // 검색어가 없으면 전체 행 수 표시
+            }
+            
             val rowsItem = new TreeItem<>(TreeAttributeWrapper.builder()
                     .renderableForm(form)
-                    .name(DisplayableText.of(ROWS_ELEMENT_NAME, table.getNumberOfRows()))
+                    .name(DisplayableText.of(ROWS_ELEMENT_NAME, rowCountForLabel))
                     .viewTitle(DisplayableText.of(ROWS_VIEW_TITLE))
                     .databaseAttribute(RECORD)
                     .databaseTable(table)
@@ -739,6 +756,24 @@ public class TreeBuilder {
     // 커스텀 메서드
     private TreeItem<TreeAttributeWrapper> customCreateColumnItem(DatabaseColumn column) {
         return createColumnItem(column, false); // 체크박스 비활성화
+    }
+
+    private long calculateMatchedRows(DatabaseTable table, String searchTerm) {
+        try {
+            val dispenser = table.getTable().openRecords();
+            long count = 0;
+            final int MAX_COUNT = 100000; // 성능을 위해 최대 100000개로 제한
+            while (count < MAX_COUNT) {
+                val rec = dispenser.getWithSearchTerm(searchTerm);
+                if (rec == null) break;
+                if (dispenser.anyMatches()) {
+                    count++;
+                }
+            }
+            return count;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
 }

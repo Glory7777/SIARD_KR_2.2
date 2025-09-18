@@ -10,6 +10,7 @@ import ch.admin.bar.siard2.api.utli.ValidCellCounter;
 import ch.enterag.utils.EU;
 import ch.enterag.utils.jaxb.XMLStreamFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,7 +24,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-
+/**
+ * 
+ */
 @Slf4j
 public class RecordDispenserImpl implements RecordDispenser {
     private static final ObjectFactory _OF_TABLE = new ObjectFactory();
@@ -31,6 +34,8 @@ public class RecordDispenserImpl implements RecordDispenser {
     private CountingInputStream _isXml = null;
     private final ValidCellCounter validCellCounter = new ValidCellCounter();
     private boolean anyMatches;
+    private LobReader lobReader; // LobReader 인스턴스 추가
+    private boolean lobReaderInitializedInternal = false; // 내부에서 생성되었는지 여부
 
     InputStream getXmlInputStream() {
         return this._isXml;
@@ -44,7 +49,6 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     private long _lRecord = -1L;
 
-
     private class CountingInputStream extends InputStream {
         private InputStream _is = null;
         private long _lCount = 0L;
@@ -53,14 +57,12 @@ public class RecordDispenserImpl implements RecordDispenser {
             this._is = is;
         }
 
-
         public int read() throws IOException {
             int iResult = this._is.read();
             if (iResult != -1)
                 this._lCount++;
             return iResult;
         }
-
 
         public int read(byte[] buf) throws IOException {
             int iResult = this._is.read(buf);
@@ -69,14 +71,12 @@ public class RecordDispenserImpl implements RecordDispenser {
             return iResult;
         }
 
-
         public int read(byte[] buf, int iOffset, int iLength) throws IOException {
             int iResult = this._is.read(buf, iOffset, iLength);
             if (iResult != -1)
                 this._lCount += iResult;
             return iResult;
         }
-
 
         public void close() throws IOException {
             this._is.close();
@@ -87,15 +87,12 @@ public class RecordDispenserImpl implements RecordDispenser {
         }
     }
 
-
     private ArchiveImpl getArchiveImpl() {
         return (ArchiveImpl) this._table.getParentSchema().getParentArchive();
     }
 
-
     XMLStreamReader readHeader(InputStream isXsd, InputStream isXml) throws IOException {
         XMLStreamReader xsr = null;
-
 
         try {
             if (isXsd != null) {
@@ -118,13 +115,28 @@ public class RecordDispenserImpl implements RecordDispenser {
         return xsr;
     }
 
-
     public RecordDispenserImpl(Table table) throws IOException {
+        this(table, null);
+    }
+
+    public RecordDispenserImpl(Table table, LobReader lobReader) throws IOException {
         this._table = table;
         TableImpl ti = (TableImpl) table;
-        if (!ti.isCreating()) {
 
+        if (!ti.isCreating()) {
             ArchiveImpl ai = getArchiveImpl();
+
+            if (lobReader != null) {
+                this.lobReader = lobReader;
+                this.lobReaderInitializedInternal = false;
+            } else {
+                File siardFile = ai.getFile();
+                if (siardFile != null) {
+                    this.lobReader = new LobReader(siardFile);
+                    this.lobReaderInitializedInternal = true;
+                }
+            }
+
             if (ti.getSortedTable() == null) {
                 this._isXml = new CountingInputStream(ai.openFileEntry(ti.getTableXml()));
             } else {
@@ -138,7 +150,6 @@ public class RecordDispenserImpl implements RecordDispenser {
             throw new IOException("Table cannot be opened for reading!");
         }
     }
-
 
     private Element getRowElement(XMLStreamReader xsr, Document doc) throws XMLStreamException {
         Element elRow = null;
@@ -176,13 +187,10 @@ public class RecordDispenserImpl implements RecordDispenser {
                         listElementsStack.get(0).appendChild(text);
                         break;
                 }
-
-
             }
         }
         return elRow;
     }
-
 
     private RecordType getRecordType(XMLStreamReader xsr) throws IOException, XMLStreamException {
         RecordType rt = null;
@@ -237,7 +245,6 @@ public class RecordDispenserImpl implements RecordDispenser {
     }
 
     private boolean containsSearchTerm(Element elRow, String searchTerm) {
-        String filePath = GlobalState.getInstance().getFilePath();
         SearchUtil searchUtil = new SearchUtil(searchTerm);
         this.anyMatches = false;
 
@@ -252,8 +259,8 @@ public class RecordDispenserImpl implements RecordDispenser {
                         // cPath 비어있으면 elColumn 텍스트 내용을 사용
                         textContent = elColumn.getTextContent();
                     } else {
-                        // cPath 비어있지 않으면 filePath, cPath 로 readRecordByCPath 호출
-                        textContent = LobReader.readRecordByCPath(filePath, cPath);
+                        // cPath 비어있지 않으면 lobReader를 통해 LOB 데이터 조회
+                        textContent = lobReader.readLob(cPath);
                     }
                     //  String textContent = elColumn.getTextContent();
                     if (searchUtil.matches(textContent)) {
@@ -292,7 +299,6 @@ public class RecordDispenserImpl implements RecordDispenser {
         return record;
     }
 
-
     public Record get() throws IOException {
         Record record = null;
         try {
@@ -323,7 +329,6 @@ public class RecordDispenserImpl implements RecordDispenser {
         return record;
     }
 
-
     private long skip(long lSkip, String sTag) throws XMLStreamException {
         long lSkipped = 0L;
         boolean bContinue = (this._xsr.isStartElement() && sTag.equals(this._xsr.getLocalName()));
@@ -339,7 +344,6 @@ public class RecordDispenserImpl implements RecordDispenser {
         }
         return lSkipped;
     }
-
 
     public void skip(long lSkip) throws IOException {
 
@@ -357,8 +361,11 @@ public class RecordDispenserImpl implements RecordDispenser {
 
     }
 
-
     public void close() throws IOException {
+        // 내부에서 생성한 LobReader 인스턴스인 경우에만 close() 호출
+        if (this.lobReader != null && this.lobReaderInitializedInternal) {
+            this.lobReader.close();
+        }
 
         try {
             if (this._xsr != null) {
@@ -376,11 +383,9 @@ public class RecordDispenserImpl implements RecordDispenser {
         this._lRecord = -1L;
     }
 
-
     public long getPosition() {
         return this._lRecord;
     }
-
 
     public long getByteCount() {
         return this._isXml.getByteCount();
