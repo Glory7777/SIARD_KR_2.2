@@ -1,5 +1,6 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 
+import ch.admin.bar.siard2.api.primary.LobReader;
 import ch.admin.bar.siardsuite.framework.dialogs.Dialogs;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
@@ -42,6 +43,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -329,23 +332,27 @@ public class GenericArchiveBrowserPresenter {
                 // 1) 검색 인덱스 구축: 전 테이블 전수 스캔(한 번)
                 if (searchTerm != null && !searchTerm.isBlank()) {
                     currentSearchIndex = new SearchIndex();
-                    cachedArchive.getSchemas().forEach(schema -> {
-                        if (isCancelled()) return; // 취소 시 빠른 종료
-                        schema.getTables().forEach(dbTable -> {
+                    try (LobReader lobReader = new LobReader(new File(cachedArchive.getArchive().getFile().getPath()))) {
+                        cachedArchive.getSchemas().forEach(schema -> {
                             if (isCancelled()) return; // 취소 시 빠른 종료
-                            try {
-                                val dispenser = dbTable.getTable().openRecords();
-                                while (true) {
-                                    if (isCancelled()) break; // 취소 체크
-                                    val rec = dispenser.getWithSearchTerm(searchTerm);
-                                    if (rec == null) break;
-                                    if (dispenser.anyMatches()) {
-                                        currentSearchIndex.addMatch(dbTable, rec.getRecord());
+                            schema.getTables().forEach(dbTable -> {
+                                if (isCancelled()) return; // 취소 시 빠른 종료
+                                try {
+                                    val dispenser = dbTable.getTable().openRecords(lobReader); // LobReader 전달
+                                    while (true) {
+                                        if (isCancelled()) break; // 취소 체크
+                                        val rec = dispenser.getWithSearchTerm(searchTerm);
+                                        if (rec == null) break;
+                                        if (dispenser.anyMatches()) {
+                                            currentSearchIndex.addMatch(dbTable, rec.getRecord());
+                                        }
                                     }
-                                }
-                            } catch (Exception ignore) {}
+                                } catch (Exception ignore) {}
+                            });
                         });
-                    });
+                    } catch (IOException e) {
+                        log.error("Failed to create LobReader for search index", e);
+                    }
                 } else {
                     currentSearchIndex = null; // 검색 아님
                 }
@@ -405,9 +412,9 @@ public class GenericArchiveBrowserPresenter {
                 
                 // 검색 완료 후 자동으로 통합 검색 결과 표시
                 if (searchTerm != null && !searchTerm.isBlank()) {
-                    // 통합 검색 결과 자동 표시
+                    // 통합 검색 결과 자동 표시 (캐시된 결과 사용)
                     try {
-                        val unifiedForm = RowsOverviewForm.createUnifiedSearchResult(treeBuilder.getSiardArchive(), searchTerm, currentSearchIndex);
+                        val unifiedForm = RowsOverviewForm.createUnifiedSearchResult(treeBuilder.getSiardArchive(), searchTerm, currentSearchIndex );
                         currentFormRenderer = FormRenderer.builder()
                                 .renderableForm(unifiedForm)
                                 .hasChanged(hasChanged)
@@ -645,23 +652,27 @@ public class GenericArchiveBrowserPresenter {
     private long calculateTotalMatchedRows(TreeItem<TreeAttributeWrapper> rootItem) {
         long total = 0;
         if (rootItem == null) return total;
-        
-        // 모든 자식 노드를 재귀적으로 탐색
-        for (TreeItem<TreeAttributeWrapper> child : rootItem.getChildren()) {
-            TreeAttributeWrapper wrapper = child.getValue();
-            if (wrapper != null && wrapper.getDatabaseAttribute() == TreeAttributeWrapper.DatabaseAttribute.RECORD) {
-                // RECORD 노드인 경우 매치된 행 수 추가
-                try {
-                    val recordDataSource = new RowsOverviewForm.RecordDataSource(wrapper.getDatabaseTable(), currentSearchTerm);
-                    long matchedRows = recordDataSource.getNumberOfItems();
-                    total += matchedRows;
-                    log.info("Table {} has {} matched rows", wrapper.getDatabaseTable().getName(), matchedRows);
-                } catch (Exception e) {
-                    log.error("Error calculating matched rows for table {}", wrapper.getDatabaseTable().getName(), e);
+
+        try (LobReader lobReader = new LobReader(new File(treeBuilder.getSiardArchive().getArchive().getPath()))) {
+            // 모든 자식 노드를 재귀적으로 탐색
+            for (TreeItem<TreeAttributeWrapper> child : rootItem.getChildren()) {
+                TreeAttributeWrapper wrapper = child.getValue();
+                if (wrapper != null && wrapper.getDatabaseAttribute() == TreeAttributeWrapper.DatabaseAttribute.RECORD) {
+                    // RECORD 노드인 경우 매치된 행 수 추가
+                    try {
+                        val recordDataSource = new RowsOverviewForm.RecordDataSource(wrapper.getDatabaseTable(), currentSearchTerm, lobReader);
+                        long matchedRows = recordDataSource.getNumberOfItems();
+                        total += matchedRows;
+                        log.info("Table {} has {} matched rows", wrapper.getDatabaseTable().getName(), matchedRows);
+                    } catch (Exception e) {
+                        log.error("Error calculating matched rows for table {}", wrapper.getDatabaseTable().getName(), e);
+                    }
                 }
+                // 재귀적으로 자식 노드들도 탐색
+                total += calculateTotalMatchedRows(child);
             }
-            // 재귀적으로 자식 노드들도 탐색
-            total += calculateTotalMatchedRows(child);
+        } catch (IOException e) {
+            log.error("Failed to create LobReader for calculating matched rows", e);
         }
         return total;
     }

@@ -1,11 +1,13 @@
 package ch.admin.bar.siard2.api;
 
 import ch.admin.bar.siard2.api.ext.SftpConnection;
+import ch.admin.bar.siard2.api.primary.LobReader;
 import ch.enterag.utils.background.Progress;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 public interface Table extends Search {
     Schema getParentSchema();
@@ -19,6 +21,8 @@ public interface Table extends Search {
     boolean isEmpty();
 
     RecordDispenser openRecords() throws IOException;
+
+    RecordDispenser openRecords(LobReader lobReader) throws IOException;
 
     RecordRetainer createRecords() throws IOException;
 
@@ -56,4 +60,3 @@ public interface Table extends Search {
 
     void setRowsToDefault();
 }
-

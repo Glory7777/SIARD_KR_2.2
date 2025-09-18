@@ -5,6 +5,7 @@ import ch.admin.bar.dbexception.DbOutOfMemoryException;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.Table;
+import ch.admin.bar.siard2.api.primary.LobReader;
 import ch.admin.bar.siard2.api.primary.TableImpl;
 import ch.admin.bar.siard2.api.MetaColumn;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
@@ -481,31 +482,38 @@ public class RowsOverviewForm {
         }
     }
 
-// 검색 결과 표시의 핵심: DataSource가 매칭 레코드만 즉시 공급하고,
-
+    /**
+     * 
+     */
     public static class RecordDataSource implements LazyLoadingDataSource<RecordWrapper> {
         // DatabaseTable을 보유하면 '전체 행 수'를 정확히 얻을 수 있습니다.
         private final DatabaseTable databaseTable;
         private final Table table;
         private final String searchTerm;
+        private final LobReader lobReader; // LobReader 인스턴스 추가   
         // 매치 총개수 캐시(검색어가 있을 때 한 번만 계산)
         private Long cachedMatchedCount = null;
 
     public RecordDataSource(DatabaseTable databaseTable, String searchTerm) {
+        this(databaseTable, searchTerm, null);
+    }
+
+    public RecordDataSource(DatabaseTable databaseTable, String searchTerm, LobReader lobReader) {
         this.databaseTable = databaseTable;
         this.table = databaseTable.getTable();
             this.searchTerm = searchTerm;
-        }
-
-    private boolean isSearchTermBlank() {
-        return searchTerm == null || searchTerm.isBlank();
+        this.lobReader = lobReader;
     }
+
+        private boolean isSearchTermBlank() {
+            return searchTerm == null || searchTerm.isBlank();
+        }
 
         @SneakyThrows
         @Override
         public List<RecordWrapper> load(int startIndex, int nrOfItems) {
             try {
-            val dispenser = table.openRecords();
+            val dispenser = table.openRecords(this.lobReader); // LobReader 전달
             dispenser.skip(startIndex);
 
             final List<RecordWrapper> collected = new ArrayList<>();
@@ -552,7 +560,7 @@ public class RowsOverviewForm {
             // 전체 스캔으로 매치 수 산출(한 번만)
             long count = 0;
             try {
-                val dispenser = table.openRecords();
+                val dispenser = table.openRecords(this.lobReader); // LobReader 전달
                 while (true) {
                     val rec = dispenser.getWithSearchTerm(searchTerm);
                     if (rec == null) break;

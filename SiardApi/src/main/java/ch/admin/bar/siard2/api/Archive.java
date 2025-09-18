@@ -97,4 +97,6 @@ public interface Archive {
 
     void setFormDataSet(Set<FormData> formDataSet);
 
+    String getPath();
+
 }

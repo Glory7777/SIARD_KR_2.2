@@ -340,8 +340,13 @@ public class TableImpl extends SearchImpl implements Table {
     }
 
 
-    public RecordDispenserImpl openRecords() throws IOException {
-        return new RecordDispenserImpl(this);
+    public RecordDispenser openRecords() throws IOException {
+        return openRecords(null);
+    }
+
+    @Override
+    public RecordDispenser openRecords(LobReader lobReader) throws IOException {
+        return new RecordDispenserImpl(this, lobReader);
     }
 
     private TableImpl(Schema schemaParent, String sName) throws IOException {

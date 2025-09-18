@@ -624,4 +624,10 @@ public class ArchiveImpl implements Archive {
 
     @Override
     public void setFormDataSet(Set<FormData> formDataSet) { this._formDataSet.addAll(formDataSet); }
+
+    @Override
+    public String getPath() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPath'");
+    }
 }
