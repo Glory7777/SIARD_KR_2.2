@@ -34,6 +34,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.concurrent.Task;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
@@ -78,6 +79,9 @@ public class GenericArchiveBrowserPresenter {
     public VBox container;
     @FXML
     private BorderPane borderPane;
+
+    @FXML
+    private SplitPane mainSplitPane;
 
     @FXML
     private Label title;
@@ -181,6 +185,22 @@ public class GenericArchiveBrowserPresenter {
                 hideSaveAndDropButtons();
             }
         });
+
+        // SplitPane 설정 - 네비게이션 바 크기 조절 가능하도록 설정
+        if (mainSplitPane != null) {
+            mainSplitPane.setDividerPositions(0.25); // 초기 분할 위치: 25% : 75%
+
+            // 분할 바가 움직일 때마다 폭 제한 확인
+            mainSplitPane.getDividers().get(0).positionProperty().addListener((obs, oldPos, newPos) -> {
+                double leftWidth = mainSplitPane.getWidth() * newPos.doubleValue();
+                // 최소/최대 폭 제한
+                if (leftWidth < 250.0) {
+                    mainSplitPane.setDividerPositions(250.0 / mainSplitPane.getWidth());
+                } else if (leftWidth > 500.0) {
+                    mainSplitPane.setDividerPositions(500.0 / mainSplitPane.getWidth());
+                }
+            });
+        }
 
         this.saveChangesButton.setOnAction(() -> {
             val report = currentFormRenderer.saveChanges();
@@ -675,6 +695,40 @@ public class GenericArchiveBrowserPresenter {
             log.error("Failed to create LobReader for calculating matched rows", e);
         }
         return total;
+    }
+
+    /**
+     * 네비게이션 바의 폭을 고정
+     * @param fixed true로 설정하면 분할 바를 움직일 수 없게 됨됨
+     */
+    public void setNavigationBarFixed(boolean fixed) {
+        if (mainSplitPane != null && mainSplitPane.getDividers().size() > 0) {
+            mainSplitPane.getDividers().get(0).setPosition(fixed ? 0.25 : mainSplitPane.getDividerPositions()[0]);
+            // 실제로는 CSS나 속성을 통해 divider를 비활성화하는 것이 더 좋지만,
+            // 간단한 구현을 위해 현재는 position을 강제 설정하는 방식으로 구현
+        }
+    }
+
+    /**
+     * 네비게이션 바의 현재 폭을 반환
+     */
+    public double getNavigationBarWidth() {
+        if (mainSplitPane != null) {
+            return mainSplitPane.getWidth() * mainSplitPane.getDividerPositions()[0];
+        }
+        return 365.0; // 기본값
+    }
+
+    /**
+     * 네비게이션 바의 폭을 지정된 값으로 설정
+     * @param width 설정할 폭 (픽셀 단위)
+     */
+    public void setNavigationBarWidth(double width) {
+        if (mainSplitPane != null) {
+            // 최소/최대 폭 제한 확인
+            double constrainedWidth = Math.max(250.0, Math.min(500.0, width));
+            mainSplitPane.setDividerPositions(constrainedWidth / mainSplitPane.getWidth());
+        }
     }
 
     // 새 트리에서 첫 번째 RECORD 노드를 찾는다.

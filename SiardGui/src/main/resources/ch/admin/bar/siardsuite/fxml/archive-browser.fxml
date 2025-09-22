@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -54,21 +55,19 @@
                             </VBox.margin>
                         </Text>
                     </VBox>
-                    <HBox VBox.vgrow="ALWAYS">
+                    <SplitPane fx:id="mainSplitPane" dividerPositions="0.25" VBox.vgrow="ALWAYS">
                         <VBox.margin>
                             <Insets bottom="15.0" left="25.0" right="25.0" top="15.0"/>
                         </VBox.margin>
                         <!-- tree on the left side -->
                         <VBox fx:id="leftTreeBox"
-                              prefWidth="365.0"
-                              HBox.hgrow="SOMETIMES">
+                              prefWidth="365.0">
                             <TreeView fx:id="treeView"
                                       maxHeight="1.7976931348623157E308"
                                       VBox.vgrow="ALWAYS"/>
                         </VBox>
                         <StackPane maxHeight="1.7976931348623157E308"
-                                   maxWidth="1.7976931348623157E308"
-                                   HBox.hgrow="ALWAYS">
+                                   maxWidth="1.7976931348623157E308">
 
                             <!-- content -->
                             <ScrollPane fitToHeight="true"
@@ -191,7 +190,7 @@
                                 <Insets left="20.0"/>
                             </HBox.margin>
                         </StackPane>
-                    </HBox>
+                    </SplitPane>
                 </VBox>
             </center>
             <bottom>
