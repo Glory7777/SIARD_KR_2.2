@@ -58,7 +58,8 @@ public abstract class ValueImpl implements Value {
     private Element getValueElement() throws IOException {
         if (this._elValue == null) {
             if (this instanceof Cell) {
-                this._elValue = RecordImpl.getDocument().createElementNS("http://www.bar.admin.ch/xmlns/siard/2/table.xsd", getColumnTag(getIndex()));
+                String tagName = getColumnTag(getIndex());
+                this._elValue = RecordImpl.getDocument().createElementNS("http://www.bar.admin.ch/xmlns/siard/2/table.xsd", tagName);
             } else {
 
                 ValueImpl viParent = (ValueImpl) ((Field) this).getParent();

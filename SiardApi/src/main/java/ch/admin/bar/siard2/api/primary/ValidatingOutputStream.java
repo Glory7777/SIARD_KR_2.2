@@ -61,18 +61,29 @@ public class ValidatingOutputStream extends OutputStream {
   
   public void close() throws IOException {
     this._os.close();
-    if (this._os instanceof ByteArrayOutputStream baos) {
-
-        this._el.setTextContent(BU.toHex(baos.toByteArray()));
+    if (this._os instanceof ByteArrayOutputStream) {
+      ByteArrayOutputStream baos = (ByteArrayOutputStream) this._os;
+      this._el.setTextContent(BU.toHex(baos.toByteArray()));
     }
     else {
-      
-      this._el.setAttribute("length", String.valueOf(this._lWritten));
+      String lengthAttr = String.valueOf(this._lWritten);
+      String digestTypeAttr = null;
+      String digestAttr = null;
       if (this._md != null) {
-        
-        this._el.setAttribute("digestType", this._md.getAlgorithm());
-        this._el.setAttribute("digest", BU.toHex(this._md.digest()));
-      } 
+        digestTypeAttr = this._md.getAlgorithm();
+        digestAttr = BU.toHex(this._md.digest());
+      }
+      // 기존 file 속성은 그대로 두고, 나머지 관련 속성만 최신 값으로 교체
+      this._el.removeAttribute("length");
+      this._el.removeAttribute("digestType");
+      this._el.removeAttribute("digest");
+      this._el.setAttribute("length", lengthAttr);
+      if (digestTypeAttr != null) {
+        this._el.setAttribute("digestType", digestTypeAttr);
+      }
+      if (digestAttr != null) {
+        this._el.setAttribute("digest", digestAttr);
+      }
     } 
   }
 }

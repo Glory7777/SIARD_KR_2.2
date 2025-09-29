@@ -75,10 +75,11 @@ public class ValidatingWriter extends Writer {
   
   public void close() throws IOException {
     this._wr.close();
-    if (this._wr instanceof StringWriter swr) {
-
-        XU.toXml(swr.toString(), this._el);
-    } 
+    if (this._wr instanceof StringWriter) {
+      StringWriter swr = (StringWriter) this._wr;
+      XU.toXml(swr.toString(), this._el);
+    }
+    this._el.removeAttribute("length");
     this._el.setAttribute("length", String.valueOf(this._lWritten));
   }
 }

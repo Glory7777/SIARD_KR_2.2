@@ -84,10 +84,37 @@ public class RecordRetainerImpl implements RecordRetainer {
     private static void putRowElement(Element el, XMLStreamWriter xsw) throws XMLStreamException {
         xsw.writeStartElement(el.getLocalName());
 
+        if ("c3".equals(el.getLocalName())) {
+            for (int j = 0; j < el.getAttributes().getLength(); j++) {
+                Attr attr = (Attr) el.getAttributes().item(j);
+            }
+        }
+
+        // 속성 순서를 원본 SIARD Suite와 동일하게 맞추기 위해
+        // 특정 순서로 속성을 쓰기
+        String[] attributeOrder = {"file", "length", "digestType", "digest"};
+        
+        // 먼저 순서가 정해진 속성들을 쓰기
+        for (String attrName : attributeOrder) {
+            if (el.hasAttribute(attrName)) {
+                xsw.writeAttribute(attrName, el.getAttribute(attrName));
+            }
+        }
+        
+        // 나머지 속성들을 쓰기 (순서가 정해지지 않은 것들)
         int i;
         for (i = 0; i < el.getAttributes().getLength(); ++i) {
             Attr attr = (Attr) el.getAttributes().item(i);
-            xsw.writeAttribute(attr.getName(), attr.getValue());
+            boolean alreadyWritten = false;
+            for (String orderedAttr : attributeOrder) {
+                if (orderedAttr.equals(attr.getName())) {
+                    alreadyWritten = true;
+                    break;
+                }
+            }
+            if (!alreadyWritten) {
+                xsw.writeAttribute(attr.getName(), attr.getValue());
+            }
         }
 
         for (i = 0; i < el.getChildNodes().getLength(); ++i) {
