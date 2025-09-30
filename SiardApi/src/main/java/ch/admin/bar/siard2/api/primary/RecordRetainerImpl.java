@@ -81,7 +81,15 @@ public class RecordRetainerImpl implements RecordRetainer {
         }
     }
 
-    private static void putRowElement(Element el, XMLStreamWriter xsw) throws XMLStreamException {
+    private static void indent(XMLStreamWriter xsw, int depth) throws XMLStreamException {
+        xsw.writeCharacters("\n");
+        for (int i = 0; i < depth; i++) {
+            xsw.writeCharacters("  ");
+        }
+    }
+
+    private static void putRowElement(Element el, XMLStreamWriter xsw, int depth) throws XMLStreamException {
+        indent(xsw, depth);
         xsw.writeStartElement(el.getLocalName());
 
         if ("c3".equals(el.getLocalName())) {
@@ -90,7 +98,6 @@ public class RecordRetainerImpl implements RecordRetainer {
             }
         }
 
-        // 속성 순서를 원본 SIARD Suite와 동일하게 맞추기 위해
         // 특정 순서로 속성을 쓰기
         String[] attributeOrder = {"file", "length", "digestType", "digest"};
         
@@ -120,7 +127,7 @@ public class RecordRetainerImpl implements RecordRetainer {
         for (i = 0; i < el.getChildNodes().getLength(); ++i) {
             Node node = el.getChildNodes().item(i);
             if (node.getNodeType() == 1) {
-                putRowElement((Element) node, xsw);
+                putRowElement((Element) node, xsw, depth + 1);
             } else if (node.getNodeType() == 3) {
                 xsw.writeCharacters(node.getTextContent());
             }
@@ -130,12 +137,14 @@ public class RecordRetainerImpl implements RecordRetainer {
     }
 
     private static void putRecordType(RecordType rt, XMLStreamWriter xsw) throws XMLStreamException {
+        indent(xsw, 1);
         xsw.writeStartElement("row");
 
         for (int i = 0; i < rt.getAny().size(); ++i) {
-            putRowElement((Element) rt.getAny().get(i), xsw);
+            putRowElement((Element) rt.getAny().get(i), xsw, 2);
         }
 
+        indent(xsw, 1);
         xsw.writeEndElement();
     }
 
