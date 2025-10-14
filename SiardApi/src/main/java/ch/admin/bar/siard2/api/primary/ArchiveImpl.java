@@ -341,7 +341,8 @@ public class ArchiveImpl implements Archive {
 
             this._bModifyPrimaryData = false;
             this._bMetaDataModified = false;
-            this.validate();
+            // 파일을 열 때 유효성 검사를 실행하지 않음
+            // this.validate();
         }
     }
 
@@ -526,10 +527,9 @@ public class ArchiveImpl implements Archive {
     }
 
     public boolean isValid() {
-        if (this.canModifyPrimaryData()) {
+        // if (this.canModifyPrimaryData()) { // 항상 유효성 검사를 수행하도록 변경
             this.validate();
-        }
-
+        // }
         return this._bValid;
     }
 

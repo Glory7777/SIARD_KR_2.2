@@ -93,6 +93,7 @@ public class RowsOverviewForm {
                         .property(RenderableLazyLoadingTable.<DatabaseTable, RecordWrapper>builder()
                                 .dataExtractor(databaseTable -> new RecordDataSource(table, searchTerm))
                                 .properties(tableProperties)
+                                .usePagination(true) // 페이지네이션 사용
                                 .build())
 
                                 
@@ -282,6 +283,7 @@ public class RowsOverviewForm {
                         .property(RenderableLazyLoadingTable.<Object, UnifiedRecordWrapper>builder()
                                 .dataExtractor(data -> new UnifiedStreamingDataSource(archive, searchTerm, searchIndex))
                                 .properties(tableProperties)
+                                .usePagination(true) // 페이지네이션 사용
                                 .build())
                         .build())
                 .build();
@@ -518,7 +520,11 @@ public class RowsOverviewForm {
 
             final List<RecordWrapper> collected = new ArrayList<>();
             long viewSeq = startIndex + 1L; // No. 컬럼용 순번 (1, 2, 3...)
-            for (int i = 0; i < nrOfItems; i++) {
+            
+            // 메모리 사용량 최적화: 최대 로드 개수 제한
+            int actualItems = Math.min(nrOfItems, 10000); // 최대 10000개로 제한
+            
+            for (int i = 0; i < actualItems; i++) {
                 val record = dispenser.getWithSearchTerm(searchTerm);
                 if (record == null) break;
 
