@@ -17,12 +17,16 @@ public class RenderableLazyLoadingTable<T, I> implements RenderableProperty<T> {
     @Singular
     @NonNull
     List<TableColumnProperty<I>> properties;
+    
+    boolean usePagination;
 
     @Builder
     public RenderableLazyLoadingTable(
             @NonNull Function<T, LazyLoadingDataSource<I>> dataExtractor,
-            @NonNull @Singular List<TableColumnProperty<I>> properties) {
+            @NonNull @Singular List<TableColumnProperty<I>> properties,
+            boolean usePagination) {
         this.dataExtractor = dataExtractor;
         this.properties = properties;
+        this.usePagination = usePagination;
     }
 }

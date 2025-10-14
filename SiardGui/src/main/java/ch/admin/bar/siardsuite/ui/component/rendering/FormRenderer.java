@@ -98,12 +98,19 @@ public class FormRenderer<T> {
                     }
 
                     if (renderableProperty instanceof RenderableLazyLoadingTable) {
-                        return LazyLoadingTableRenderer.<T, Object>builder()
+                        val lazyTable = (RenderableLazyLoadingTable<T, Object>) renderableProperty;
+                        val renderer = LazyLoadingTableRenderer.<T, Object>builder()
                                 .dataHolder(data)
                                 .errorHandler(errorHandler)
-                                .renderableTable((RenderableLazyLoadingTable<T, Object>) renderableProperty)
-                                .build()
-                                .render();
+                                .renderableTable(lazyTable)
+                                .build();
+                        
+                        // 페이지네이션 사용 여부에 따라 다른 렌더링 방식 선택
+                        if (lazyTable.isUsePagination()) {
+                            return renderer.renderWithPagination();
+                        } else {
+                            return renderer.render();
+                        }
                     }
 
                     throw new IllegalArgumentException(String.format(

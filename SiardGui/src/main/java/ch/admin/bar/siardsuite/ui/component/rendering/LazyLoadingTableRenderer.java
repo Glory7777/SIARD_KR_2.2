@@ -4,15 +4,14 @@ import ch.admin.bar.siardsuite.ui.component.rendering.model.LazyLoadingDataSourc
 import ch.admin.bar.siardsuite.ui.component.rendering.model.RenderableLazyLoadingTable;
 import ch.admin.bar.siardsuite.ui.component.rendering.model.TableColumnProperty;
 import ch.admin.bar.siardsuite.ui.component.rendering.utils.LoadingBatchManager;
+import ch.admin.bar.siardsuite.ui.component.rendering.utils.PaginationManager;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
@@ -96,6 +95,66 @@ public class LazyLoadingTableRenderer<T, I> {
         tableView.autosize();
 
         return tableView;
+    }
+
+    /**
+     * 페이지네이션을 사용하여 테이블을 렌더링합니다.
+     * 기존 render() 메서드와 동일한 기능을 제공하지만 페이지네이션 컨트롤이 포함됩니다.
+     */
+    public VBox renderWithPagination() {
+        val paginationManager = new PaginationManager<>(lazyLoadingDataSource);
+        val tableView = new TableView<>(paginationManager.getCurrentPageData());
+        val paginationControls = new PaginationControls<>(paginationManager);
+
+        // 테이블 컬럼 설정
+        tableView.getColumns().addAll(
+                renderableTable.getProperties().stream()
+                        .map(this::column)
+                        .collect(Collectors.toList())
+        );
+
+        // 행 팩토리 설정 (기존 로직과 동일)
+        tableView.setRowFactory(param -> {
+            val row = new TableRow<I>();
+
+            row.setOnMouseClicked(event -> {
+                val selectionModel = tableView.getSelectionModel();
+                if (selectionModel.getSelectedCells().isEmpty()) {
+                    return;
+                }
+
+                val tablePosition = selectionModel.getSelectedCells().get(0);
+                if (tablePosition.getColumn() < 0 || tablePosition.getColumn() >= renderableTable.getProperties().size()) {
+                    return;
+                }
+
+                val column = renderableTable.getProperties().get(tablePosition.getColumn());
+
+                column.getOnCellClickedListener()
+                        .ifPresent(listener -> {
+                            try {
+                                listener.onClick(column, row.getItem());
+                            } catch (Exception e) {
+                                errorHandler.handle(e);
+                            }
+                        });
+            });
+
+            return row;
+        });
+
+        // 테이블 스타일 설정
+        tableView.getStyleClass().add(TABLE_STYLE_CLASS);
+        tableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        tableView.autosize();
+
+        // 컨테이너 설정 (컴팩트한 레이아웃)
+        val container = new VBox();
+        container.getChildren().addAll(tableView, paginationControls);
+        VBox.setVgrow(tableView, Priority.ALWAYS);
+        container.setSpacing(5); // 테이블과 페이지네이션 간격 줄이기
+
+        return container;
     }
 
     public TableColumn<I, String> column(final TableColumnProperty<I> columnProperty) {
