@@ -90,11 +90,13 @@ public class ExportSelectTablesDialogPresenter {
                     .map(TreeItem::getValue)
                     .collect(Collectors.toSet());
 
+            String archiveFileName = archive.getFile().getName();
             TableExporterService.builder()
                     .exportDir(file)
                     .schemas(ListAssembler.assemble(archive.getSchemas(), archive::getSchema))
                     .shouldBeExportedFilter(table -> namesOfSelectedTables.contains(
                             table.getMetaTable().getName()))
+                    .archiveFileName(archiveFileName)
                     .build()
                     .export();
 

@@ -1063,9 +1063,7 @@ public abstract class ValueImpl implements Value {
         // LOB 파일의 부모 디렉토리 생성 (임시 폴더 내)
         if (!lobFile.getParentFile().exists()) {
             boolean created = lobFile.getParentFile().mkdirs();
-            System.out.println("DEBUG: LOB 폴더 생성 시도: " + lobFile.getParentFile().getAbsolutePath() + " -> " + created);
         }
-        System.out.println("DEBUG: LOB 파일 경로: " + lobFile.getAbsolutePath() + ", XML 참조: " + lobFilename);
         return new AbstractMap.SimpleEntry<>(lobFile, lobFilename);
     }
 
