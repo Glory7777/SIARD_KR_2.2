@@ -98,8 +98,8 @@ public class LazyLoadingTableRenderer<T, I> {
     }
 
     /**
-     * 페이지네이션을 사용하여 테이블을 렌더링합니다.
-     * 기존 render() 메서드와 동일한 기능을 제공하지만 페이지네이션 컨트롤이 포함됩니다.
+     * 페이지네이션을 사용하여 테이블을 렌더링
+     * 기존 render() 메서드와 동일한 기능을 제공하지만 페이지네이션 컨트롤이 포함
      */
     public VBox renderWithPagination() {
         val paginationManager = new PaginationManager<>(lazyLoadingDataSource);
