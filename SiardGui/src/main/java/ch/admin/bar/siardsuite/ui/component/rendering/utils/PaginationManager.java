@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * 페이지네이션을 관리하는 클래스
- * 기존 LazyLoadingDataSource를 활용하여 페이지 단위로 데이터를 로드합니다.
+ * 기존 LazyLoadingDataSource를 활용하여 페이지 단위로 데이터 로드
  */
 @Slf4j
 public class PaginationManager<T> {
@@ -44,7 +44,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 현재 페이지의 데이터를 로드합니다.
+     * 현재 페이지의 데이터 로드
      */
     public void loadCurrentPage() {
         int startIndex = currentPage.get() * pageSize.get();
@@ -69,7 +69,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 지정된 페이지로 이동합니다.
+     * 지정된 페이지로 이동
      */
     public void goToPage(int page) {
         if (page >= 0 && page < totalPages.get()) {
@@ -79,7 +79,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 다음 페이지로 이동합니다.
+     * 다음 페이지로 이동
      */
     public void nextPage() {
         if (currentPage.get() < totalPages.get() - 1) {
@@ -88,7 +88,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 이전 페이지로 이동합니다.
+     * 이전 페이지로 이동
      */
     public void previousPage() {
         if (currentPage.get() > 0) {
@@ -97,14 +97,14 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 페이지 크기를 설정합니다.
+     * 페이지 크기를 설정
      */
     public void setPageSize(int pageSize) {
         this.pageSize.set(pageSize);
     }
 
     /**
-     * 총 페이지 수를 계산합니다.
+     * 총 페이지 수를 계산
      */
     private void calculateTotalPages() {
         int pages = (int) Math.ceil((double) totalItems.get() / pageSize.get());
@@ -112,7 +112,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 페이지 정보를 문자열로 반환합니다.
+     * 페이지 정보를 문자열로 반환
      */
     public String getPageInfo() {
         return String.format("%d / %d 페이지", 
@@ -120,7 +120,7 @@ public class PaginationManager<T> {
     }
 
     /**
-     * 사용 가능한 페이지 크기 목록을 반환합니다.
+     * 사용 가능한 페이지 크기 목록을 반환
      */
     public static int[] getAvailablePageSizes() {
         return AVAILABLE_PAGE_SIZES.clone();

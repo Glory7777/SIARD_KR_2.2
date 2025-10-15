@@ -480,7 +480,25 @@ public class RowsOverviewForm {
 
         @Override
         public long getNumberOfItems() {
-            return allLoadedRecords.size();
+            if (searchIndex != null) {
+                return searchIndex.getTotalMatched();
+            }
+
+            // 검색 인덱스가 없으면 실제 검색을 수행해서 개수 계산
+            long count = 0;
+            for (DatabaseTable table : tables) {
+                try {
+                    val dispenser = table.getTable().openRecords();
+                    while (true) {
+                        val rec = dispenser.getWithSearchTerm(searchTerm);
+                        if (rec == null) break;
+                        if (dispenser.anyMatches()) count++;
+                    }
+                } catch (Exception ignore) {
+                    // 테이블 접근 실패 시 다음 테이블로
+                }
+            }
+            return count;
         }
     }
 
@@ -488,7 +506,7 @@ public class RowsOverviewForm {
      * 
      */
     public static class RecordDataSource implements LazyLoadingDataSource<RecordWrapper> {
-        // DatabaseTable을 보유하면 '전체 행 수'를 정확히 얻을 수 있습니다.
+        // DatabaseTable을 보유하면 '전체 행 수'를 정확히 얻을 수 있음
         private final DatabaseTable databaseTable;
         private final Table table;
         private final String searchTerm;
@@ -516,27 +534,43 @@ public class RowsOverviewForm {
         public List<RecordWrapper> load(int startIndex, int nrOfItems) {
             try {
             val dispenser = table.openRecords(this.lobReader); // LobReader 전달
-            dispenser.skip(startIndex);
 
             final List<RecordWrapper> collected = new ArrayList<>();
-            long viewSeq = startIndex + 1L; // No. 컬럼용 순번 (1, 2, 3...)
-            
+            long currentSearchResultIndex = 0; // 검색 결과의 현재 인덱스 (0부터 시작)
+
             // 메모리 사용량 최적화: 최대 로드 개수 제한
             int actualItems = Math.min(nrOfItems, 10000); // 최대 10000개로 제한
-            
-            for (int i = 0; i < actualItems; i++) {
-                val record = dispenser.getWithSearchTerm(searchTerm);
-                if (record == null) break;
 
-                if (isSearchTermBlank()) {
-                    // 비검색 모드: No. = 절대 인덱스
+            if (isSearchTermBlank()) {
+                // 비검색 모드: 단순 페이지네이션
+                dispenser.skip(startIndex);
+                long viewSeq = startIndex + 1L; // No. 컬럼용 순번 (1, 2, 3...)
+
+                for (int i = 0; i < actualItems; i++) {
+                    val record = dispenser.get();
+                    if (record == null) break;
+
                     collected.add(new RecordWrapper(record, viewSeq, record.getRecord() + 1));
-                } else if (dispenser.anyMatches()) {
-                    // 검색 모드: No. = 순번, Matched No. = 절대 인덱스
-                    long abs1Based = record.getRecord() + 1;
-                    collected.add(new RecordWrapper(record, viewSeq, abs1Based));
+                    viewSeq++;
                 }
-                viewSeq++;
+            } else {
+                // 검색 모드: 검색 결과만 대상으로 페이지네이션
+                while (collected.size() < actualItems) {
+                    val record = dispenser.getWithSearchTerm(searchTerm);
+                    if (record == null) break;
+
+                    if (dispenser.anyMatches()) {
+                        // 검색 결과가 맞으면 현재 인덱스가 요청 범위에 있는지 확인
+                        if (currentSearchResultIndex >= startIndex &&
+                            currentSearchResultIndex < startIndex + actualItems) {
+
+                            long viewSeq = currentSearchResultIndex + 1; // 검색 결과 내 순번 (1, 2, 3...)
+                            long abs1Based = record.getRecord() + 1; // 절대 인덱스
+                            collected.add(new RecordWrapper(record, viewSeq, abs1Based));
+                        }
+                        currentSearchResultIndex++;
+                    }
+                }
             }
 
             return collected;

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * 페이지네이션 컨트롤 UI 컴포넌트
- * 페이지 크기 선택, 이전/다음 버튼, 페이지 정보를 제공합니다.
+ * 페이지 크기 선택, 이전/다음 버튼, 페이지 정보를 제공
  */
 @Slf4j
 public class PaginationControls<T> extends HBox {
@@ -223,7 +223,7 @@ public class PaginationControls<T> extends HBox {
     }
 
     /**
-     * 페이지 버튼들을 업데이트합니다.
+     * 페이지 버튼들을 업데이트
      */
     private void updatePageButtons() {
         // 기존 라벨들 제거
@@ -281,7 +281,7 @@ public class PaginationControls<T> extends HBox {
     }
 
     /**
-     * 페이지 정보를 수동으로 업데이트합니다.
+     * 페이지 정보를 수동으로 업데이트
      * (바인딩이 제대로 작동하지 않을 경우를 위한 백업)
      */
     public void updatePageInfo() {
