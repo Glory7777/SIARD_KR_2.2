@@ -242,6 +242,7 @@ public class GenericArchiveBrowserPresenter {
 
             TreeItem<TreeAttributeWrapper> rootNode = initialRootItem;
             TreeAttributeWrapper wrapper = rootNode.getValue();
+            resetTableRowsToDefault(rootNode);
             currentSearchLabel.setText(DisplayableText.of(CURRENT_SEARCH).getText());
             currentSearchTerm = null;
             currentSearchIndex = null; // SearchIndex 초기화
@@ -263,6 +264,11 @@ public class GenericArchiveBrowserPresenter {
                 treeView.refresh();
             } finally {
                 rebuildingTree = false;
+            }
+
+             // 추가: 현재 FormRenderer도 초기화하여 데이터 소스 캐시 문제 해결
+            if (currentFormRenderer != null) {
+                currentFormRenderer = null;
             }
         });
 
@@ -303,6 +309,21 @@ public class GenericArchiveBrowserPresenter {
 
         treeView.getSelectionModel().select(rootTreeItem);
 
+    }
+
+    private void resetTableRowsToDefault(TreeItem<TreeAttributeWrapper> node) {
+        if (node == null) {
+            return;
+        }
+
+        TreeAttributeWrapper value = node.getValue();
+        if (value != null) {
+            value.setTableToDefault();
+        }
+
+        for (TreeItem<TreeAttributeWrapper> child : node.getChildren()) {
+            resetTableRowsToDefault(child);
+        }
     }
 
     private void refreshTree(String searchTerm) {

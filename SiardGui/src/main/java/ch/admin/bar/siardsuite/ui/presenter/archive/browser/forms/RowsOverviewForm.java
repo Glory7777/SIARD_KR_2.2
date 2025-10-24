@@ -521,8 +521,10 @@ public class RowsOverviewForm {
     public RecordDataSource(DatabaseTable databaseTable, String searchTerm, LobReader lobReader) {
         this.databaseTable = databaseTable;
         this.table = databaseTable.getTable();
-            this.searchTerm = searchTerm;
+        this.searchTerm = searchTerm;
         this.lobReader = lobReader;
+        // 리셋 시 캐시 초기화를 위해 생성자에서 캐시 클리어
+        this.cachedMatchedCount = null;
     }
 
         private boolean isSearchTermBlank() {
@@ -594,7 +596,8 @@ public class RowsOverviewForm {
             if (isSearchTermBlank()) {
                 return databaseTable.getNumberOfRows();
             }
-            if (cachedMatchedCount != null) {
+            // 검색어가 있을 때만 캐시 사용, 리셋 시에는 캐시 무시
+            if (cachedMatchedCount != null && searchTerm != null && !searchTerm.isBlank()) {
                 return cachedMatchedCount;
             }
             // 전체 스캔으로 매치 수 산출(한 번만)
