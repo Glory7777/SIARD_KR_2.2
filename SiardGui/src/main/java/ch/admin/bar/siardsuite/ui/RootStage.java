@@ -2,6 +2,7 @@ package ch.admin.bar.siardsuite.ui;
 
 import ch.admin.bar.siardsuite.framework.dialogs.DialogDisplay;
 import ch.admin.bar.siardsuite.framework.view.ViewDisplay;
+import ch.admin.bar.siardsuite.framework.ServicesFacade;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKeyArg;
 import ch.admin.bar.siardsuite.service.FilesService;
@@ -27,6 +28,7 @@ import lombok.val;
 public class RootStage extends Stage implements ViewDisplay, DialogDisplay {
 
     private static final I18nKeyArg<String> WINDOW_TITLE = I18nKeyArg.of("window.title");
+    private static ServicesFacade servicesFacade;
 
     private final BorderPane rootPane;
     private final BorderPane dialogPane;
@@ -39,6 +41,7 @@ public class RootStage extends Stage implements ViewDisplay, DialogDisplay {
         titleProperty().bind(DisplayableText.of(WINDOW_TITLE, ProgramInfo.getProgramInfo().getVersion()).bindable());
 
         val servicesFacade = new ServicesFacadeBuilder().build(this);
+        RootStage.servicesFacade = servicesFacade;
 
         Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> servicesFacade.errorHandler().handle(ex));
 
@@ -90,5 +93,9 @@ public class RootStage extends Stage implements ViewDisplay, DialogDisplay {
     @Override
     public void closeDialog() {
         dialogPane.setVisible(false);
+    }
+    
+    public static ServicesFacade getServicesFacade() {
+        return servicesFacade;
     }
 }

@@ -366,7 +366,10 @@ public class TableImpl extends SearchImpl implements Table {
         }
         SchemaImpl si = (SchemaImpl) getParentSchema();
         if (tt == null) {
-            String sFolder = "table" + tts.getTable().size();
+            // SIARD 파일명에서 확장자를 제거한 이름을 가져옴
+            String siardFileName = getParentSchema().getParentArchive().getFile().getName();
+            String siardName = siardFileName.substring(0, siardFileName.lastIndexOf('.'));
+            String sFolder = siardName + "_" + sName; // SIARD파일명_테이블명 형식으로 폴더명 생성
             tt = MetaTableImpl.createTableType(sName, sFolder);
             tts.getTable().add(tt);
         }
@@ -433,9 +436,9 @@ public class TableImpl extends SearchImpl implements Table {
             sFilename = uriExternal.toURL().toString();
 
         } else if (folderLobs != null) {
-
-
-            sFilename = "/" + folderLobs.getAbsolutePath().replace('\\', '/') + "/" + sFilename;
+            // sFilename에서 파일명만 추출 (경로 제거)
+            String fileName = sFilename.substring(sFilename.lastIndexOf('/') + 1);
+            sFilename = "/" + folderLobs.getAbsolutePath().replace('\\', '/') + "/" + fileName;
             File fileLob = new File(sFilename);
             fileLob.getParentFile().mkdirs();
 
@@ -470,7 +473,9 @@ public class TableImpl extends SearchImpl implements Table {
             }
         }
 
-        wr.write("<a href=\"" + sFilename + "\">" + sFilename + "</a>");
+        // 링크 텍스트는 파일명만 표시
+        String displayText = sFilename.substring(sFilename.lastIndexOf('/') + 1);
+        wr.write("<a href=\"" + sFilename + "\">" + displayText + "</a>");
     }
 
 
@@ -591,6 +596,12 @@ public class TableImpl extends SearchImpl implements Table {
         oswr.write("  <head>\r\n");
         oswr.write("    <title>" + SU.toHtml(mt.getName()) + "</title>\r\n");
         oswr.write("    <meta charset=\"utf-8\" />\r\n");
+        oswr.write("    <style>\r\n");
+        oswr.write("      table { border-collapse: collapse; width: 100%; }\r\n");
+        oswr.write("      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\r\n");
+        oswr.write("      th { background-color: #f2f2f2; font-weight: bold; }\r\n");
+        oswr.write("      tr:nth-child(even) { background-color: #f9f9f9; }\r\n");
+        oswr.write("    </style>\r\n");
         oswr.write("  </head>\r\n");
         oswr.write("  <body>\r\n");
         oswr.write("    <table>\r\n");
@@ -610,6 +621,56 @@ public class TableImpl extends SearchImpl implements Table {
             Record record = rd.get();
             for (int i = 0; i < record.getCells(); i++) {
 
+                oswr.write("        <td>");
+                Cell cell = record.getCell(i);
+                writeValue(oswr, cell, folderLobs);
+                oswr.write("</td>\r\n");
+            }
+            oswr.write("      </tr>\r\n");
+        }
+        rd.close();
+        oswr.write("    </table>\r\n");
+        oswr.write("  </body>\r\n");
+        oswr.write("</html>\r\n");
+        oswr.flush();
+    }
+
+    public void exportAsHtml(OutputStream os, File folderLobs, long startRow, long endRow) throws IOException {
+        OutputStreamWriter oswr = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+        MetaTable mt = getMetaTable();
+        oswr.write("<!DOCTYPE html>\r\n");
+        oswr.write("<html lang=\"en\">\r\n");
+        oswr.write("  <head>\r\n");
+        oswr.write("    <title>" + SU.toHtml(mt.getName()) + "</title>\r\n");
+        oswr.write("    <meta charset=\"utf-8\" />\r\n");
+        oswr.write("    <style>\r\n");
+        oswr.write("      table { border-collapse: collapse; width: 100%; }\r\n");
+        oswr.write("      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\r\n");
+        oswr.write("      th { background-color: #f2f2f2; font-weight: bold; }\r\n");
+        oswr.write("      tr:nth-child(even) { background-color: #f9f9f9; }\r\n");
+        oswr.write("    </style>\r\n");
+        oswr.write("  </head>\r\n");
+        oswr.write("  <body>\r\n");
+        oswr.write("    <table>\r\n");
+        oswr.write("      <tr>\r\n");
+        for (int iColumn = 0; iColumn < mt.getMetaColumns(); iColumn++) {
+            oswr.write("        <th>");
+            oswr.write(SU.toHtml(mt.getMetaColumn(iColumn).getName()));
+            oswr.write("</th>\r\n");
+        }
+        oswr.write("      </tr>\r\n");
+        
+        RecordDispenser rd = openRecords();
+        // 시작 행으로 이동
+        for (long i = 0; i < startRow; i++) {
+            rd.get();
+        }
+        
+        // 지정된 범위의 행만 처리
+        for (long lRow = startRow; lRow < endRow; lRow++) {
+            oswr.write("      <tr>\r\n");
+            Record record = rd.get();
+            for (int i = 0; i < record.getCells(); i++) {
                 oswr.write("        <td>");
                 Cell cell = record.getCell(i);
                 writeValue(oswr, cell, folderLobs);

@@ -36,6 +36,8 @@ public interface Table extends Search {
 
     void exportAsHtml(OutputStream paramOutputStream, File paramFile) throws IOException;
 
+    void exportAsHtml(OutputStream paramOutputStream, File paramFile, long startRow, long endRow) throws IOException;
+
     void setTableSize(long byteCount);
 
     long getTableSize();

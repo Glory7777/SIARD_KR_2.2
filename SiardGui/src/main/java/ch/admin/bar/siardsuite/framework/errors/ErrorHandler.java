@@ -5,6 +5,7 @@ import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import javafx.application.Platform;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,8 @@ public class ErrorHandler {
 
     static final I18nKey UNEXPECTED_ERROR_TITLE = I18nKey.of("errors.unexpected.title");
     static final I18nKey UNEXPECTED_ERROR_MESSAGE = I18nKey.of("errors.unexpected.message");
+    static final I18nKey VIDEO_FILE_DETECTED_TITLE = I18nKey.of("errors.videoFileDetected.title");
+    static final I18nKey VIDEO_FILE_DETECTED_MESSAGE = I18nKey.of("errors.videoFileDetected.message");
 
     private final FailureDisplay failureDisplay;
     private final List<HandlingInstruction> generalHandlingInstructions;
@@ -30,7 +33,14 @@ public class ErrorHandler {
     public void handle(final Throwable throwable) {
         val definition = mapToFailure(throwable);
 
-        failureDisplay.displayFailure(definition);
+        // JavaFX UI 스레드에서 다이얼로그 표시
+        Platform.runLater(() -> {
+            try {
+                failureDisplay.displayFailure(definition);
+            } catch (Exception e) {
+                log.error("Failed to display error dialog", e);
+            }
+        });
     }
 
     /**
@@ -40,6 +50,16 @@ public class ErrorHandler {
      * @return The mapped failure.
      */
     public Failure mapToFailure(Throwable throwable) {
+        // 동영상 파일 관련 오류 감지
+        if (isVideoFileError(throwable)) {
+            log.error("Video file detected in data processing", throwable);
+            return Failure.builder()
+                    .title(DisplayableText.of(VIDEO_FILE_DETECTED_TITLE))
+                    .message(DisplayableText.of(VIDEO_FILE_DETECTED_MESSAGE))
+                    .throwable(Optional.of(throwable))
+                    .build();
+        }
+        
         return tryFindMatchingWarningDefinition(throwable)
                 .map(handlingInstruction -> Failure.builder()
                         .title(handlingInstruction.getTitle())
@@ -77,5 +97,25 @@ public class ErrorHandler {
         }
 
         return matching;
+    }
+    
+    /**
+     * 동영상 파일 관련 오류인지 확인
+     * @param throwable 확인할 예외
+     * @return 동영상 파일 관련 오류이면 true
+     */
+    private boolean isVideoFileError(Throwable throwable) {
+        if (throwable == null) {
+            return false;
+        }
+        
+        String message = throwable.getMessage();
+        if (message != null && (message.contains("VIDEO_FILE_DETECTED") || 
+                               message.contains("동영상 파일이 포함되어 있어 처리할 수 없습니다"))) {
+            return true;
+        }
+        
+        // 원인 예외도 재귀적으로 확인
+        return isVideoFileError(throwable.getCause());
     }
 }

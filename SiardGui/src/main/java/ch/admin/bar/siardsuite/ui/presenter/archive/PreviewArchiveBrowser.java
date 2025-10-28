@@ -51,7 +51,8 @@ public class PreviewArchiveBrowser {
             final DbmsConnectionData connectionData,
             final StepperNavigator<Tuple<Archive, DbmsConnectionData>> navigator,
             final Dialogs dialogs,
-            final ErrorHandler errorHandler
+            final ErrorHandler errorHandler,
+            final ServicesFacade servicesFacade
     ) {
         val archiveBrowserView = TreeBuilder.builder()
                 .siardArchive(new SiardArchive("", archive, true))
@@ -81,6 +82,7 @@ public class PreviewArchiveBrowser {
         this.loadedView = GenericArchiveBrowserPresenter.load(
                 dialogs,
                 errorHandler,
+                servicesFacade.navigator(),
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 this.buttonsBox,
@@ -101,7 +103,8 @@ public class PreviewArchiveBrowser {
                 data.getValue2(),
                 navigator,
                 servicesFacade.dialogs(),
-                servicesFacade.errorHandler()
+                servicesFacade.errorHandler(),
+                servicesFacade
         );
         return new LoadedView<>(browser::getView, browser);
     }

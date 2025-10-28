@@ -11,13 +11,11 @@ import ch.admin.bar.siardsuite.model.database.SiardArchive;
 import ch.admin.bar.siardsuite.service.ArchiveHandler;
 import ch.admin.bar.siardsuite.util.OptionalHelper;
 import ch.admin.bar.siardsuite.framework.view.LoadedView;
+import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
-import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
 import javafx.scene.Node;
 import lombok.val;
-
-import java.io.IOException;
 
 import static ch.admin.bar.siardsuite.ui.component.ButtonBox.Type.OPEN_PREVIEW;
 import static ch.admin.bar.siardsuite.ui.presenter.archive.browser.GenericArchiveBrowserPresenter.*;
@@ -68,6 +66,7 @@ public class OpenArchiveBrowser {
         this.loadedView = GenericArchiveBrowserPresenter.load(
                 dialogs,
                 errorHandler,
+                navigator,
                 DisplayableText.of(TITLE),
                 DisplayableText.of(TEXT),
                 buttonsBox,

@@ -1,17 +1,14 @@
 package ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms;
 
 import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
-import ch.admin.bar.dbexception.DbOutOfMemoryException;
 import ch.admin.bar.siard2.api.Cell;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.Table;
 import ch.admin.bar.siard2.api.primary.LobReader;
-import ch.admin.bar.siard2.api.primary.TableImpl;
-import ch.admin.bar.siard2.api.MetaColumn;
+import ch.admin.bar.siardsuite.framework.errors.Failure;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.model.database.DatabaseColumn;
-import ch.admin.bar.siardsuite.model.database.DatabaseSchema;
 import ch.admin.bar.siardsuite.model.database.DatabaseTable;
 import ch.admin.bar.siardsuite.model.database.SiardArchive;
 import ch.admin.bar.siardsuite.ui.component.rendering.model.*;
@@ -19,6 +16,7 @@ import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.Converte
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.ListAssembler;
 import ch.admin.bar.siardsuite.util.FileHelper;
 import ch.admin.bar.siardsuite.util.OS;
+import ch.admin.bar.siardsuite.util.VideoFileDetector;
 import ch.enterag.utils.BU;
 import ch.enterag.utils.mime.MimeTypes;
 import lombok.Getter;
@@ -117,6 +115,7 @@ public class RowsOverviewForm {
         @Getter
         private final Record record;
         private final Map<String, Cell> cellsByName;
+        private final VideoFileDetector videoFileDetector = new VideoFileDetector();
 
         public RecordWrapper(@NonNull Record record) {
             this.record = record;
@@ -178,6 +177,32 @@ public class RowsOverviewForm {
 
                         if (bytes.length == 0) {
                             return "";
+                        }
+
+                        // 동영상 파일 감지
+                        if (videoFileDetector.isVideoByContent(bytes)) {
+                            // JavaFX UI 스레드에서 OPEN_FAILED 페이지로 이동 후 오류 다이얼로그 표시
+                            javafx.application.Platform.runLater(() -> {
+                                try {
+                                    ch.admin.bar.siardsuite.framework.ServicesFacade servicesFacade = 
+                                        ch.admin.bar.siardsuite.ui.RootStage.getServicesFacade();
+                                    if (servicesFacade != null) {
+                                        // OPEN_FAILED 페이지로 이동
+                                        servicesFacade.navigator().navigate(ch.admin.bar.siardsuite.ui.View.OPEN_FAILED);
+                                        
+                                        // 오류 다이얼로그 표시
+                                        Failure failure = Failure.builder()
+                                                .title(DisplayableText.of(I18nKey.of("errors.videoFileDetected.title")))
+                                                .message(DisplayableText.of(I18nKey.of("errors.videoFileDetected.message")))
+                                                .throwable(java.util.Optional.of(new RuntimeException(videoFileDetector.getVideoDetectionMessage(null))))
+                                                .build();
+                                        servicesFacade.dialogs().open(ch.admin.bar.siardsuite.ui.View.ERROR, failure);
+                                    }
+                                } catch (Exception e) {
+                                    log.error("Failed to show video file error dialog", e);
+                                }
+                            });
+                            return "[동영상 파일 감지됨]";
                         }
 
                         if (bytes.length < 16) {

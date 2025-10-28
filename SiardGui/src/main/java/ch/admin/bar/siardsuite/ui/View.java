@@ -11,6 +11,7 @@ import ch.admin.bar.siardsuite.framework.navigation.NavigationTarget;
 import ch.admin.bar.siardsuite.framework.navigation.SimpleNavigationTarget;
 import ch.admin.bar.siardsuite.framework.errors.Failure;
 import ch.admin.bar.siardsuite.ui.presenter.ErrorDialogPresenter;
+import ch.admin.bar.siardsuite.ui.presenter.OpenFailedPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.StartPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.ArchiveStepperPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.OpenArchiveBrowser;
@@ -37,6 +38,8 @@ import java.util.function.Consumer;
 public class View {
     public static final SimpleNavigationTarget START =
             new SimpleNavigationTarget(StartPresenter::load);
+    public static final SimpleNavigationTarget OPEN_FAILED =
+            new SimpleNavigationTarget(OpenFailedPresenter::load);
     public static final NavigationTarget<Workflow> START_WITH_WORKFLOW =
             new NavigationTarget<>(StartPresenter::load);
     public static final NavigationTarget<Archive> OPEN_SIARD_ARCHIVE_PREVIEW =

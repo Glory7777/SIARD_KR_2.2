@@ -3,6 +3,7 @@ package ch.admin.bar.siardsuite.ui.presenter.archive.browser;
 import ch.admin.bar.siard2.api.primary.LobReader;
 import ch.admin.bar.siardsuite.framework.dialogs.Dialogs;
 import ch.admin.bar.siardsuite.framework.errors.ErrorHandler;
+import ch.admin.bar.siardsuite.framework.navigation.Navigator;
 import ch.admin.bar.siardsuite.framework.i18n.DisplayableText;
 import ch.admin.bar.siardsuite.framework.i18n.keys.I18nKey;
 import ch.admin.bar.siardsuite.framework.view.FXMLLoadHelper;
@@ -127,6 +128,7 @@ public class GenericArchiveBrowserPresenter {
 
     private Dialogs dialogs;
     private ErrorHandler errorHandler;
+    private Navigator navigator;
 
     private final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
     private String currentSearchTerm = null;
@@ -141,6 +143,7 @@ public class GenericArchiveBrowserPresenter {
     public void init(
             final Dialogs dialogs,
             final ErrorHandler errorHandler,
+            final Navigator navigator,
             final DisplayableText titleValue,
             final DisplayableText textValue,
             final Node footerNode,
@@ -150,6 +153,7 @@ public class GenericArchiveBrowserPresenter {
     ) {
         this.dialogs = dialogs;
         this.errorHandler = errorHandler;
+        this.navigator = navigator;
         this.borderPane.setBottom(footerNode);
         this.treeView.setRoot(rootTreeItem);
         this.treeView.setCellFactory(new TableCheckBoxTreeCellFactory(this, treeView));
@@ -548,6 +552,7 @@ public class GenericArchiveBrowserPresenter {
         hideErrorMessage();
 
         final RenderableForm form = wrapper.getRenderableForm();
+        
         currentFormRenderer = FormRenderer.builder()
                 .renderableForm(form)
                 .hasChanged(hasChanged)
@@ -594,6 +599,7 @@ public class GenericArchiveBrowserPresenter {
     public static LoadedView<GenericArchiveBrowserPresenter> load(
             final Dialogs dialogs,
             final ErrorHandler errorHandler,
+            final Navigator navigator,
             final DisplayableText title,
             final DisplayableText text,
             final Node footer,
@@ -605,6 +611,7 @@ public class GenericArchiveBrowserPresenter {
         loaded.getController()
                 .init(dialogs,
                         errorHandler,
+                        navigator,
                         title,
                         text,
                         footer,

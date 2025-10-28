@@ -3,10 +3,7 @@ package ch.admin.bar.siard2.cmd;
 import ch.admin.bar.dbexception.DatabaseExceptionHandlerHelper;
 import ch.admin.bar.siard2.api.Record;
 import ch.admin.bar.siard2.api.*;
-import ch.admin.bar.siard2.api.ext.FileDownloadPathHolder;
 import ch.admin.bar.siard2.api.ext.SchemaTableKey;
-import ch.admin.bar.siard2.api.ext.SftpConnection;
-import ch.admin.bar.siard2.api.ext.SftpSender;
 import ch.admin.bar.siard2.api.ext.form.FormData;
 import ch.admin.bar.siard2.api.ext.form.FormDataHelper;
 import ch.admin.bar.siard2.api.generated.CategoryType;
@@ -22,17 +19,12 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static ch.admin.bar.siard2.api.ext.SftpSender.buildSftpSender;
-
 public class PrimaryDataFromDb extends PrimaryDataTransfer {
     private static final Logger LOG = LoggerFactory.getLogger(PrimaryDataFromDb.class);
-    private static final long REPORT_RECORDS = 1000L;
     private Progress progress = null;
     private long recordsDownloaded = -1L;
     private long recordsTotal = -1L;
@@ -113,13 +105,6 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         }
     }
 
-    private void tryGetSchema(Schema schema) {
-        try {
-            this.getSchema(schema);
-        } catch (IOException | SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private void tryGetTable(Table table) {
         try {
@@ -403,8 +388,4 @@ public class PrimaryDataFromDb extends PrimaryDataTransfer {
         return record;
     }
 
-    private void getSchema(Schema schema) throws IOException, SQLException {
-        schema.getSelectedTables().forEach(this::tryGetTable);
-        LOG.debug("All data of schema '{}' successfully downloaded", schema.getMetaSchema().getName());
-    }
 }
