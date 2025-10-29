@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+
+<ScrollPane styleClass="scrollable-pane" stylesheets="@../../css/root.css" xmlns="http://javafx.com/javafx/1.8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ch.admin.bar.siardsuite.ui.presenter.OpenFailedPresenter"
+            maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+    <BorderPane style="-fx-background-color: white" fx:id="borderPane" maxHeight="1.7976931348623157E308"
+                maxWidth="1.7976931348623157E308">
+        <top>
+            <VBox>
+                <children>
+                    <Label fx:id="title" contentDisplay="RIGHT" styleClass="h2">
+                        <VBox.margin>
+                            <Insets left="25.0" right="25.0" top="48.0"/>
+                        </VBox.margin>
+                    </Label>
+                    <Label fx:id="message" contentDisplay="RIGHT" styleClass="h3">
+                        <VBox.margin>
+                            <Insets left="25.0" right="25.0" top="25.0"/>
+                        </VBox.margin>
+                    </Label>
+                </children>
+            </VBox>
+        </top>
+        <center>
+        </center>
+        <bottom>
+            <VBox>
+                <children>
+                    <Separator style="-fx-background-color: lightgray; -fx-pref-height: 1px;">
+                        <VBox.margin>
+                            <Insets left="25.0" right="25.0"/>
+                        </VBox.margin>
+                    </Separator>
+                    <HBox alignment="BOTTOM_LEFT">
+                        <children>
+                            <Button fx:id="homeButton" text="Home" styleClass="primary-button" style="-fx-background-color: #2c3e50; -fx-text-fill: white;">
+                                <HBox.margin>
+                                    <Insets left="25.0" right="25.0" top="15.0" bottom="15.0"/>
+                                </HBox.margin>
+                            </Button>
+                        </children>
+                    </HBox>
+                </children>
+            </VBox>
+        </bottom>
+    </BorderPane>
+</ScrollPane>
