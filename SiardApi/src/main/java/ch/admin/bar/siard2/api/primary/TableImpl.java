@@ -366,10 +366,7 @@ public class TableImpl extends SearchImpl implements Table {
         }
         SchemaImpl si = (SchemaImpl) getParentSchema();
         if (tt == null) {
-            // SIARD 파일명에서 확장자를 제거한 이름을 가져옴
-            String siardFileName = getParentSchema().getParentArchive().getFile().getName();
-            String siardName = siardFileName.substring(0, siardFileName.lastIndexOf('.'));
-            String sFolder = siardName + "_" + sName; // SIARD파일명_테이블명 형식으로 폴더명 생성
+            String sFolder = "table" + tts.getTable().size();
             tt = MetaTableImpl.createTableType(sName, sFolder);
             tts.getTable().add(tt);
         }
