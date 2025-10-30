@@ -8,11 +8,13 @@ public class LabelIcon extends Label {
 
   public LabelIcon(String text, Integer pos, IconView.IconType type) {
     this.setText(text);
-    this.getStyleClass().add("view-text");
-    this.setContentDisplay(ContentDisplay.RIGHT);
-    ImageView imageView = new IconView(pos, type);
-    if (type.equals(IconView.IconType.LOADING)) {
-      new Spinner(imageView).play();
+    this.getStyleClass().addAll("view-text", "label-icon-left");
+    this.setContentDisplay(ContentDisplay.LEFT);
+    ImageView imageView;
+    if (type != null) {
+      imageView = new IconView(pos, type);
+    } else {
+      imageView = new IconView(pos, IconView.IconType.PLACEHOLDER);
     }
     this.setGraphic(imageView);
   }

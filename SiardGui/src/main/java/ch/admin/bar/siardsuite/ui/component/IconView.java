@@ -7,8 +7,9 @@ import javafx.scene.image.ImageView;
 public class IconView extends ImageView {
 
   public enum IconType {
-    LOADING(Icon.LOADING.toImage(), "loading-icon"),
+    LOADING(Icon.OK.toImage(), "gray-check"),
     OK(Icon.OK.toImage(), ""),
+    PLACEHOLDER(null, "") ,
     ERROR(Icon.CIRCLE_ERROR.toImage(), "");
 
     private final Image icon;
@@ -21,7 +22,9 @@ public class IconView extends ImageView {
   }
 
   public IconView(Integer pos, IconType type) {
-    this.setImage(type.icon);
+    if (type.icon != null) {
+      this.setImage(type.icon);
+    }
     this.setFitHeight(14.0);
     this.setFitWidth(14.0);
     this.getStyleClass().addAll(type.styleClass, "icon-button");

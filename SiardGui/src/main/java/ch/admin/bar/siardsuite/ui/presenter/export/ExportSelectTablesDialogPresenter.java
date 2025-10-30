@@ -90,15 +90,37 @@ public class ExportSelectTablesDialogPresenter {
                     .map(TreeItem::getValue)
                     .collect(Collectors.toSet());
 
-            TableExporterService.builder()
+            // 진행 다이얼로그 열기: 선택된 테이블 목록 전달
+            val allSelected = ListAssembler.assemble(archive.getSchemas(), archive::getSchema).stream()
+                    .flatMap(schema -> ListAssembler.assemble(schema.getTables(), schema::getTable).stream())
+                    .map(table -> table.getMetaTable().getName())
+                    .filter(namesOfSelectedTables::contains)
+                    .collect(Collectors.toList());
+            dialogs.open(View.EXPORT_IN_PROGRESS, allSelected);
+
+            val exporter = TableExporterService.builder()
                     .exportDir(file)
                     .schemas(ListAssembler.assemble(archive.getSchemas(), archive::getSchema))
                     .shouldBeExportedFilter(table -> namesOfSelectedTables.contains(
                             table.getMetaTable().getName()))
-                    .build()
-                    .export();
+                    .build();
 
-            this.dialogs.open(View.EXPORT_SUCCESS);
+            exporter.setOnProgress(progress -> {
+                ExportInProgressDialogPresenter controller = ExportInProgressDialogPresenter.getInstance();
+                if (controller != null) controller.updateProgress(progress, "");
+            });
+            exporter.setOnTableExported(tableName -> {
+                ExportInProgressDialogPresenter controller = ExportInProgressDialogPresenter.getInstance();
+                if (controller != null) controller.updateProgress(-1, tableName);
+            });
+
+            // 시작 직후 0%를 즉시 반영하도록 호출
+            {
+                ExportInProgressDialogPresenter controller = ExportInProgressDialogPresenter.getInstance();
+                if (controller != null) controller.updateProgress(0.0, "");
+            }
+
+            new Thread(exporter::export, "table-exporter-thread").start();
         }
     }
 

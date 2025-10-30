@@ -5,7 +5,7 @@ import ch.admin.bar.siard2.api.Table;
 import ch.admin.bar.siardsuite.ui.presenter.archive.browser.forms.utils.ListAssembler;
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+// import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -16,10 +16,13 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Predicate;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+// 생성자 요구를 줄이기 위해 명시적 RequiredArgsConstructor 제거
+//@RequiredArgsConstructor
 @Builder
 public class TableExporterService {
 
@@ -40,6 +43,21 @@ public class TableExporterService {
     @Builder.Default
     private final int maxRowsPerFile = 10000; // 파일당 최대 행 수
 
+    // 진행 표시용 콜백들 (필수가 아님)
+    @Builder.Default
+    private Consumer<String> onTableExported = tableName -> {};
+
+    @Builder.Default
+    private Consumer<Double> onProgress = progress -> {};
+
+    public void setOnTableExported(Consumer<String> onTableExported) {
+        this.onTableExported = onTableExported != null ? onTableExported : (name -> {});
+    }
+
+    public void setOnProgress(Consumer<Double> onProgress) {
+        this.onProgress = onProgress != null ? onProgress : (p -> {});
+    }
+
     @SneakyThrows
     public void export() {
         // SIARD 파일명과 현재 날짜시간으로 상위 폴더 생성
@@ -52,19 +70,28 @@ public class TableExporterService {
         if (!parentFolder.exists()) {
             parentFolder.mkdirs();
         }
-        
+
+        // 내보낼 전체 테이블 목록을 먼저 수집하여 총 개수 파악
+        List<Table> allTables = new ArrayList<>();
         for (val schema : schemas) {
-            exportSchema(schema, parentFolder);
+            val filtered = ListAssembler.assemble(schema.getTables(), schema::getTable).stream()
+                    .filter(shouldBeExportedFilter)
+                    .collect(Collectors.toList());
+            allTables.addAll(filtered);
         }
-    }
 
-    private void exportSchema(Schema schema, File parentFolder) throws IOException {
-        val filtered = ListAssembler.assemble(schema.getTables(), schema::getTable).stream()
-                .filter(shouldBeExportedFilter)
-                .collect(Collectors.toList());
+        int totalTables = allTables.size();
+        // 초기 전체 진행률 0% 알림
+        try { onProgress.accept(0.0); } catch (Exception ignored) {}
+        for (int i = 0; i < totalTables; i++) {
+            Table table = allTables.get(i);
 
-        for (val table : filtered) {
             exportTable(table, parentFolder);
+            // 전체 진행률 = 완료 엔티티 수 / 총 엔티티 수
+            double overall = (i + 1) / (double) totalTables;
+            try { onProgress.accept(overall); } catch (Exception ignored) {}
+
+            try { onTableExported.accept(table.getMetaTable().getName()); } catch (Exception ignored) {}
         }
     }
 
@@ -87,6 +114,9 @@ public class TableExporterService {
                 long endRow = Math.min(startRow + maxRowsPerFile, totalRows);
                 String suffix = fileCount > 1 ? "_" + (i + 1) : "";
                 exportSingleTableFile(table, parentFolder, siardName, tableName, startRow, endRow, suffix);
+                // 청크(파일) 단위로 현재 테이블 진행률 보고
+                double tableProgress = (i + 1) / (double) fileCount;
+                try { onProgress.accept(tableProgress); } catch (Exception ignored) {}
             }
         }
     }

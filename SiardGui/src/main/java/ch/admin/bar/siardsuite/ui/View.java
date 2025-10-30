@@ -22,6 +22,7 @@ import ch.admin.bar.siardsuite.ui.presenter.archive.browser.dialogues.UnsavedCha
 import ch.admin.bar.siardsuite.ui.presenter.common.RecentConnectionsDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.export.ExportSelectTablesDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.export.ExportSuccessDialogPresenter;
+import ch.admin.bar.siardsuite.ui.presenter.export.ExportInProgressDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.info.InfoDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.open.OpenSiardArchiveDialogPresenter;
 import ch.admin.bar.siardsuite.ui.presenter.option.OptionDialogPresenter;
@@ -57,6 +58,8 @@ public class View {
             new ShowDialogTarget<>(ExportSelectTablesDialogPresenter::load);
     public static final SimpleShowDialogTarget EXPORT_SUCCESS =
             new SimpleShowDialogTarget(ExportSuccessDialogPresenter::load);
+    public static final ShowDialogTarget<java.util.List<String>> EXPORT_IN_PROGRESS =
+            new ShowDialogTarget<>(ExportInProgressDialogPresenter::load);
     public static final SimpleShowDialogTarget INFO_DIALOG =
             new SimpleShowDialogTarget(InfoDialogPresenter::load);
     public static final SimpleShowDialogTarget OPTION_DIALOG =

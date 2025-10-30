@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXProgressBar?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="585.0" prefWidth="480.0" styleClass="dialog" stylesheets="@../../css/root.css" xmlns="http://javafx.com/javafx/1.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.admin.bar.siardsuite.ui.presenter.export.ExportInProgressDialogPresenter">
+    <top>
+        <HBox BorderPane.alignment="CENTER_LEFT">
+            <children>
+                <Label fx:id="title" prefHeight="42.0" styleClass="dialog-title" text="Export in progress" HBox.hgrow="ALWAYS" />
+            </children>
+            <BorderPane.margin>
+                <Insets bottom="15.0" />
+            </BorderPane.margin>
+        </HBox>
+    </top>
+    <center>
+        <VBox prefHeight="100.0" spacing="12.0" BorderPane.alignment="CENTER">
+            <children>
+                <BorderPane>
+                    <center>
+                        <MFXProgressBar fx:id="progressBar" prefHeight="18.0" prefWidth="418.0" BorderPane.alignment="CENTER" />
+                    </center>
+                    <right>
+                        <Label fx:id="percentLabel" text="0%" styleClass="progress-percent" BorderPane.alignment="CENTER" />
+                    </right>
+                </BorderPane>
+                <ScrollPane fitToWidth="true" styleClass="progress-scroll">
+                    <content>
+                        <VBox fx:id="itemBox" spacing="8.0" />
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
+
+

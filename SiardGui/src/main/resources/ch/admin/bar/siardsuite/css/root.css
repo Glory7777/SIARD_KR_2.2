@@ -427,6 +427,21 @@
     -fx-graphic-text-gap: 1.2em;
 }
 
+/* Export in progress UI */
+.progress-scroll .viewport {
+    -fx-background-color: white;
+}
+.progress-scroll {
+    -fx-background-color: transparent;
+}
+.icon-button.gray-check {
+    -fx-opacity: 0.2; /* 미완료: 거의 투명한 체크 */
+}
+
+.progress-percent {
+    -fx-padding: 0 0 0 8; /* 퍼센트바와 숫자 간격 */
+}
+
 .server-icon {
     -fx-graphic: url(../icons/server.png);
 }
