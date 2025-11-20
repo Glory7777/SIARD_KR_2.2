@@ -28,10 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.tika.Tika;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -380,125 +382,87 @@ public class RowsOverviewForm {
     }
 
     /**
-     * 통합 검색 결과용 데이터 소스
+     * 통합 검색 결과용 데이터 소스 (성능 최적화 버전)
+     * - SearchIndex의 전역 매치 목록(unifiedPositions)을 직접 사용하여
+     * 페이지네이션 요청 시 반복적인 테이블 스캔을 제거.
      */
-    // 통합 검색 결과를 제공 - SIARD 기존 로직 활용하여 제한 없이 모든 데이터 검색
-    public static class UnifiedStreamingDataSource implements LazyLoadingDataSource<UnifiedRecordWrapper> {
-        private final List<DatabaseTable> tables;
-        private final String searchTerm;
-        // 각 테이블에서 "읽은 전체 레코드 수"를 추적(매치 여부와 무관)
-        private final long[] readRowsPerTable;
-        private final ch.admin.bar.siardsuite.ui.presenter.archive.browser.SearchIndex searchIndex;
-        private long globalIndex = 0; // 전역 순차 번호
-        private boolean allDataLoaded = false; // 모든 데이터 로드 완료 여부
-        private final List<UnifiedRecordWrapper> allLoadedRecords = new ArrayList<>(); // 모든 로드된 레코드
 
-        public UnifiedStreamingDataSource(@NonNull SiardArchive archive, String searchTerm, ch.admin.bar.siardsuite.ui.presenter.archive.browser.SearchIndex searchIndex) {
-            val list = new ArrayList<DatabaseTable>();
-            for (val schema : archive.getSchemas()) {
-                list.addAll(schema.getTables());
-            }
-            this.tables = list;
+    public static class UnifiedStreamingDataSource implements LazyLoadingDataSource<UnifiedRecordWrapper> {
+
+        private final String searchTerm;
+        // SearchIndex가 미리 계산한 '전역 매치 목록'
+        private final List<ch.admin.bar.siardsuite.ui.presenter.archive.browser.SearchIndex.TablePosition> globalMatches;
+        private final long totalItems;
+        private final SiardArchive archive;
+        
+        // 이미 로드한 레코드를 캐싱하여 페이지를 앞뒤로 이동할 때 I/O를 방지
+        private final Map<Integer, UnifiedRecordWrapper> recordCache = new HashMap<>();
+
+        public UnifiedStreamingDataSource(@NonNull SiardArchive archive, String searchTerm, @NonNull ch.admin.bar.siardsuite.ui.presenter.archive.browser.SearchIndex searchIndex) {
+            this.archive = archive;
             this.searchTerm = searchTerm;
-            this.searchIndex = searchIndex;
-            this.readRowsPerTable = new long[list.size()];
+            
+            // 생성 시점에 '전역 매치 목록'을 한 번만 가져옴
+            this.globalMatches = searchIndex.getUnifiedPositions();
+            this.totalItems = this.globalMatches.size();
         }
 
         @Override
         public List<UnifiedRecordWrapper> load(int startIndex, int nrOfItems) {
-            // 이미 로드된 데이터가 있으면 그것을 반환
-            if (startIndex < allLoadedRecords.size()) {
-                int endIndex = Math.min(startIndex + nrOfItems, allLoadedRecords.size());
-                return allLoadedRecords.subList(startIndex, endIndex);
-            }
+            final List<UnifiedRecordWrapper> pageRecords = new ArrayList<>();
+            // 로드할 정확한 범위 계산
+            int endIndex = Math.min(startIndex + nrOfItems, (int) this.totalItems);
 
-            // 모든 데이터가 이미 로드되었으면 빈 리스트 반환
-            if (allDataLoaded) {
-                return new ArrayList<>();
-            }
-
-            // 새로운 데이터 로드: 인덱스가 있으면 인덱스 기반으로, 없으면 순차 스캔
-            final List<UnifiedRecordWrapper> out = new ArrayList<>();
-            int need = nrOfItems;
-            boolean foundAnyData = false;
-            
-            // 각 테이블에서 순차적으로 검색
-            for (int t = 0; t < tables.size() && need > 0; t++) {
-                val table = tables.get(t);
-                try {
-                    if (searchIndex != null) {
-                        // 인덱스 기반: 이미 계산된 매치 포지션에서 필요한 구간만 로드
-                        val positions = searchIndex.getPerTableMatchedPositions().getOrDefault(table, List.of());
-                        long already = allLoadedRecords.stream().filter(r -> r.getTableName().equals(table.getName())).count();
-                        for (int i = (int) already; i < positions.size() && need > 0; i++) {
-                            long target = positions.get(i);
-                            val dispenser = table.getTable().openRecords();
-                            dispenser.skip(target);
-                            val rec = dispenser.get();
-                            if (rec == null) break;
-                            val wrapper = new UnifiedRecordWrapper(rec, table.getName());
-                            wrapper.setGlobalIndex(++globalIndex);
-                            out.add(wrapper);
-                            allLoadedRecords.add(wrapper);
-                            need--;
-                            foundAnyData = true;
-                        }
-                    } else {
-                        val dispenser = table.getTable().openRecords();
-                        dispenser.skip((int) readRowsPerTable[t]);
-                        while (need > 0) {
-                            val rec = dispenser.getWithSearchTerm(searchTerm);
-                            if (rec == null) break;
-                            readRowsPerTable[t]++;
-                            if (dispenser.anyMatches()) {
-                                val wrapper = new UnifiedRecordWrapper(rec, table.getName());
-                                wrapper.setGlobalIndex(++globalIndex);
-                                out.add(wrapper);
-                                allLoadedRecords.add(wrapper);
-                                need--;
-                                foundAnyData = true;
-                            }
-                        }
+            // 이 페이지 로드를 위한 LobReader를 한 번만 열기
+            try (LobReader lobReader = new LobReader(new File(archive.getArchive().getFile().getPath()))) {
+                
+                for (int i = startIndex; i < endIndex; i++) {
+                    
+                    // 캐시 확인: 이미 로드한 레코드는 즉시 반환
+                    if (recordCache.containsKey(i)) {
+                        pageRecords.add(recordCache.get(i));
+                        continue;
                     }
-                } catch (Exception ignore) {
-                    // 테이블 접근 실패 시 다음 테이블로
+
+                    // 캐시에 없는 항목: '전역 매치 목록'에서 직접 위치를 찾아 로드
+                    try {
+                        // 'i'번째 매치 정보(테이블, 레코드 인덱스)를 직접 가져옴
+                        val match = this.globalMatches.get(i);
+                        DatabaseTable table = match.getTable();
+                        long recordIndex = match.getRecordIndex(); // 0-based
+
+                        // 해당 테이블을 열고 'skip'으로 레코드로 바로 Jump
+                        val dispenser = table.getTable().openRecords(lobReader); 
+                        dispenser.skip(recordIndex); // 반복 스캔 없이 정확한 위치로 이동
+                        val rec = dispenser.get();
+
+                        if (rec != null) {
+                            val wrapper = new UnifiedRecordWrapper(rec, table.getName());
+                            wrapper.setGlobalIndex(i + 1); // 전역 인덱스(1-based)
+                            pageRecords.add(wrapper);
+                            recordCache.put(i, wrapper); // 다음을 위해 캐시에 저장
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to load record at global index {}", i, e);
+                    }
                 }
+            } catch (IOException e) {
+                 log.error("Failed to create LobReader for unified search loading", e);
             }
             
-            // 더 이상 로드할 데이터가 없으면 완료 표시
-            if (!foundAnyData) {
-                allDataLoaded = true;
-            }
-            
-            return out;
+            return pageRecords;
         }
 
         @Override
         public long findIndexOf(UnifiedRecordWrapper item) {
-            return item.getGlobalIndex(); // 전역 순차 번호 반환
+            // globalIndex는 1-based, 리스트 인덱스는 0-based
+            return item.getGlobalIndex() - 1;
         }
 
         @Override
         public long getNumberOfItems() {
-            if (searchIndex != null) {
-                return searchIndex.getTotalMatched();
-            }
-
-            // 검색 인덱스가 없으면 실제 검색을 수행해서 개수 계산
-            long count = 0;
-            for (DatabaseTable table : tables) {
-                try {
-                    val dispenser = table.getTable().openRecords();
-                    while (true) {
-                        val rec = dispenser.getWithSearchTerm(searchTerm);
-                        if (rec == null) break;
-                        if (dispenser.anyMatches()) count++;
-                    }
-                } catch (Exception ignore) {
-                    // 테이블 접근 실패 시 다음 테이블로
-                }
-            }
-            return count;
+            // 전체 아이템 개수를 즉시 반환 (기존의 전체 스캔 로직 제거)
+            return this.totalItems;
         }
     }
 
